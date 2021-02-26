@@ -1,0 +1,33 @@
+2021-02-25 16:48:06.100 CET [15398] LOG:  starting PostgreSQL 13.1 on x86_64-apple-darwin20.1.0, compiled by Apple clang version 12.0.0 (clang-1200.0.32.27), 64-bit
+2021-02-25 16:48:06.102 CET [15398] LOG:  listening on IPv6 address "::1", port 5432
+2021-02-25 16:48:06.102 CET [15398] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2021-02-25 16:48:06.103 CET [15398] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2021-02-25 16:48:06.106 CET [15399] LOG:  database system was shut down at 2021-02-25 16:47:00 CET
+2021-02-25 16:48:06.109 CET [15398] LOG:  database system is ready to accept connections
+2021-02-25 16:50:15.928 CET [15451] FATAL:  role "root" does not exist
+2021-02-25 16:50:48.578 CET [15459] FATAL:  role "root" does not exist
+2021-02-25 16:52:33.949 CET [15699] FATAL:  role "root" does not exist
+2021-02-25 17:20:50.399 CET [18701] ERROR:  smallint out of range
+2021-02-25 17:20:50.399 CET [18701] STATEMENT:  ALTER TABLE routes ALTER test TYPE SMALLINT
+2021-02-25 17:20:50.400 CET [18701] ERROR:  current transaction is aborted, commands ignored until end of transaction block
+2021-02-25 17:20:50.400 CET [18701] STATEMENT:  DEALLOCATE pdo_stmt_0000000d
+2021-02-25 17:37:34.437 CET [19177] ERROR:  Invalid type name "public.GEOMETRYCOLLECTION(2)" - valid ones are:
+		POINT, MULTIPOINT,
+		LINESTRING, MULTILINESTRING,
+		POLYGON, MULTIPOLYGON,
+		CIRCULARSTRING, COMPOUNDCURVE, MULTICURVE,
+		CURVEPOLYGON, MULTISURFACE,
+		GEOMETRY, GEOMETRYCOLLECTION,
+		POINTM, MULTIPOINTM,
+		LINESTRINGM, MULTILINESTRINGM,
+		POLYGONM, MULTIPOLYGONM,
+		CIRCULARSTRINGM, COMPOUNDCURVEM, MULTICURVEM
+		CURVEPOLYGONM, MULTISURFACEM, TRIANGLE, TRIANGLEM,
+		POLYHEDRALSURFACE, POLYHEDRALSURFACEM, TIN, TINM
+		or GEOMETRYCOLLECTIONM
+2021-02-25 17:37:34.437 CET [19177] CONTEXT:  PL/pgSQL function addgeometrycolumn(character varying,character varying,character varying,character varying,integer,character varying,integer,boolean) line 14 at RAISE
+	SQL statement "SELECT public.AddGeometryColumn('','',$1,$2,$3,$4,$5, $6)"
+	PL/pgSQL function addgeometrycolumn(character varying,character varying,integer,character varying,integer,boolean) line 5 at SQL statement
+2021-02-25 17:37:34.437 CET [19177] STATEMENT:  SELECT public.AddGeometryColumn('routes', 'geometry', 4326, 'public.GEOMETRYCOLLECTION', 2, true)
+2021-02-25 17:37:34.439 CET [19177] ERROR:  current transaction is aborted, commands ignored until end of transaction block
+2021-02-25 17:37:34.439 CET [19177] STATEMENT:  DEALLOCATE pdo_stmt_0000000a
