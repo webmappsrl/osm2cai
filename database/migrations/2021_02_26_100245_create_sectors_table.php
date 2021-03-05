@@ -17,7 +17,8 @@ class CreateSectorsTable extends Migration
             $table->id();
             $table->string("name");
             $table->geometry("geometry");
-            $table->string("code");
+            $table->string("code", 1);
+            $table->string("full_code", 5);
             $table->unsignedBigInteger("area_id");
             $table->timestamps();
 

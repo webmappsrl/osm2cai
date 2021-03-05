@@ -17,7 +17,8 @@ class CreateProvincesTable extends Migration
             $table->id();
             $table->string("name");
             $table->geometry("geometry");
-            $table->string("code");
+            $table->string("code", 2);
+            $table->string("full_code", 3);
             $table->unsignedBigInteger("region_id");
             $table->timestamps();
 
