@@ -1,7 +1,5 @@
 <p class="mt-8 text-center text-xs text-80">
-    <a href="https://nova.laravel.com" class="text-primary dim no-underline">Laravel Nova</a>
+    Osm2Cai v{{ config('app.version') }}
     <span class="px-1">&middot;</span>
-    &copy; {{ date('Y') }} Laravel LLC - By Taylor Otwell, David Hemphill, and Steve Schoger.
-    <span class="px-1">&middot;</span>
-    v{{ \Laravel\Nova\Nova::version() }}
+    &copy; <a href="https://webmapp.it" class="text-primary dim no-underline">Webmapp</a>
 </p>
