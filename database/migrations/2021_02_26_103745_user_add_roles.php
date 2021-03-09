@@ -16,7 +16,7 @@ class UserAddRoles extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('is_administrator')->default(false);
             $table->boolean('is_national_referent')->default(false);
-            $table->unsignedBigInteger('region_id');
+            $table->unsignedBigInteger('region_id')->nullable();
             $table->foreign('region_id')->references('id')->on('regions');
         });
     }

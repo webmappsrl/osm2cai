@@ -9,142 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
-define("REGIONS", [
-    "E" => "Piemonte",
-    "F" => "Valle d'Aosta",
-    "D" => "Lombardia",
-    "C" => "Trentino Alto Adige",
-    "B" => "Veneto",
-    "A" => "Friuli Venezia Giulia",
-    "G" => "Liguria",
-    "H" => "Emilia Romagna",
-    "L" => "Toscana",
-    "N" => "Umbria",
-    "M" => "Marche",
-    "O" => "Lazio",
-    "P" => "Abruzzo",
-    "Q" => "Molise",
-    "S" => "Campania",
-    "R" => "Puglia",
-    "T" => "Basilicata",
-    "U" => "Calabria",
-    "V" => "Sicilia",
-    "Z" => "Sardegna"
-]);
-define("PROVINCES", [
-    "AG" => "Agrigento",
-    "AL" => "Alessandria",
-    "AN" => "Ancona",
-    "AO" => "Valle d'Aosta/Vallée d'Aoste",
-    "AP" => "Ascoli Piceno",
-    "AQ" => "L'Aquila",
-    "AR" => "Arezzo",
-    "AT" => "Asti",
-    "AV" => "Avellino",
-    "BA" => "Bari",
-    "BG" => "Bergamo",
-    "BI" => "Biella",
-    "BL" => "Belluno",
-    "BN" => "Benevento",
-    "BO" => "Bologna",
-    "BR" => "Brindisi",
-    "BS" => "Brescia",
-    "BT" => "Barletta-Andria-Trani",
-    "BZ" => "Bolzano/Bozen",
-    "CA" => "Cagliari",
-    "CB" => "Campobasso",
-    "CE" => "Caserta",
-    "CH" => "Chieti",
-    "CI" => "Carbonia-Iglesias",
-    "CL" => "Caltanissetta",
-    "CN" => "Cuneo",
-    "CO" => "Como",
-    "CR" => "Cremona",
-    "CS" => "Cosenza",
-    "CT" => "Catania",
-    "CZ" => "Catanzaro",
-    "EN" => "Enna",
-    "FC" => "Forlì-Cesena",
-    "FE" => "Ferrara",
-    "FG" => "Foggia",
-    "FI" => "Firenze",
-    "FM" => "Fermo",
-    "FR" => "Frosinone",
-    "GE" => "Genova",
-    "GO" => "Gorizia",
-    "GR" => "Grosseto",
-    "IM" => "Imperia",
-    "IS" => "Isernia",
-    "KR" => "Crotone",
-    "LC" => "Lecco",
-    "LE" => "Lecce",
-    "LI" => "Livorno",
-    "LO" => "Lodi",
-    "LT" => "Latina",
-    "LU" => "Lucca",
-    "MB" => "Monza e della Brianza",
-    "MC" => "Macerata",
-    "ME" => "Messina",
-    "MI" => "Milano",
-    "MN" => "Mantova",
-    "MO" => "Modena",
-    "MS" => "Massa-Carrara",
-    "MT" => "Matera",
-    "NA" => "Napoli",
-    "NO" => "Novara",
-    "NU" => "Nuoro",
-    "OG" => "Ogliastra",
-    "OR" => "Oristano",
-    "OT" => "Olbia-Tempio",
-    "PA" => "Palermo",
-    "PC" => "Piacenza",
-    "PD" => "Padova",
-    "PE" => "Pescara",
-    "PG" => "Perugia",
-    "PI" => "Pisa",
-    "PN" => "Pordenone",
-    "PO" => "Prato",
-    "PR" => "Parma",
-    "PT" => "Pistoia",
-    "PU" => "Pesaro e Urbino",
-    "PV" => "Pavia",
-    "PZ" => "Potenza",
-    "RA" => "Ravenna",
-    "RC" => "Reggio Calabria",
-    "RE" => "Reggio nell'Emilia",
-    "RG" => "Ragusa",
-    "RI" => "Rieti",
-    "RM" => "Roma",
-    "RN" => "Rimini",
-    "RO" => "Rovigo",
-    "SA" => "Salerno",
-    "SI" => "Siena",
-    "SO" => "Sondrio",
-    "SP" => "La Spezia",
-    "SR" => "Siracusa",
-    "SS" => "Sassari",
-    "SU" => "Sud Sardegna",
-    "SV" => "Savona",
-    "TA" => "Taranto",
-    "TE" => "Teramo",
-    "TN" => "Trento",
-    "TO" => "Torino",
-    "TP" => "Trapani",
-    "TR" => "Terni",
-    "TS" => "Trieste",
-    "TV" => "Treviso",
-    "UD" => "Udine",
-    "VA" => "Varese",
-    "VB" => "Verbano-Cusio-Ossola",
-    "VC" => "Vercelli",
-    "VE" => "Venezia",
-    "VI" => "Vicenza",
-    "VR" => "Verona",
-    "VS" => "Medio Campidano",
-    "VT" => "Viterbo",
-    "VV" => "Vibo Valentia"
-]);
-
 class import extends Command
 {
     /**
@@ -256,7 +120,7 @@ class import extends Command
         Log::info("Importing regions...");
         $db->beginTransaction();
         Log::info("Setting standard region names...");
-        foreach (REGIONS as $key => $name) {
+        foreach (config('geometry_mapping.regions') as $key => $name) {
             $db->select(
                 "UPDATE temp_sectors
                     SET regione_nome = ?
@@ -284,7 +148,7 @@ class import extends Command
         Log::info("Importing provinces...");
         $db->beginTransaction();
         Log::info("Setting standard province names...");
-        foreach (PROVINCES as $key => $name) {
+        foreach (config('geometry_mapping.provinces') as $key => $name) {
             $db->select(
                 "UPDATE temp_sectors
                     SET provincia_nome = ?
@@ -361,7 +225,7 @@ class import extends Command
                            settore_codice,
                            areas.id
                         FROM
-                            temp_sectors INNER JOIN areas ON (temp_sectors.area_codice = areas.code);");
+                            temp_sectors INNER JOIN areas ON (temp_sectors.regione_codice_cai || temp_sectors.provincia_sigla || temp_sectors.area_codice = areas.full_code);");
         $db->commit();
         Log::info("Sectors imported successfully");
     }

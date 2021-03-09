@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
-class Province extends Seeder
+class ImportFromCaiSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +14,6 @@ class Province extends Seeder
      */
     public function run()
     {
-        //
+        Artisan::call('osm2cai:import');
     }
 }

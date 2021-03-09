@@ -18,7 +18,7 @@ class CreateAreasTable extends Migration
             $table->string("name");
             $table->geometry("geometry");
             $table->string("code", 1);
-            $table->string("full_code", 4);
+            $table->string("full_code", 4)->unique();
             $table->unsignedBigInteger("province_id");
             $table->timestamps();
 
