@@ -30,9 +30,8 @@ class DownloadShape extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         $model = $models->first();
-        $type = strtolower(last(explode('\\', get_class($model)))) . 's';
-        $id = $model->id;
         $name = str_replace(" ", "_", $model->name);
+        $ids = $model->sectorsIds();
 
         Storage::disk('public')->makeDirectory('shape_files/zip');
         chdir('storage/shape_files');
@@ -50,11 +49,9 @@ class DownloadShape extends Action
             config('database.connections.osm2cai.username') .
             '\' password=\'' .
             config('database.connections.osm2cai.password') .
-            '\'" -sql "SELECT geometry, id, name FROM ' .
-            $type .
-            ' WHERE id = ' .
-            $id .
-            '"';
+            '\'" -sql "SELECT geometry, id, name FROM sectors WHERE id IN (' .
+            implode(',', $ids) .
+            ');"';
         exec($command);
 
         $command = 'zip ' . $name . '.zip ' . $name . '.*';
