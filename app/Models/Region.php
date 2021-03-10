@@ -11,7 +11,7 @@ class Region extends Model
 
     public function provinces()
     {
-        return $this->belongsToMany(Province::class);
+        return $this->hasMany(Province::class);
     }
 
     public function users()

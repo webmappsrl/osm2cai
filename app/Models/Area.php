@@ -11,12 +11,12 @@ class Area extends Model
 
     public function province()
     {
-        return $this->hasOne(Province::class);
+        return $this->belongsTo(Province::class);
     }
 
     public function sectors()
     {
-        return $this->belongsToMany(Sector::class);
+        return $this->hasMany(Sector::class);
     }
 
     public function users()
