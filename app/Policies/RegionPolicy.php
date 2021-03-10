@@ -59,4 +59,9 @@ class RegionPolicy
     {
         return true;
     }
+
+    public function downloadShape(User $user, Region $region)
+    {
+        return true;
+    }
 }

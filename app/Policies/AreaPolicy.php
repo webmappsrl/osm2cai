@@ -59,4 +59,9 @@ class AreaPolicy
     {
         return true;
     }
+
+    public function downloadShape(User $user, Area $area)
+    {
+        return true;
+    }
 }

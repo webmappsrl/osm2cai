@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
+use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 
@@ -106,8 +107,11 @@ class Sector extends Resource
     public function actions(Request $request)
     {
         return [
-            (new DownloadGeojson)->canRun(function ($request, $region) {
-                return $request->user()->can('downloadGeojson', $region);
+            (new DownloadGeojson())->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadGeojson', $zone);
+            }),
+            (new DownloadShape())->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadShape', $zone);
             })
         ];
     }

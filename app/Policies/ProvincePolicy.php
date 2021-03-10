@@ -59,4 +59,9 @@ class ProvincePolicy
     {
         return true;
     }
+
+    public function downloadShape(User $user, Province $province)
+    {
+        return true;
+    }
 }

@@ -59,4 +59,9 @@ class SectorPolicy
     {
         return true;
     }
+
+    public function downloadShape(User $user, Sector $sector)
+    {
+        return true;
+    }
 }

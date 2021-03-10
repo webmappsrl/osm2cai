@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
+use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -115,8 +116,11 @@ class Region extends Resource
     public function actions(Request $request): array
     {
         return [
-            (new DownloadGeojson)->canRun(function ($request, $region) {
-                return $request->user()->can('downloadGeojson', $region);
+            (new DownloadGeojson)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadGeojson', $zone);
+            }),
+            (new DownloadShape)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadShape', $zone);
             })
         ];
     }
