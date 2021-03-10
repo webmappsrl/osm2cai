@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Province;
+use App\Models\Sector;
 use Illuminate\Support\Facades\DB;
 
 class ProvinceController extends Controller
@@ -10,12 +11,12 @@ class ProvinceController extends Controller
     public function geojson(string $id)
     {
         $province = Province::find($id);
-        $results = DB::select('SELECT ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom FROM provinces WHERE id = ?;', [$id]);
-        if (count($results) > 0)
-        {
+        $sectors = $province->sectorsIds();
+        $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
+        if (count($results) > 0) {
             $geojson = [
-                'type' => 'Feature',
-                'geometry' => json_decode($results[0]->geom),
+                'type' => 'FeatureCollection',
+                'features' => [],
                 'properties' => [
                     'id' => $province->id,
                     'name' => $province->name,
@@ -24,9 +25,27 @@ class ProvinceController extends Controller
                     'region' => $province->region->name
                 ]
             ];
+
+            foreach ($results as $result) {
+                $sector = Sector::find($result->id);
+                $geojson['features'][] =
+                    [
+                        'type' => 'Feature',
+                        'geometry' => json_decode($result->geom),
+                        'properties' => [
+                            'id' => $sector->id,
+                            'name' => $sector->name,
+                            'code' => $sector->code,
+                            'full_code' => $sector->full_code,
+                            'area' => $sector->area->name,
+                            'province' => $sector->area->province->name,
+                            'region' => $sector->area->province->region->name
+                        ]
+                    ];
+            }
+
             return response(json_encode($geojson));
-        }
-        else
-            return abort(404,'Province ' . $id . ' not found');
+        } else
+            return abort(404, 'Province ' . $id . ' not found');
     }
 }

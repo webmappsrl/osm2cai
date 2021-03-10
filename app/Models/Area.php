@@ -19,6 +19,11 @@ class Area extends Model
         return $this->hasMany(Sector::class);
     }
 
+    public function sectorsIds(): array
+    {
+        return $this->sectors->pluck('id')->toArray();
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class);
