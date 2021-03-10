@@ -41,7 +41,19 @@ class Province extends Resource
      *
      * @var string
      */
-    public static $group = 'Zones';
+    public static $group = 'Territorio';
+
+    /**
+     * Custom priority level of the resource.
+     *
+     * @var int
+     */
+    public static $priority = 2;
+
+    public static function label()
+    {
+        return 'Province';
+    }
 
     /**
      * Get the fields displayed by the resource.

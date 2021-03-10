@@ -18,4 +18,9 @@ class Sector extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function sectorsIds(): array
+    {
+        return [$this->id];
+    }
 }

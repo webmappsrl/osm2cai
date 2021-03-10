@@ -5,6 +5,7 @@ namespace App\Nova;
 use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 
@@ -39,7 +40,12 @@ class Region extends Resource
      *
      * @var string
      */
-    public static $group = 'Zones';
+    public static $group = 'Territorio';
+
+    public static function label()
+    {
+        return 'Regioni';
+    }
 
     /**
      * Get the fields displayed by the resource.
@@ -60,6 +66,7 @@ class Region extends Resource
             }
         }
         return [
+//            ID::make(__('ID'), 'id')->sortable(),
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
             Number::make(__('Provinces'), 'provinces', function () use ($provincesCount) {

@@ -39,7 +39,12 @@ class Sector extends Resource
      *
      * @var string
      */
-    public static $group = 'Zones';
+    public static $group = 'Territorio';
+
+    public static function label()
+    {
+        return __('Settori');
+    }
 
     /**
      * Get the fields displayed by the resource.
