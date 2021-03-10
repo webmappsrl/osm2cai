@@ -42,6 +42,8 @@ class Area extends Resource
      */
     public static $group = 'Territorio';
 
+    public static $priority = 3;
+
     public static function label()
     {
         return 'Aree';

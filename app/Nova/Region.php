@@ -42,6 +42,8 @@ class Region extends Resource
      */
     public static $group = 'Territorio';
 
+    public static $priority = 1;
+
     public static function label()
     {
         return 'Regioni';

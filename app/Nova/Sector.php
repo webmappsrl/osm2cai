@@ -41,6 +41,8 @@ class Sector extends Resource
      */
     public static $group = 'Territorio';
 
+    public static $priority = 4;
+
     public static function label()
     {
         return __('Settori');
