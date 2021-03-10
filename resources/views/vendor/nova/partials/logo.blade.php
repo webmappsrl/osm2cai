@@ -1,1 +1,1 @@
-<img src="/assets/images/logo_sosec_webmapp.png" alt="SOSEC">
+<img src="/assets/images/logo_sosec.jpg" alt="SOSEC">
