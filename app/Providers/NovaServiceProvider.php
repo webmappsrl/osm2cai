@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -27,9 +28,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-                ->withAuthenticationRoutes()
-                ->withPasswordResetRoutes()
-                ->register();
+            ->withAuthenticationRoutes()
+            ->withPasswordResetRoutes()
+            ->register();
     }
 
     /**
@@ -77,7 +78,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools()
     {
-        return [];
+        return [
+            (new NovaSidebar())->hydrate([
+                'Tools' => [
+                    ['Mappa', 'http://osm2cai.j.webmapp.it']
+                ],
+            ])
+        ];
     }
 
     /**
