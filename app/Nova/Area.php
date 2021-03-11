@@ -7,6 +7,7 @@ use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Area extends Resource
 {
@@ -47,6 +48,19 @@ class Area extends Resource
     public static function label()
     {
         return 'Aree';
+    }
+
+    private static $indexDefaultOrder = [
+        'name' => 'asc'
+    ];
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if (empty($request->get('orderBy'))) {
+            $query->getQuery()->orders = [];
+            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+        }
+        return $query;
     }
 
     /**

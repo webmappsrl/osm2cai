@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Province extends Resource
 {
@@ -53,6 +54,19 @@ class Province extends Resource
     public static function label()
     {
         return 'Province';
+    }
+
+    private static $indexDefaultOrder = [
+        'name' => 'asc'
+    ];
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if (empty($request->get('orderBy'))) {
+            $query->getQuery()->orders = [];
+            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+        }
+        return $query;
     }
 
     /**

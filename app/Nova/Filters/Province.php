@@ -36,7 +36,6 @@ class Province extends BooleanFilter
      */
     public function options(Request $request)
     {
-        Log::info($request);
         $provinces = \App\Models\Province::select('id', 'name')->get()->toArray();
         $result = [];
         foreach ($provinces as $province) {
