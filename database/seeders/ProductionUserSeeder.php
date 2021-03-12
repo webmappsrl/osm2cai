@@ -68,7 +68,7 @@ class ProductionUserSeeder extends Seeder
             ],
             [
                 'name' => 'Luca De Lucchi',
-                'email' => 'luca.delucchi@fmach.it ',
+                'email' => 'luca.delucchi@fmach.it',
                 'email_verified_at' => now(),
                 'password' => bcrypt('osm2cai'),
                 'is_administrator' => false,

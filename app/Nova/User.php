@@ -3,12 +3,9 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -18,7 +15,7 @@ class User extends Resource
     public static $model = \App\Models\User::class;
     public static $title = 'name';
     public static $search = [
-        'id', 'name', 'email',
+        'name', 'email',
     ];
     public static $group = '';
 
