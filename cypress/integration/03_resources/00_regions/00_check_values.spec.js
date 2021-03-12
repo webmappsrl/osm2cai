@@ -5,6 +5,7 @@ describe('Regions list', () => {
         cy.get('input[name=password]').type('webmapp');
         cy.contains('Login').click();
         cy.contains('Regioni').click();
+        cy.wait(1000);
     });
 
     afterEach(() => {
