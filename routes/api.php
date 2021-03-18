@@ -22,8 +22,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-//Route::middleware('auth:api')->post('/region/geojson', [RegionController::class, 'geojson']);
-
 Route::prefix('geojson')->group(function () {
     Route::get('/region/{id}', [RegionController::class, 'geojson']);
     Route::get('/province/{id}', [ProvinceController::class, 'geojson']);
