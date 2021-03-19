@@ -1,6 +1,6 @@
 describe('Users national referent', () => {
     beforeEach(() => {
-        cy.visit('/nova/login');
+        cy.visit('/');
         cy.get('input[name=email]').type('alessiopiccioli@webmapp.it');
         cy.get('input[name=password]').type('osm2cai');
         cy.contains('Login').click();
@@ -61,7 +61,7 @@ describe('Users national referent', () => {
         cy.get('.v-popover.dropdown-right button.rounded').click();
         cy.contains('Logout').click();
 
-        cy.visit('/nova/login');
+        cy.visit('/');
         cy.get('input[name=email]').type(user.email);
         cy.get('input[name=password]').type(user.password);
         cy.contains('Login').click();

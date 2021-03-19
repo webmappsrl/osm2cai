@@ -1,6 +1,6 @@
 describe('Users admin', () => {
     beforeEach(() => {
-        cy.visit('/nova/login');
+        cy.visit('/');
         cy.get('input[name=email]').type('team@webmapp.it');
         cy.get('input[name=password]').type('webmapp');
         cy.contains('Login').click();
@@ -84,7 +84,7 @@ describe('Users admin', () => {
         cy.get('.v-popover.dropdown-right button.rounded').click();
         cy.contains('Logout').click();
 
-        cy.visit('/nova/login');
+        cy.visit('/');
         cy.get('input[name=email]').type(user.email);
         cy.get('input[name=password]').type(user.password);
         cy.contains('Login').click();

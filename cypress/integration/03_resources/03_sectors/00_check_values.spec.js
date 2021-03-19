@@ -1,6 +1,6 @@
 describe('Sectors list', () => {
     beforeEach(() => {
-        cy.visit('/nova/login');
+        cy.visit('/');
         cy.get('input[name=email]').type('team@webmapp.it');
         cy.get('input[name=password]').type('webmapp');
         cy.contains('Login').click();

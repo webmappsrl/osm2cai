@@ -1,6 +1,6 @@
 describe('Login page layout', () => {
     beforeEach(() => {
-        cy.visit('/nova/login');
+        cy.visit('/');
     })
 
     afterEach(() => {

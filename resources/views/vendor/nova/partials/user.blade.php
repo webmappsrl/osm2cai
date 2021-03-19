@@ -5,7 +5,7 @@
                 class="rounded-full w-8 h-8 mr-3"
         />
     @endisset
- 
+
     <span class="text-90">
         {{ $user->name ?? $user->email ?? __('Nova User') }}
     </span>
@@ -20,14 +20,14 @@
                     resourceName: 'users',
                     resourceId: '{{ $user->id }}'
                 }
-            }" class="block no-underline text-90 hover:bg-30 p-3">
-                {{--            <a href="{{ route('nova.logout') }}" class="block no-underline text-90 hover:bg-30 p-3">--}}
-                {{ __('Profilo') }}
-                {{--            </a>--}}
+            }" class="block no-underline text-90 hover:bg-30 p-3"
+                         id="wm-user-profile-button">
+                {{ __('Profile') }}
             </router-link>
         </li>
         <li>
-            <a href="{{ route('nova.logout') }}" class="block no-underline text-90 hover:bg-30 p-3">
+            <a href="{{ route('nova.logout') }}" class="block no-underline text-90 hover:bg-30 p-3"
+               id="wm-user-logout-button">
                 {{ __('Logout') }}
             </a>
         </li>

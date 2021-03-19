@@ -1,7 +1,7 @@
 describe('After seed', () => {
     describe('it should be able to login', () => {
         beforeEach(() => {
-            cy.visit('/nova/login');
+            cy.visit('/');
         });
 
         afterEach(() => {
