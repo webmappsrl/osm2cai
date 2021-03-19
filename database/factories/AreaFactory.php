@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Area;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use MStaack\LaravelPostgis\Geometries\Point;
 
 class AreaFactory extends Factory
 {
@@ -14,6 +15,8 @@ class AreaFactory extends Factory
      */
     protected $model = Area::class;
 
+    private static $id = 1;
+
     /**
      * Define the model's default state.
      *
@@ -21,8 +24,15 @@ class AreaFactory extends Factory
      */
     public function definition()
     {
+        $id = self::$id;
+        $code = chr($id);
+        self::$id = self::$id + 1;
         return [
-            //
+            'id' => $id,
+            'name' => $this->faker->name,
+            'geometry' => (new Point($this->faker->latitude, $this->faker->longitude))->toWKT(),
+            'code' => $code,
+            'full_code' => chr($id) . chr($id) . chr($id) . $code
         ];
     }
 }

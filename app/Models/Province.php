@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Province extends Model
 {
@@ -11,12 +12,27 @@ class Province extends Model
 
     public function region()
     {
-        return $this->hasOne(Region::class);
+        return $this->belongsTo(Region::class);
     }
 
     public function areas()
     {
-        return $this->belongsToMany(Area::class);
+        return $this->hasMany(Area::class);
+    }
+
+    public function areasIds(): array
+    {
+        return $this->areas->pluck('id')->toArray();
+    }
+
+    public function sectorsIds(): array
+    {
+        $result = [];
+        foreach ($this->areas as $area) {
+            $result = array_unique(array_values(array_merge($result, $area->sectorsIds())));
+        }
+
+        return $result;
     }
 
     public function users()

@@ -15,7 +15,7 @@ class CreateSectorsTable extends Migration
     {
         Schema::create('sectors', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->string("name", 254);
             $table->geometry("geometry");
             $table->string("code", 1);
             $table->string("full_code", 5);//->unique();
