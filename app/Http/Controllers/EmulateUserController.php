@@ -11,9 +11,4 @@ class EmulateUserController extends Controller
         session(['emulate_user_id' => null]);
         return redirect()->route('home');
     }
-
-    public function emulate()
-    {
-
-    }
 }

@@ -1,6 +1,6 @@
 <dropdown-trigger class="h-9 flex items-center">
     <?php
-    $emulatedUserId = $user->emulatedUserId();
+    $emulatedUserId = intval(session('emulate_user_id'));
     $emulatedUser = $emulatedUserId > 0
         ? \App\Models\User::find($emulatedUserId)
         : $user;
