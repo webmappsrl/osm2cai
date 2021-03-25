@@ -13,7 +13,7 @@ describe('Users admin', () => {
         cy.contains('Logout').click();
     });
 
-    it('should show a table with name, email, is admin, is national referent, region and provinces', () => {
+    xit('should show a table with name, email, is admin, is national referent, region and provinces', () => {
         const tableSelector = 'table[data-testid=resource-table]',
             tableHeadSelector = tableSelector + ' > thead',
             tableBodySelector = tableSelector + ' > tbody';
@@ -43,7 +43,7 @@ describe('Users admin', () => {
         region: "Toscana"
     };
 
-    it('should be able to create a user', () => {
+    xit('should be able to create a user', () => {
         // cy.contains('td', user.name).should('not.exist');
         cy.contains('create utenti', {matchCase: false})
             .should('be.visible')
@@ -91,7 +91,7 @@ describe('Users admin', () => {
         cy.url().should('contain', 'dashboard');
     });
 
-    describe('associations update', () => {
+    xdescribe('associations update', () => {
         beforeEach(() => {
             let tr = cy.contains('td', user.name)
                 .should('exist')
@@ -187,7 +187,7 @@ describe('Users admin', () => {
         });
     });
 
-    describe('and finally', () => {
+    xdescribe('and finally', () => {
         it('should be able to delete a user', () => {
             let tr = cy.contains('td', user.name).parent('tr');
             tr.invoke('attr', 'dusk').then((dusk) => {
@@ -198,5 +198,20 @@ describe('Users admin', () => {
                     .click();
             });
         });
+    });
+
+    it('should be able to emulate a user', () => {
+        let emulateButton = cy.get('tr[dusk=7-row]').contains('emulate', {matchCase: false});
+        emulateButton.should('be.visible');
+        emulateButton.click();
+        cy.wait(1000);
+        let user = cy.get('.v-popover.dropdown-right button.rounded').contains('Alessandro Geri');
+        user.should('be.visible');
+        user.click();
+        let restore = cy.contains('restore user', {matchCase: false});
+        restore.should('be.visible');
+        restore.click();
+        user = cy.get('.v-popover.dropdown-right button.rounded').contains('Webmapp Team');
+        user.should('be.visible');
     });
 });

@@ -2,7 +2,9 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\EmulateUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
@@ -143,6 +145,14 @@ class User extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new EmulateUser())
+                ->canSee(function ($request) {
+                    return $request->user()->can('emulate', $this->resource);
+                })
+                ->canRun(function ($request, $zone) {
+                    return $request->user()->can('emulate', $zone);
+                }),
+        ];
     }
 }
