@@ -11,7 +11,6 @@ use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Traits\LoggedUserTrait;
 
 class User extends Resource {
     public static string $model = \App\Models\User::class;
@@ -63,29 +62,29 @@ class User extends Resource {
                 ->creationRules('required', 'string', 'min:8')
                 ->updateRules('nullable', 'string', 'min:8'),
             Boolean::make(__('Admin'), 'is_administrator')->sortable()->hideWhenCreating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator;
             })->hideWhenUpdating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator;
             }),
             Boolean::make(__('National referent'), 'is_national_referent')->sortable()->hideWhenCreating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator && !$user->is_national_referent;
             })->hideWhenUpdating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
             BelongsTo::make('Region')->hideWhenCreating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator && !$user->is_national_referent;
             })->hideWhenUpdating(function () {
-                $user = LoggedUserTrait::getEmulatedUser();
+                $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator && !$user->is_national_referent;
             }),

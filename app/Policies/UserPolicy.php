@@ -6,7 +6,6 @@ use App\Models\Area;
 use App\Models\Province;
 use App\Models\Sector;
 use App\Models\User;
-use App\Traits\LoggedUserTrait;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy {
@@ -53,19 +52,19 @@ class UserPolicy {
     }
 
     public function create(User $user): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
 
         return $user->is_administrator || $user->is_national_referent || isset($user->region);
     }
 
     public function update(User $user, User $model): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
 
         return $this->_isManager($user, $model);
     }
 
     public function delete(User $user, User $model): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
         $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
 
         return !$hasRelations && (
@@ -75,13 +74,13 @@ class UserPolicy {
     }
 
     public function restore(User $user, User $model): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
 
         return $user->is_administrator || ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent);
     }
 
     public function forceDelete(User $user, User $model): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
         $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
 
         return !$hasRelations && (
@@ -91,13 +90,13 @@ class UserPolicy {
     }
 
     public function emulate(User $user, User $model): bool {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
 
         return $this->_isManager($user, $model, false);
     }
 
     private function _canProvince(User $user, Province $province) {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
         $result = false;
 
         if ($user->is_administrator || $user->is_national_referent)
@@ -113,7 +112,7 @@ class UserPolicy {
     }
 
     private function _canArea(User $user, Area $area) {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
         $result = false;
 
         if ($user->is_administrator || $user->is_national_referent)
@@ -129,7 +128,7 @@ class UserPolicy {
     }
 
     private function _canSector(User $user, Sector $sector) {
-        $user = LoggedUserTrait::getEmulatedUser($user);
+        $user = User::getEmulatedUser($user);
         $result = false;
 
         if ($user->is_administrator || $user->is_national_referent)
