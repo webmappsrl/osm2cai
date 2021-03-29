@@ -2,12 +2,14 @@
 
 namespace App\Policies;
 
+use App\Models\Area;
+use App\Models\Province;
+use App\Models\Sector;
 use App\Models\User;
+use App\Traits\LoggedUserTrait;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
-class UserPolicy
-{
+class UserPolicy {
     use HandlesAuthorization;
 
     /**
@@ -15,8 +17,7 @@ class UserPolicy
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
     }
 
     /**
@@ -25,10 +26,10 @@ class UserPolicy
      * @param User $user
      * @param User $model
      * @param bool $self if the user is manager of himself
+     *
      * @return bool
      */
-    private function _isManager(User $user, User $model, bool $self = true): bool
-    {
+    private function _isManager(User $user, User $model, bool $self = true): bool {
         if ($user->id === $model->id)
             return $self;
 
@@ -38,91 +39,132 @@ class UserPolicy
         if ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent)
             return true;
 
-        if ($user->region && !$model->is_administrator && !$model->is_national_referent && !$model->region) {
-            $provincesIds = $user->region->provincesIds();
-            $areasIds = $user->region->areasIds();
-            $sectorsIds = $user->region->sectorsIds();
-
-            foreach ($model->provinces->pluck('id') as $id) {
-                if (in_array($id, $provincesIds))
-                    return true;
-            }
-
-            foreach ($model->areas->pluck('id') as $id) {
-                if (in_array($id, $areasIds))
-                    return true;
-            }
-
-            foreach ($model->sectors->pluck('id') as $id) {
-                if (in_array($id, $sectorsIds))
-                    return true;
-            }
-        }
-
         return false;
     }
 
-    private function _getEmulatedUser(User $user): User
-    {
-        $result = $user;
-        $emulateUserId = session('emulate_user_id');
-        if (isset($emulateUserId))
-            $result = User::find($emulateUserId);
-        return $result;
-    }
-
-    public function viewAny(User $user): bool
-    {
+    public function viewAny(User $user): bool {
         return true;
     }
 
-    public function view(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
+    public function view(User $user, User $model): bool {
+        //        $user = $this->_getEmulatedUser($user);
+        //        return $this->_isManager($user, $model);
+        return true;
+    }
+
+    public function create(User $user): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+
+        return $user->is_administrator || $user->is_national_referent || isset($user->region);
+    }
+
+    public function update(User $user, User $model): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+
         return $this->_isManager($user, $model);
     }
 
-    public function create(User $user): bool
-    {
-        $user = $this->_getEmulatedUser($user);
-        return $user->is_administrator || $user->is_national_referent;
-    }
-
-    public function update(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
-        return $this->_isManager($user, $model);
-    }
-
-    public function delete(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
+    public function delete(User $user, User $model): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
         $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
+
         return !$hasRelations && (
                 $user->is_administrator ||
                 ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent)
             );
     }
 
-    public function restore(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
+    public function restore(User $user, User $model): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+
         return $user->is_administrator || ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent);
     }
 
-    public function forceDelete(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
+    public function forceDelete(User $user, User $model): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
         $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
+
         return !$hasRelations && (
                 $user->is_administrator ||
                 ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent)
             );
     }
 
-    public function emulate(User $user, User $model): bool
-    {
-        $user = $this->_getEmulatedUser($user);
+    public function emulate(User $user, User $model): bool {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+
         return $this->_isManager($user, $model, false);
+    }
+
+    private function _canProvince(User $user, Province $province) {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+        $result = false;
+
+        if ($user->is_administrator || $user->is_national_referent)
+            $result = true;
+        else if (isset($user->region_id)) {
+            $ids = $user->region->provincesIds();
+
+            if (in_array($province->id, $ids))
+                $result = true;
+        }
+
+        return $result;
+    }
+
+    private function _canArea(User $user, Area $area) {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+        $result = false;
+
+        if ($user->is_administrator || $user->is_national_referent)
+            $result = true;
+        else if (isset($user->region_id)) {
+            $ids = $user->region->areasIds();
+
+            if (in_array($area->id, $ids))
+                $result = true;
+        }
+
+        return $result;
+    }
+
+    private function _canSector(User $user, Sector $sector) {
+        $user = LoggedUserTrait::getEmulatedUser($user);
+        $result = false;
+
+        if ($user->is_administrator || $user->is_national_referent)
+            $result = true;
+        else if (isset($user->region_id)) {
+            $ids = $user->region->sectorsIds();
+
+            if (in_array($sector->id, $ids))
+                $result = true;
+        }
+
+        return $result;
+    }
+
+    public function attachProvince(User $user, User $model, Province $province) {
+        return $this->_canProvince($user, $province);
+    }
+
+    public function detachProvince(User $user, User $model, Province $province) {
+        return $this->_canProvince($user, $province);
+    }
+
+    public function attachArea(User $user, User $model, Area $area) {
+        return $this->_canArea($user, $area);
+    }
+
+    public function detachArea(User $user, User $model, Area $area) {
+        return $this->_canArea($user, $area);
+    }
+
+    public function attachSector(User $user, User $model, Sector $sector) {
+        return $this->_canSector($user, $sector);
+    }
+
+    public function detachSector(User $user, User $model, Sector $sector) {
+        return $this->_canSector($user, $sector);
     }
 }

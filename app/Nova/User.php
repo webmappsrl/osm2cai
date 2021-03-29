@@ -3,53 +3,53 @@
 namespace App\Nova;
 
 use App\Nova\Actions\EmulateUser;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Traits\LoggedUserTrait;
 
-class User extends Resource
-{
-    public static $model = \App\Models\User::class;
-    public static $title = 'name';
-    public static $search = [
+class User extends Resource {
+    public static string $model = \App\Models\User::class;
+    public static string $title = 'name';
+    public static array $search = [
         'name', 'email',
     ];
-    public static $group = '';
+    public static string $group = '';
 
-    public static function label()
-    {
+    public static function label() {
         return __('Utenti');
     }
 
-    private static $indexDefaultOrder = [
+    private static array $indexDefaultOrder = [
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query)
-    {
+    public static function indexQuery(NovaRequest $request, $query): Builder {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
+
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
+
         return $query;
     }
 
     /**
      * Get the fields displayed by the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return array
      */
-    public function fields(Request $request)
-    {
+    public function fields(Request $request): array {
         return [
-//            ID::make()->sortable(),
-//            Gravatar::make()->maxWidth(50),
+            //            ID::make()->sortable(),
+            //            Gravatar::make()->maxWidth(50),
             Text::make('Name')
                 ->sortable()
                 ->rules('required', 'max:255'),
@@ -62,26 +62,39 @@ class User extends Resource
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
                 ->updateRules('nullable', 'string', 'min:8'),
-            Boolean::make(__('Admin'), 'is_administrator')->sortable()->hideWhenCreating(function ($request) {
-                $user = auth()->user();
+            Boolean::make(__('Admin'), 'is_administrator')->sortable()->hideWhenCreating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
                 return !$user->is_administrator;
-            })->hideWhenUpdating(function ($request) {
-                $user = auth()->user();
+            })->hideWhenUpdating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
                 return !$user->is_administrator;
             }),
-            Boolean::make(__('National referent'), 'is_national_referent')->sortable()->hideWhenCreating(function ($request) {
-                $user = auth()->user();
+            Boolean::make(__('National referent'), 'is_national_referent')->sortable()->hideWhenCreating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
                 return !$user->is_administrator && !$user->is_national_referent;
-            })->hideWhenUpdating(function ($request) {
-                $user = auth()->user();
+            })->hideWhenUpdating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
-            BelongsTo::make('Region'),
+            BelongsTo::make('Region')->hideWhenCreating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
+                return !$user->is_administrator && !$user->is_national_referent;
+            })->hideWhenUpdating(function () {
+                $user = LoggedUserTrait::getEmulatedUser();
+
+                return !$user->is_administrator && !$user->is_national_referent;
+            }),
             Text::make(__('Provinces'), function () {
                 $result = [];
                 foreach ($this->provinces as $province) {
                     $result[] = $province->name;
                 }
+
                 return count($result) > 0 ? implode(', ', $result) : '—';
             }),
             Text::make(__('Areas'), function () {
@@ -89,6 +102,7 @@ class User extends Resource
                 foreach ($this->areas as $area) {
                     $result[] = $area->name;
                 }
+
                 return count($result) > 0 ? implode(', ', $result) : '—';
             })->onlyOnDetail(),
             Text::make(__('Sectors'), function () {
@@ -96,55 +110,56 @@ class User extends Resource
                 foreach ($this->sectors as $sector) {
                     $result[] = $sector->name;
                 }
+
                 return count($result) > 0 ? implode(', ', $result) : '—';
             })->onlyOnDetail(),
-            BelongsToMany::make('Provinces'),
-            BelongsToMany::make('Areas'),
-            BelongsToMany::make('Sectors')
+            BelongsToMany::make('Provinces', 'provinces'),
+            BelongsToMany::make('Areas', 'areas'),
+            BelongsToMany::make('Sectors', 'sectors')
         ];
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return array
      */
-    public function cards(Request $request)
-    {
+    public function cards(Request $request): array {
         return [];
     }
 
     /**
      * Get the filters available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return array
      */
-    public function filters(Request $request)
-    {
+    public function filters(Request $request): array {
         return [];
     }
 
     /**
      * Get the lenses available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return array
      */
-    public function lenses(Request $request)
-    {
+    public function lenses(Request $request): array {
         return [];
     }
 
     /**
      * Get the actions available for the resource.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
+     *
      * @return array
      */
-    public function actions(Request $request)
-    {
+    public function actions(Request $request): array {
         return [
             (new EmulateUser())
                 ->canSee(function ($request) {
@@ -154,5 +169,62 @@ class User extends Resource
                     return $request->user()->can('emulate', $zone);
                 }),
         ];
+    }
+
+    public static function relatableProvinces(NovaRequest $request, $query) {
+        $emulateUserId = session('emulate_user_id');
+        $user = $request->user();
+
+        if (isset($emulateUserId))
+            $user = \App\Models\User::find($emulateUserId);
+
+        if (!$user->is_administrator && !$user->is_national_referent) {
+            $ids = [];
+
+            if ($user->region)
+                $ids = $user->region->provincesIds();
+
+            $query = $query->whereIn('id', $ids);
+        }
+
+        return $query;
+    }
+
+    public static function relatableAreas(NovaRequest $request, $query) {
+        $emulateUserId = session('emulate_user_id');
+        $user = $request->user();
+
+        if (isset($emulateUserId))
+            $user = \App\Models\User::find($emulateUserId);
+
+        if (!$user->is_administrator && !$user->is_national_referent) {
+            $ids = [];
+
+            if ($user->region_id)
+                $ids = $user->region->areasIds();
+
+            $query = $query->whereIn('id', $ids);
+        }
+
+        return $query;
+    }
+
+    public static function relatableSectors(NovaRequest $request, $query) {
+        $emulateUserId = session('emulate_user_id');
+        $user = $request->user();
+
+        if (isset($emulateUserId))
+            $user = \App\Models\User::find($emulateUserId);
+
+        if (!$user->is_administrator && !$user->is_national_referent) {
+            $ids = [];
+
+            if ($user->region)
+                $ids = $user->region->sectorsIds();
+
+            $query = $query->whereIn('id', $ids);
+        }
+
+        return $query;
     }
 }

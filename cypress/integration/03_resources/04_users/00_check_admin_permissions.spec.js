@@ -13,7 +13,7 @@ describe('Users admin', () => {
         cy.contains('Logout').click();
     });
 
-    xit('should show a table with name, email, is admin, is national referent, region and provinces', () => {
+    it('should show a table with name, email, is admin, is national referent, region and provinces', () => {
         const tableSelector = 'table[data-testid=resource-table]',
             tableHeadSelector = tableSelector + ' > thead',
             tableBodySelector = tableSelector + ' > tbody';
@@ -43,7 +43,7 @@ describe('Users admin', () => {
         region: "Toscana"
     };
 
-    xit('should be able to create a user', () => {
+    it('should be able to create a user', () => {
         // cy.contains('td', user.name).should('not.exist');
         cy.contains('create utenti', {matchCase: false})
             .should('be.visible')
@@ -91,7 +91,7 @@ describe('Users admin', () => {
         cy.url().should('contain', 'dashboard');
     });
 
-    xdescribe('associations update', () => {
+    describe('associations update', () => {
         beforeEach(() => {
             let tr = cy.contains('td', user.name)
                 .should('exist')
@@ -187,7 +187,7 @@ describe('Users admin', () => {
         });
     });
 
-    xdescribe('and finally', () => {
+    describe('and finally', () => {
         it('should be able to delete a user', () => {
             let tr = cy.contains('td', user.name).parent('tr');
             tr.invoke('attr', 'dusk').then((dusk) => {

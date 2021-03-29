@@ -10,43 +10,37 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Region extends Resource
-{
+class Region extends Resource {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Region::class;
-
+    public static string $model = \App\Models\Region::class;
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
-
+    public static string $title = 'name';
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
+    public static array $search = [
         'name',
         'code'
     ];
-
     /**
      * The logical group associated with the resource.
      *
      * @var string
      */
-    public static $group = 'Territorio';
-
+    public static string $group = 'Territorio';
     public static $priority = 1;
 
-    public static function label()
-    {
+    public static function label() {
         return 'Regioni';
     }
 
@@ -54,12 +48,13 @@ class Region extends Resource
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query)
-    {
+    public static function indexQuery(NovaRequest $request, $query) {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
+
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
+
         return $query;
     }
 
@@ -67,10 +62,10 @@ class Region extends Resource
      * Get the fields displayed by the resource.
      *
      * @param Request $request
+     *
      * @return array
      */
-    public function fields(Request $request): array
-    {
+    public function fields(Request $request): array {
         $provincesCount = count($this->provinces);
         $areasCount = 0;
         $sectorsCount = 0;
@@ -81,8 +76,9 @@ class Region extends Resource
                 $sectorsCount += count($area->sectors);
             }
         }
+
         return [
-//            ID::make(__('ID'), 'id')->sortable(),
+            //            ID::make(__('ID'), 'id')->sortable(),
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
             Number::make(__('Provinces'), 'provinces', function () use ($provincesCount) {
@@ -101,10 +97,10 @@ class Region extends Resource
      * Get the cards available for the request.
      *
      * @param Request $request
+     *
      * @return array
      */
-    public function cards(Request $request)
-    {
+    public function cards(Request $request) {
         return [];
     }
 
@@ -112,10 +108,10 @@ class Region extends Resource
      * Get the filters available for the resource.
      *
      * @param Request $request
+     *
      * @return array
      */
-    public function filters(Request $request)
-    {
+    public function filters(Request $request) {
         return [];
     }
 
@@ -123,10 +119,10 @@ class Region extends Resource
      * Get the lenses available for the resource.
      *
      * @param Request $request
+     *
      * @return array
      */
-    public function lenses(Request $request)
-    {
+    public function lenses(Request $request) {
         return [];
     }
 
@@ -134,10 +130,10 @@ class Region extends Resource
      * Get the actions available for the resource.
      *
      * @param Request $request
+     *
      * @return array
      */
-    public function actions(Request $request): array
-    {
+    public function actions(Request $request): array {
         return [
             (new DownloadGeojson)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
