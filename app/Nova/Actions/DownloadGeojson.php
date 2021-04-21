@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadGeojson extends Action
-{
+class DownloadGeojson extends Action {
     use InteractsWithQueue, Queueable;
 
     public $showOnDetail = false;
@@ -22,17 +21,17 @@ class DownloadGeojson extends Action
      * Perform the action on the given models.
      *
      * @param \Laravel\Nova\Fields\ActionFields $fields
-     * @param \Illuminate\Support\Collection $models
+     * @param Collection                        $models
+     *
      * @return mixed
      */
-    public function handle(ActionFields $fields, Collection $models)
-    {
+    public function handle(ActionFields $fields, Collection $models) {
         $model = $models->first();
         $type = strtolower(last(explode('\\', get_class($model))));
         $id = $model->id;
         $name = $model->name;
 
-        return Action::download(config('app.url') . '/api/geojson/' . $type . '/' . $id, $name . '.geojson');
+        return Action::download(route('api.geojson.' . $type, ['id' => $id]), $name . '.geojson');
     }
 
     /**
@@ -40,8 +39,7 @@ class DownloadGeojson extends Action
      *
      * @return array
      */
-    public function fields()
-    {
+    public function fields() {
         return [];
     }
 }

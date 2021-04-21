@@ -6,11 +6,11 @@ use App\Models\Region;
 use App\Models\Sector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
-class RegionController extends Controller
-{
-    public function geojson(string $id)
-    {
+class RegionController extends Controller {
+    public function geojson(string $id) {
         $region = Region::find($id);
         $sectors = $region->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -23,6 +23,8 @@ class RegionController extends Controller
                     'name' => $region->name,
                     'code' => $region->code,
                     'full_code' => $region->full_code,
+                    'geojson_url' => \route('api.geojson.region', ['id' => $region->id]),
+                    'shapefile_url' => route('api.shapefile.region', ['id' => $region->id]),
                 ]
             ];
 
@@ -39,13 +41,23 @@ class RegionController extends Controller
                             'full_code' => $sector->full_code,
                             'area' => $sector->area->name,
                             'province' => $sector->area->province->name,
-                            'region' => $sector->area->province->region->name
+                            'region' => $sector->area->province->region->name,
+                            'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                            'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
                         ]
                     ];
             }
 
             return response(json_encode($geojson));
         } else
-            return abort(404, 'Province ' . $id . ' not found');
+            return response()->json(['Error' => 'Region ' . $id . ' not found'], 404);
+    }
+
+    public function shapefile(string $id) {
+        $model = Region::find($id);
+        $name = str_replace(" ", "_", $model->name);
+        $shapefile = $model->getShapefile();
+
+        return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 }
