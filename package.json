@@ -9,7 +9,9 @@
         "prod": "npm run production",
         "production": "mix --production",
         "build-wm-map": "cd nova-components/WmMap && npm run dev",
-        "build-wm-map-prod": "cd nova-components/WmMap && npm run prod"
+        "build-wm-map-prod": "cd nova-components/WmMap && npm run prod",
+        "build-UserSectorsListCard": "cd nova-components/UserSectorsListCard && npm run dev",
+        "build-UserSectorsListCard-prod": "cd nova-components/UserSectorsListCard && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.21",

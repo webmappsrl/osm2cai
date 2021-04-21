@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
-class loggedUserTest extends TestCase {
+class LoggedUserTest extends TestCase {
     use RefreshDatabase;
 
     public function testLoggedUserWithNoLogin() {

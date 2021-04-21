@@ -63,6 +63,34 @@ class User extends Authenticatable {
         return $this->belongsToMany(Sector::class);
     }
 
+    public function getSectors() {
+        $sectorsIds = [];
+
+        if ($this->region)
+            $sectorsIds = $this->region->sectorsIds();
+
+        if ($this->provinces) {
+            foreach ($this->provinces as $province) {
+                $sectorsIds = array_merge($sectorsIds, $province->sectorsIds());
+            }
+        }
+        if ($this->areas) {
+            foreach ($this->areas as $area) {
+                $sectorsIds = array_merge($sectorsIds, $area->sectorsIds());
+            }
+        }
+        if ($this->sectors) {
+            foreach ($this->sectors as $sector) {
+                $sectorsIds[] = $sector->id;
+            }
+        }
+
+        $sectorsIds = array_values(array_unique($sectorsIds));
+        $result = Sector::whereIn('id', $sectorsIds)->orderBy('full_code', 'ASC')->get();
+
+        return $result;
+    }
+
     /**
      * Get the current logged User
      *
