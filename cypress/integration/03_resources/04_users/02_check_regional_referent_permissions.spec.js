@@ -1,8 +1,8 @@
-describe('Users admin', () => {
+describe('Users regional referent', () => {
     beforeEach(() => {
         cy.visit('/');
-        cy.get('input[name=email]').type('team@webmapp.it');
-        cy.get('input[name=password]').type('webmapp');
+        cy.get('input[name=email]').type('turluc47@gmail.com');
+        cy.get('input[name=password]').type('osm2cai');
         cy.contains('Login').click();
         cy.contains('Utenti').click();
         cy.wait(1000);
@@ -13,27 +13,25 @@ describe('Users admin', () => {
         cy.contains('Logout').click();
     });
 
-    it('should show a table with name, email, is admin, is national referent, region and provinces', () => {
-        const tableSelector = 'table[data-testid=resource-table]',
-            tableHeadSelector = tableSelector + ' > thead',
-            tableBodySelector = tableSelector + ' > tbody';
-        cy.get('h1').contains('Utenti').should('be.visible');
-        cy.get(tableSelector).should('be.visible');
-        cy.get(tableHeadSelector)
-            .should('be.visible');
+    after(() => {
+        cy.visit('/');
+        cy.get('input[name=email]').type('team@webmapp.it');
+        cy.get('input[name=password]').type('webmapp');
+        cy.contains('Login').click();
+        cy.contains('Utenti').click();
+        cy.wait(1000);
 
-        let labels = ['name', 'email', 'admin', 'national referent', 'region', 'provinces'];
-        for (let label of labels) {
-            cy.get(tableHeadSelector)
-                .contains(label, {matchCase: false})
-                .should('be.visible');
-        }
-
-        cy.get(tableBodySelector + ' > tr').each((tr) => {
-            cy.wrap(tr).children('td').each((td) => {
-                expect(td).to.be.visible;
-            });
+        let tr = cy.contains('td', user.name).parent('tr');
+        tr.invoke('attr', 'dusk').then((dusk) => {
+            let id = dusk.split('-')[0];
+            cy.get('[dusk=' + id + '-delete-button]')
+                .click();
+            cy.get('button#confirm-delete-button')
+                .click();
         });
+
+        cy.get('.v-popover.dropdown-right button.rounded').click();
+        cy.contains('Logout').click();
     });
 
     let user = {
@@ -44,13 +42,13 @@ describe('Users admin', () => {
     };
 
     it('should be able to create a user', () => {
-        // cy.contains('td', user.name).should('not.exist');
+        cy.contains('td', user.name).should('not.exist');
         cy.contains('create utenti', {matchCase: false})
             .should('be.visible')
             .click();
         cy.wait(1000);
 
-        let labels = ['name', 'email', 'password', 'admin', 'national referent', 'region'];
+        let labels = ['name', 'email', 'password'];
         for (let label of labels) {
             cy.contains('label', label, {matchCase: false})
                 .should('be.visible');
@@ -65,9 +63,6 @@ describe('Users admin', () => {
         cy.get('#password')
             .should('be.visible')
             .type(user.password);
-        cy.get('select[data-testid=regions-select]')
-            .should('be.visible')
-            .select(user.region);
         cy.contains('a', 'cancel', {matchCase: false})
             .should('be.visible');
         cy.contains('button', 'create utenti', {matchCase: false})
@@ -188,30 +183,13 @@ describe('Users admin', () => {
     });
 
     describe('and finally', () => {
-        it('should be able to delete a user', () => {
+        it('should not be able to delete a user', () => {
             let tr = cy.contains('td', user.name).parent('tr');
             tr.invoke('attr', 'dusk').then((dusk) => {
                 let id = dusk.split('-')[0];
                 cy.get('[dusk=' + id + '-delete-button]')
-                    .click();
-                cy.get('button#confirm-delete-button')
-                    .click();
+                    .should('not.exist');
             });
         });
-    });
-
-    it('should be able to emulate a user', () => {
-        let emulateButton = cy.get('tr[dusk=7-row]').contains('emulate', {matchCase: false});
-        emulateButton.should('be.visible');
-        emulateButton.click();
-        cy.wait(1000);
-        let user = cy.get('.v-popover.dropdown-right button.rounded').contains('Alessandro Geri');
-        user.should('be.visible');
-        user.click();
-        let restore = cy.contains('restore user', {matchCase: false});
-        restore.should('be.visible');
-        restore.click();
-        user = cy.get('.v-popover.dropdown-right button.rounded').contains('Webmapp Team');
-        user.should('be.visible');
     });
 });

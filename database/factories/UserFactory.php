@@ -6,8 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class UserFactory extends Factory
-{
+class UserFactory extends Factory {
     /**
      * The name of the factory's corresponding model.
      *
@@ -20,8 +19,7 @@ class UserFactory extends Factory
      *
      * @return array
      */
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
@@ -29,7 +27,8 @@ class UserFactory extends Factory
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
             'is_administrator' => $this->faker->boolean(10),
-            'is_national_referent' => $this->faker->boolean(25)
+            'is_national_referent' => $this->faker->boolean(25),
+            'region_id' => null
         ];
     }
 
@@ -38,8 +37,7 @@ class UserFactory extends Factory
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
-    public function unverified()
-    {
+    public function unverified() {
         return $this->state(function (array $attributes) {
             return [
                 'email_verified_at' => null,

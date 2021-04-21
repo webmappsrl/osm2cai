@@ -7,7 +7,11 @@
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
-        "production": "mix --production"
+        "production": "mix --production",
+        "build-wm-map": "cd nova-components/WmMap && npm run dev",
+        "build-wm-map-prod": "cd nova-components/WmMap && npm run prod",
+        "build-UserSectorsListCard": "cd nova-components/UserSectorsListCard && npm run dev",
+        "build-UserSectorsListCard-prod": "cd nova-components/UserSectorsListCard && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.21",

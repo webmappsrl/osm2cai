@@ -17,6 +17,7 @@
         "laravel/framework": "^8.12",
         "laravel/nova": "*",
         "laravel/tinker": "^2.5",
+        "m-a-k-o/nova-custom-table-card": "^3.2",
         "mstaack/laravel-postgis": "^5.2"
     },
     "require-dev": {
@@ -49,10 +50,10 @@
             "Tests\\": "tests/"
         }
     },
-    "repositories":[
+    "repositories": [
         {
-            "type":"path",
-            "url":"./nova"
+            "type": "path",
+            "url": "./nova"
         }
     ],
     "minimum-stability": "dev",

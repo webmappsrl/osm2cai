@@ -10,40 +10,35 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Province extends Resource
-{
+class Province extends Resource {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
     public static $model = \App\Models\Province::class;
-
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
-
+    public static string $title = 'name';
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
+    public static array $search = [
         'name',
         'code',
         'full_code'
     ];
-
     /**
      * The logical group associated with the resource.
      *
      * @var string
      */
-    public static $group = 'Territorio';
-
+    public static string $group = 'Territorio';
     /**
      * Custom priority level of the resource.
      *
@@ -51,8 +46,7 @@ class Province extends Resource
      */
     public static $priority = 2;
 
-    public static function label()
-    {
+    public static function label() {
         return 'Province';
     }
 
@@ -60,12 +54,13 @@ class Province extends Resource
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query)
-    {
+    public static function indexQuery(NovaRequest $request, $query) {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
+
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
+
         return $query;
     }
 
@@ -73,16 +68,17 @@ class Province extends Resource
      * Get the fields displayed by the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function fields(Request $request)
-    {
+    public function fields(Request $request) {
         $areasCount = count($this->areas);
         $sectorsCount = 0;
 
         foreach ($this->areas as $area) {
             $sectorsCount += count($area->sectors);
         }
+
         return [
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
@@ -101,10 +97,10 @@ class Province extends Resource
      * Get the cards available for the request.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function cards(Request $request)
-    {
+    public function cards(Request $request) {
         return [];
     }
 
@@ -112,10 +108,10 @@ class Province extends Resource
      * Get the filters available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function filters(Request $request)
-    {
+    public function filters(Request $request) {
         return [
             new \App\Nova\Filters\Region
         ];
@@ -125,10 +121,10 @@ class Province extends Resource
      * Get the lenses available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function lenses(Request $request)
-    {
+    public function lenses(Request $request) {
         return [];
     }
 
@@ -136,10 +132,10 @@ class Province extends Resource
      * Get the actions available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function actions(Request $request)
-    {
+    public function actions(Request $request) {
         return [
             (new DownloadGeojson())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);

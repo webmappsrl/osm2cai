@@ -8,44 +8,38 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Sector extends Resource
-{
+class Sector extends Resource {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Sector::class;
-
+    public static string $model = \App\Models\Sector::class;
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
-
+    public static string $title = 'name';
     /**
      * The columns that should be searched.
      *
      * @var array
      */
-    public static $search = [
+    public static array $search = [
         'name',
         'code',
         'full_code'
     ];
-
     /**
      * The logical group associated with the resource.
      *
      * @var string
      */
-    public static $group = 'Territorio';
+    public static string $group = 'Territorio';
+    public static int $priority = 4;
 
-    public static $priority = 4;
-
-    public static function label()
-    {
+    public static function label() {
         return __('Settori');
     }
 
@@ -53,12 +47,13 @@ class Sector extends Resource
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query)
-    {
+    public static function indexQuery(NovaRequest $request, $query) {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
+
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
+
         return $query;
     }
 
@@ -66,10 +61,10 @@ class Sector extends Resource
      * Get the fields displayed by the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function fields(Request $request)
-    {
+    public function fields(Request $request) {
         return [
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
@@ -90,10 +85,10 @@ class Sector extends Resource
      * Get the cards available for the request.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function cards(Request $request)
-    {
+    public function cards(Request $request) {
         return [];
     }
 
@@ -101,10 +96,10 @@ class Sector extends Resource
      * Get the filters available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function filters(Request $request)
-    {
+    public function filters(Request $request) {
         return [];
     }
 
@@ -112,10 +107,10 @@ class Sector extends Resource
      * Get the lenses available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function lenses(Request $request)
-    {
+    public function lenses(Request $request) {
         return [];
     }
 
@@ -123,10 +118,10 @@ class Sector extends Resource
      * Get the actions available for the resource.
      *
      * @param \Illuminate\Http\Request $request
+     *
      * @return array
      */
-    public function actions(Request $request)
-    {
+    public function actions(Request $request) {
         return [
             (new DownloadGeojson())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
