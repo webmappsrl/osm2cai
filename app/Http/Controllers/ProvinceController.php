@@ -47,7 +47,12 @@ class ProvinceController extends Controller {
                     ];
             }
 
-            return response(json_encode($geojson));
+            $headers = [
+                'Content-type' => 'application/json',
+                'Content-Disposition' => 'attachment; filename="' . $id . '.geojson"',
+            ];
+
+            return response(json_encode($geojson), 200, $headers);
         } else
             return response()->json(['Error' => 'Province ' . $id . ' not found'], 404);
     }
