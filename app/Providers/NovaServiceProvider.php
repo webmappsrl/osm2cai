@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Nova\Dashboards\UserSectors;
+use App\Nova\Metrics\TotalAreasCount;
+use App\Nova\Metrics\TotalProvincesCount;
+use App\Nova\Metrics\TotalRegionsCount;
+use App\Nova\Metrics\TotalSectorsCount;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
@@ -57,6 +61,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider {
      */
     protected function cards() {
         return [
+            (new TotalRegionsCount())->width('1/4'),
+            (new TotalProvincesCount())->width('1/4'),
+            (new TotalAreasCount())->width('1/4'),
+            (new TotalSectorsCount())->width('1/4'),
             $this->_getUserSectorsListCard()
         ];
     }
