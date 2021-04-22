@@ -22,7 +22,7 @@ class RegionController extends Controller {
                     'id' => $region->id,
                     'name' => $region->name,
                     'code' => $region->code,
-                    'full_code' => $region->full_code,
+                    'full_code' => $region->code,
                     'geojson_url' => \route('api.geojson.region', ['id' => $region->id]),
                     'shapefile_url' => route('api.shapefile.region', ['id' => $region->id]),
                 ]

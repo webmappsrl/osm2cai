@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 abstract class TerritorialUnit extends Model {
@@ -26,9 +27,9 @@ abstract class TerritorialUnit extends Model {
         $ids = $model->sectorsIds();
 
         Storage::disk('public')->makeDirectory('shape_files/zip');
-        chdir('storage/shape_files');
-        $command = 'rm zip/' . $name . '.zip';
-        exec($command);
+        chdir(Storage::disk('public')->path('shape_files'));
+        if (Storage::disk('public')->exists('shape_files/zip/' . $name . '.zip'))
+            Storage::disk('public')->delete('shape_files/zip/' . $name . '.zip');
         $command = 'ogr2ogr -f "ESRI Shapefile" ' .
             $name .
             '.shp PG:"dbname=\'' .
