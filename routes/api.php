@@ -18,13 +18,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::name('api.')->group(function () {
+    Route::middleware('auth:api')->get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-Route::prefix('geojson')->group(function () {
-    Route::get('/region/{id}', [RegionController::class, 'geojson']);
-    Route::get('/province/{id}', [ProvinceController::class, 'geojson']);
-    Route::get('/area/{id}', [AreaController::class, 'geojson']);
-    Route::get('/sector/{id}', [SectorController::class, 'geojson']);
+    Route::prefix('geojson')->name('geojson.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'geojson'])->name('region');
+        Route::get('/province/{id}', [ProvinceController::class, 'geojson'])->name('province');
+        Route::get('/area/{id}', [AreaController::class, 'geojson'])->name('area');
+        Route::get('/sector/{id}', [SectorController::class, 'geojson'])->name('sector');
+    });
+    Route::prefix('shapefile')->name('shapefile.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'shapefile'])->name('region');
+        Route::get('/province/{id}', [ProvinceController::class, 'shapefile'])->name('province');
+        Route::get('/area/{id}', [AreaController::class, 'shapefile'])->name('area');
+        Route::get('/sector/{id}', [SectorController::class, 'shapefile'])->name('sector');
+    });
 });

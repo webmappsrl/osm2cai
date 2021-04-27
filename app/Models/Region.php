@@ -3,24 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Region extends Model
-{
+class Region extends TerritorialUnit {
     use HasFactory;
 
-    public function provinces()
-    {
+    public function provinces() {
         return $this->hasMany(Province::class);
     }
 
-    public function provincesIds(): array
-    {
+    public function provincesIds(): array {
         return $this->provinces->pluck('id')->toArray();
     }
 
-    public function areasIds(): array
-    {
+    public function areasIds(): array {
         $result = [];
         foreach ($this->provinces as $province) {
             $result = array_unique(array_values(array_merge($result, $province->areasIds())));
@@ -29,8 +24,7 @@ class Region extends Model
         return $result;
     }
 
-    public function sectorsIds(): array
-    {
+    public function sectorsIds(): array {
         $result = [];
         foreach ($this->provinces as $province) {
             $result = array_unique(array_values(array_merge($result, $province->sectorsIds())));
@@ -39,8 +33,7 @@ class Region extends Model
         return $result;
     }
 
-    public function users()
-    {
+    public function users() {
         return $this->hasMany(User::class);
     }
 }

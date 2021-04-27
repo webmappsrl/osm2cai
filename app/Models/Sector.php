@@ -3,24 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Sector extends Model
-{
+class Sector extends TerritorialUnit {
     use HasFactory;
 
-    public function area()
-    {
+    public function area() {
         return $this->belongsTo(Area::class);
     }
 
-    public function users()
-    {
+    public function users() {
         return $this->belongsToMany(User::class);
     }
 
-    public function sectorsIds(): array
-    {
+    public function sectorsIds(): array {
         return [$this->id];
     }
 }
