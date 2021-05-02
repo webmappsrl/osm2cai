@@ -186,6 +186,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\Osm2CaiHikingRoutesServiceProvider::class,
 
     ],
 
