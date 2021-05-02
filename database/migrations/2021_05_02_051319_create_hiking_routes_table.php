@@ -56,6 +56,7 @@ class CreateHikingRoutesTable extends Migration
             // GEOMETRY
             $table->multiLineString('geometry_osm')->nullable();
             $table->multiLineString('geometry')->nullable();
+            $table->point('geometry_start_point')->nullable();
 
             // MAIN INFO
             $table->string('cai_scale_osm')->nullable();
