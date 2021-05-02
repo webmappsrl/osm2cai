@@ -18,4 +18,9 @@ class Sector extends TerritorialUnit {
     public function sectorsIds(): array {
         return [$this->id];
     }
+
+    public function hikingRoutes() {
+        return $this->hasMany(HikingRoutes::class);
+    }
+
 }

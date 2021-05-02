@@ -31,4 +31,9 @@ class Province extends TerritorialUnit {
     public function users() {
         return $this->belongsToMany(User::class);
     }
+
+    public function hikingRoutes() {
+        return $this->hasMany(HikingRoutes::class);
+    }
+
 }

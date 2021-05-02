@@ -36,4 +36,8 @@ class Region extends TerritorialUnit {
     public function users() {
         return $this->hasMany(User::class);
     }
+
+    public function hikingRoutes() {
+        return $this->hasMany(HikingRoutes::class);
+    }
 }
