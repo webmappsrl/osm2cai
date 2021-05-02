@@ -31,12 +31,8 @@ class Osm2CaiHikingRoutesServiceProvider extends ServiceProvider
         //
     }
 
-    public function checkCode($code) : bool {
-        // Step 0. Check Syntax
+    private function getWhereByCode($code) {
         $len = strlen($code);
-        if($len>5) return false;
-
-        // Step 1. Build query
         switch ($len) {
             case 1:
                 // L : Regione
@@ -73,8 +69,19 @@ class Osm2CaiHikingRoutesServiceProvider extends ServiceProvider
                           ";
                 break;
             default:
-                return false;
+                return '';
         }
+        return $where;
+
+    }
+
+    public function checkCode($code) : bool {
+        // Step 0. Check Syntax
+        if(strlen($code)>5) return false;
+        if(strlen($code)==2) return false;
+
+        // Step 1. Build query
+        $where = $this->getWhereByCode($code);
         // Step 2. Perform query
         $caiDb = DB::connection("pgsql_cai");
         $num = $caiDb->table("aree_settori")->whereRaw($where)->count();
@@ -84,8 +91,27 @@ class Osm2CaiHikingRoutesServiceProvider extends ServiceProvider
         return false;
     }
 
+    /**
+     * SELECT DISTINCT relation_id,ref FROM hiking_routes AS r1, aree_settori AS s1
+    WHERE regione_codice_cai='L' AND provincia_sigla='PI' AND area_codice='O' AND settore_codice='1'
+    AND ST_Intersects (r1.geom,s1.geom);
+     */
     public function getHikingRoutes($code) : array {
+        $routes=[];
+        if($this->checkCode($code)) {
+            $caiDb = DB::connection("pgsql_cai");
+            $where = $this->getWhereByCode($code);
+            $select = "SELECT DISTINCT relation_id,ref FROM hiking_routes AS r1, aree_settori AS s1 WHERE $where AND ST_Intersects (r1.geom,s1.geom);";
+            $routes = $caiDb->select($select);
+        }
+        return $routes;
+    }
 
+    public function getAllRoutes() : array {
+        $caiDb = DB::connection("pgsql_cai");
+        $select = "SELECT DISTINCT relation_id,ref FROM hiking_routes;";
+        $routes = $caiDb->select($select);
+        return $routes;
     }
 
     public function getHikingRoute($osmid) {
