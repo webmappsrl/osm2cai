@@ -43,18 +43,19 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
      */
     public function handle()
     {
+        $routes=[];
         $code = $this->argument('code');
         if ($code=='italy') {
             $routes = $this->getAllItaly($this->provider);
         } else {
-            $routes = $this->getZone($code,$this->provider);
-            if($provider->checkCode($code)) {
-                $this->info("Sync Zone Code $code.");
-        } else {
-                $this->error("Invalid Zone Code $code");
+            if($this->provider->checkCode($code)) {
+                $routes = $this->getZone($code,$this->provider);
             }
-
+            else {
+                $this->error('Bad code.');
+            }
         }
+
         if(count($routes)==0) {
             $this->warn('No routes found');
             return 1;
