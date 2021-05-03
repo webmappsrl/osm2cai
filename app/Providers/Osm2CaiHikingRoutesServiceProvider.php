@@ -98,12 +98,10 @@ class Osm2CaiHikingRoutesServiceProvider extends ServiceProvider
      */
     public function getHikingRoutes($code) : array {
         $routes=[];
-        if($this->checkCode($code)) {
-            $caiDb = DB::connection("pgsql_cai");
-            $where = $this->getWhereByCode($code);
-            $select = "SELECT DISTINCT relation_id,ref FROM hiking_routes AS r1, aree_settori AS s1 WHERE $where AND ST_Intersects (r1.geom,s1.geom);";
-            $routes = $caiDb->select($select);
-        }
+        $caiDb = DB::connection("pgsql_cai");
+        $where = $this->getWhereByCode($code);
+        $select = "SELECT DISTINCT relation_id,ref FROM hiking_routes AS r1, aree_settori AS s1 WHERE $where AND ST_Intersects (r1.geom,s1.geom);";
+        $routes = $caiDb->select($select);
         return $routes;
     }
 

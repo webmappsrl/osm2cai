@@ -48,6 +48,12 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $routes = $this->getAllItaly($this->provider);
         } else {
             $routes = $this->getZone($code,$this->provider);
+            if($provider->checkCode($code)) {
+                $this->info("Sync Zone Code $code.");
+        } else {
+                $this->error("Invalid Zone Code $code");
+            }
+
         }
         if(count($routes)==0) {
             $this->warn('No routes found');
@@ -82,13 +88,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
         return $provider->getAllRoutes();
     }
 
-    public function getZone($code, Osm2CaiHikingRoutesServiceProvider $provider) {
-        if($provider->checkCode($code)) {
-            $this->info("Sync Zone Code $code.");
-            return $provider->getHikingRoutes($code);
-        } else {
-            $this->error("Invalid Zone Code $code");
-            return [];
-        }
+    public static function getZone($code, Osm2CaiHikingRoutesServiceProvider $provider) {
+        return $provider->getHikingRoutes($code);
     }
 }
