@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\HikingRoute;
+use App\Models\HikingRoutes;
 use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 use Illuminate\Console\Command;
 
@@ -60,7 +62,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $this->warn('No routes found');
             return 1;
         } else {
-            if($this->hasOption('dry-mode')) {
+            if($this->option('dry-mode')) {
                 $this->info('Running in DRY mode: showing routes ID that would be synced.');
                 $this->showRoutes($routes);
             }
@@ -80,9 +82,39 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
         }
     }
 
-    public function sync($routes, Osm2CaiHikingRoutesServiceProvider $provider) {
-        $this->info('Sync not yet implemented');
+    public function sync($routes, Osm2CaiHikingRoutesServiceProvider $provider)
+    {
+        if (count($routes) > 0) {
+            foreach ($routes as $route) {
+                $this->info("Sync $route->relation_id (REF:$route->ref)");
+                // Retrieve data
+                $route_osm = $this->provider->getHikingRoute($route->relation_id);
+                if ($route_osm) {
+                    // Convert Object to array
+                    $route_osm_array = (array)$route_osm;
+                    // Map keys
+                    $route_cai_array = [];
+                    foreach ($route_osm_array as $k => $v) {
+                        if ($k == 'relation_id') {
+                            ;
+                        } else if ($k == 'tags') {
+                            // TODO: json data convert
+                            // $route_cai_array['tags_osm']=$v;
+                        } else if ($k == 'geom') {
+                            $route_cai_array['geometry_osm'] = $v;
+                        } else {
+                            $route_cai_array[$k . '_osm'] = $v;
+                        }
+                    }
+                    $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route->relation_id]);
+                    $route_cai->fill($route_cai_array);
+                    $route_cai->setOsm2CaiStatus();
+                    $route_cai->save();
+                }
+            }
+        }
     }
+
 
     public function getAllItaly(Osm2CaiHikingRoutesServiceProvider $provider) {
         $this->info('Sync ALL ITALY.');

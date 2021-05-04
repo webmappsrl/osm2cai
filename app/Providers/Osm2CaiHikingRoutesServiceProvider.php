@@ -112,7 +112,12 @@ class Osm2CaiHikingRoutesServiceProvider extends ServiceProvider
         return $routes;
     }
 
+    /**
+     * @param $osmid OpenStreetMap relation IDentifier
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|object|null
+     */
     public function getHikingRoute($osmid) {
-
+        $caiDb = DB::connection("pgsql_cai");
+        return $caiDb->table('hiking_routes')->where('relation_id',$osmid)->first();
     }
 }

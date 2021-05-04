@@ -29,7 +29,7 @@ class CreateHikingRoutesTable extends Migration
             $table->date('validation_date')->nullable();
             $table->bigInteger('user_id')->nullable();
             $table->foreign('user_id')->
-                references('id')->on('users');
+            references('id')->on('users');
 
             // IDENTIFICATION
             $table->string('ref_osm')->nullable();
@@ -45,17 +45,20 @@ class CreateHikingRoutesTable extends Migration
             $table->string('name_osm')->nullable();
             $table->string('name')->nullable();
             $table->string('rwn_name_osm')->nullable();
-            $table->string('rw_name')->nullable();
+            $table->string('rwn_name')->nullable();
+
+            // REI CODE
             $table->string('ref_REI_osm')->nullable();
             $table->string('ref_REI')->nullable();
+            $table->string('ref_REI_comp')->nullable();
 
             // TAGS
             $table->json('tags_osm')->nullable();
             $table->json('tags')->nullable();
 
             // GEOMETRY
-            $table->multiLineString('geometry_osm')->nullable();
-            $table->multiLineString('geometry')->nullable();
+            $table->geometry('geometry_osm')->nullable();
+            $table->geometry('geometry')->nullable();
             $table->point('geometry_start_point')->nullable();
 
             // MAIN INFO
@@ -78,16 +81,20 @@ class CreateHikingRoutesTable extends Migration
 
             // TECH INFO
             $table->string('ascent_osm')->nullable();
-            $table->string('ascent')->nullable();
+            $table->float('ascent')->nullable();
+            $table->float('ascent_comp')->nullable();
             $table->string('descent_osm')->nullable();
-            $table->string('descent')->nullable();
-            $table->string('distance')->nullable();
+            $table->float('descent')->nullable();
+            $table->float('descent_comp')->nullable();
+            $table->float('distance')->nullable();
+            $table->float('distance_comp')->nullable();
             $table->string('distance_osm')->nullable();
             $table->string('duration_forward')->nullable();
+            $table->string('duration_forward_comp')->nullable();
             $table->string('duration_forward_osm')->nullable();
             $table->string('duration_backward')->nullable();
+            $table->string('duration_backward_comp')->nullable();
             $table->string('duration_backward_osm')->nullable();
-
 
             // OTHER INFO
             $table->string('operator_osm')->nullable();
