@@ -35,7 +35,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
     public function __construct(Osm2CaiHikingRoutesServiceProvider $provider)
     {
         parent::__construct();
-        $this->provider=$provider;
+        $this->provider = $provider;
     }
 
     /**
@@ -45,40 +45,39 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
      */
     public function handle()
     {
-        $routes=[];
+        $routes = [];
         $code = $this->argument('code');
-        if ($code=='italy') {
+        if ($code == 'italy') {
             $routes = $this->getAllItaly($this->provider);
         } else {
-            if($this->provider->checkCode($code)) {
-                $routes = $this->getZone($code,$this->provider);
-            }
-            else {
+            if ($this->provider->checkCode($code)) {
+                $routes = $this->getZone($code, $this->provider);
+            } else {
                 $this->error('Bad code.');
             }
         }
 
-        if(count($routes)==0) {
+        if (count($routes) == 0) {
             $this->warn('No routes found');
             return 1;
         } else {
-            if($this->option('dry-mode')) {
+            if ($this->option('dry-mode')) {
                 $this->info('Running in DRY mode: showing routes ID that would be synced.');
                 $this->showRoutes($routes);
-            }
-            else {
-                $this->sync($routes,$this->provider);
+            } else {
+                $this->sync($routes, $this->provider);
             }
         }
     }
 
-    public function showRoutes($routes) {
-        if(count($routes)>0) {
+    public function showRoutes($routes)
+    {
+        if (count($routes) > 0) {
             foreach ($routes as $route) {
                 $this->info("ID: $route->relation_id / REF: $route->ref");
             }
             $this->info(" ");
-            $this->info("Found ".count($routes). " routes to be synced");
+            $this->info("Found " . count($routes) . " routes to be synced");
         }
     }
 
@@ -110,18 +109,23 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
                     $route_cai->fill($route_cai_array);
                     $route_cai->setOsm2CaiStatus();
                     $route_cai->save();
+                    $route_cai->computeAndSetTechInfo();
+                    $route_cai->computeAndSetTerritorialUnits();
+                    $route_cai->save();
                 }
             }
         }
     }
 
 
-    public function getAllItaly(Osm2CaiHikingRoutesServiceProvider $provider) {
+    public function getAllItaly(Osm2CaiHikingRoutesServiceProvider $provider)
+    {
         $this->info('Sync ALL ITALY.');
         return $provider->getAllRoutes();
     }
 
-    public static function getZone($code, Osm2CaiHikingRoutesServiceProvider $provider) {
+    public static function getZone($code, Osm2CaiHikingRoutesServiceProvider $provider)
+    {
         return $provider->getHikingRoutes($code);
     }
 }
