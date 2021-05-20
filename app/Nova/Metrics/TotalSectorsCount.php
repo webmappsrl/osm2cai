@@ -6,7 +6,19 @@ use App\Models\Sector;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Metrics\Value;
 
-class TotalSectorsCount extends Value {
+class TotalSectorsCount extends Value
+{
+
+    /**
+     * Set card's label
+     *
+     * @return string
+     */
+    public function name()
+    {
+        return 'Numero Settori';
+    }
+
     /**
      * Calculate the value of the metric.
      *
@@ -14,7 +26,8 @@ class TotalSectorsCount extends Value {
      *
      * @return mixed
      */
-    public function calculate(NovaRequest $request) {
+    public function calculate(NovaRequest $request)
+    {
         return $this->result(Sector::all()->count())->format("0");
     }
 
@@ -23,7 +36,8 @@ class TotalSectorsCount extends Value {
      *
      * @return array
      */
-    public function ranges(): array {
+    public function ranges(): array
+    {
         return [];
     }
 
@@ -32,7 +46,8 @@ class TotalSectorsCount extends Value {
      *
      * @return  \DateTimeInterface|\DateInterval|float|int
      */
-    public function cacheFor() {
+    public function cacheFor()
+    {
         // return now()->addMinutes(5);
     }
 
@@ -41,7 +56,8 @@ class TotalSectorsCount extends Value {
      *
      * @return string
      */
-    public function uriKey() {
+    public function uriKey()
+    {
         return 'total-sectors-number';
     }
 }
