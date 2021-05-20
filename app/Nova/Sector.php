@@ -5,10 +5,12 @@ namespace App\Nova;
 use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Sector extends Resource {
+class Sector extends Resource
+{
     /**
      * The model the resource corresponds to.
      *
@@ -39,7 +41,8 @@ class Sector extends Resource {
     public static string $group = 'Territorio';
     public static int $priority = 4;
 
-    public static function label() {
+    public static function label()
+    {
         return __('Settori');
     }
 
@@ -47,7 +50,8 @@ class Sector extends Resource {
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query) {
+    public static function indexQuery(NovaRequest $request, $query)
+    {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
@@ -64,7 +68,8 @@ class Sector extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request) {
+    public function fields(Request $request)
+    {
         return [
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
@@ -78,6 +83,7 @@ class Sector extends Resource {
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             }),
+            BelongsToMany::make('hikingRoutes')
         ];
     }
 
@@ -88,7 +94,8 @@ class Sector extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request) {
+    public function cards(Request $request)
+    {
         return [];
     }
 
@@ -99,7 +106,8 @@ class Sector extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request) {
+    public function filters(Request $request)
+    {
         return [];
     }
 
@@ -110,7 +118,8 @@ class Sector extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request) {
+    public function lenses(Request $request)
+    {
         return [];
     }
 
@@ -121,7 +130,8 @@ class Sector extends Resource {
      *
      * @return array
      */
-    public function actions(Request $request) {
+    public function actions(Request $request)
+    {
         return [
             (new DownloadGeojson())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);

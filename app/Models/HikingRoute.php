@@ -153,9 +153,9 @@ class HikingRoute extends Model
         $query = 'SELECT s.id FROM sectors AS s,hiking_routes AS r WHERE ST_intersects(s.geometry,r.' . $this->getActualGeometryField() . ') AND r.id=' . $this->id;
         $sectors = DB::select(DB::raw($query));
         if (count($sectors) > 0) {
-            foreach ($sectors as $sector) {
-                $this->sectors()->attach($sector->id);
-            }
+            $this->sectors()->sync(array_map(function ($item) {
+                return $item->id;
+            }, $sectors));
         }
     }
 
@@ -174,9 +174,9 @@ class HikingRoute extends Model
         $query = 'SELECT a.id FROM areas AS a,hiking_routes AS r WHERE ST_intersects(a.geometry,r.' . $this->getActualGeometryField() . ') AND r.id=' . $this->id;
         $areas = DB::select(DB::raw($query));
         if (count($areas) > 0) {
-            foreach ($areas as $area) {
-                $this->areas()->attach($area->id);
-            }
+            $this->areas()->sync(array_map(function ($item) {
+                return $item->id;
+            }, $areas));
         }
     }
 
@@ -195,9 +195,9 @@ class HikingRoute extends Model
         $query = 'SELECT p.id FROM provinces AS p,hiking_routes AS r WHERE ST_intersects(p.geometry,r.' . $this->getActualGeometryField() . ') AND r.id=' . $this->id;
         $provinces = DB::select(DB::raw($query));
         if (count($provinces) > 0) {
-            foreach ($provinces as $province) {
-                $this->provinces()->attach($province->id);
-            }
+            $this->provinces()->sync(array_map(function ($item) {
+                return $item->id;
+            }, $provinces));
         }
     }
 
@@ -216,9 +216,9 @@ class HikingRoute extends Model
         $query = 'SELECT re.id FROM regions AS re,hiking_routes AS r WHERE ST_intersects(re.geometry,r.' . $this->getActualGeometryField() . ') AND r.id=' . $this->id;
         $regions = DB::select(DB::raw($query));
         if (count($regions) > 0) {
-            foreach ($regions as $region) {
-                $this->regions()->attach($region->id);
-            }
+            $this->regions()->sync(array_map(function ($item) {
+                return $item->id;
+            }, $regions));
         }
     }
 

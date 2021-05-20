@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\HikingRoute;
 use App\Models\Sector;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -27,7 +28,7 @@ class SectorPolicy
 
     public function view(User $user, Sector $sector)
     {
-        return false;
+        return true;
     }
 
     public function create(User $user)
@@ -63,5 +64,20 @@ class SectorPolicy
     public function downloadShape(User $user, Sector $sector)
     {
         return true;
+    }
+
+    public function attachHikingRoute(User $user, Sector $sector)
+    {
+        return false;
+    }
+
+    public function detachHikingRoute(User $user, Sector $sector)
+    {
+        return false;
+    }
+
+    public function attachAnyHikingRoute(User $user, Sector $sector)
+    {
+        return false;
     }
 }
