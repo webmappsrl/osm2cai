@@ -35,4 +35,11 @@ Route::name('api.')->group(function () {
         Route::get('/area/{id}', [AreaController::class, 'shapefile'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'shapefile'])->name('sector');
     });
+    // API KML: /api/kml/region/{id}
+    Route::prefix('kml')->name('kml.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'kml'])->name('region');
+        Route::get('/province/{id}', [ProvinceController::class, 'kml'])->name('province');
+        Route::get('/area/{id}', [AreaController::class, 'kml'])->name('area');
+        Route::get('/sector/{id}', [SectorController::class, 'kml'])->name('sector');
+    });
 });

@@ -64,4 +64,9 @@ class RegionPolicy
     {
         return true;
     }
+
+    public function downloadKml(User $user, Region $region)
+    {
+        return true;
+    }
 }
