@@ -72,15 +72,13 @@ class RegionController extends Controller
     public function kml(string $id)
     {
         $region = Region::find($id);
-
-
+        
         $headers = [
             'Content-type' => 'application/xml',
             'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
         ];
 
         return response($region->getKml(), 200, $headers);
-        // return response()->json(['Error' => 'Region ' . $id . ' not found'], 404);
     }
 
 

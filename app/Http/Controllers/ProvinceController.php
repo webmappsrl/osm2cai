@@ -7,8 +7,10 @@ use App\Models\Sector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class ProvinceController extends Controller {
-    public function geojson(string $id) {
+class ProvinceController extends Controller
+{
+    public function geojson(string $id)
+    {
         $province = Province::find($id);
         $sectors = $province->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -57,11 +59,25 @@ class ProvinceController extends Controller {
             return response()->json(['Error' => 'Province ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id) {
+    public function shapefile(string $id)
+    {
         $model = Province::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
 
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
+
+    public function kml(string $id)
+    {
+        $province = Province::find($id);
+
+        $headers = [
+            'Content-type' => 'application/xml',
+            'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
+        ];
+
+        return response($province->getKml(), 200, $headers);
+    }
+
 }

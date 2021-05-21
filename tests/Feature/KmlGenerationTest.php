@@ -14,18 +14,6 @@ use Tests\TestCase;
 class KmlGenerationTest extends TestCase
 {
 
-
-    public function _getGeometry($type, $coordinates): string
-    {
-        $geojson = json_encode([
-            "type" => $type,
-            "coordinates" => $coordinates
-        ]);
-        $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . $geojson . '\') as geom'));
-        return $res[0]->geom;
-    }
-
-
     use RefreshDatabase;
 
     /**
@@ -35,6 +23,39 @@ class KmlGenerationTest extends TestCase
      */
     public function testRegionKmlGeneration()
     {
+        $region = $this->_getRegion();
+        $result = $this->get(route('api.kml.region', ['id' => $region->id]));
+        $this->assertIsString($result->getContent());
+        $kml_obj = simplexml_load_string($result->getContent());
+        $this->_assertKml($kml_obj);
+    }
+
+    /**
+     * Test Kml for Province Model
+     *
+     * @return void
+     */
+    public function testProvinceKmlGeneration()
+    {
+        $province = $this->_getRegion()->provinces()->first();
+        $result = $this->get(route('api.kml.province', ['id' => $province->id]));
+        $this->assertIsString($result->getContent());
+        $kml_obj = simplexml_load_string($result->getContent());
+        $this->_assertKml($kml_obj);
+    }
+
+    private function _getGeometry($type, $coordinates): string
+    {
+        $geojson = json_encode([
+            "type" => $type,
+            "coordinates" => $coordinates
+        ]);
+        $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . $geojson . '\') as geom'));
+        return $res[0]->geom;
+    }
+
+    private function _getRegion(): Region
+    {
         $fake_geom = ['geometry' => $this->_getGeometry('Polygon', [[[-2, -2], [-2, -1], [-1, -1], [-2, -2]]])];
         $region = Region::factory($fake_geom)->has(
             Province::factory($fake_geom)->has(
@@ -43,9 +64,11 @@ class KmlGenerationTest extends TestCase
                 )->count(2)
             )->count(2)
         )->create()->first();
-        $result = $this->get(route('api.kml.region', ['id' => $region->id]));
-        $this->assertIsString($result->getContent());
-        $kml_obj = simplexml_load_string($result->getContent());
+        return $region;
+    }
+
+    private function _assertKml($kml_obj): void
+    {
         $this->assertTrue(isset($kml_obj->Document));
         $this->assertTrue(isset($kml_obj->Document->Placemark));
         $this->assertTrue(isset($kml_obj->Document->Placemark[0]));
@@ -55,5 +78,8 @@ class KmlGenerationTest extends TestCase
         $this->assertTrue(isset($kml_obj->Document->Placemark[0]->Polygon->outerBoundaryIs));
         $this->assertTrue(isset($kml_obj->Document->Placemark[0]->Polygon->outerBoundaryIs->LinearRing));
         $this->assertTrue(isset($kml_obj->Document->Placemark[0]->Polygon->outerBoundaryIs->LinearRing->coordinates));
+
     }
+
+
 }
