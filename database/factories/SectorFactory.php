@@ -25,14 +25,13 @@ class SectorFactory extends Factory
     public function definition()
     {
         $id = self::$id;
-        $code = chr($id);
         self::$id = self::$id + 1;
         return [
             'id' => $id,
             'name' => $this->faker->name,
             'geometry' => (new Point($this->faker->latitude, $this->faker->longitude))->toWKT(),
-            'code' => $code,
-            'full_code' => chr($id) . chr($id) . chr($id) . chr($id) . $code
+            'code' => "A",
+            'full_code' => "AAAAA"
         ];
     }
 }

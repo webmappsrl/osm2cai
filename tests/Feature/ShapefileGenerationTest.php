@@ -50,6 +50,7 @@ class ShapefileGenerationTest extends TestCase
 
     public function testSectorShapefileGeneration()
     {
+
         Storage::disk('public')->deleteDirectory('shape_files');
         $region = $this->_getRegion();
 
