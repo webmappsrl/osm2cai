@@ -66,6 +66,11 @@ class SectorPolicy
         return true;
     }
 
+    public function downloadKml(User $user, Sector $sector)
+    {
+        return true;
+    }
+
     public function attachHikingRoute(User $user, Sector $sector)
     {
         return false;

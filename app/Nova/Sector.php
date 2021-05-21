@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
+use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -138,7 +139,10 @@ class Sector extends Resource
             }),
             (new DownloadShape())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadShape', $zone);
-            })
+            }),
+            (new DownloadKml())->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
+            }),
         ];
     }
 }

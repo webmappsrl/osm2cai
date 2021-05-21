@@ -58,6 +58,20 @@ class KmlGenerationTest extends TestCase
         $this->_assertKml($kml_obj);
     }
 
+    /**
+     * Test Kml for Sector Model
+     *
+     * @return void
+     */
+    public function testSectorKmlGeneration()
+    {
+        $sector = $this->_getRegion()->provinces()->first()->areas()->first()->sectors()->first();
+        $result = $this->get(route('api.kml.sector', ['id' => $sector->id]));
+        $this->assertIsString($result->getContent());
+        $kml_obj = simplexml_load_string($result->getContent());
+        $this->_assertKml($kml_obj);
+    }
+
     private function _getGeometry($type, $coordinates): string
     {
         $geojson = json_encode([

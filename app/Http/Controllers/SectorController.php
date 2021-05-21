@@ -7,8 +7,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 
-class SectorController extends Controller {
-    public function geojson(string $id) {
+class SectorController extends Controller
+{
+    public function geojson(string $id)
+    {
         $sector = Sector::find($id);
         $results = DB::select('SELECT ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom FROM sectors WHERE id = ?;', [$id]);
         if (count($results) > 0) {
@@ -38,11 +40,25 @@ class SectorController extends Controller {
             return response()->json(['Error' => 'Sector ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id) {
+    public function shapefile(string $id)
+    {
         $model = Sector::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
 
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
+
+    public function kml(string $id)
+    {
+        $sector = Sector::find($id);
+
+        $headers = [
+            'Content-type' => 'application/xml',
+            'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
+        ];
+
+        return response($sector->getKml(), 200, $headers);
+    }
+
 }
