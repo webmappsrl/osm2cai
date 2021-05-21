@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Sector;
+use App\Nova\Province;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class AreaController extends Controller {
-    public function geojson(string $id) {
+class AreaController extends Controller
+{
+    public function geojson(string $id)
+    {
         $area = Area::find($id);
         $sectors = $area->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -58,11 +61,25 @@ class AreaController extends Controller {
             return response()->json(['Error' => 'Area ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id) {
+    public function shapefile(string $id)
+    {
         $model = Area::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
 
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
+
+    public function kml(string $id)
+    {
+        $area = Area::find($id);
+
+        $headers = [
+            'Content-type' => 'application/xml',
+            'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
+        ];
+
+        return response($area->getKml(), 200, $headers);
+    }
+
 }

@@ -3,13 +3,15 @@
 namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
+use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Area extends Resource {
+class Area extends Resource
+{
     /**
      * The model the resource corresponds to.
      *
@@ -40,7 +42,8 @@ class Area extends Resource {
     public static string $group = 'Territorio';
     public static int $priority = 3;
 
-    public static function label(): string {
+    public static function label(): string
+    {
         return 'Aree';
     }
 
@@ -48,7 +51,8 @@ class Area extends Resource {
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query) {
+    public static function indexQuery(NovaRequest $request, $query)
+    {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
@@ -65,7 +69,8 @@ class Area extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request) {
+    public function fields(Request $request)
+    {
         return [
             Text::make(__('Name'), 'name')->sortable(),
             Text::make(__('Code'), 'code')->sortable(),
@@ -89,7 +94,8 @@ class Area extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request) {
+    public function cards(Request $request)
+    {
         return [];
     }
 
@@ -100,7 +106,8 @@ class Area extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request) {
+    public function filters(Request $request)
+    {
         return [
             //            new \App\Nova\Filters\Region,
             new \App\Nova\Filters\Province
@@ -114,7 +121,8 @@ class Area extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request) {
+    public function lenses(Request $request)
+    {
         return [];
     }
 
@@ -125,14 +133,18 @@ class Area extends Resource {
      *
      * @return array
      */
-    public function actions(Request $request) {
+    public function actions(Request $request)
+    {
         return [
             (new DownloadGeojson())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
             }),
             (new DownloadShape())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadShape', $zone);
-            })
+            }),
+            (new DownloadKml())->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
+            }),
         ];
     }
 }
