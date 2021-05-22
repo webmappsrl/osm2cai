@@ -13,7 +13,7 @@ class DownloadKml extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $showOnDetail = false;
+    public $showOnDetail = true;
     public $showOnIndex = false;
     public $showOnTableRow = true;
     public $withoutConfirmation = true;
