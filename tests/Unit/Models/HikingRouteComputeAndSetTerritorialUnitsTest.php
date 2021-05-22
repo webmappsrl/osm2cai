@@ -10,6 +10,7 @@ use App\Models\Sector;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use phpseclib3\Math\PrimeField\Integer;
+use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
 
@@ -104,8 +105,9 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
 
     public function testHikingRouteWithOsmGeometryHasSectorA()
     {
-        $this->_generateAllSectors();
-        $r = $this->_getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
+        $t = TerritorialUnitsFixtures::getInstance();
+        $t->generateAllSectors();
+        $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetSectors();
         $r->save();
         $this->assertEquals(1, $r->sectors()->count());
@@ -535,5 +537,5 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(1, $r->sectors()->count());
         $this->assertEquals('A', $r->sectors()->first()->code);
     }
-    
+
 }
