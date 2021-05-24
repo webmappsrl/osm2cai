@@ -13,7 +13,6 @@ use Tests\TestCase;
 
 class KmlGenerationTest extends TestCase
 {
-
     use RefreshDatabase;
 
     /**

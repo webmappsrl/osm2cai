@@ -30,8 +30,7 @@ class TerritorialUnitsFixtures
         }
         return self::$instance;
     }
-
-
+    
     use RefreshDatabase;
 
     private $firstTimeGenerateAllSectors = true;

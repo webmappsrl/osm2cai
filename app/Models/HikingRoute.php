@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -232,6 +233,101 @@ class HikingRoute extends Model
         $this->computeAndSetAreas();
         $this->computeAndSetProvinces();
         $this->computeAndSetRegions();
+    }
+
+    public static function idsByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1): array
+    {
+        $geometry_field = 'geometry_osm';
+
+        if (!in_array($osm2cai_status, [0, 1, 2, 3, 4])) {
+            return [];
+        }
+        if ($osm2cai_status == 4) {
+            $geometry_field = 'geometry';
+        }
+        $ids = [];
+        // Build Polygon BB geometry
+        $coords = [[[$lo0, $la0], [$lo0, $la1], [$lo1, $la1], [$lo1, $la0], [$lo0, $la0]]];
+        $poly = new Polygon($coords);
+        $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\') as geom'));
+        $geom = $res[0]->geom;
+
+        $query = 'SELECT id 
+            FROM hiking_routes 
+            WHERE ST_intersects(' . $geometry_field . ',ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\')) AND
+            osm2cai_status=' . $osm2cai_status;
+        $res = DB::select(DB::raw($query));
+        if (count($res) > 0) {
+            foreach ($res as $obj) {
+                $ids[] = $obj->id;
+            }
+        }
+        return $ids;
+    }
+
+    /**
+     * Returns geojson Feature Collection
+     *
+     * @param $osm2cai_status
+     * @param $lo0
+     * @param $la0
+     * @param $lo1
+     * @param $la1
+     * @return string
+     */
+    public static function geojsonByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1): string
+    {
+        // TODO: remove idsByBoundingBox call and implement query ST_intersects directly
+        // TODO: unitTest (inspired by Feature test HikingRouteBoundingBox)
+        $ids = self::idsByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1);
+        if (count($ids) == 0)
+            return json_encode(["type" => "FeatureCollection", "features" => []]);
+        // Build Query
+        $geometry_field = 'geometry_osm';
+        if ($osm2cai_status == 4) {
+            $geometry_field = 'geometry';
+        }
+        $where = implode(',', $ids);
+        $query = <<<EOF
+SELECT json_build_object(
+    'type', 'FeatureCollection',
+    'features', json_agg(ST_AsGeoJSON(t.*)::json)
+    )
+FROM
+(SELECT id,created_at,updated_at,osm2cai_status,validation_date,relation_id,
+        ref, old_ref, source, source_ref, survey_date, name, rwn_name,
+        ref_osm, old_ref_osm, source_osm, source_ref_osm, survey_date_osm, name_osm, rwn_name_osm,
+        "ref_REI_osm","ref_REI","ref_REI_comp",
+        cai_scale, "from", "to", osmc_symbol, network, roundtrip, symbol, symbol_it,
+        cai_scale_osm, "from_osm", "to_osm", osmc_symbol_osm, network_osm, roundtrip_osm, symbol_osm, symbol_it_osm,
+        "ascent", "descent", "distance", "duration_forward", "duration_backward",
+        "ascent_osm", "descent_osm", "distance_osm", "duration_forward_osm", "duration_backward_osm",
+        "ascent_comp", "descent_comp", "distance_comp", "duration_forward_comp", "duration_backward_comp",
+        "operator", "state", "description", "description_it", "website", "wikimedia_commons",
+        "maintenance", "maintenance_it", "note", "note_it", "note_project_page",
+        "operator_osm", "state_osm", "description_osm", "description_it_osm", "website_osm", "wikimedia_commons_osm",
+        "maintenance_osm", "maintenance_it_osm", "note_osm", "note_it_osm", "note_project_page_osm",
+        $geometry_field 
+        FROM hiking_routes WHERE id IN ($where)) AS 
+
+      t(id,created_at,updated_at,osm2cai_status,validation_date,relation_id,
+        ref, old_ref, source, source_ref, survey_date, name, rwn_name,
+        ref_osm, old_ref_osm, source_osm, source_ref_osm, survey_date_osm, name_osm, rwn_name_osm,
+        "ref_REI_osm","ref_REI","ref_REI_comp",
+        cai_scale, "from", "to", osmc_symbol, network, roundtrip, symbol, symbol_it,
+        cai_scale_osm, "from_osm", "to_osm", osmc_symbol_osm, network_osm, roundtrip_osm, symbol_osm, symbol_it_osm,
+        "ascent", "descent", "distance", "duration_forward", "duration_backward",
+        "ascent_osm", "descent_osm", "distance_osm", "duration_forward_osm", "duration_backward_osm",
+        "ascent_comp", "descent_comp", "distance_comp", "duration_forward_comp", "duration_backward_comp",
+        "operator", "state", "description", "description_it", "website", "wikimedia_commons",
+        "maintenance", "maintenance_it", "note", "note_it", "note_project_page",
+        "operator_osm", "state_osm", "description_osm", "description_it_osm", "website_osm", "wikimedia_commons_osm",
+        "maintenance_osm", "maintenance_it_osm", "note_osm", "note_it_osm", "note_project_page_osm",
+        geom);
+EOF;
+        $res = DB::select(DB::raw($query));
+        return $res[0]->json_build_object;
+
     }
 
 }
