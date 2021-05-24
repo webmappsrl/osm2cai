@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadShape extends Action {
+class DownloadShape extends Action
+{
     use InteractsWithQueue, Queueable;
 
-    public $showOnDetail = false;
+    public $showOnDetail = true;
     public $showOnIndex = false;
     public $showOnTableRow = true;
     public $withoutConfirmation = true;
@@ -23,11 +24,12 @@ class DownloadShape extends Action {
      * Perform the action on the given models.
      *
      * @param \Laravel\Nova\Fields\ActionFields $fields
-     * @param \Illuminate\Support\Collection    $models
+     * @param \Illuminate\Support\Collection $models
      *
      * @return mixed
      */
-    public function handle(ActionFields $fields, Collection $models) {
+    public function handle(ActionFields $fields, Collection $models)
+    {
         $model = $models->first();
         $type = strtolower(last(explode('\\', get_class($model))));
         $id = $model->id;
@@ -40,7 +42,8 @@ class DownloadShape extends Action {
      *
      * @return array
      */
-    public function fields() {
+    public function fields()
+    {
         return [];
     }
 }
