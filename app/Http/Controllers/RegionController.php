@@ -9,10 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-class RegionController extends Controller
-{
-    public function geojson(string $id)
-    {
+class RegionController extends Controller {
+    public function geojson(string $id) {
         $region = Region::find($id);
         $sectors = $region->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -25,8 +23,9 @@ class RegionController extends Controller
                     'name' => $region->name,
                     'code' => $region->code,
                     'full_code' => $region->code,
-                    'geojson_url' => \route('api.geojson.region', ['id' => $region->id]),
+                    'geojson_url' => route('api.geojson.region', ['id' => $region->id]),
                     'shapefile_url' => route('api.shapefile.region', ['id' => $region->id]),
+                    'kml' => route('api.kml.region', ['id' => $region->id]),
                 ]
             ];
 
@@ -44,8 +43,9 @@ class RegionController extends Controller
                             'area' => $sector->area->name,
                             'province' => $sector->area->province->name,
                             'region' => $sector->area->province->region->name,
-                            'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                            'geojson_url' => route('api.geojson.sector', ['id' => $sector->id]),
                             'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
+                            'kml' => route('api.kml.sector', ['id' => $sector->id]),
                         ]
                     ];
             }
@@ -60,8 +60,7 @@ class RegionController extends Controller
             return response()->json(['Error' => 'Region ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id)
-    {
+    public function shapefile(string $id) {
         $model = Region::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
@@ -69,10 +68,9 @@ class RegionController extends Controller
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
-    public function kml(string $id)
-    {
+    public function kml(string $id) {
         $region = Region::find($id);
-        
+
         $headers = [
             'Content-type' => 'application/xml',
             'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
@@ -80,6 +78,4 @@ class RegionController extends Controller
 
         return response($region->getKml(), 200, $headers);
     }
-
-
 }

@@ -7,10 +7,8 @@ use App\Models\Sector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class ProvinceController extends Controller
-{
-    public function geojson(string $id)
-    {
+class ProvinceController extends Controller {
+    public function geojson(string $id) {
         $province = Province::find($id);
         $sectors = $province->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -24,8 +22,9 @@ class ProvinceController extends Controller
                     'code' => $province->code,
                     'full_code' => $province->full_code,
                     'region' => $province->region->name,
-                    'geojson_url' => \route('api.geojson.province', ['id' => $province->id]),
+                    'geojson_url' => route('api.geojson.province', ['id' => $province->id]),
                     'shapefile_url' => route('api.shapefile.province', ['id' => $province->id]),
+                    'kml' => route('api.kml.province', ['id' => $province->id]),
                 ]
             ];
 
@@ -43,8 +42,9 @@ class ProvinceController extends Controller
                             'area' => $sector->area->name,
                             'province' => $sector->area->province->name,
                             'region' => $sector->area->province->region->name,
-                            'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                            'geojson_url' => route('api.geojson.sector', ['id' => $sector->id]),
                             'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
+                            'kml' => route('api.kml.sector', ['id' => $sector->id]),
                         ]
                     ];
             }
@@ -59,8 +59,7 @@ class ProvinceController extends Controller
             return response()->json(['Error' => 'Province ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id)
-    {
+    public function shapefile(string $id) {
         $model = Province::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
@@ -68,8 +67,7 @@ class ProvinceController extends Controller
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
-    public function kml(string $id)
-    {
+    public function kml(string $id) {
         $province = Province::find($id);
 
         $headers = [
@@ -79,5 +77,4 @@ class ProvinceController extends Controller
 
         return response($province->getKml(), 200, $headers);
     }
-
 }

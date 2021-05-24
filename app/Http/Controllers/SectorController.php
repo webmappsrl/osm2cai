@@ -7,10 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 
-class SectorController extends Controller
-{
-    public function geojson(string $id)
-    {
+class SectorController extends Controller {
+    public function geojson(string $id) {
         $sector = Sector::find($id);
         $results = DB::select('SELECT ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom FROM sectors WHERE id = ?;', [$id]);
         if (count($results) > 0) {
@@ -25,8 +23,9 @@ class SectorController extends Controller
                     'area' => $sector->area->name,
                     'province' => $sector->area->province->name,
                     'region' => $sector->area->province->region->name,
-                    'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                    'geojson_url' => route('api.geojson.sector', ['id' => $sector->id]),
                     'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
+                    'kml' => route('api.kml.sector', ['id' => $sector->id]),
                 ]
             ];
 
@@ -40,8 +39,7 @@ class SectorController extends Controller
             return response()->json(['Error' => 'Sector ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id)
-    {
+    public function shapefile(string $id) {
         $model = Sector::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
@@ -49,8 +47,7 @@ class SectorController extends Controller
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
-    public function kml(string $id)
-    {
+    public function kml(string $id) {
         $sector = Sector::find($id);
 
         $headers = [
@@ -60,5 +57,4 @@ class SectorController extends Controller
 
         return response($sector->getKml(), 200, $headers);
     }
-
 }
