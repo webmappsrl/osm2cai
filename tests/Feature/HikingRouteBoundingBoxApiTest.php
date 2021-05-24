@@ -3,15 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\HikingRoute;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
 class HikingRouteBoundingBoxApiTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function testNoGeomReturnsEmptyFeatureCollection()
     {
 
