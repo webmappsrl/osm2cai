@@ -3,13 +3,13 @@
 namespace App\Nova\Actions;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadGeojson extends Action
+class DownloadKml extends Action
 {
     use InteractsWithQueue, Queueable;
 
@@ -22,8 +22,7 @@ class DownloadGeojson extends Action
      * Perform the action on the given models.
      *
      * @param \Laravel\Nova\Fields\ActionFields $fields
-     * @param Collection $models
-     *
+     * @param \Illuminate\Support\Collection $models
      * @return mixed
      */
     public function handle(ActionFields $fields, Collection $models)
@@ -33,7 +32,7 @@ class DownloadGeojson extends Action
         $id = $model->id;
         $name = $model->name;
 
-        return Action::download(route('api.geojson.' . $type, ['id' => $id]), $name . '.geojson');
+        return Action::download(route('api.kml.' . $type, ['id' => $id]), $name . '.kml');
     }
 
     /**

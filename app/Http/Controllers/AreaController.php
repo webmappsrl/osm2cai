@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Sector;
+use App\Nova\Province;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,8 +24,9 @@ class AreaController extends Controller {
                     'full_code' => $area->full_code,
                     'province' => $area->province->name,
                     'region' => $area->province->region->name,
-                    'geojson_url' => \route('api.geojson.area', ['id' => $area->id]),
+                    'geojson_url' => route('api.geojson.area', ['id' => $area->id]),
                     'shapefile_url' => route('api.shapefile.area', ['id' => $area->id]),
+                    'kml' => route('api.kml.area', ['id' => $area->id]),
                 ]
             ];
 
@@ -42,8 +44,9 @@ class AreaController extends Controller {
                             'area' => $sector->area->name,
                             'province' => $sector->area->province->name,
                             'region' => $sector->area->province->region->name,
-                            'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                            'geojson_url' => route('api.geojson.sector', ['id' => $sector->id]),
                             'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
+                            'kml' => route('api.kml.sector', ['id' => $sector->id]),
                         ]
                     ];
             }
@@ -64,5 +67,16 @@ class AreaController extends Controller {
         $shapefile = $model->getShapefile();
 
         return Storage::disk('public')->download($shapefile, $name . '.zip');
+    }
+
+    public function kml(string $id) {
+        $area = Area::find($id);
+
+        $headers = [
+            'Content-type' => 'application/xml',
+            'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
+        ];
+
+        return response($area->getKml(), 200, $headers);
     }
 }

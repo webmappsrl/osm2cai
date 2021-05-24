@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-abstract class TerritorialUnit extends Model {
+abstract class TerritorialUnit extends Model
+{
     use HasFactory;
 
     abstract public function users();
@@ -20,7 +21,8 @@ abstract class TerritorialUnit extends Model {
      *
      * @return string the shapefile relative url
      */
-    public function getShapefile(): string {
+    public function getShapefile(): string
+    {
         $class = get_class($this);
         $model = $class::find($this->id);
         $name = str_replace(" ", "_", $model->name);
@@ -57,5 +59,32 @@ abstract class TerritorialUnit extends Model {
         exec($command);
 
         return 'shape_files/zip/' . $name . '.zip';
+    }
+
+    public function getKml(): string
+    {
+        /**
+         * <?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+         * <Placemark><ExtendedData></ExtendedData> [data from POSTGIS] </Placemark>
+         * <Placemark><ExtendedData></ExtendedData> [data from POSTGIS] </Placemark>
+         * ...
+         * <Placemark><ExtendedData></ExtendedData> [data from POSTGIS] </Placemark>
+         * </Document></kml>
+         **/
+
+        $sectors = $this->sectorsIds();
+        $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsKML(geometry) as kml'))->get();
+
+        $kml = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document>';
+
+        if (count($results) > 0) {
+            foreach ($results as $sector) {
+                $kml .= '<Placemark><ExtendedData></ExtendedData>';
+                $kml .= $sector->kml;
+                $kml .= '</Placemark>';
+            }
+        }
+        $kml .= '</Document></kml>';
+        return $kml;
     }
 }

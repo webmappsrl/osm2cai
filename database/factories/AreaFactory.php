@@ -3,8 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\Area;
+use App\Models\Province;
+use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use MStaack\LaravelPostgis\Geometries\Point;
+use Illuminate\Support\Facades\DB;
 
 class AreaFactory extends Factory
 {
@@ -15,8 +17,6 @@ class AreaFactory extends Factory
      */
     protected $model = Area::class;
 
-    private static $id = 1;
-
     /**
      * Define the model's default state.
      *
@@ -24,15 +24,16 @@ class AreaFactory extends Factory
      */
     public function definition()
     {
-        $id = self::$id;
-        $code = chr($id);
-        self::$id = self::$id + 1;
+        $coords = [[[0, 0], [0, 2], [1, 1], [0, 0]]];
+        $poly = new Polygon($coords);
+        $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\') as geom'));
+
         return [
-            'id' => $id,
-            'name' => $this->faker->name,
-            'geometry' => (new Point($this->faker->latitude, $this->faker->longitude))->toWKT(),
-            'code' => $code,
-            'full_code' => chr($id) . chr($id) . chr($id) . $code
+            'name' => $this->faker->name(),
+            'geometry' => $res[0]->geom,
+            'code' => $this->faker->lexify('?'),
+            'full_code' => $this->faker->lexify('????'),
+            'province_id' => Province::factory()
         ];
     }
 }

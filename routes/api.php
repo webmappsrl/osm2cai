@@ -4,6 +4,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\HikingRouteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,11 +29,19 @@ Route::name('api.')->group(function () {
         Route::get('/province/{id}', [ProvinceController::class, 'geojson'])->name('province');
         Route::get('/area/{id}', [AreaController::class, 'geojson'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'geojson'])->name('sector');
+        Route::post('/hiking_route/bounding_box', [HikingRouteController::class, 'boundingBox'])->name('hiking_route');
     });
     Route::prefix('shapefile')->name('shapefile.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'shapefile'])->name('region');
         Route::get('/province/{id}', [ProvinceController::class, 'shapefile'])->name('province');
         Route::get('/area/{id}', [AreaController::class, 'shapefile'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'shapefile'])->name('sector');
+    });
+    // API KML: /api/kml/region/{id}
+    Route::prefix('kml')->name('kml.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'kml'])->name('region');
+        Route::get('/province/{id}', [ProvinceController::class, 'kml'])->name('province');
+        Route::get('/area/{id}', [AreaController::class, 'kml'])->name('area');
+        Route::get('/sector/{id}', [SectorController::class, 'kml'])->name('sector');
     });
 });

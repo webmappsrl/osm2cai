@@ -22,8 +22,9 @@ class ProvinceController extends Controller {
                     'code' => $province->code,
                     'full_code' => $province->full_code,
                     'region' => $province->region->name,
-                    'geojson_url' => \route('api.geojson.province', ['id' => $province->id]),
+                    'geojson_url' => route('api.geojson.province', ['id' => $province->id]),
                     'shapefile_url' => route('api.shapefile.province', ['id' => $province->id]),
+                    'kml' => route('api.kml.province', ['id' => $province->id]),
                 ]
             ];
 
@@ -41,8 +42,9 @@ class ProvinceController extends Controller {
                             'area' => $sector->area->name,
                             'province' => $sector->area->province->name,
                             'region' => $sector->area->province->region->name,
-                            'geojson_url' => \route('api.geojson.sector', ['id' => $sector->id]),
+                            'geojson_url' => route('api.geojson.sector', ['id' => $sector->id]),
                             'shapefile_url' => route('api.shapefile.sector', ['id' => $sector->id]),
+                            'kml' => route('api.kml.sector', ['id' => $sector->id]),
                         ]
                     ];
             }
@@ -63,5 +65,16 @@ class ProvinceController extends Controller {
         $shapefile = $model->getShapefile();
 
         return Storage::disk('public')->download($shapefile, $name . '.zip');
+    }
+
+    public function kml(string $id) {
+        $province = Province::find($id);
+
+        $headers = [
+            'Content-type' => 'application/xml',
+            'Content-Disposition' => 'attachment; filename="' . $id . '.kml"',
+        ];
+
+        return response($province->getKml(), 200, $headers);
     }
 }

@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'version' => "0.0.4",
+    'version' => "0.5.13",
 
     /*
     |--------------------------------------------------------------------------
@@ -186,6 +186,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\NovaServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\Osm2CaiHikingRoutesServiceProvider::class,
 
     ],
 

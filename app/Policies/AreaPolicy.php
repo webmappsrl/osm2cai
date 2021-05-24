@@ -64,4 +64,9 @@ class AreaPolicy
     {
         return true;
     }
+
+    public function downloadKml(User $user, Area $area)
+    {
+        return true;
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
+use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
@@ -10,7 +11,8 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Region extends Resource {
+class Region extends Resource
+{
     /**
      * The model the resource corresponds to.
      *
@@ -40,7 +42,8 @@ class Region extends Resource {
     public static string $group = 'Territorio';
     public static $priority = 1;
 
-    public static function label() {
+    public static function label()
+    {
         return 'Regioni';
     }
 
@@ -48,7 +51,8 @@ class Region extends Resource {
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query) {
+    public static function indexQuery(NovaRequest $request, $query)
+    {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
@@ -65,7 +69,8 @@ class Region extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request): array {
+    public function fields(Request $request): array
+    {
         $provincesCount = count($this->provinces);
         $areasCount = 0;
         $sectorsCount = 0;
@@ -77,18 +82,39 @@ class Region extends Resource {
             }
         }
 
+        $hikingRoutes4Count = $this->hikingRoutes()->where('osm2cai_status', '=', 4)->count();
+        $hikingRoutes3Count = $this->hikingRoutes()->where('osm2cai_status', '=', 3)->count();
+        $hikingRoutes2Count = $this->hikingRoutes()->where('osm2cai_status', '=', 2)->count();
+        $hikingRoutes1Count = $this->hikingRoutes()->where('osm2cai_status', '=', 1)->count();
+        $hikingRoutes0Count = $this->hikingRoutes()->where('osm2cai_status', '=', 0)->count();
+
         return [
             //            ID::make(__('ID'), 'id')->sortable(),
-            Text::make(__('Name'), 'name')->sortable(),
-            Text::make(__('Code'), 'code')->sortable(),
-            Number::make(__('Provinces'), 'provinces', function () use ($provincesCount) {
+            Text::make(__('Regione'), 'name')->sortable(),
+            Text::make(__('Codice CAI'), 'code')->sortable(),
+            Number::make(__('# Province'), function () use ($provincesCount) {
                 return $provincesCount;
             }),
-            Number::make(__('Areas'), 'provinces', function () use ($areasCount) {
+            Number::make(__('# Aree'), function () use ($areasCount) {
                 return $areasCount;
             }),
-            Number::make(__('Sectors'), 'provinces', function () use ($sectorsCount) {
+            Number::make(__('# Settori'), function () use ($sectorsCount) {
                 return $sectorsCount;
+            }),
+            Number::make(__('# 4'), function () use ($hikingRoutes4Count) {
+                return $hikingRoutes4Count;
+            }),
+            Number::make(__('# 3'), function () use ($hikingRoutes3Count) {
+                return $hikingRoutes3Count;
+            }),
+            Number::make(__('# 2'), function () use ($hikingRoutes2Count) {
+                return $hikingRoutes2Count;
+            }),
+            Number::make(__('# 1'), function () use ($hikingRoutes1Count) {
+                return $hikingRoutes1Count;
+            }),
+            Number::make(__('# 0'), function () use ($hikingRoutes0Count) {
+                return $hikingRoutes0Count;
             }),
         ];
     }
@@ -100,7 +126,8 @@ class Region extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request) {
+    public function cards(Request $request)
+    {
         return [];
     }
 
@@ -111,7 +138,8 @@ class Region extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request) {
+    public function filters(Request $request)
+    {
         return [];
     }
 
@@ -122,7 +150,8 @@ class Region extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request) {
+    public function lenses(Request $request)
+    {
         return [];
     }
 
@@ -133,14 +162,19 @@ class Region extends Resource {
      *
      * @return array
      */
-    public function actions(Request $request): array {
+    public function actions(Request $request): array
+    {
         return [
             (new DownloadGeojson)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
             }),
             (new DownloadShape)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadShape', $zone);
+            }),
+            (new DownloadKml)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
             })
+
         ];
     }
 }

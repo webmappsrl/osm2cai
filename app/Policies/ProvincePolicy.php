@@ -64,4 +64,9 @@ class ProvincePolicy
     {
         return true;
     }
+
+    public function downloadKml(User $user, Province $province)
+    {
+        return true;
+    }
 }

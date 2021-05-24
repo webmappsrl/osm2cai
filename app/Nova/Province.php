@@ -4,13 +4,15 @@ namespace App\Nova;
 
 use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Actions\DownloadShape;
+use App\Nova\Actions\DownloadKml;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Province extends Resource {
+class Province extends Resource
+{
     /**
      * The model the resource corresponds to.
      *
@@ -46,7 +48,8 @@ class Province extends Resource {
      */
     public static $priority = 2;
 
-    public static function label() {
+    public static function label()
+    {
         return 'Province';
     }
 
@@ -54,7 +57,8 @@ class Province extends Resource {
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query) {
+    public static function indexQuery(NovaRequest $request, $query)
+    {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
@@ -71,7 +75,8 @@ class Province extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request) {
+    public function fields(Request $request)
+    {
         $areasCount = count($this->areas);
         $sectorsCount = 0;
 
@@ -100,7 +105,8 @@ class Province extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request) {
+    public function cards(Request $request)
+    {
         return [];
     }
 
@@ -111,7 +117,8 @@ class Province extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request) {
+    public function filters(Request $request)
+    {
         return [
             new \App\Nova\Filters\Region
         ];
@@ -124,7 +131,8 @@ class Province extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request) {
+    public function lenses(Request $request)
+    {
         return [];
     }
 
@@ -135,13 +143,17 @@ class Province extends Resource {
      *
      * @return array
      */
-    public function actions(Request $request) {
+    public function actions(Request $request)
+    {
         return [
             (new DownloadGeojson())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
             }),
             (new DownloadShape())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadShape', $zone);
+            }),
+            (new DownloadKml())->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
             })
         ];
     }

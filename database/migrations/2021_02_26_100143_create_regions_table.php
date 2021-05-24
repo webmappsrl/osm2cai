@@ -17,7 +17,7 @@ class CreateRegionsTable extends Migration
             $table->id();
             $table->string("name", 254);
             $table->geometry("geometry");
-            $table->string("code", 1)->unique();
+            $table->string("code", 1);
             $table->timestamps();
         });
     }
