@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\Area;
 use App\Models\HikingRoute;
@@ -13,9 +13,7 @@ use phpseclib3\Math\PrimeField\Integer;
 use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
-
-class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
-{
+class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase {
     use RefreshDatabase;
 
     private $firstTimeGenerateAllSectors = true;
@@ -23,45 +21,46 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
     private $firstTimeGenerateAllProvinces = true;
     private $firstTimeGenerateAllRegions = true;
 
-    public function _getGeometry($type, $coordinates): string
-    {
+    public function _getGeometry($type, $coordinates): string {
         $geojson = json_encode([
             "type" => $type,
             "coordinates" => $coordinates
         ]);
         $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . $geojson . '\') as geom'));
+
         return $res[0]->geom;
     }
 
     /**
      * Simple saved track across LPIO1 and LLUO1 sectors
+     *
      * @return HikingRoute
      */
-    private function _getHikingRouteWithOsmGeometry($coordinates): HikingRoute
-    {
+    private function _getHikingRouteWithOsmGeometry($coordinates): HikingRoute {
         static $relation_id = 1234;
         $r = new HikingRoute(['relation_id' => $relation_id]);
         $relation_id++;
         $r->geometry_osm = $this->_getGeometry('LineString', $coordinates);
+
         return $r;
     }
 
-    private function _getHikingRouteWithCaiGeometry($coordinates): HikingRoute
-    {
+    private function _getHikingRouteWithCaiGeometry($coordinates): HikingRoute {
         static $relation_id = 1234;
         $r = new HikingRoute(['relation_id' => $relation_id]);
         $relation_id++;
         $r->geometry = $this->_getGeometry('LineString', $coordinates);
+
         return $r;
     }
 
-    private function _getHikingRouteWithOsmGeometryAndCaiGeometry($osm_coordinates, $cai_coordinates): HikingRoute
-    {
+    private function _getHikingRouteWithOsmGeometryAndCaiGeometry($osm_coordinates, $cai_coordinates): HikingRoute {
         static $relation_id = 1234;
         $r = new HikingRoute(['relation_id' => $relation_id]);
         $relation_id++;
         $r->geometry_osm = $this->_getGeometry('LineString', $osm_coordinates);
         $r->geometry = $this->_getGeometry('LineString', $cai_coordinates);
+
         return $r;
     }
 
@@ -69,8 +68,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
      * Sector
      */
 
-    public function _generateSector($code, $coordinates): void
-    {
+    public function _generateSector($code, $coordinates): void {
         $data = ['code' => $code,
             'geometry' => $this->_getGeometry('Polygon', $coordinates)];
         $fake_geom = ['geometry' => $this->_getGeometry('Polygon', [[[-2, -2], [-2, -1], [-1, -1], [-2, -2]]])];
@@ -85,8 +83,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
             ->create();
     }
 
-    public function _generateAllSectors(): void
-    {
+    public function _generateAllSectors(): void {
         if ($this->firstTimeGenerateAllSectors) {
             $this->firstTimeGenerateAllSectors = false;
             $this->_generateSector('A', [[[0, 0], [0, 5], [5, 5], [5, 0], [0, 0]]]);
@@ -96,15 +93,13 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         }
     }
 
-    public function testNoGeometryNoSectors()
-    {
+    public function testNoGeometryNoSectors() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $r->computeAndSetSectors();
         $this->assertEquals(0, $r->sectors()->count());
     }
 
-    public function testHikingRouteWithOsmGeometryHasSectorA()
-    {
+    public function testHikingRouteWithOsmGeometryHasSectorA() {
         $t = TerritorialUnitsFixtures::getInstance();
         $t->generateAllSectors();
         $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
@@ -114,8 +109,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->sectors()->first()->code);
     }
 
-    public function testHikingRouteWithOsmGeometryHasSectorAandB()
-    {
+    public function testHikingRouteWithOsmGeometryHasSectorAandB() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithOsmGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetSectors();
@@ -129,8 +123,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithOsmGeometryNoSector()
-    {
+    public function testHikingRouteWithOsmGeometryNoSector() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithOsmGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetSectors();
@@ -138,8 +131,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->sectors()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryHasSectorA()
-    {
+    public function testHikingRouteWithCaiGeometryHasSectorA() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetSectors();
@@ -148,8 +140,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->sectors()->first()->code);
     }
 
-    public function testHikingRouteWithCaiGeometryHasSectorAandB()
-    {
+    public function testHikingRouteWithCaiGeometryHasSectorAandB() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithCaiGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetSectors();
@@ -163,8 +154,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithCaiGeometryNoSector()
-    {
+    public function testHikingRouteWithCaiGeometryNoSector() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithCaiGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetSectors();
@@ -172,8 +162,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->sectors()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasSectorAandNotB()
-    {
+    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasSectorAandNotB() {
         $this->_generateAllSectors();
         $r = $this->_getHikingRouteWithOsmGeometryAndCaiGeometry([[3, 6], [3, 7]], [[1, 1], [2, 2]]);
         $r->computeAndSetSectors();
@@ -186,8 +175,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
      * Area
      */
 
-    public function _generateArea($code, $coordinates): void
-    {
+    public function _generateArea($code, $coordinates): void {
         $data = ['code' => $code,
             'geometry' => $this->_getGeometry('Polygon', $coordinates)];
         $fake_geom = ['geometry' => $this->_getGeometry('Polygon', [[[-2, -2], [-2, -1], [-1, -1], [-2, -2]]])];
@@ -198,8 +186,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
             ->create();
     }
 
-    public function _generateAllAreas(): void
-    {
+    public function _generateAllAreas(): void {
         if ($this->firstTimeGenerateAllAreas) {
             $this->firstTimeGenerateAllAreas = false;
             $this->_generateArea('A', [[[0, 0], [0, 5], [5, 5], [5, 0], [0, 0]]]);
@@ -209,15 +196,13 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         }
     }
 
-    public function testNoGeometryNoAreas()
-    {
+    public function testNoGeometryNoAreas() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $r->computeAndSetAreas();
         $this->assertEquals(0, $r->areas()->count());
     }
 
-    public function testHikingRouteWithOsmGeometryHasAreaA()
-    {
+    public function testHikingRouteWithOsmGeometryHasAreaA() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetAreas();
@@ -226,8 +211,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->areas()->first()->code);
     }
 
-    public function testHikingRouteWithOsmGeometryHasAreaAandB()
-    {
+    public function testHikingRouteWithOsmGeometryHasAreaAandB() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithOsmGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetAreas();
@@ -241,8 +225,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithOsmGeometryNoArea()
-    {
+    public function testHikingRouteWithOsmGeometryNoArea() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithOsmGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetAreas();
@@ -250,8 +233,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->areas()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryHasAreaA()
-    {
+    public function testHikingRouteWithCaiGeometryHasAreaA() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetAreas();
@@ -260,8 +242,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->areas()->first()->code);
     }
 
-    public function testHikingRouteWithCaiGeometryHasAreaAandB()
-    {
+    public function testHikingRouteWithCaiGeometryHasAreaAandB() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithCaiGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetAreas();
@@ -275,8 +256,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithCaiGeometryNoArea()
-    {
+    public function testHikingRouteWithCaiGeometryNoArea() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithCaiGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetAreas();
@@ -284,8 +264,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->areas()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasAreaAandNotB()
-    {
+    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasAreaAandNotB() {
         $this->_generateAllAreas();
         $r = $this->_getHikingRouteWithOsmGeometryAndCaiGeometry([[3, 6], [3, 7]], [[1, 1], [2, 2]]);
         $r->computeAndSetAreas();
@@ -298,8 +277,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
      * Province
      */
 
-    public function _generateProvince($code, $coordinates): void
-    {
+    public function _generateProvince($code, $coordinates): void {
         $data = ['code' => $code,
             'geometry' => $this->_getGeometry('Polygon', $coordinates)];
         $fake_geom = ['geometry' => $this->_getGeometry('Polygon', [[[-2, -2], [-2, -1], [-1, -1], [-2, -2]]])];
@@ -308,8 +286,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
             ->create();
     }
 
-    public function _generateAllProvinces(): void
-    {
+    public function _generateAllProvinces(): void {
         if ($this->firstTimeGenerateAllProvinces) {
             $this->firstTimeGenerateAllProvinces = false;
             $this->_generateProvince('A', [[[0, 0], [0, 5], [5, 5], [5, 0], [0, 0]]]);
@@ -319,15 +296,13 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         }
     }
 
-    public function testNoGeometryNoProvinces()
-    {
+    public function testNoGeometryNoProvinces() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $r->computeAndSetProvinces();
         $this->assertEquals(0, $r->provinces()->count());
     }
 
-    public function testHikingRouteWithOsmGeometryHasProvinceA()
-    {
+    public function testHikingRouteWithOsmGeometryHasProvinceA() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetProvinces();
@@ -336,8 +311,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->provinces()->first()->code);
     }
 
-    public function testHikingRouteWithOsmGeometryHasProvinceAandB()
-    {
+    public function testHikingRouteWithOsmGeometryHasProvinceAandB() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithOsmGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetProvinces();
@@ -351,8 +325,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithOsmGeometryNoProvince()
-    {
+    public function testHikingRouteWithOsmGeometryNoProvince() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithOsmGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetProvinces();
@@ -360,8 +333,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->provinces()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryHasProvinceA()
-    {
+    public function testHikingRouteWithCaiGeometryHasProvinceA() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetProvinces();
@@ -370,8 +342,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->provinces()->first()->code);
     }
 
-    public function testHikingRouteWithCaiGeometryHasProvinceAandB()
-    {
+    public function testHikingRouteWithCaiGeometryHasProvinceAandB() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithCaiGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetProvinces();
@@ -385,8 +356,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithCaiGeometryNoProvince()
-    {
+    public function testHikingRouteWithCaiGeometryNoProvince() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithCaiGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetProvinces();
@@ -394,8 +364,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->provinces()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasProvinceAandNotB()
-    {
+    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasProvinceAandNotB() {
         $this->_generateAllProvinces();
         $r = $this->_getHikingRouteWithOsmGeometryAndCaiGeometry([[3, 6], [3, 7]], [[1, 1], [2, 2]]);
         $r->computeAndSetProvinces();
@@ -408,15 +377,13 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
      * Region
      */
 
-    public function _generateRegion($code, $coordinates): void
-    {
+    public function _generateRegion($code, $coordinates): void {
         $data = ['code' => $code,
             'geometry' => $this->_getGeometry('Polygon', $coordinates)];
         Region::factory($data)->count(1)->create();
     }
 
-    public function _generateAllRegions(): void
-    {
+    public function _generateAllRegions(): void {
         if ($this->firstTimeGenerateAllRegions) {
             $this->firstTimeGenerateAllRegions = false;
             $this->_generateRegion('A', [[[0, 0], [0, 5], [5, 5], [5, 0], [0, 0]]]);
@@ -426,15 +393,13 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         }
     }
 
-    public function testNoGeometryNoRegions()
-    {
+    public function testNoGeometryNoRegions() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $r->computeAndSetRegions();
         $this->assertEquals(0, $r->regions()->count());
     }
 
-    public function testHikingRouteWithOsmGeometryHasRegionA()
-    {
+    public function testHikingRouteWithOsmGeometryHasRegionA() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetRegions();
@@ -443,8 +408,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->regions()->first()->code);
     }
 
-    public function testHikingRouteWithOsmGeometryHasRegionAandB()
-    {
+    public function testHikingRouteWithOsmGeometryHasRegionAandB() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithOsmGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetRegions();
@@ -458,8 +422,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithOsmGeometryNoRegion()
-    {
+    public function testHikingRouteWithOsmGeometryNoRegion() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithOsmGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetRegions();
@@ -467,8 +430,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->regions()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryHasRegionA()
-    {
+    public function testHikingRouteWithCaiGeometryHasRegionA() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
         $r->computeAndSetRegions();
@@ -477,8 +439,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals('A', $r->regions()->first()->code);
     }
 
-    public function testHikingRouteWithCaiGeometryHasRegionAandB()
-    {
+    public function testHikingRouteWithCaiGeometryHasRegionAandB() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithCaiGeometry([[3, 4], [3, 6]]);
         $r->computeAndSetRegions();
@@ -492,8 +453,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertTrue(in_array('B', $codes));
     }
 
-    public function testHikingRouteWithCaiGeometryNoRegion()
-    {
+    public function testHikingRouteWithCaiGeometryNoRegion() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithCaiGeometry([[15, 1], [15, 2]]);
         $r->computeAndSetRegions();
@@ -501,8 +461,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(0, $r->regions()->count());
     }
 
-    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasRegionAandNotB()
-    {
+    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasRegionAandNotB() {
         $this->_generateAllRegions();
         $r = $this->_getHikingRouteWithOsmGeometryAndCaiGeometry([[3, 6], [3, 7]], [[1, 1], [2, 2]]);
         $r->computeAndSetRegions();
@@ -514,8 +473,7 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
     /**
      * Sector Area Province and Region at once
      */
-    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasAllTerritorialUnitsAAndNotB()
-    {
+    public function testHikingRouteWithCaiGeometryAndOsmGeometryHasAllTerritorialUnitsAAndNotB() {
         $this->_generateAllSectors();
         $this->_generateAllAreas();
         $this->_generateAllProvinces();
@@ -537,5 +495,4 @@ class HikingRouteComputeAndSetTerritorialUnitsTest extends TestCase
         $this->assertEquals(1, $r->sectors()->count());
         $this->assertEquals('A', $r->sectors()->first()->code);
     }
-
 }

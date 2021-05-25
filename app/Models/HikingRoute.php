@@ -11,14 +11,14 @@ use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * Class HikingRoute
+ *
  * @package App\Models
- * @property int id
- * @property float distance_comp
+ * @property int      id
+ * @property float    distance_comp
  * @property geometry geometry
  * @property geometry geometry_osm
  */
-class HikingRoute extends Model
-{
+class HikingRoute extends Model {
     use HasFactory;
 
     protected $fillable = [
@@ -30,36 +30,31 @@ class HikingRoute extends Model
         'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm'
     ];
 
-    public function validator()
-    {
+    public function validator() {
         return $this->belongsTo(User::class);
     }
 
-    public function regions()
-    {
+    public function regions() {
         return $this->belongsToMany(Region::class);
     }
 
-    public function provinces()
-    {
+    public function provinces() {
         return $this->belongsToMany(Province::class);
     }
 
-    public function areas()
-    {
+    public function areas() {
         return $this->belongsToMany(Area::class);
     }
 
-    public function sectors()
-    {
+    public function sectors() {
         return $this->belongsToMany(Sector::class);
     }
 
-    public function validated(): bool
-    {
+    public function validated(): bool {
         if (!empty($this->validation_date)) {
             return true;
         }
+
         return false;
     }
 
@@ -70,8 +65,7 @@ class HikingRoute extends Model
      * 3: cai_scale not null, source=survey:cai not null
      * 4: validation_date not_null
      */
-    public function setOsm2CaiStatus(): void
-    {
+    public function setOsm2CaiStatus(): void {
         if ($this->validated()) {
             $status = 4;
         } else if (is_null($this->cai_scale_osm) && $this->source_osm != 'survey:CAI') {
@@ -87,12 +81,11 @@ class HikingRoute extends Model
     }
 
     /**
-     * This method compute and set tech info (distance_comp, ascent_comp, descent_comp, duration_forward_comp, duration_backward_comp)
-     * from geometry: geometry_cai if geometry_osm is not present, geometry_osm if it is present.
-     * If HikingRoute ha no geometry nothing is done.
+     * This method compute and set tech info (distance_comp, ascent_comp, descent_comp, duration_forward_comp,
+     * duration_backward_comp) from geometry: geometry_cai if geometry_osm is not present, geometry_osm if it is
+     * present. If HikingRoute ha no geometry nothing is done.
      */
-    public function computeAndSetTechInfo(): void
-    {
+    public function computeAndSetTechInfo(): void {
         if (is_null($this->geometry_osm) && is_null($this->geometry)) {
             return;
         } else {
@@ -114,36 +107,37 @@ class HikingRoute extends Model
 
     /**
      * Check if Hiking Route has geometry
+     *
      * @return bool
      */
-    public function hasGeometry(): bool
-    {
+    public function hasGeometry(): bool {
         if (is_null($this->geometry) && is_null($this->geometry_osm)) {
             return false;
         }
+
         return true;
     }
 
     /**
      * Check if Hiking route has geometry, if not returns false, if true returns the name of the
      * "actual" geometry, that is geometry if present, geometry_osm if geometry is not still there.
+     *
      * @return mixed
      */
-    public function getActualGeometryField(): string
-    {
+    public function getActualGeometryField(): string {
         if (!$this->hasGeometry()) {
             return '';
         } elseif (!is_null($this->geometry)) {
             return 'geometry';
         }
+
         return 'geometry_osm';
     }
 
     /**
      * Compute and Associate Sectors to Hiking Route
      */
-    public function computeAndSetSectors(): void
-    {
+    public function computeAndSetSectors(): void {
         // If object is not persistent save it
         if (!$this->exists) {
             $this->save();
@@ -163,8 +157,7 @@ class HikingRoute extends Model
     /**
      * Compute and Associate Areas to Hiking Route
      */
-    public function computeAndSetAreas(): void
-    {
+    public function computeAndSetAreas(): void {
         // If object is not persistent save it
         if (!$this->exists) {
             $this->save();
@@ -184,8 +177,7 @@ class HikingRoute extends Model
     /**
      * Compute and Associate Provinces to Hiking Route
      */
-    public function computeAndSetProvinces(): void
-    {
+    public function computeAndSetProvinces(): void {
         // If object is not persistent save it
         if (!$this->exists) {
             $this->save();
@@ -205,8 +197,7 @@ class HikingRoute extends Model
     /**
      * Compute and Associate Provinces to Hiking Route
      */
-    public function computeAndSetRegions(): void
-    {
+    public function computeAndSetRegions(): void {
         // If object is not persistent save it
         if (!$this->exists) {
             $this->save();
@@ -226,17 +217,25 @@ class HikingRoute extends Model
     /**
      * Compute and Associate all Territorial Units
      */
-    public function computeAndSetTerritorialUnits(): void
-    {
-
+    public function computeAndSetTerritorialUnits(): void {
         $this->computeAndSetSectors();
         $this->computeAndSetAreas();
         $this->computeAndSetProvinces();
         $this->computeAndSetRegions();
     }
 
-    public static function idsByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1): array
-    {
+    /**
+     * Get the hiking routes ids intersecting a bounding box in a specific status
+     *
+     * @param int   $osm2cai_status the status
+     * @param float $lo0            the minimum longitude
+     * @param float $la0            the minimum latitude
+     * @param float $lo1            the maximum longitude
+     * @param float $la1            the maximum latitude
+     *
+     * @return array
+     */
+    public static function idsByBoundingBox(int $osm2cai_status, float $lo0, float $la0, float $lo1, float $la1): array {
         $geometry_field = 'geometry_osm';
 
         if (!in_array($osm2cai_status, [0, 1, 2, 3, 4])) {
@@ -262,6 +261,7 @@ class HikingRoute extends Model
                 $ids[] = $obj->id;
             }
         }
+
         return $ids;
     }
 
@@ -273,10 +273,10 @@ class HikingRoute extends Model
      * @param $la0
      * @param $lo1
      * @param $la1
+     *
      * @return string
      */
-    public static function geojsonByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1): string
-    {
+    public static function geojsonByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1): string {
         // TODO: remove idsByBoundingBox call and implement query ST_intersects directly
         // TODO: unitTest (inspired by Feature test HikingRouteBoundingBox)
         $ids = self::idsByBoundingBox($osm2cai_status, $lo0, $la0, $lo1, $la1);
@@ -326,8 +326,7 @@ FROM
         geom);
 EOF;
         $res = DB::select(DB::raw($query));
+
         return $res[0]->json_build_object;
-
     }
-
 }

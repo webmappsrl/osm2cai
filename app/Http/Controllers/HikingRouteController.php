@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 
-class HikingRouteController extends Controller
-{
-    public function boundingBox(Request $request)
-    {
-        // TODO: Cehck (bad)data and returns code
+class HikingRouteController extends Controller {
+    public function boundingBox(Request $request) {
+        // TODO: Check (bad)data and returns code
         // Retrieve data
         $geojson = HikingRoute::geojsonByBoundingBox(
             $request->input('osm2cai_status'),
@@ -18,6 +16,7 @@ class HikingRouteController extends Controller
             $request->input('lo1'),
             $request->input('la1')
         );
+
         // Return
         return response($geojson, 200, ['Content-type' => 'application/json']);
     }
