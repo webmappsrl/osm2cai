@@ -1,16 +1,13 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class HikingRouteActualGeometryTest extends TestCase
-{
-
-    private function _createHikingRouteOsm(): HikingRoute
-    {
+class HikingRouteActualGeometryTest extends TestCase {
+    private function _createHikingRouteOsm(): HikingRoute {
         static $relation_id = 1234;
 
         $geojson = json_encode([
@@ -29,12 +26,11 @@ class HikingRouteActualGeometryTest extends TestCase
         $r = new HikingRoute(['relation_id' => $relation_id]);
         $relation_id++;
         $r->geometry_osm = DB::raw('ST_GeomFromGeoJSON(\'' . $geojson . '\')');
-        return $r;
 
+        return $r;
     }
 
-    private function _createHikingRouteOsmAndCai(): HikingRoute
-    {
+    private function _createHikingRouteOsmAndCai(): HikingRoute {
         static $relation_id = 1234;
 
         $geojson = json_encode([
@@ -54,46 +50,37 @@ class HikingRouteActualGeometryTest extends TestCase
         $relation_id++;
         $r->geometry_osm = DB::raw('ST_GeomFromGeoJSON(\'' . $geojson . '\')');
         $r->geometry = DB::raw('ST_GeomFromGeoJSON(\'' . $geojson . '\')');
-        return $r;
 
+        return $r;
     }
 
-    public function testWhenNoGeometryHasGeometryFalse()
-    {
+    public function testWhenNoGeometryHasGeometryFalse() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $this->assertFalse($r->hasGeometry());
     }
 
-    public function testWhenNoGeometryGetActualGeometryFalse()
-    {
+    public function testWhenNoGeometryGetActualGeometryFalse() {
         $r = new HikingRoute(['relation_id' => 1234]);
         $this->assertEquals('', $r->getActualGeometryField());
     }
 
-    public function testWhenGeometryOsmHasGeometryTrue()
-    {
+    public function testWhenGeometryOsmHasGeometryTrue() {
         $r = $this->_createHikingRouteOsm();
         $this->assertTrue($r->hasGeometry());
     }
 
-    public function testWhenGeometryCaiHasGeometryTrue()
-    {
+    public function testWhenGeometryCaiHasGeometryTrue() {
         $r = $this->_createHikingRouteOsmAndCai();
         $this->assertTrue($r->hasGeometry());
     }
 
-    public function testWhenGeometryOsmActualGeometryReturnsGeometryOsm()
-    {
+    public function testWhenGeometryOsmActualGeometryReturnsGeometryOsm() {
         $r = $this->_createHikingRouteOsm();
         $this->assertEquals('geometry_osm', $r->getActualGeometryField());
-
     }
 
-    public function testWhenGeometryCaiActualGeometryReturnsGeometry()
-    {
+    public function testWhenGeometryCaiActualGeometryReturnsGeometry() {
         $r = $this->_createHikingRouteOsmAndCai();
         $this->assertEquals('geometry', $r->getActualGeometryField());
     }
-
-
 }

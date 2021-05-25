@@ -1,18 +1,16 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\HikingRoute;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
-class HikingRouteIdsByBoundingBoxTest extends TestCase
-{
+class HikingRouteIdsByBoundingBoxTest extends TestCase {
     use RefreshDatabase;
 
-    public function testNoGeom()
-    {
+    public function testNoGeom() {
         HikingRoute::truncate();
         $r = HikingRoute::factory(["geometry" => null])->create();
         $ids = $r->idsByBoundingBox(0, 0, 0, 5, 5);
@@ -20,8 +18,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertCount(0, $ids);
     }
 
-    public function testWrongStatus()
-    {
+    public function testWrongStatus() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
@@ -30,14 +27,12 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $ids = HikingRoute::idsByBoundingBox(6, 0, 0, 5, 5);
         $this->assertIsArray($ids);
         $this->assertCount(0, $ids);
-
     }
 
     /**
      * OSM GEOM
      */
-    public function testOsmGeomInBB()
-    {
+    public function testOsmGeomInBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
@@ -50,8 +45,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertEquals($r->id, $ids[0]);
     }
 
-    public function testOsmGeomInBBButDifferentStatus()
-    {
+    public function testOsmGeomInBBButDifferentStatus() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [2, 2]]);
@@ -63,8 +57,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertCount(0, $ids);
     }
 
-    public function testOsmGeomPartiallyInBB()
-    {
+    public function testOsmGeomPartiallyInBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithOsmGeometry([[1, 1], [6, 6]]);
@@ -77,8 +70,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertEquals($r->id, $ids[0]);
     }
 
-    public function testOsmGeomOutBB()
-    {
+    public function testOsmGeomOutBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithOsmGeometry([[6, 6], [7, 7]]);
@@ -94,8 +86,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
      * CAI Geometry -> status 4
      */
 
-    public function testCaiGeomInBB()
-    {
+    public function testCaiGeomInBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
@@ -108,8 +99,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertEquals($r->id, $ids[0]);
     }
 
-    public function testCaiGeomInBBButDifferentStatus()
-    {
+    public function testCaiGeomInBBButDifferentStatus() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithCaiGeometry([[1, 1], [2, 2]]);
@@ -121,8 +111,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertCount(0, $ids);
     }
 
-    public function testCaiGeomPartiallyInBB()
-    {
+    public function testCaiGeomPartiallyInBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithCaiGeometry([[1, 1], [6, 6]]);
@@ -135,8 +124,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $this->assertEquals($r->id, $ids[0]);
     }
 
-    public function testCaiGeomOutBB()
-    {
+    public function testCaiGeomOutBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
         $r = $t->getHikingRouteWithCaiGeometry([[6, 6], [7, 7]]);
@@ -151,8 +139,7 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
     /**
      * Osm AND CAI Mixed
      */
-    public function testOsmAndCaiGeomInBB()
-    {
+    public function testOsmAndCaiGeomInBB() {
         HikingRoute::truncate();
         $t = TerritorialUnitsFixtures::getInstance();
 
@@ -168,7 +155,5 @@ class HikingRouteIdsByBoundingBoxTest extends TestCase
         $ids = HikingRoute::idsByBoundingBox(3, 0, 0, 5, 5);
         $this->assertIsArray($ids);
         $this->assertCount(0, $ids);
-
     }
-
 }

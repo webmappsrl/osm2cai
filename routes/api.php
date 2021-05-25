@@ -29,7 +29,7 @@ Route::name('api.')->group(function () {
         Route::get('/province/{id}', [ProvinceController::class, 'geojson'])->name('province');
         Route::get('/area/{id}', [AreaController::class, 'geojson'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'geojson'])->name('sector');
-        Route::post('/hiking_route/bounding_box', [HikingRouteController::class, 'boundingBox'])->name('hiking_route');
+        Route::post('/hiking_routes/bounding_box', [HikingRouteController::class, 'boundingBox'])->name('hiking_routes');
     });
     Route::prefix('shapefile')->name('shapefile.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'shapefile'])->name('region');
