@@ -25,6 +25,12 @@ class TerritorialUnitViews extends Migration
                (SELECT count(*) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 3) as tot3,
                (SELECT count(*) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 2) as tot2,
                (SELECT count(*) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 1) as tot1,
+
+               (SELECT sum(distance_comp) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status <> 0) as km_tot,
+               (SELECT sum(distance_comp) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 4) as km_tot4,
+               (SELECT sum(distance_comp) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 3) as km_tot3,
+               (SELECT sum(distance_comp) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 2) as km_tot2,
+               (SELECT sum(distance_comp) FROM hiking_route_region LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE region_id=regions.id AND osm2cai_status = 1) as km_tot1,
                regions.geometry
             FROM
                regions;
@@ -43,6 +49,12 @@ class TerritorialUnitViews extends Migration
                (SELECT count(*) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 3) as tot3,
                (SELECT count(*) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 2) as tot2,
                (SELECT count(*) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 1) as tot1,
+
+               (SELECT sum(distance_comp) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status <> 0) as km_tot,
+               (SELECT sum(distance_comp) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 4) as km_tot4,
+               (SELECT sum(distance_comp) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 3) as km_tot3,
+               (SELECT sum(distance_comp) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 2) as km_tot2,
+               (SELECT sum(distance_comp) FROM hiking_route_province LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE province_id=provinces.id AND osm2cai_status = 1) as km_tot1,
                provinces.geometry
             FROM
                provinces;
@@ -61,6 +73,12 @@ class TerritorialUnitViews extends Migration
                (SELECT count(*) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 3) as tot3,
                (SELECT count(*) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 2) as tot2,
                (SELECT count(*) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 1) as tot1,
+
+               (SELECT sum(distance_comp) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status <> 0) as km_tot,
+               (SELECT sum(distance_comp) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 4) as km_tot4,
+               (SELECT sum(distance_comp) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 3) as km_tot3,
+               (SELECT sum(distance_comp) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 2) as km_tot2,
+               (SELECT sum(distance_comp) FROM area_hiking_route LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE area_id=areas.id AND osm2cai_status = 1) as km_tot1,
                areas.geometry
             FROM
                areas;
@@ -79,6 +97,12 @@ class TerritorialUnitViews extends Migration
                (SELECT count(*) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 3) as tot3,
                (SELECT count(*) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 2) as tot2,
                (SELECT count(*) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 1) as tot1,
+
+               (SELECT sum(distance_comp) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status <> 0) as km_tot,
+               (SELECT sum(distance_comp) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 4) as km_tot4,
+               (SELECT sum(distance_comp) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 3) as km_tot3,
+               (SELECT sum(distance_comp) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 2) as km_tot2,
+               (SELECT sum(distance_comp) FROM hiking_route_sector LEFT JOIN hiking_routes ON hiking_route_id=hiking_routes.id WHERE sector_id=sectors.id AND osm2cai_status = 1) as km_tot1,
                sectors.geometry
             FROM
                sectors;
