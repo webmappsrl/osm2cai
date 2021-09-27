@@ -8,6 +8,11 @@ class Province extends TerritorialUnit
 {
     use HasFactory;
 
+    protected $fillable = [
+        'num_expected',
+    ];
+
+
     public function region()
     {
         return $this->belongsTo(Region::class);
