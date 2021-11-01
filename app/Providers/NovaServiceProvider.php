@@ -7,6 +7,7 @@ use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\RegionReferentDashboard;
 use App\Nova\Dashboards\UserSectors;
 use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberByMyRegionValueMetric;
 use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
 use App\Nova\Metrics\SectorsNumberByMyRegionValueMetric;
 use App\Nova\Metrics\TotalAreasCount;
@@ -108,6 +109,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     private function _getRegionCards(): array
     {
         return [
+
+            // General static info on Area and sectors number
             (new TextCard())
                 ->width('1/4')
                 ->heading(\auth()->user()->region->name)
@@ -119,6 +122,27 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4'),
             (new SectorsNumberByMyRegionValueMetric())
                 ->width('1/4'),
+
+            // Info on hiking routes
+
+            (new HikingRoutesNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('#percorsi stato (2)')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('#percorsi stato (3)')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('#percorsi stato (4)')
+                ->center(false),
+
         ];
     }
 
