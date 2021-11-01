@@ -15,5 +15,6 @@ class ImportFromCaiSeeder extends Seeder
     public function run()
     {
         Artisan::call('osm2cai:import');
+        Artisan::call('osm2cai:set-expected-values');
     }
 }

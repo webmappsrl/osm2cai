@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Log;
  * @property bool is_national_referent
  *
  */
-class User extends Authenticatable {
+class User extends Authenticatable
+{
     use HasFactory, Notifiable;
 
     /**
@@ -47,27 +48,33 @@ class User extends Authenticatable {
         'email_verified_at' => 'datetime',
     ];
 
-    public function region() {
+    public function region()
+    {
         return $this->belongsTo(Region::class);
     }
 
-    public function provinces() {
+    public function provinces()
+    {
         return $this->belongsToMany(Province::class);
     }
 
-    public function areas() {
+    public function areas()
+    {
         return $this->belongsToMany(Area::class);
     }
 
-    public function sectors() {
+    public function sectors()
+    {
         return $this->belongsToMany(Sector::class);
     }
 
-    public function hikingRoutes() {
+    public function hikingRoutes()
+    {
         return $this->belongsToMany(HikingRoutes::class);
     }
 
-    public function getSectors() {
+    public function getSectors()
+    {
         $sectorsIds = [];
 
         if ($this->region)
@@ -95,12 +102,33 @@ class User extends Authenticatable {
         return $result;
     }
 
+
+    /**
+     * @return string
+     */
+    public function getPermissionString(): string
+    {
+        if ($this->is_administrator) {
+            return 'Superadmin';
+        } else if ($this->is_national_referent) {
+            return 'Referente nazionale';
+        } else if (!is_null($this->region_id)) {
+            return 'Referente regionale';
+        } else if (count($this->provinces) > 0
+            || count($this->areas) > 0
+            || count($this->sectors) > 0) {
+            return 'Referente di zona';
+        }
+        return 'Unknown';
+    }
+
     /**
      * Get the current logged User
      *
      * @return User
      */
-    public static function getLoggedUser(): ?User {
+    public static function getLoggedUser(): ?User
+    {
         return isset(auth()->user()->id)
             ? User::find(auth()->user()->id)
             : null;
@@ -113,7 +141,8 @@ class User extends Authenticatable {
      *
      * @return User
      */
-    public static function getEmulatedUser(User $user = null): User {
+    public static function getEmulatedUser(User $user = null): User
+    {
         if (!isset($user)) $user = self::getLoggedUser();
 
         $result = $user;

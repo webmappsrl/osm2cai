@@ -3,12 +3,18 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Nova\Dashboards\ItalyDashboard;
+use App\Nova\Dashboards\RegionReferentDashboard;
 use App\Nova\Dashboards\UserSectors;
+use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
+use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
 use App\Nova\Metrics\TotalAreasCount;
 use App\Nova\Metrics\TotalProvincesCount;
 use App\Nova\Metrics\TotalRegionsCount;
 use App\Nova\Metrics\TotalSectorsCount;
+use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -65,12 +71,56 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+        $main_cards = [
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->name)
+                ->text('Username')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->getPermissionString())
+                ->text('Permessi')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('LastLogin')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('Task and notify')
+                ->center(false),
+            // $this->_getUserSectorsListCard()
+        ];
+
+        if (!is_null(Auth::user()->region_id)) {
+            $cards = array_merge($main_cards, $this->_getRegionCards());
+        } else {
+            $cards = $main_cards;
+        }
+
+        return $cards;
+    }
+
+    private function _getRegionCards(): array
+    {
         return [
-            (new TotalRegionsCount())->width('1/4'),
-            (new TotalProvincesCount())->width('1/4'),
-            (new TotalAreasCount())->width('1/4'),
-            (new TotalSectorsCount())->width('1/4'),
-            $this->_getUserSectorsListCard()
+            (new TextCard())
+                ->width('1/4')
+                ->heading(\auth()->user()->region->name)
+                ->text('Regione')
+                ->center(false),
+            (new ProvincesNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new AreasNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('#settori')
+                ->center(false),
         ];
     }
 
@@ -121,6 +171,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
+            (new ItalyDashboard()),
         ];
     }
 

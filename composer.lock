@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86401b99f2c6320391e8d65f59fb5f31",
+    "content-hash": "921eeffc2be922ede4ad82db1f164db1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -943,6 +943,61 @@
                 }
             ],
             "time": "2020-12-29T14:50:06+00:00"
+        },
+        {
+            "name": "ericlagarda/nova-text-card",
+            "version": "v1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Krato/NovaTextCard.git",
+                "reference": "ea56e68328085d1322364df25a1fef4fa88c425d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Krato/NovaTextCard/zipball/ea56e68328085d1322364df25a1fef4fa88c425d",
+                "reference": "ea56e68328085d1322364df25a1fef4fa88c425d",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/nova": "*",
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ericlagarda\\NovaTextCard\\CardServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ericlagarda\\NovaTextCard\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eric Lagarda",
+                    "email": "eric@infinety.es",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A custom card for Laravel Nova to show Text in cards with some good options",
+            "keywords": [
+                "card",
+                "laravel",
+                "nova",
+                "text"
+            ],
+            "support": {
+                "issues": "https://github.com/Krato/NovaTextCard/issues",
+                "source": "https://github.com/Krato/NovaTextCard/tree/master"
+            },
+            "time": "2020-06-03T16:41:16+00:00"
         },
         {
             "name": "fideloper/proxy",
@@ -8912,5 +8967,5 @@
         "ext-json": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
