@@ -8,7 +8,10 @@ use App\Nova\Dashboards\RegionReferentDashboard;
 use App\Nova\Dashboards\UserSectors;
 use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
 use App\Nova\Metrics\HikingRoutesNumberByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus1ByMyRegionValueMetric;
 use App\Nova\Metrics\HikingRoutesNumberStatus2ByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus3ByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus4ByMyRegionValueMetric;
 use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
 use App\Nova\Metrics\SectorsNumberByMyRegionValueMetric;
 use App\Nova\Metrics\TotalAreasCount;
@@ -111,24 +114,30 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         return [
 
-            // General static info on Area and sectors number
+            // Heading with region name
             (new TextCard())
-                ->width('1/4')
+                ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
-                ->text('Regione')
-                ->center(false),
+                ->text('Regione'),
+
+            // General Info
             (new ProvincesNumberByMyRegionValueMetric())
                 ->width('1/4'),
             (new AreasNumberByMyRegionValueMetric())
                 ->width('1/4'),
             (new SectorsNumberByMyRegionValueMetric())
                 ->width('1/4'),
-
-            // Info on hiking routes
-
             (new HikingRoutesNumberByMyRegionValueMetric())
                 ->width('1/4'),
+
+            // Info on hiking routes
+            (new HikingRoutesNumberStatus1ByMyRegionValueMetric())
+                ->width('1/4'),
             (new HikingRoutesNumberStatus2ByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberStatus3ByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberStatus4ByMyRegionValueMetric())
                 ->width('1/4'),
         ];
     }

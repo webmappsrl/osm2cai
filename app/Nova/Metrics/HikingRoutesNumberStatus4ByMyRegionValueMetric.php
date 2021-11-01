@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Metrics\Value;
 
-class HikingRoutesNumberStatus2ByMyRegionValueMetric extends Value
+class HikingRoutesNumberStatus4ByMyRegionValueMetric extends Value
 {
 
-    public $name = '#percorsi (status 2)';
+    public $name = '#percorsi (status 4)';
 
     /**
      * Calculate the value of the metric.
@@ -19,7 +19,7 @@ class HikingRoutesNumberStatus2ByMyRegionValueMetric extends Value
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->result(count(Auth::user()->region->hikingRoutes->where('osm2cai_status', 2)))
+        return $this->result(count(Auth::user()->region->hikingRoutes->where('osm2cai_status', 4)))
             ->format('0');
     }
 
@@ -50,6 +50,6 @@ class HikingRoutesNumberStatus2ByMyRegionValueMetric extends Value
      */
     public function uriKey()
     {
-        return 'hiking-routes-number-status2-by-my-region-value-metric';
+        return 'hiking-routes-number-status4-by-my-region-value-metric';
     }
 }

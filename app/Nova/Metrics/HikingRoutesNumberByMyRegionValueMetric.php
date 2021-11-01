@@ -9,7 +9,7 @@ use Laravel\Nova\Metrics\Value;
 class HikingRoutesNumberByMyRegionValueMetric extends Value
 {
 
-    public $name = '#percorsi (status 2+3+4)';
+    public $name = '#percorsi (status 1+2+3+4)';
 
     /**
      * Calculate the value of the metric.
@@ -19,7 +19,7 @@ class HikingRoutesNumberByMyRegionValueMetric extends Value
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->result(count(Auth::user()->region->hikingRoutes->whereIn('osm2cai_status', [2, 3, 4])))
+        return $this->result(count(Auth::user()->region->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4])))
             ->format('0');
     }
 
