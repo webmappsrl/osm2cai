@@ -8,6 +8,7 @@ use App\Nova\Dashboards\RegionReferentDashboard;
 use App\Nova\Dashboards\UserSectors;
 use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
 use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
+use App\Nova\Metrics\SectorsNumberByMyRegionValueMetric;
 use App\Nova\Metrics\TotalAreasCount;
 use App\Nova\Metrics\TotalProvincesCount;
 use App\Nova\Metrics\TotalRegionsCount;
@@ -116,11 +117,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4'),
             (new AreasNumberByMyRegionValueMetric())
                 ->width('1/4'),
-            (new TextCard())
-                ->width('1/4')
-                ->heading('TBI')
-                ->text('#settori')
-                ->center(false),
+            (new SectorsNumberByMyRegionValueMetric())
+                ->width('1/4'),
         ];
     }
 
