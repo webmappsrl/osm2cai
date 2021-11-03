@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "921eeffc2be922ede4ad82db1f164db1",
+    "content-hash": "c56c971a7009fb85713db9efa0ea34de",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -296,6 +296,53 @@
                 "source": "https://github.com/cakephp/chronos"
             },
             "time": "2021-04-07T01:06:46+00:00"
+        },
+        {
+            "name": "dkulyk/nova-tabs",
+            "version": "1.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dkulyk/nova-tabs.git",
+                "reference": "20968961c0fedd4074b8744175cdfdb3e8f76ae0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dkulyk/nova-tabs/zipball/20968961c0fedd4074b8744175cdfdb3e8f76ae0",
+                "reference": "20968961c0fedd4074b8744175cdfdb3e8f76ae0",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "DKulyk\\Nova\\TabsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "DKulyk\\Nova\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmytro Kulyk",
+                    "email": "lnkvisitor.ts@gmail.com"
+                }
+            ],
+            "description": "Another Laravel Nova Tabs Package",
+            "support": {
+                "issues": "https://github.com/dkulyk/nova-tabs/issues",
+                "source": "https://github.com/dkulyk/nova-tabs/tree/1.1.9"
+            },
+            "time": "2021-03-18T10:26:17+00:00"
         },
         {
             "name": "doctrine/cache",

@@ -105,16 +105,33 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
                             $route_cai_array[$k . '_osm'] = $v;
                         }
                     }
+                    $this->info('  --> Creating or loadinf route');
                     $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route->relation_id]);
+
+                    $this->info('  --> Set Osm fields');
                     $route_cai->fill($route_cai_array);
+
+                    $this->info('  --> Set Status');
                     $route_cai->setOsm2CaiStatus();
+
+                    $this->info('  --> Copy fields from osm 2 cai (only if status is not 4)');
+                    $route_cai->copyFromOsm2Cai();
+
+                    $this->info('  --> Saving first');
                     $route_cai->save();
+
+                    $this->info('  --> Computing tech info');
                     $route_cai->computeAndSetTechInfo();
+
+                    $this->info('  --> Setting Territorial Units');
                     $route_cai->computeAndSetTerritorialUnits();
+
+                    $this->info('  --> Saving second time');
                     $route_cai->save();
                 }
             }
         }
+
     }
 
 
