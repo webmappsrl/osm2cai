@@ -3,11 +3,14 @@
 namespace App\Nova;
 
 use App\Nova\Filters\HikingRouteStatus;
+use DKulyk\Nova\Tabs;
+use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Panel;
 
 class HikingRoute extends Resource
 {
@@ -31,7 +34,7 @@ class HikingRoute extends Resource
      * @var array
      */
     public static array $search = [
-        'ref_REI', 'relation_id'
+        'ref_REI', 'relation_id', 'ref'
     ];
 
     public static string $group = 'Territorio';
@@ -44,6 +47,7 @@ class HikingRoute extends Resource
 
     /**
      * Get the fields displayed by the resource.
+     * SUGGESTION: use tabs https://novapackages.com/packages/dkulyk/nova-tabs
      *
      * @param \Illuminate\Http\Request $request
      * @return array
@@ -51,11 +55,38 @@ class HikingRoute extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('ID'), 'id')->sortable(),
-            Text::make('Cod. REI', 'ref_REI'),
-            Number::make('OSMID', 'relation_id'),
-            Number::make('STATO', 'osm2cai_status')->sortable()
+            ID::make(__('ID'), 'id')->sortable()->onlyOnIndex(),
+            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('REF', 'ref')->onlyOnIndex(),
+            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+            Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
+            (new Tabs('Metadata', [
+                'Main' => $this->getMetaFields('main'),
+                'General' => $this->getMetaFields('general'),
+                'Tech' => $this->getMetaFields('tech'),
+                'Other' => $this->getMetaFields('other'),
+            ]))->withToolbar(),
         ];
+    }
+
+    private function getMetaFields($group): array
+    {
+        if (!in_array($group, ['main', 'general', 'tech', 'other'])) {
+            return [];
+        }
+        $fields = [];
+        foreach (\App\Models\HikingRoute::getInfoFields()[$group] as $field => $field_data) {
+            $fields[] = Text::make($field_data['label'], function () use ($field, $field_data) {
+                $field_osm = $field . '_osm';
+                if ($field_data['comp']) {
+                    $field_comp = $field . '_comp';
+                    return sprintf('%s (%s / %s)', $this->$field, $this->$field_osm, $this->$field_comp);
+                } else {
+                    return sprintf('%s (%s)', $this->$field, $this->$field_osm);
+                }
+            })->onlyOnDetail();
+        }
+        return $fields;
     }
 
     /**
@@ -66,6 +97,34 @@ class HikingRoute extends Resource
      */
     public function cards(Request $request)
     {
+
+        $hr = \App\Models\HikingRoute::find($request->resourceId);
+        if (!is_null($hr)) {
+            $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
+            return [
+                (new TextCard())
+                    ->center(false)
+                    ->onlyOnDetail()
+                    ->width('1/2')
+                    ->heading('REF:' . $hr->ref . ' (CODICE REI: ' . $hr->ref_REI . ' / ' . $hr->ref_REI_comp . ')')
+                    ->text('Settori: ' . $hr->getSectorsString()),
+
+                (new TextCard())
+                    ->center(false)
+                    ->onlyOnDetail()
+                    ->width('1/4')
+                    ->heading('<a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a>')
+                    ->text('OSMID')
+                    ->headingAsHtml(),
+
+                (new TextCard())
+                    ->center(false)
+                    ->onlyOnDetail()
+                    ->width('1/4')
+                    ->heading($hr->osm2cai_status)
+                    ->text('Stato di accatastamento'),
+            ];
+        }
         return [];
     }
 
