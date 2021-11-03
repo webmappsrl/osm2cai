@@ -9,7 +9,10 @@
   "license": "MIT",
   "require": {
     "php": "^7.4|^8.0",
+    "ext-json": "*",
+    "dkulyk/nova-tabs": "^1.1",
     "doctrine/dbal": "^2.9",
+    "ericlagarda/nova-text-card": "^1.2",
     "fideloper/proxy": "^4.4",
     "fruitcake/laravel-cors": "^2.0",
     "gabrieliuga/laravel-nova-sidebar-links": "^1.0",
@@ -18,8 +21,7 @@
     "laravel/nova": "*",
     "laravel/tinker": "^2.5",
     "m-a-k-o/nova-custom-table-card": "^3.2",
-    "mstaack/laravel-postgis": "^5.2",
-    "ext-json": "*"
+    "mstaack/laravel-postgis": "^5.2"
   },
   "require-dev": {
     "facade/ignition": "^2.5",

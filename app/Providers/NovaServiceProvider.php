@@ -3,12 +3,24 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Nova\Dashboards\ItalyDashboard;
+use App\Nova\Dashboards\RegionReferentDashboard;
 use App\Nova\Dashboards\UserSectors;
+use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus1ByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus2ByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus3ByMyRegionValueMetric;
+use App\Nova\Metrics\HikingRoutesNumberStatus4ByMyRegionValueMetric;
+use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
+use App\Nova\Metrics\SectorsNumberByMyRegionValueMetric;
 use App\Nova\Metrics\TotalAreasCount;
 use App\Nova\Metrics\TotalProvincesCount;
 use App\Nova\Metrics\TotalRegionsCount;
 use App\Nova\Metrics\TotalSectorsCount;
+use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -65,12 +77,72 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+        $main_cards = [
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->name)
+                ->text('Username')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->getPermissionString())
+                ->text('Permessi')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('LastLogin')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('Task and notify')
+                ->center(false),
+            // $this->_getUserSectorsListCard()
+        ];
+
+        if (!is_null(Auth::user()->region_id)) {
+            $cards = array_merge($main_cards, $this->_getRegionCards());
+        } else {
+            $cards = $main_cards;
+        }
+
+        return $cards;
+    }
+
+    private function _getRegionCards(): array
+    {
         return [
-            (new TotalRegionsCount())->width('1/4'),
-            (new TotalProvincesCount())->width('1/4'),
-            (new TotalAreasCount())->width('1/4'),
-            (new TotalSectorsCount())->width('1/4'),
-            $this->_getUserSectorsListCard()
+
+            // Heading with region name
+            (new TextCard())
+                ->forceFullWidth()
+                ->heading(\auth()->user()->region->name)
+                ->text('<h4 class="font-light">
+                         <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
+                         <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
+                         ')
+                ->textAsHtml(),
+
+            // General Info
+            (new ProvincesNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new AreasNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new SectorsNumberByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberByMyRegionValueMetric())
+                ->width('1/4'),
+
+            // Info on hiking routes
+            (new HikingRoutesNumberStatus1ByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberStatus2ByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberStatus3ByMyRegionValueMetric())
+                ->width('1/4'),
+            (new HikingRoutesNumberStatus4ByMyRegionValueMetric())
+                ->width('1/4'),
         ];
     }
 
@@ -121,6 +193,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
+            (new ItalyDashboard()),
         ];
     }
 

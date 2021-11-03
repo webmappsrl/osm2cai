@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-class RegionController extends Controller {
-    public function geojson(string $id) {
+class RegionController extends Controller
+{
+    public function geojson(string $id)
+    {
         $region = Region::find($id);
         $sectors = $region->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -60,7 +62,8 @@ class RegionController extends Controller {
             return response()->json(['Error' => 'Region ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id) {
+    public function shapefile(string $id)
+    {
         $model = Region::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
@@ -68,7 +71,8 @@ class RegionController extends Controller {
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
-    public function kml(string $id) {
+    public function kml(string $id)
+    {
         $region = Region::find($id);
 
         $headers = [
@@ -77,5 +81,18 @@ class RegionController extends Controller {
         ];
 
         return response($region->getKml(), 200, $headers);
+    }
+
+    public function csv(string $id)
+    {
+        $region = Region::find($id);
+
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_regione_' . $region->name . '.csv"',
+        ];
+
+        return response($region->getCsv(), 200, $headers);
+        
     }
 }
