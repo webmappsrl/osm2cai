@@ -351,12 +351,14 @@ EOF;
      */
     public function setRefREIComp(): void
     {
-        if (strlen($this->ref) == 3) {
-            $this->ref_REI_comp = $this->mainSector()->full_code . substr($this->ref, 1) . '0';
-        } else if (strlen($this->ref) == 4) {
-            $this->ref_REI_comp = $this->mainSector()->full_code . substr($this->ref, 1);
-        } else {
-            $this->ref_REI_comp = $this->mainSector()->full_code . '????';
+        if (!is_null($this->mainSector())) {
+            if (strlen($this->ref) == 3) {
+                $this->ref_REI_comp = $this->mainSector()->full_code . substr($this->ref, 1) . '0';
+            } else if (strlen($this->ref) == 4) {
+                $this->ref_REI_comp = $this->mainSector()->full_code . substr($this->ref, 1);
+            } else {
+                $this->ref_REI_comp = $this->mainSector()->full_code . '????';
+            }
         }
     }
 
