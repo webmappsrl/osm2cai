@@ -71,22 +71,18 @@ class Region extends TerritorialUnit
      */
     public function getCsv(): string
     {
-        $line = 'osm2cai_status;ref:REI(comp);ref:REI;osm id;survey:date;from;to;cai_scale;osmc:symbol;ref;name;network;source' . PHP_EOL;
+        $line = 'sda,settore,ref,from,to,difficoltà,codice rei,osm,osm2cai' . PHP_EOL;
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
-                $line .= $hr->osm2cai_status . ';';
-                $line .= $hr->ref_REI_comp . ';';
-                $line .= $hr->ref_REI . ';';
-                $line .= $hr->relation_id . ';';
-                $line .= $hr->survey_date . ';';
-                $line .= $hr->from . ';';
-                $line .= $hr->to . ';';
-                $line .= $hr->cai_scale . ';';
-                $line .= $hr->osmc_symbol . ';';
-                $line .= $hr->ref . ';';
-                $line .= $hr->name . ';';
-                $line .= $hr->network . ';';
-                $line .= $hr->source . ';';
+                $line .= $hr->osm2cai_status . ',';
+                $line .= $hr->mainSector()->full_code . ',';
+                $line .= $hr->ref . ',';
+                $line .= $hr->from . ',';
+                $line .= $hr->to . ',';
+                $line .= $hr->cai_scale . ',';
+                $line .= $hr->ref_REI_comp . ',';
+                $line .= $hr->relation_id . ',';
+                $line .= url('/resources/hiking-routes/' . $hr->id);
                 $line .= PHP_EOL;
             }
         }
