@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\HikingRoute;
+use App\Models\Region;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\RegionReferentDashboard;
@@ -77,6 +79,19 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
+            $num_expected = Region::sum('num_expected');
+            $done = number_format((
+                    HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
+                    HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
+                    HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
+                    HikingRoute::where('osm2cai_status', 4)->count()
+                ) / Region::sum('num_expected') * 100, 2);
+            $info = (new TextCard())->width('1/4')->heading("$done %")->text('SAL nazionale')->center(false);
+        } else {
+            $info = (new TextCard())->width('1/4')->heading('TBI')->text('????')->center(false);
+        }
+
         $main_cards = [
             (new TextCard())
                 ->width('1/4')
@@ -93,11 +108,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            (new TextCard())
-                ->width('1/4')
-                ->heading('TBI')
-                ->text('Task and notify')
-                ->center(false),
+            $info,
             // $this->_getUserSectorsListCard()
         ];
 
