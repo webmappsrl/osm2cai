@@ -23,6 +23,7 @@ use App\Nova\Metrics\TotalSectorsCount;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -79,8 +80,27 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+        $values = DB::table('hiking_routes')
+            ->select('osm2cai_status', DB::raw('count(*) as num'))
+            ->groupBy('osm2cai_status')
+            ->get();
+
+        $numbers = [];
+        $numbers[1] = 0;
+        $numbers[2] = 0;
+        $numbers[3] = 0;
+        $numbers[4] = 0;
+
+        if (count($values) > 0) {
+            foreach ($values as $value) {
+                $numbers[$value->osm2cai_status] = $value->num;
+            }
+        }
+
+        $tot = array_sum($numbers);
+
+
         if (Auth::user()->getPermissionString() == 'Referente nazionale') {
-            $num_expected = Region::sum('num_expected');
             $done = number_format((
                     HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
                     HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
@@ -109,7 +129,17 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->text('LastLogin')
                 ->center(false),
             $info,
-            // $this->_getUserSectorsListCard()
+
+            (new TextCard())->width('1/4')
+                ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 3')->heading('<div style="background-color: #F36E45; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 4')->heading('<div style="background-color: #47AC34; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+
+
         ];
 
         if (!is_null(Auth::user()->region_id)) {
