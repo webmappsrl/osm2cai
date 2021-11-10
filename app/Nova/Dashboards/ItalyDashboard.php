@@ -6,6 +6,8 @@ use App\Nova\Metrics\TotalAreasCount;
 use App\Nova\Metrics\TotalProvincesCount;
 use App\Nova\Metrics\TotalRegionsCount;
 use App\Nova\Metrics\TotalSectorsCount;
+use Ericlagarda\NovaTextCard\TextCard;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Dashboard;
 
 class ItalyDashboard extends Dashboard
@@ -23,11 +25,59 @@ class ItalyDashboard extends Dashboard
      */
     public function cards()
     {
+
+        // Download data
+        // select count(*),osm2cai_status from hiking_routes where osm2cai_status>0 group by osm2cai_status;
+        $values = DB::table('hiking_routes')
+            ->select('osm2cai_status', DB::raw('count(*) as num'))
+            ->groupBy('osm2cai_status')
+            ->get();
+        /**
+         * => Illuminate\Support\Collection {#3632
+         * all: [
+         * {#3627
+         * +"osm2cai_status": 0,
+         * +"num": 1202,
+         * },
+         * {#3625
+         * +"osm2cai_status": 1,
+         * +"num": 437,
+         * },
+         * {#3608
+         * +"osm2cai_status": 3,
+         * +"num": 953,
+         * },
+         * {#3595
+         * +"osm2cai_status": 2,
+         * +"num": 50,
+         * },
+         * ],
+         * }         */
+        $numbers = [];
+        $numbers[1] = 0;
+        $numbers[2] = 0;
+        $numbers[3] = 0;
+        $numbers[4] = 0;
+
+        if (count($values) > 0) {
+            foreach ($values as $value) {
+                $numbers[$value->osm2cai_status] = $value->num;
+            }
+        }
+
+        $tot = array_sum($numbers);
+
         return [
-            (new TotalRegionsCount())->width('1/4'),
             (new TotalProvincesCount())->width('1/4'),
             (new TotalAreasCount())->width('1/4'),
             (new TotalSectorsCount())->width('1/4'),
+            (new TextCard())->width('1/4')->text('#tot')->heading($tot),
+
+            (new TextCard())->width('1/4')->text('#sda 1')->heading($numbers[1]),
+            (new TextCard())->width('1/4')->text('#sda 2')->heading($numbers[2]),
+            (new TextCard())->width('1/4')->text('#sda 3')->heading($numbers[3]),
+            (new TextCard())->width('1/4')->text('#sda 4')->heading($numbers[4]),
+
         ];
     }
 
