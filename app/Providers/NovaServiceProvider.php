@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\HikingRoute;
+use App\Models\Region;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\RegionReferentDashboard;
@@ -21,6 +23,7 @@ use App\Nova\Metrics\TotalSectorsCount;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
@@ -77,6 +80,39 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+
+        $values = DB::table('hiking_routes')
+            ->select('osm2cai_status', DB::raw('count(*) as num'))
+            ->groupBy('osm2cai_status')
+            ->get();
+
+        $numbers = [];
+        $numbers[1] = 0;
+        $numbers[2] = 0;
+        $numbers[3] = 0;
+        $numbers[4] = 0;
+
+        if (count($values) > 0) {
+            foreach ($values as $value) {
+                $numbers[$value->osm2cai_status] = $value->num;
+            }
+        }
+
+        $tot = array_sum($numbers);
+
+
+        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
+            $done = number_format((
+                    HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
+                    HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
+                    HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
+                    HikingRoute::where('osm2cai_status', 4)->count()
+                ) / Region::sum('num_expected') * 100, 2);
+            $info = (new TextCard())->width('1/4')->heading("$done %")->text('SAL nazionale')->center(false);
+        } else {
+            $info = (new TextCard())->width('1/4')->heading('TBI')->text('????')->center(false);
+        }
+
         $main_cards = [
             (new TextCard())
                 ->width('1/4')
@@ -93,15 +129,23 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            (new TextCard())
-                ->width('1/4')
-                ->heading('TBI')
-                ->text('Task and notify')
-                ->center(false),
-            // $this->_getUserSectorsListCard()
+            $info,
+
+            (new TextCard())->width('1/4')
+                ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 3')->heading('<div style="background-color: #F36E45; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 4')->heading('<div style="background-color: #47AC34; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+
+
         ];
 
-        if (!is_null(Auth::user()->region_id)) {
+        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
+            $cards = array_merge($main_cards, [$this->_getRegionsTableCard()]);
+        } else if (!is_null(Auth::user()->region_id)) {
             $cards = array_merge($main_cards, $this->_getRegionCards());
         } else {
             $cards = $main_cards;
@@ -143,7 +187,59 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4'),
             (new HikingRoutesNumberStatus4ByMyRegionValueMetric())
                 ->width('1/4'),
+
         ];
+    }
+
+    /**
+     * @return CustomTableCard
+     */
+    private function _getRegionsTableCard(): CustomTableCard
+    {
+
+        $regionsCard = new CustomTableCard();
+        $regionsCard->title(__('SDA e SAL Regioni'));
+
+        // Headings
+        $regionsCard->header([
+            new Cell(__('Regione')),
+            new Cell(__('#1')),
+            new Cell(__('#2')),
+            new Cell(__('#3')),
+            new Cell(__('#4')),
+            new Cell(__('#tot')),
+            new Cell(__('#att')),
+            new Cell(__('SAL')),
+        ]);
+
+        // Extract data from views
+        // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
+        $items = DB::table('regions_view')
+            ->select('name', 'code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->get();
+
+        $data = [];
+        foreach ($items as $item) {
+
+            $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
+            $sal = number_format((($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected * 100, 2);
+
+            $row = new Row(
+                new Cell("{$item->name} ({$item->code})"),
+                new Cell($item->tot1),
+                new Cell($item->tot2),
+                new Cell($item->tot3),
+                new Cell($item->tot4),
+                new Cell($tot),
+                new Cell($item->num_expected),
+                new Cell("$sal %"),
+            );
+            $data[] = $row;
+        }
+
+        $regionsCard->data($data);
+
+        return $regionsCard;
     }
 
     private function _getUserSectorsListCard()
@@ -160,7 +256,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             new Cell(__('2')),
             new Cell(__('3')),
             new Cell(__('4')),
-
         ]);
         $user = User::getEmulatedUser();
         $sectors = $user->getSectors();
