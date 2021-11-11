@@ -80,6 +80,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+
         $values = DB::table('hiking_routes')
             ->select('osm2cai_status', DB::raw('count(*) as num'))
             ->groupBy('osm2cai_status')
@@ -142,7 +143,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         ];
 
-        if (!is_null(Auth::user()->region_id)) {
+        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
+            $cards = array_merge($main_cards, [$this->_getRegionsTableCard()]);
+        } else if (!is_null(Auth::user()->region_id)) {
             $cards = array_merge($main_cards, $this->_getRegionCards());
         } else {
             $cards = $main_cards;
@@ -184,7 +187,59 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4'),
             (new HikingRoutesNumberStatus4ByMyRegionValueMetric())
                 ->width('1/4'),
+
         ];
+    }
+
+    /**
+     * @return CustomTableCard
+     */
+    private function _getRegionsTableCard(): CustomTableCard
+    {
+
+        $regionsCard = new CustomTableCard();
+        $regionsCard->title(__('SDA e SAL Regioni'));
+
+        // Headings
+        $regionsCard->header([
+            new Cell(__('Regione')),
+            new Cell(__('#1')),
+            new Cell(__('#2')),
+            new Cell(__('#3')),
+            new Cell(__('#4')),
+            new Cell(__('#tot')),
+            new Cell(__('#att')),
+            new Cell(__('SAL')),
+        ]);
+
+        // Extract data from views
+        // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
+        $items = DB::table('regions_view')
+            ->select('name', 'code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->get();
+
+        $data = [];
+        foreach ($items as $item) {
+
+            $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
+            $sal = number_format((($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected * 100, 2);
+
+            $row = new Row(
+                new Cell("{$item->name} ({$item->code})"),
+                new Cell($item->tot1),
+                new Cell($item->tot2),
+                new Cell($item->tot3),
+                new Cell($item->tot4),
+                new Cell($tot),
+                new Cell($item->num_expected),
+                new Cell("$sal %"),
+            );
+            $data[] = $row;
+        }
+
+        $regionsCard->data($data);
+
+        return $regionsCard;
     }
 
     private function _getUserSectorsListCard()
@@ -201,7 +256,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             new Cell(__('2')),
             new Cell(__('3')),
             new Cell(__('4')),
-
         ]);
         $user = User::getEmulatedUser();
         $sectors = $user->getSectors();
