@@ -43,7 +43,7 @@ class ItalyDashboard extends Dashboard
             }
         }
 
-        $tot = array_sum($numbers);
+        $tot = array_sum($numbers) - $numbers[0];
 
         return [
             (new TotalProvincesCount())->width('1/4'),
