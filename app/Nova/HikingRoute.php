@@ -7,6 +7,7 @@ use DKulyk\Nova\Tabs;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
@@ -57,7 +58,7 @@ class HikingRoute extends Resource
     public function fields(Request $request)
     {
         return [
-            Text::make('Regione', function () {
+            Text::make('Regioni', function () {
                 $val = "ND";
                 if (Arr::accessible($this->regions)) {
                     if (count($this->regions) > 0) {
@@ -65,12 +66,39 @@ class HikingRoute extends Resource
                     }
                 }
                 return $val;
-            }),
-            ID::make(__('ID'), 'id')->sortable()->onlyOnIndex(),
-            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            })->onlyOnIndex(),
+            Text::make('Province', function () {
+                $val = "ND";
+                if (Arr::accessible($this->provinces)) {
+                    if (count($this->provinces) > 0) {
+                        $val = implode(', ', $this->provinces->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
+            Text::make('Aree', function () {
+                $val = "ND";
+                if (Arr::accessible($this->areas)) {
+                    if (count($this->areas) > 0) {
+                        $val = implode(', ', $this->areas->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
+            Text::make('Settori', function () {
+                $val = "ND";
+                if (Arr::accessible($this->sectors)) {
+                    if (count($this->sectors) > 0) {
+                        $val = implode(', ', $this->sectors->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
             Text::make('REF', 'ref')->onlyOnIndex(),
-            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
+            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),

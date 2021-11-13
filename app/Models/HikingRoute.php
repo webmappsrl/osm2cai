@@ -32,7 +32,9 @@ class HikingRoute extends Model
     ];
 
     protected $casts = [
-        'distance', 'distance_osm', 'distance_comp'
+        'distance' => 'float',
+        'distance_osm' => 'float',
+        'distance_comp' => 'float',
     ];
 
     public static array $info_fields = [
