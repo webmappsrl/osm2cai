@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Filters\HikingRoutesAreaFilter;
 use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRouteStatus;
@@ -181,6 +182,7 @@ class HikingRoute extends Resource
         return [
             (new HikingRoutesRegionFilter()),
             (new HikingRoutesProvinceFilter()),
+            (new HikingRoutesAreaFilter()),
             new HikingRouteStatus,
         ];
     }
