@@ -80,6 +80,28 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function cards()
     {
+        $cards = [];
+        switch (Auth::user()->getTerritorialRole()) {
+            case 'national' :
+                $cards = $this->_nationalCards();
+                break;
+            case 'regional' :
+                $cards = $this->_regionalCards();
+                break;
+            default :
+                $cards = [
+                    (new TextCard())
+                        ->forceFullWidth()
+                        ->heading('Nessun Permesso territoriale')
+                        ->text('Contatta catastorei@cai.it per informazioni')
+                        ->textAsHtml(),
+                ];
+        }
+        return $cards;
+    }
+
+    private function _nationalCards()
+    {
 
         $values = DB::table('hiking_routes')
             ->select('osm2cai_status', DB::raw('count(*) as num'))
@@ -152,43 +174,91 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         }
 
         return $cards;
+
     }
 
-    private function _getRegionCards(): array
+    private function _regionalCards()
     {
-        return [
+        $data = DB::table('regions_view')
+            ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
+            ->where('id', Auth::user()->region->id)
+            ->get();
+        $numbers[1] = $data[0]->tot1;
+        $numbers[2] = $data[0]->tot2;
+        $numbers[3] = $data[0]->tot3;
+        $numbers[4] = $data[0]->tot4;
 
-            // Heading with region name
+        $num_areas = 0;
+        $num_sectors = 0;
+        foreach (Auth::user()->region->provinces as $province) {
+            $num_areas += $province->areas->count();
+            if ($province->areas->count() > 0) {
+                foreach ($province->areas as $area) {
+                    $num_sectors += $area->sectors->count();
+                }
+            }
+        }
+
+        $cards = [
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->name)
+                ->text('Username')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->getPermissionString())
+                ->text('Permessi')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('LastLogin')
+                ->center(false),
+            (new TextCard())->width('1/4')->heading('TBI')->text('????')->center(false),
+
             (new TextCard())
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
                 ->text('<h4 class="font-light">
-                         <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
-                         <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
-                         ')
+                 <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
+                 <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
+                 ')
                 ->textAsHtml(),
 
             // General Info
-            (new ProvincesNumberByMyRegionValueMetric())
+            (new TextCard())
+                ->width('1/4')
+                ->heading(Auth::user()->region->provinces->count())
+                ->text('#province'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading($num_areas)
+                ->text('#aree'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading($num_sectors)
+                ->text('#settori')
                 ->width('1/4'),
-            (new AreasNumberByMyRegionValueMetric())
-                ->width('1/4'),
-            (new SectorsNumberByMyRegionValueMetric())
-                ->width('1/4'),
-            (new HikingRoutesNumberByMyRegionValueMetric())
-                ->width('1/4'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading(array_sum($numbers))
+                ->text('#tot percorsi'),
 
-            // Info on hiking routes
-            (new HikingRoutesNumberStatus1ByMyRegionValueMetric())
-                ->width('1/4'),
-            (new HikingRoutesNumberStatus2ByMyRegionValueMetric())
-                ->width('1/4'),
-            (new HikingRoutesNumberStatus3ByMyRegionValueMetric())
-                ->width('1/4'),
-            (new HikingRoutesNumberStatus4ByMyRegionValueMetric())
-                ->width('1/4'),
+            (new TextCard())->width('1/4')
+                ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 3')->heading('<div style="background-color: #F36E45; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+            (new TextCard())->width('1/4')
+                ->text('#sda 4')->heading('<div style="background-color: #47AC34; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+
 
         ];
+
+        return $cards;
+
     }
 
     /**

@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\SallableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Collection;
 
 class Region extends TerritorialUnit
 {
-    use HasFactory;
+    use HasFactory, SallableTrait;
 
     protected $fillable = [
         'num_expected',
@@ -16,7 +18,7 @@ class Region extends TerritorialUnit
     {
         return $this->hasMany(Province::class);
     }
-
+    
     public function provincesIds(): array
     {
         return $this->provinces->pluck('id')->toArray();

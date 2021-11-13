@@ -6,11 +6,13 @@ use App\Nova\Filters\HikingRouteStatus;
 use DKulyk\Nova\Tabs;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
+use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
 {
@@ -55,6 +57,15 @@ class HikingRoute extends Resource
     public function fields(Request $request)
     {
         return [
+            Text::make('Regione', function () {
+                $val = "ND";
+                if (Arr::accessible($this->regions)) {
+                    if (count($this->regions) > 0) {
+                        $val = implode(', ', $this->regions->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            }),
             ID::make(__('ID'), 'id')->sortable()->onlyOnIndex(),
             Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
             Text::make('REF', 'ref')->onlyOnIndex(),
@@ -137,7 +148,7 @@ class HikingRoute extends Resource
     public function filters(Request $request)
     {
         return [
-            new HikingRouteStatus
+            new HikingRouteStatus,
         ];
     }
 

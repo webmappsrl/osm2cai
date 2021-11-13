@@ -122,6 +122,23 @@ class User extends Authenticatable
         return 'Unknown';
     }
 
+    public function getTerritorialRole(): string
+    {
+        $role = 'unknown';
+        if ($this->is_administrator) {
+            $role = 'admin';
+        } else if ($this->is_national_referent) {
+            return 'national';
+        } else if (!is_null($this->region_id)) {
+            return 'regional';
+        } else if (count($this->provinces) > 0
+            || count($this->areas) > 0
+            || count($this->sectors) > 0) {
+            return 'local';
+        }
+        return $role;
+    }
+    
     /**
      * Get the current logged User
      *
