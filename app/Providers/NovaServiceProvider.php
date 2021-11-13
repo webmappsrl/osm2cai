@@ -166,13 +166,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         ];
 
-        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
-            $cards = array_merge($main_cards, [$this->_getRegionsTableCard()]);
-        } else if (!is_null(Auth::user()->region_id)) {
-            $cards = array_merge($main_cards, $this->_getRegionCards());
-        } else {
-            $cards = $main_cards;
-        }
+        $cards = array_merge($main_cards, [$this->_getRegionsTableCard()]);
 
         return $cards;
 
@@ -300,7 +294,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($items as $item) {
 
             $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
-            $sal = number_format((($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected * 100, 2);
+            $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
+            $sal_color = Osm2CaiHelper::getSalColor($sal);
 
             $row = new Row(
                 new Cell("{$item->name} ({$item->code})"),
@@ -310,7 +305,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($item->tot4),
                 new Cell($tot),
                 new Cell($item->num_expected),
-                new Cell("$sal %"),
+                new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
             );
             $data[] = $row;
         }
