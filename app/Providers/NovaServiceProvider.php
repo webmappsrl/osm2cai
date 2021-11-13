@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\Osm2CaiHelper;
 use App\Models\HikingRoute;
 use App\Models\Region;
 use App\Models\User;
@@ -199,6 +200,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             }
         }
 
+        $sal = Auth::user()->region->getSal();
+        $sal_color = Osm2CaiHelper::getSalColor($sal);
+
         $cards = [
             (new TextCard())
                 ->width('1/4')
@@ -215,7 +219,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            (new TextCard())->width('1/4')->heading('TBI')->text('????')->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
+                ->headingAsHtml()
+                ->text('SAL ' . Auth::user()->region->name),
 
             (new TextCard())
                 ->forceFullWidth()
