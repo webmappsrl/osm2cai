@@ -23,6 +23,7 @@ use App\Nova\Metrics\TotalRegionsCount;
 use App\Nova\Metrics\TotalSectorsCount;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -132,7 +133,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             ) / Region::sum('num_expected');
         $sal_color = Osm2CaiHelper::getSalColor($sal);
 
-        $main_cards = [
+        $cards = [
             (new TextCard())
                 ->width('1/4')
                 ->heading(Auth::user()->name)
@@ -166,7 +167,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         ];
 
-        $cards = array_merge($main_cards, [$this->_getRegionsTableCard()]);
+        $cards = array_merge($cards, [$this->_getRegionsTableCard()]);
 
         return $cards;
 
@@ -259,6 +260,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         ];
 
+        $cards = array_merge($cards, [$this->_getSectorsTableCard()]);
+
         return $cards;
 
     }
@@ -313,6 +316,71 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $regionsCard->data($data);
 
         return $regionsCard;
+    }
+
+    /**
+     * @return CustomTableCard
+     */
+    private function _getSectorsTableCard(): CustomTableCard
+    {
+
+        $sectorsCard = new CustomTableCard();
+        $sectorsCard->title(__('SDA e SAL Settori - ' . Auth::user()->region->name));
+
+        // Headings
+        $sectorsCard->header([
+            new Cell(__('Settore')),
+            new Cell(__('#1')),
+            new Cell(__('#2')),
+            new Cell(__('#3')),
+            new Cell(__('#4')),
+            new Cell(__('#tot')),
+            new Cell(__('#att')),
+            new Cell(__('SAL')),
+        ]);
+
+        // Get sectors_id
+        $sectors_id = [];
+        foreach (Auth::user()->region->provinces as $province) {
+            if (Arr::accessible($province->areas)) {
+                foreach ($province->areas as $area) {
+                    if (Arr::accessible($area->sectors)) {
+                        $sectors_id = array_merge($sectors_id, $area->sectors->pluck('id')->toArray());
+                    }
+                }
+            }
+        }
+
+        // Extract data from views
+        // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
+        $items = DB::table('sectors_view')
+            ->select('full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->whereIn('id', $sectors_id)
+            ->get();
+
+        $data = [];
+        foreach ($items as $item) {
+
+            $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
+            $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
+            $sal_color = Osm2CaiHelper::getSalColor($sal);
+
+            $row = new Row(
+                new Cell("{$item->full_code}"),
+                new Cell($item->tot1),
+                new Cell($item->tot2),
+                new Cell($item->tot3),
+                new Cell($item->tot4),
+                new Cell($tot),
+                new Cell($item->num_expected),
+                new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
+            );
+            $data[] = $row;
+        }
+
+        $sectorsCard->data($data);
+
+        return $sectorsCard;
     }
 
     private function _getUserSectorsListCard()
