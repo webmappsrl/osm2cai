@@ -15,6 +15,26 @@ class HikingRoutesTerritorialFilter extends Filter
     public $component = 'select-filter';
 
     public $name = 'Regione';
+    public $type = '';
+    public $relation_name = '';
+    public $relation_field = '';
+
+    public function __construct($type)
+    {
+        $this->type = $type;
+        switch ($type) {
+            case 'region' :
+                $this->name = 'Regione';
+                $this->relation_name = 'regions';
+                $this->relation_field = 'region_id';
+                break;
+            case 'province' :
+                $this->name = 'Provincia';
+                $this->relation_name = 'provinces';
+                $this->relation_field = 'province_id';
+                break;
+        }
+    }
 
     /**
      * Apply the filter to the given query.
@@ -26,8 +46,9 @@ class HikingRoutesTerritorialFilter extends Filter
      */
     public function apply(Request $request, $query, $value)
     {
-        return $query->whereHas('regions', function ($query) use ($value) {
-            $query->where('region_id', $value);
+        $relation_field = $this->relation_field;
+        return $query->whereHas($this->relation_name, function ($query) use ($relation_field, $value) {
+            $query->where($relation_field, $value);
         });
     }
 
@@ -39,9 +60,18 @@ class HikingRoutesTerritorialFilter extends Filter
      */
     public function options(Request $request)
     {
-        $regions = \App\Models\Region::all();
-        foreach ($regions as $region) {
-            $options[$region->name] = $region->id;
+        $options = [];
+        switch ($this->type) {
+            case 'region':
+                foreach (\App\Models\Region::all() as $region) {
+                    $options[$region->name] = $region->id;
+                }
+                break;
+            case 'province':
+                foreach (\App\Models\Province::all() as $province) {
+                    $options[$province->name] = $province->id;
+                }
+                break;
         }
         return $options;
     }

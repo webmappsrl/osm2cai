@@ -2,6 +2,8 @@
 
 namespace App\Nova;
 
+use App\Nova\Filters\HikingRoutesProvinceFilter;
+use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRouteStatus;
 use App\Nova\Filters\HikingRoutesTerritorialFilter;
 use DKulyk\Nova\Tabs;
@@ -177,7 +179,8 @@ class HikingRoute extends Resource
     public function filters(Request $request)
     {
         return [
-            (new HikingRoutesTerritorialFilter()),
+            (new HikingRoutesRegionFilter()),
+            (new HikingRoutesProvinceFilter()),
             new HikingRouteStatus,
         ];
     }
