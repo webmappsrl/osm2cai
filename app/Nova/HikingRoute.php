@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Filters\HikingRouteStatus;
+use App\Nova\Filters\HikingRoutesTerritorialFilter;
 use DKulyk\Nova\Tabs;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
@@ -176,6 +177,7 @@ class HikingRoute extends Resource
     public function filters(Request $request)
     {
         return [
+            (new HikingRoutesTerritorialFilter()),
             new HikingRouteStatus,
         ];
     }
