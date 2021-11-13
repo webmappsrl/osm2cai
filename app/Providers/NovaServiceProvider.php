@@ -124,17 +124,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $tot = array_sum($numbers);
 
 
-        if (Auth::user()->getPermissionString() == 'Referente nazionale') {
-            $done = number_format((
-                    HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
-                    HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
-                    HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
-                    HikingRoute::where('osm2cai_status', 4)->count()
-                ) / Region::sum('num_expected') * 100, 2);
-            $info = (new TextCard())->width('1/4')->heading("$done %")->text('SAL nazionale')->center(false);
-        } else {
-            $info = (new TextCard())->width('1/4')->heading('TBI')->text('????')->center(false);
-        }
+        $sal = (
+                HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
+                HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
+                HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
+                HikingRoute::where('osm2cai_status', 4)->count()
+            ) / Region::sum('num_expected');
+        $sal_color = Osm2CaiHelper::getSalColor($sal);
 
         $main_cards = [
             (new TextCard())
@@ -152,7 +148,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            $info,
+            (new TextCard())
+                ->width('1/4')
+                ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
+                ->headingAsHtml()
+                ->text('SAL Nazionale'),
 
             (new TextCard())->width('1/4')
                 ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
