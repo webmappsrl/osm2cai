@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\GeojsonableTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  */
 class HikingRoute extends Model
 {
-    use HasFactory;
+    use HasFactory, GeojsonableTrait;
 
     protected $fillable = [
         'relation_id',
@@ -32,7 +33,9 @@ class HikingRoute extends Model
     ];
 
     protected $casts = [
-        'distance', 'distance_osm', 'distance_comp'
+        'distance' => 'float',
+        'distance_osm' => 'float',
+        'distance_comp' => 'float',
     ];
 
     public static array $info_fields = [
@@ -208,15 +211,15 @@ class HikingRoute extends Model
             if (!is_null($this->geometry)) {
                 // Compute from CAI geometry
                 // Distance
-                $this->distance_comp = round((DB::table('hiking_routes')
+                $this->distance_comp = round(DB::table('hiking_routes')
                         ->selectRaw('ST_length(geometry,true) as length')
-                        ->find($this->id)->length) / 1000, 2);
+                        ->find($this->id)->length / 1000.0, 2);
             } else {
                 // Compute from OSM geometry
                 // Distance
-                $this->distance_comp = DB::table('hiking_routes')
-                    ->selectRaw('ST_length(geometry_osm,true) as length')
-                    ->find($this->id)->length;
+                $this->distance_comp = round(DB::table('hiking_routes')
+                        ->selectRaw('ST_length(geometry_osm,true) as length')
+                        ->find($this->id)->length / 1000.0, 2);
             }
         }
     }

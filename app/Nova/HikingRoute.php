@@ -2,15 +2,32 @@
 
 namespace App\Nova;
 
+use App\Nova\Filters\HikingRoutesAreaFilter;
+use App\Nova\Filters\HikingRoutesProvinceFilter;
+use App\Nova\Filters\HikingRoutesRegionFilter;
+use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Filters\HikingRouteStatus;
+use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Lenses\HikingRoutesStatus0Lens;
+use App\Nova\Lenses\HikingRoutesStatus1Lens;
+use App\Nova\Lenses\HikingRoutesStatus2Lens;
+use App\Nova\Lenses\HikingRoutesStatus3Lens;
+use App\Nova\Lenses\HikingRoutesStatus4Lens;
+use App\Nova\Lenses\HikingRoutesStatusLens;
 use DKulyk\Nova\Tabs;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
+use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
+use Imumz\LeafletMap\LeafletMap;
+
 
 class HikingRoute extends Resource
 {
@@ -42,7 +59,23 @@ class HikingRoute extends Resource
 
     public static function label()
     {
-        return 'Percorsi';
+        $label = 'Percorsi escursionistici';
+
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            $label .= ' - ' . Auth::user()->region->name;
+        }
+        return $label . ' (SDA*)';
+    }
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            $value = Auth::user()->region->id;
+            return $query->whereHas('regions', function ($query) use ($value) {
+                $query->where('region_id', $value);
+            });
+        }
+        return parent::indexQuery($request, $query);
     }
 
     /**
@@ -54,12 +87,56 @@ class HikingRoute extends Resource
      */
     public function fields(Request $request)
     {
+
         return [
-            ID::make(__('ID'), 'id')->sortable()->onlyOnIndex(),
-            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('Regioni', function () {
+                $val = "ND";
+                if (Arr::accessible($this->regions)) {
+                    if (count($this->regions) > 0) {
+                        $val = implode(', ', $this->regions->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
+            Text::make('Province', function () {
+                $val = "ND";
+                if (Arr::accessible($this->provinces)) {
+                    if (count($this->provinces) > 0) {
+                        $val = implode(', ', $this->provinces->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
+            Text::make('Aree', function () {
+                $val = "ND";
+                if (Arr::accessible($this->areas)) {
+                    if (count($this->areas) > 0) {
+                        $val = implode(', ', $this->areas->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
+            Text::make('Settori', function () {
+                $val = "ND";
+                if (Arr::accessible($this->sectors)) {
+                    if (count($this->sectors) > 0) {
+                        $val = implode(', ', $this->sectors->pluck('name')->toArray());
+                    }
+                }
+                return $val;
+            })->onlyOnIndex(),
             Text::make('REF', 'ref')->onlyOnIndex(),
-            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
+            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+
+            LeafletMap::make('Mappa')
+                ->type('GeoJson')
+                ->geoJson(json_encode($this->getEmptyGeojson()))
+                ->center($this->getCentroid()[1], $this->getCentroid()[0])
+                ->zoom(12),
+
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),
@@ -136,9 +213,21 @@ class HikingRoute extends Resource
      */
     public function filters(Request $request)
     {
-        return [
-            new HikingRouteStatus
-        ];
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            return [
+                (new HikingRoutesProvinceFilter()),
+                (new HikingRoutesAreaFilter()),
+                (new HikingRoutesSectorFilter()),
+            ];
+
+        } else {
+            return [
+                (new HikingRoutesRegionFilter()),
+                (new HikingRoutesProvinceFilter()),
+                (new HikingRoutesAreaFilter()),
+                (new HikingRoutesSectorFilter()),
+            ];
+        }
     }
 
     /**
@@ -149,7 +238,13 @@ class HikingRoute extends Resource
      */
     public function lenses(Request $request)
     {
-        return [];
+        return [
+            (new HikingRoutesStatus0Lens()),
+            (new HikingRoutesStatus1Lens()),
+            (new HikingRoutesStatus2Lens()),
+            (new HikingRoutesStatus3Lens()),
+            (new HikingRoutesStatus4Lens()),
+        ];
     }
 
     /**
