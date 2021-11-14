@@ -31,4 +31,37 @@ class Osm2CaiHelper
         }
         return $color;
     }
+
+    /**
+     * 0 969696
+     * 1 F7CA16
+     * 2 F7A117
+     * 3 F36E45
+     * 4 47AC34
+     *
+     * @param $sda
+     * @return string
+     */
+    public static function getSdaColor($sda): string
+    {
+        $color = '';
+        switch ($sda) {
+            case '0':
+                $color = '#969696';
+                break;
+            case '1':
+                $color = '#F7CA16';
+                break;
+            case '2':
+                $color = '#F7A117';
+                break;
+            case '3':
+                $color = '#F36E45';
+                break;
+            case '4':
+                $color = '#47AC34';
+                break;
+        }
+        return $color;
+    }
 }

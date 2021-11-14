@@ -251,17 +251,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading(array_sum($numbers))
                 ->text('#tot percorsi'),
 
-            (new TextCard())->width('1/4')
-                ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
-                ->textAsHtml()
-                ->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
-                ->headingAsHtml(),
-            (new TextCard())->width('1/4')
-                ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
-            (new TextCard())->width('1/4')
-                ->text('#sda 3')->heading('<div style="background-color: #F36E45; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
-            (new TextCard())->width('1/4')
-                ->text('#sda 4')->heading('<div style="background-color: #47AC34; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+            $this->_getSdaCard(1, $numbers[1]),
+            $this->_getSdaCard(2, $numbers[2]),
+            $this->_getSdaCard(3, $numbers[3]),
+            $this->_getSdaCard(4, $numbers[4]),
 
 
         ];
@@ -270,6 +263,17 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         return $cards;
 
+    }
+
+    private function _getSdaCard(int $sda, int $num): TextCard
+    {
+
+        $path = '/resources/hiking-routes/lens/hiking-routes-status-' . $sda . '-lens';
+        return (new TextCard())->width('1/4')
+            ->text('<div>#sda ' . $sda . ' <a href="' . url($path) . '">[Esplora]</a></div>')
+            ->textAsHtml()
+            ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor($sda) . '; color: white; font-size: xx-large">' . $num . '</div>')
+            ->headingAsHtml();
     }
 
     /**
