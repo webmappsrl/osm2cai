@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\GeojsonableTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use phpDocumentor\Reflection\Types\Boolean;
  */
 class HikingRoute extends Model
 {
-    use HasFactory;
+    use HasFactory, GeojsonableTrait;
 
     protected $fillable = [
         'relation_id',

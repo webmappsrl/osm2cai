@@ -26,6 +26,8 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
+use Imumz\LeafletMap\LeafletMap;
+
 
 class HikingRoute extends Resource
 {
@@ -85,6 +87,7 @@ class HikingRoute extends Resource
      */
     public function fields(Request $request)
     {
+
         return [
             Text::make('Regioni', function () {
                 $val = "ND";
@@ -127,6 +130,13 @@ class HikingRoute extends Resource
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+
+            LeafletMap::make('Mappa')
+                ->type('GeoJson')
+                ->geoJson(json_encode($this->getEmptyGeojson()))
+                ->center($this->getCentroid()[1], $this->getCentroid()[0])
+                ->zoom(12),
+
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),
