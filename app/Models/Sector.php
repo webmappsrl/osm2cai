@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\SallableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Sector extends TerritorialUnit
 {
-    use HasFactory;
+    use HasFactory, SallableTrait;
 
     public function area()
     {
@@ -27,5 +28,5 @@ class Sector extends TerritorialUnit
     {
         return $this->belongsToMany(HikingRoute::class);
     }
-    
+
 }

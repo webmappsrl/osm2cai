@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\SallableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Area extends TerritorialUnit
 {
-    use HasFactory;
+    use HasFactory, SallableTrait;
 
     public function province()
     {
