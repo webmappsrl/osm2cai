@@ -3,6 +3,7 @@
 namespace App\Nova\Filters;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Filters\Filter;
 
 class HikingRoutesAreaFilter extends Filter
@@ -40,8 +41,16 @@ class HikingRoutesAreaFilter extends Filter
     public function options(Request $request)
     {
         $options = [];
-        foreach (\App\Models\Area::orderBy('name')->get() as $region) {
-            $options[$region->name] = $region->id;
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            $provinces = \App\Models\Area::whereIn('province_id', Auth::user()->region->provinces->pluck('id')->toArray())->orderBy('name')->get();
+            foreach ($provinces as $item) {
+                $options[$item->name] = $item->id;
+            }
+
+        } else {
+            foreach (\App\Models\Area::orderBy('name')->get() as $item) {
+                $options[$item->name] = $item->id;
+            }
         }
         return $options;
     }

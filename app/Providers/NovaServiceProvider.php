@@ -156,7 +156,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->text('SAL Nazionale'),
 
             (new TextCard())->width('1/4')
-                ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
+                ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
+                ->textAsHtml()
+                ->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
+                ->headingAsHtml(),
             (new TextCard())->width('1/4')
                 ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
@@ -249,7 +252,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->text('#tot percorsi'),
 
             (new TextCard())->width('1/4')
-                ->text('#sda 1')->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')->headingAsHtml(),
+                ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
+                ->textAsHtml()
+                ->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
+                ->headingAsHtml(),
             (new TextCard())->width('1/4')
                 ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
