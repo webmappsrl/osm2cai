@@ -6,7 +6,8 @@ use App\Models\HikingRoute;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
-class HikingRouteComputeTechInfoTest extends TestCase {
+class HikingRouteComputeTechInfoTest extends TestCase
+{
     /**
      * First set of test: create new hiking route with OSM geom AND NO CAI geom.
      * In this case computed tech value must be taken from OSM geom.
@@ -23,7 +24,8 @@ class HikingRouteComputeTechInfoTest extends TestCase {
      * duration forward:
      * duration backword:
      */
-    private function _getOsmGeom() {
+    private function _getOsmGeom()
+    {
         $geojson = json_encode([
             "type" => "LineString",
             "coordinates" => [
@@ -54,7 +56,8 @@ class HikingRouteComputeTechInfoTest extends TestCase {
      * duration forward:
      * duration backword:
      */
-    private function _getCaiGeom() {
+    private function _getCaiGeom()
+    {
         $geojson = json_encode([
             "type" => "LineString",
             "coordinates" => [
@@ -81,7 +84,8 @@ class HikingRouteComputeTechInfoTest extends TestCase {
         return DB::raw('ST_GeomFromGeoJSON(\'' . $geojson . '\')');
     }
 
-    public function testIfNoGeometryNothingIsDone() {
+    public function testIfNoGeometryNothingIsDone()
+    {
         $r = new HikingRoute();
         $r->computeAndSetTechInfo();
         $this->assertTrue(is_null($r->distance_computed));
@@ -95,48 +99,58 @@ class HikingRouteComputeTechInfoTest extends TestCase {
      * First set
      */
 
-    public function testDistanceWithOsmGeom() {
-        $r = new HikingRoute(['relation_id' => 1234]);
+    public function testDistanceWithOsmGeom()
+    {
+        $r = new HikingRoute(['relation_id' => 1234, 'geometry' => null]);
         $r->geometry_osm = $this->_getOsmGeom();
         $r->save();
         $r->computeAndSetTechInfo();
-        $this->assertEquals(441, floor($r->distance_comp));
+        $this->assertEquals(0.44, $r->distance_comp);
     }
 
-    public function _testAscentWithOsmGeom() {
+    public function _testAscentWithOsmGeom()
+    {
     }
 
-    public function _testDecentWithOsmGeom() {
+    public function _testDecentWithOsmGeom()
+    {
     }
 
-    public function _testDurationForwardWithOsmGeom() {
+    public function _testDurationForwardWithOsmGeom()
+    {
     }
 
-    public function _testDurationBackwardWithOsmGeom() {
+    public function _testDurationBackwardWithOsmGeom()
+    {
     }
 
     /**
      * First set
      */
 
-    public function testDistanceWithCaiGeom() {
+    public function testDistanceWithCaiGeom()
+    {
         $r = new HikingRoute(['relation_id' => 1234]);
         $r->geometry_osm = $this->_getOsmGeom();
         $r->geometry = $this->_getCaiGeom();
         $r->save();
         $r->computeAndSetTechInfo();
-        $this->assertEquals(671, floor($r->distance_comp));
+        $this->assertEquals(0.67, $r->distance_comp);
     }
 
-    public function _testAscentWithCaiGeom() {
+    public function _testAscentWithCaiGeom()
+    {
     }
 
-    public function _testDecentWithCaiGeom() {
+    public function _testDecentWithCaiGeom()
+    {
     }
 
-    public function _testDurationForwardWithCaiGeom() {
+    public function _testDurationForwardWithCaiGeom()
+    {
     }
 
-    public function _testDurationBackwardWithCaiGeom() {
+    public function _testDurationBackwardWithCaiGeom()
+    {
     }
 }

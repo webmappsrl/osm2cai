@@ -211,15 +211,15 @@ class HikingRoute extends Model
             if (!is_null($this->geometry)) {
                 // Compute from CAI geometry
                 // Distance
-                $this->distance_comp = round((DB::table('hiking_routes')
+                $this->distance_comp = round(DB::table('hiking_routes')
                         ->selectRaw('ST_length(geometry,true) as length')
-                        ->find($this->id)->length) / 1000, 2);
+                        ->find($this->id)->length / 1000.0, 2);
             } else {
                 // Compute from OSM geometry
                 // Distance
-                $this->distance_comp = DB::table('hiking_routes')
-                    ->selectRaw('ST_length(geometry_osm,true) as length')
-                    ->find($this->id)->length;
+                $this->distance_comp = round(DB::table('hiking_routes')
+                        ->selectRaw('ST_length(geometry_osm,true) as length')
+                        ->find($this->id)->length / 1000.0, 2);
             }
         }
     }
