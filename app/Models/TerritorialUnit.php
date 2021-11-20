@@ -61,6 +61,49 @@ abstract class TerritorialUnit extends Model
         return 'shape_files/zip/' . $name . '.zip';
     }
 
+    /**
+     * Generate a shapefile for the model
+     *
+     * @return string the shapefile relative url
+     */
+    public function getHikingRoutesShapefile(): string
+    {
+        $class = get_class($this);
+        $model = $class::find($this->id);
+        $name = 'osm2cai_hikingroutes_' . str_replace(" ", "_", $model->name);
+
+        Storage::disk('public')->makeDirectory('shape_files/zip');
+        chdir(Storage::disk('public')->path('shape_files'));
+        if (Storage::disk('public')->exists('shape_files/zip/' . $name . '.zip'))
+            Storage::disk('public')->delete('shape_files/zip/' . $name . '.zip');
+        $command = 'ogr2ogr -f "ESRI Shapefile" ' .
+            $name .
+            '.shp PG:"dbname=\'' .
+            config('database.connections.osm2cai.database') .
+            '\' host=\'' .
+            config('database.connections.osm2cai.host') .
+            '\' port=\'' .
+            config('database.connections.osm2cai.port') .
+            '\' user=\'' .
+            config('database.connections.osm2cai.username') .
+            '\' password=\'' .
+            config('database.connections.osm2cai.password') .
+            '\'" -sql "SELECT * FROM hiking_routes AS h INNER JOIN hiking_route_region AS r ON h.id=r.hiking_route_id WHERE region_id=' . $this->id . ' AND osm2cai_status>0 limit 10000;"';
+        dd($command);
+        exec($command);
+
+        $command = 'zip ' . $name . '.zip ' . $name . '.*';
+        exec($command);
+
+        $command = 'mv ' . $name . '.zip zip/';
+        exec($command);
+
+        $command = 'rm ' . $name . '.*';
+        exec($command);
+
+        return 'shape_files/zip/' . $name . '.zip';
+    }
+
     public function getKml(): string
     {
         /**
