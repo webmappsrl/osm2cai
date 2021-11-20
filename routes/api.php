@@ -40,6 +40,9 @@ Route::name('api.')->group(function () {
         Route::get('/area/{id}', [AreaController::class, 'shapefile'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'shapefile'])->name('sector');
     });
+    Route::prefix('hiking-routes-shapefile')->name('hiking-routes-shapefile.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'hikingRouteShapefile'])->name('region');
+    });
     // API KML: /api/kml/region/{id}
     Route::prefix('kml')->name('kml.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'kml'])->name('region');
