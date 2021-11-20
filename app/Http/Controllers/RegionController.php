@@ -71,6 +71,15 @@ class RegionController extends Controller
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
+    public function hikingRouteShapefile(string $id)
+    {
+        $model = Region::find($id);
+        $name = 'osm2cai_hikingroutes_' . str_replace(" ", "_", $model->name);
+        $shapefile = $model->getHikingRoutesShapefile();
+
+        return Storage::disk('public')->download($shapefile, $name . '.zip');
+    }
+
     public function kml(string $id)
     {
         $region = Region::find($id);
@@ -93,6 +102,6 @@ class RegionController extends Controller
         ];
 
         return response($region->getCsv(), 200, $headers);
-        
+
     }
 }
