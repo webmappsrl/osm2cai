@@ -44,6 +44,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot()
     {
         parent::boot();
+        $this->app->alias(
+            \App\Http\Controllers\Nova\LoginController::class,
+            \Laravel\Nova\Http\Controllers\LoginController::class
+        );
     }
 
     /**

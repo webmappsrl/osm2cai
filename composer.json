@@ -23,6 +23,7 @@
     "laravel/tinker": "^2.5",
     "m-a-k-o/nova-custom-table-card": "^3.2",
     "mstaack/laravel-postgis": "^5.2",
+    "subfission/cas": "^4",
     "suenerds/nova-searchable-belongs-to-filter": "^1.0"
   },
   "require-dev": {
