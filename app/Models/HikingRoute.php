@@ -152,21 +152,20 @@ class HikingRoute extends Model
     /*
      * 0: cai_scale null, source null
      * 1: cai_scale not null, source null
-     * 2: cai_scale null, source=survey:cai not null
-     * 3: cai_scale not null, source=survey:cai not null
+     * 2: cai_scale null, source contains "survey:CAI"
+     * 3: cai_scale not null, source contains "survey:CAI"
      * 4: validation_date not_null
      */
     public function setOsm2CaiStatus(): void
     {
+        $status = 0;
         if ($this->validated()) {
             $status = 4;
-        } else if (is_null($this->cai_scale_osm) && $this->source_osm != 'survey:CAI') {
-            $status = 0;
-        } else if (!is_null($this->cai_scale_osm) && $this->source_osm != 'survey:CAI') {
+        } else if (!is_null($this->cai_scale_osm) && !preg_match('/survey:CAI/', $this->source_osm)) {
             $status = 1;
-        } else if (is_null($this->cai_scale_osm) && $this->source_osm == 'survey:CAI') {
+        } else if (is_null($this->cai_scale_osm) && preg_match('/survey:CAI/', $this->source_osm)) {
             $status = 2;
-        } else if (!is_null($this->cai_scale_osm) && $this->source_osm == 'survey:CAI') {
+        } else if (!is_null($this->cai_scale_osm) && preg_match('/survey:CAI/', $this->source_osm)) {
             $status = 3;
         }
         $this->osm2cai_status = $status;
