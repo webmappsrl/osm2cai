@@ -6,6 +6,16 @@ use App\Helpers\Osm2CaiHelper;
 use PHPUnit\Framework\TestCase;
 
 
+/**
+ * https://docs.google.com/document/d/10KL91mkn7H2IlHTaz_mpseLUWShMZePGqlvQsSko1U8/edit#heading=h.mz1do7ew6snu
+ * 
+ * 0 969696
+ * 1 FFD23F
+ * 2 B43E8F
+ * 3 1E3888
+ * 4 47AC34
+ */
+
 class Osm2CaiHelperGetSdaColorTest extends TestCase
 {
     /**
@@ -19,25 +29,25 @@ class Osm2CaiHelperGetSdaColorTest extends TestCase
     /**
      * @test
      */
-    public function with_sda_1_color_is_F7CA16()
+    public function with_sda_1_color_is_FFD23F()
     {
-        $this->assertEquals('#F7CA16', Osm2CaiHelper::getSdaColor(1));
+        $this->assertEquals('#FFD23F', Osm2CaiHelper::getSdaColor(1));
     }
 
     /**
      * @test
      */
-    public function with_sda_2_color_is_F7A117()
+    public function with_sda_2_color_is_B43E8F()
     {
-        $this->assertEquals('#F7A117', Osm2CaiHelper::getSdaColor(2));
+        $this->assertEquals('#B43E8F', Osm2CaiHelper::getSdaColor(2));
     }
 
     /**
      * @test
      */
-    public function with_sda_3_color_is_F36E45()
+    public function with_sda_3_color_is_1E3888()
     {
-        $this->assertEquals('#F36E45', Osm2CaiHelper::getSdaColor(3));
+        $this->assertEquals('#1E3888', Osm2CaiHelper::getSdaColor(3));
     }
 
     /**
