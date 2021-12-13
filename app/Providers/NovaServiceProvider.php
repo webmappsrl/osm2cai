@@ -162,14 +162,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             (new TextCard())->width('1/4')
                 ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
                 ->textAsHtml()
-                ->heading('<div style="background-color: #F7CA16; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
+                ->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(1).'; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
                 ->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 2')->heading('<div style="background-color: #F7A117; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+                ->text('#sda 2')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(2).'; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 3')->heading('<div style="background-color: #F36E45; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+                ->text('#sda 3')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(3).'; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 4')->heading('<div style="background-color: #47AC34; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+                ->text('#sda 4')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(4).'; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
 
 
         ];

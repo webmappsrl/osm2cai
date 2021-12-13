@@ -34,10 +34,10 @@ class Osm2CaiHelper
 
     /**
      * 0 969696
-     * 1 F7CA16
-     * 2 F7A117
-     * 3 F36E45
-     * 4 47AC34
+    * 1 FFD23F
+    * 2 B43E8F
+    * 3 1E3888
+    * 4 47AC34
      *
      * @param $sda
      * @return string
@@ -50,13 +50,13 @@ class Osm2CaiHelper
                 $color = '#969696';
                 break;
             case '1':
-                $color = '#F7CA16';
+                $color = '#FFD23F';
                 break;
             case '2':
-                $color = '#F7A117';
+                $color = '#B43E8F';
                 break;
             case '3':
-                $color = '#F36E45';
+                $color = '#1E3888';
                 break;
             case '4':
                 $color = '#47AC34';
