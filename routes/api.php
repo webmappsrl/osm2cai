@@ -27,6 +27,9 @@ Route::name('api.')->group(function () {
     Route::prefix('csv')->name('csv.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'csv'])->name('region');
     });
+    Route::prefix('geojson/complete')->name('geojson_complete.')->group(function () {
+        Route::get('/region/{id}', [RegionController::class, 'geojsonComplete'])->name('region');
+    });
     Route::prefix('geojson')->name('geojson.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'geojson'])->name('region');
         Route::get('/province/{id}', [ProvinceController::class, 'geojson'])->name('province');

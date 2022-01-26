@@ -104,4 +104,15 @@ class RegionController extends Controller
         return response($region->getCsv(), 200, $headers);
 
     }
+
+    public function geojsonComplete(string $id)
+    {
+        $region = Region::find($id);
+
+        $headers = [
+            'Content-type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_regione_complete_' . $region->name . '.geojson"',
+        ];
+        return response($region->getGeojsonComplete(), 200, $headers);
+    }
 }

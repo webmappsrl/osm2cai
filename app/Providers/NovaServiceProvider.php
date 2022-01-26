@@ -227,12 +227,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->headingAsHtml()
                 ->text('SAL ' . Auth::user()->region->name),
 
+//                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
             (new TextCard())
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
                 ->text('<h4 class="font-light">
-                 <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
-                 <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
+                <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
+                <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  ')
                 ->textAsHtml(),
