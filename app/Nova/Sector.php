@@ -138,8 +138,10 @@ class Sector extends Resource
             $numbers[4] = $data[0]->tot4;
 
             return [
-                (new TextCard())->width('1/2')->text('Numero percorsi sda 3/4')->heading($numbers[3]+$numbers[4])->onlyOnDetail(),
-                (new TextCard())->width('1/2')->text('Numero percorsi atttesi')->heading($sector->num_expected)->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text($sector->manager)->heading('Resposabili di settore')->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text('Resposabili di settore')->heading($sector->manager)->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text('Numero percorsi sda 3/4')->heading($numbers[3]+$numbers[4])->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text('Numero percorsi atttesi')->heading($sector->num_expected)->onlyOnDetail(),
                 $this->_getSdaCard(1,$numbers[1]),
                 $this->_getSdaCard(2,$numbers[2]),
                 $this->_getSdaCard(3,$numbers[3]),
