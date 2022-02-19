@@ -6,6 +6,7 @@ use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
