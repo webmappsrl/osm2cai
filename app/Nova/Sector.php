@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -79,12 +80,13 @@ class Sector extends Resource
      */
     public function fields(Request $request)
     {
-        return [
+        $fields = [
             Text::make(__('Codice'), 'name')->sortable()->hideWhenUpdating(),
             Text::make(__('Name'), 'human_name')
                ->sortable()
                ->help('Modifica il nome del settore'),
             Text::make(__('Code'), 'code')->sortable()->hideWhenUpdating(),
+            Number::make(__('Numero Atteso'),'num_expected'),
             Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
                 return $this->area->province->region->name;
@@ -96,14 +98,19 @@ class Sector extends Resource
                 return $this->area->name;
             })->hideWhenUpdating(),
 
-            LeafletMap::make('Mappa')
-            ->type('GeoJson')
-            ->geoJson(json_encode($this->getEmptyGeojson()))
-            ->center($this->getCentroid()[1], $this->getCentroid()[0])
-            ->zoom(12)
-            ->hideFromIndex(),
-
         ];
+
+        if (NovaCurrentResourceActionHelper::isDetail($request)) {
+            $fields[] = 
+                LeafletMap::make('Mappa')
+                ->type('GeoJson')
+                ->geoJson(json_encode($this->getEmptyGeojson()))
+                ->center($this->getCentroid()[1], $this->getCentroid()[0])
+                ->zoom(12)
+                ->onlyOnDetail();
+        }
+
+        return $fields;
     }
 
     /**
