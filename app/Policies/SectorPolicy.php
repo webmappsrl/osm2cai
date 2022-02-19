@@ -38,6 +38,15 @@ class SectorPolicy
 
     public function update(User $user, Sector $sector)
     {
+        if($user->is_administrator) {
+            return true;
+        }
+        if($user->is_national_referent) {
+            return true;
+        }
+        if($user->region_id == $sector->area->province->region->id) {
+            return true;
+        }
         return false;
     }
 

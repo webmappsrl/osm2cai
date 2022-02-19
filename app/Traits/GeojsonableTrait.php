@@ -14,12 +14,17 @@ trait GeojsonableTrait
     public function getEmptyGeojson(): ?array
     {
         $model = get_class($this);
-        $geom = $model::where('id', '=', $this->id)
+        $obj = $model::where('id', '=', $this->id)
             ->select(
                 DB::raw("ST_AsGeoJSON(geometry) as geom")
             )
-            ->first()
-            ->geom;
+            ->first();
+
+        if(is_null($obj)) {
+            return null;
+        }
+
+        $geom = $obj->geom;
 
         if (isset($geom)) {
             return [
@@ -41,13 +46,18 @@ trait GeojsonableTrait
     public function getCentroidGeojson(): ?array
     {
         $model = get_class($this);
-        $geom = $model::where('id', '=', $this->id)
+        $obj = $model::where('id', '=', $this->id)
             ->select(
                 DB::raw("ST_Asgeojson(ST_Centroid(geometry)) as geom")
             )
-            ->first()
-            ->geom;
+            ->first();
 
+            if(is_null($obj)) {
+                return null;
+            }
+
+        $geom = $obj->geom;
+    
         if (isset($geom)) {
             return [
                 "type" => "Feature",

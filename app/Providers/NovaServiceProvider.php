@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Helpers\Osm2CaiHelper;
 use App\Models\HikingRoute;
 use App\Models\Region;
+use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\RegionReferentDashboard;
@@ -346,6 +347,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         // Headings
         $sectorsCard->header([
             new Cell(__('Settore')),
+            new Cell(__('Nome')),
             new Cell(__('#1')),
             new Cell(__('#2')),
             new Cell(__('#3')),
@@ -370,7 +372,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         // Extract data from views
         // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
         $items = DB::table('sectors_view')
-            ->select('full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
             ->whereIn('id', $sectors_id)
             ->get();
 
@@ -380,9 +382,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
             $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
             $sal_color = Osm2CaiHelper::getSalColor($sal);
+            $sector = Sector::find($item->id);
 
             $row = new Row(
                 new Cell("{$item->full_code}"),
+                new Cell($sector->human_name),
                 new Cell($item->tot1),
                 new Cell($item->tot2),
                 new Cell($item->tot3),

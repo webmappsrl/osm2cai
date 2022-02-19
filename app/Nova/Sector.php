@@ -72,19 +72,21 @@ class Sector extends Resource
     public function fields(Request $request)
     {
         return [
-            Text::make(__('Name'), 'name')->sortable(),
-            Text::make(__('Code'), 'code')->sortable(),
-            Text::make(__('Full code'), 'full_code')->sortable(),
+            Text::make(__('Codice'), 'name')->sortable()->hideWhenUpdating(),
+            Text::make(__('Name'), 'human_name')
+               ->sortable()
+               ->help('Modifica il nome del settore'),
+            Text::make(__('Code'), 'code')->sortable()->hideWhenUpdating(),
+            Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
                 return $this->area->province->region->name;
-            }),
+            })->hideWhenUpdating(),
             Text::make(__('Province'), 'area_id', function () {
                 return $this->area->province->name;
-            }),
+            })->hideWhenUpdating(),
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
-            }),
-            BelongsToMany::make('hikingRoutes')
+            })->hideWhenUpdating(),
         ];
     }
 
