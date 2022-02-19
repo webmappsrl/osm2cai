@@ -7,6 +7,7 @@ use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -89,6 +90,14 @@ class Sector extends Resource
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             })->hideWhenUpdating(),
+
+            LeafletMap::make('Mappa')
+            ->type('GeoJson')
+            ->geoJson(json_encode($this->getEmptyGeojson()))
+            ->center($this->getCentroid()[1], $this->getCentroid()[0])
+            ->zoom(12)
+            ->hideFromIndex(),
+
         ];
     }
 
