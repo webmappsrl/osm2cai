@@ -31,6 +31,7 @@ class Sector extends Resource
      */
     public static array $search = [
         'name',
+        'human_name',
         'code',
         'full_code'
     ];
