@@ -355,6 +355,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             new Cell(__('#tot')),
             new Cell(__('#att')),
             new Cell(__('SAL')),
+            new Cell(__('Actions')),
         ]);
 
         // Get sectors_id
@@ -394,6 +395,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
+                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
             );
             $data[] = $row;
         }
