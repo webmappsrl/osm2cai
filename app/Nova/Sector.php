@@ -2,11 +2,16 @@
 
 namespace App\Nova;
 
+use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Helpers\Osm2CaiHelper;
 use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
+use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Text;
@@ -110,8 +115,43 @@ class Sector extends Resource
      */
     public function cards(Request $request)
     {
+        if(!is_null($request['resourceId'])) {
+
+            $sector = Sector::find($request['resourceId']);
+
+            $data = DB::table('sectors_view')
+            ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
+            ->where('id', $request['resourceId'])
+            ->get();
+
+            $numbers[1] = $data[0]->tot1;
+            $numbers[2] = $data[0]->tot2;
+            $numbers[3] = $data[0]->tot3;
+            $numbers[4] = $data[0]->tot4;
+
+            return [
+                (new TextCard())->width('1/2')->text('Numero percorsi sda 3/4')->heading($numbers[3]+$numbers[4])->onlyOnDetail(),
+                (new TextCard())->width('1/2')->text('Numero percorsi atttesi')->heading($sector->num_expected)->onlyOnDetail(),
+                $this->_getSdaCard(1,$numbers[1]),
+                $this->_getSdaCard(2,$numbers[2]),
+                $this->_getSdaCard(3,$numbers[3]),
+                $this->_getSdaCard(4,$numbers[4]),
+            ];
+
+        }
         return [];
     }
+
+    private function _getSdaCard(int $sda, int $num): TextCard
+    {
+        return (new TextCard())->width('1/4')
+            ->text('<div>#sda ' . $sda . '</div>')
+            ->textAsHtml()
+            ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor($sda) . '; color: white; font-size: xx-large">' . $num . '</div>')
+            ->headingAsHtml()
+            ->onlyOnDetail();
+    }
+
 
     /**
      * Get the filters available for the resource.
