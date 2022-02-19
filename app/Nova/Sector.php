@@ -86,6 +86,7 @@ class Sector extends Resource
                ->sortable()
                ->help('Modifica il nome del settore'),
             Text::make(__('Code'), 'code')->sortable()->hideWhenUpdating(),
+            Text::make(__('Responsabili'),'manager'),
             Number::make(__('Numero Atteso'),'num_expected'),
             Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
