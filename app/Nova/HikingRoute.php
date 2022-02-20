@@ -135,7 +135,8 @@ class HikingRoute extends Resource
                 ->type('GeoJson')
                 ->geoJson(json_encode($this->getEmptyGeojson()))
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
-                ->zoom(12),
+                ->zoom(12)
+                ->hideFromIndex(),
 
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),

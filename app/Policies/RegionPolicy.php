@@ -22,7 +22,10 @@ class RegionPolicy
 
     public function viewAny(User $user)
     {
-        return true;
+        if($user->is_administrator || $user->is_national_referent) {
+            return true;
+        }
+        return false;
     }
 
     public function view(User $user, Region $region)

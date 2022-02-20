@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\GeojsonableTrait;
 use App\Traits\SallableTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Sector extends TerritorialUnit
 {
-    use HasFactory, SallableTrait;
+    use HasFactory, SallableTrait, GeojsonableTrait;
 
     public function area()
     {

@@ -117,7 +117,9 @@ class Region extends TerritorialUnit
                 $p['name'] = $hr->name;
                 $p['roundtrip'] = $hr->rounftrip;
                 $p['duration_forward'] = $hr->duration_forward;
-                $p['duration_backword'] = $hr->duration_backword;
+                $p['duration_backword'] = $hr->duration_backword;            
+                $p['ascent'] = $hr->ascent;
+                $p['descent'] = $hr->descent;
             
                 // Geometry
                 $geom_s = HikingRoute::where('id', '=', $hr->id)
