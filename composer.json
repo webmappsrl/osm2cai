@@ -22,8 +22,10 @@
     "laravel/framework": "^8.12",
     "laravel/nova": "*",
     "laravel/tinker": "^2.5",
+    "league/flysystem-aws-s3-v3": "~1.0",
     "m-a-k-o/nova-custom-table-card": "^3.2",
     "mstaack/laravel-postgis": "^5.2",
+    "spatie/db-dumper": "^2.21",
     "subfission/cas": "^4",
     "suenerds/nova-searchable-belongs-to-filter": "^1.0"
   },
