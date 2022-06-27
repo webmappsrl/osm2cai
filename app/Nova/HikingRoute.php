@@ -256,6 +256,12 @@ class HikingRoute extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        if ( $this->osm2cai_status == 3) {
+            return [
+                (new Actions\ValidateHkingRoute($this->model()))->showOnTableRow()
+            ];
+        } else {
+            return [];
+        }
     }
 }
