@@ -15,6 +15,7 @@ use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use DKulyk\Nova\Tabs;
+use App\Nova\Actions\ValidateHikingRouteAction;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -258,7 +259,10 @@ class HikingRoute extends Resource
     {
         if ( $this->osm2cai_status == 3) {
             return [
-                (new Actions\ValidateHkingRoute($this->model()))->showOnTableRow()
+                (new ValidateHikingRouteAction())
+                    ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
+                    ->confirmButtonText('Validare')
+                    ->cancelButtonText("Non validare"),
             ];
         } else {
             return [];

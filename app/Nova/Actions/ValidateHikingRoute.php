@@ -2,32 +2,27 @@
 
 namespace App\Nova\Actions;
 
+use App\Models\HikingRoute;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
+use Laravel\Nova\Fields\Text;
 
-class ValidateHkingRoute extends Action
+class ValidateHikingRouteAction extends Action
 {
-    use InteractsWithQueue, Queueable;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public $showOnDetail = true;
-    public $showOnTableRow = true;
-    public $exceptOnIndex = true;
+    public $showOnIndex = false;
 
     public $name='Validate';
-
-    public $model;
-
-    function __construct($model = null)
-    {
-        
-        $this->model = $model;
-    }
 
     /**
      * Perform the action on the given models.
@@ -40,11 +35,12 @@ class ValidateHkingRoute extends Action
     {
         foreach ($models as $model) {
             try {
-                return Action::message('It worked!' . $model->id);
+                $model->validateSDA();
             } catch (\Exception $e) {
                 Log::error('An error occurred during the validate operation: ' . $e->getMessage());
             }
         }
+        return Action::message('It worked!');
     }
 
     /**
@@ -57,8 +53,8 @@ class ValidateHkingRoute extends Action
         return [
             // LeafletMap::make('Mappa')
             //     ->type('GeoJson')
-            //     ->geoJson(json_encode($this->model->getEmptyGeojson()))
-            //     ->center($this->model->getCentroid()[1], $this->model->getCentroid()[0])
+            //     ->geoJson(json_encode($this->getEmptyGeojson()))
+            //     ->center($this->getCentroid()[1], $this->getCentroid()[0])
             //     ->zoom(12)
             //     ->hideFromIndex(),
         ];
