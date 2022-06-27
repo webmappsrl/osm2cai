@@ -257,15 +257,13 @@ class HikingRoute extends Resource
      */
     public function actions(Request $request)
     {
-        if ( $this->osm2cai_status == 3) {
             return [
-                (new ValidateHikingRouteAction())
+                (new ValidateHikingRouteAction)
                     ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
                     ->confirmButtonText('Validare')
-                    ->cancelButtonText("Non validare"),
+                    ->cancelButtonText("Non validare")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
             ];
-        } else {
-            return [];
-        }
     }
 }
