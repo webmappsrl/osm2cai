@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\UploadValidationRawDataAction;
 use App\Nova\Filters\HikingRoutesAreaFilter;
 use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Filters\HikingRoutesRegionFilter;
@@ -15,6 +16,7 @@ use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use DKulyk\Nova\Tabs;
+use App\Nova\Actions\ValidateHikingRouteAction;
 use Ericlagarda\NovaTextCard\TextCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -133,7 +135,7 @@ class HikingRoute extends Resource
 
             LeafletMap::make('Mappa')
                 ->type('GeoJson')
-                ->geoJson(json_encode($this->getEmptyGeojson()))
+                ->geoJson(json_encode($this->getGeojsonForMapView()))
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
                 ->zoom(12)
                 ->hideFromIndex(),
@@ -256,6 +258,19 @@ class HikingRoute extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+            return [
+                (new UploadValidationRawDataAction)
+                    ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
+                    ->confirmButtonText('Carica')
+                    ->cancelButtonText("Non caricare")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+                (new ValidateHikingRouteAction)
+                    ->confirmText('Sei sicuro di voler validare questo percorso?')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Non validare")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+            ];
     }
 }
