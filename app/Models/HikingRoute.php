@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Imumz\LeafletMap\LeafletMap;
 use phpDocumentor\Reflection\Types\Boolean;
+use Symm\Gisconverter\Exceptions\InvalidText;
+use Symm\Gisconverter\Gisconverter;
 
 /**
  * Class HikingRoute
@@ -487,5 +490,69 @@ EOF;
     public function validateSDA() {
         $this->osm2cai_status = 4;
         $this->save();
+    }
+
+    /**
+     * @param string json encoded geometry.
+     */
+    public function fileToGeometry($fileContent = '') {
+        $geometry = $contentType = null;
+        if ($fileContent) {
+            if (substr($fileContent, 0, 5) == "<?xml") {
+                $geojson = '';
+                if ('' === $geojson) {
+                    try {
+                        $geojson = Gisconverter::gpxToGeojson($fileContent);
+                        $content = json_decode($geojson);
+                        $contentType = @$content->type;
+                    } catch (InvalidText $ec) {
+                    }
+                }
+
+                if ('' === $geojson) {
+                    try {
+                        $geojson = Gisconverter::kmlToGeojson($fileContent);
+                        $content = json_decode($geojson);
+                        $contentType = @$content->type;
+                    } catch (InvalidText $ec) {
+                    }
+                }
+            } else {
+                $content = json_decode($fileContent);
+                $isJson = json_last_error() === JSON_ERROR_NONE;
+                if ($isJson) {
+                    $contentType = $content->type;
+                }
+            }
+
+            if ($contentType) {
+                switch ($contentType) {
+                    case "FeatureCollection":
+                        $contentGeometry = $content->features[0]->geometry;
+                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
+                        break;
+                    case "LineString":
+                        $contentGeometry = $content;
+                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
+                        break;
+                    default:
+                        $contentGeometry = $content->geometry;
+                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
+                        break;
+                }
+            }
+        }
+
+        return $geometry;
+    }
+
+    public function addLayerToMap($geometry,$getCentroid) {
+        return [
+        LeafletMap::make('Mappa')
+                ->type('GeoJson')
+                ->geoJson(json_encode($geometry))
+                ->center($getCentroid[1], $getCentroid[0])
+                ->zoom(12)
+        ];
     }
 }

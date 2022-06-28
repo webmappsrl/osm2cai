@@ -3,6 +3,7 @@
 namespace App\Nova\Actions;
 
 use App\Models\HikingRoute;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
@@ -13,16 +14,16 @@ use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 
-class ValidateHikingRouteActionzzz extends Action
+class ValidateHikingRouteAction extends Action
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
     public $showOnDetail = true;
-    public $showOnIndex = false;
 
-    public $name='Validate';
+    public $name='VALIDATE';
 
     /**
      * Perform the action on the given models.
@@ -33,14 +34,15 @@ class ValidateHikingRouteActionzzz extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        foreach ($models as $model) {
-            try {
-                $model->validateSDA();
-            } catch (\Exception $e) {
-                Log::error('An error occurred during the validate operation: ' . $e->getMessage());
-            }
-        }
-        return Action::message('It worked!');
+        $model = $models->first();
+        if ($model->osm2cai_status != 3)
+            return Action::danger('The SDA is not 3!');
+
+        if (!$model->geometry_raw_data)
+            return Action::danger('Upload a GPX first!');
+        
+        $model->validateSDA();
+        return Action::redirect($model->id);
     }
 
     /**
@@ -50,13 +52,6 @@ class ValidateHikingRouteActionzzz extends Action
      */
     public function fields()
     {
-        return [
-            // LeafletMap::make('Mappa')
-            //     ->type('GeoJson')
-            //     ->geoJson(json_encode($this->getEmptyGeojson()))
-            //     ->center($this->getCentroid()[1], $this->getCentroid()[0])
-            //     ->zoom(12)
-            //     ->hideFromIndex(),
-        ];
+        return [];
     }
 }
