@@ -266,8 +266,8 @@ class HikingRoute extends Resource
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
                 (new ValidateHikingRouteAction)
-                    ->confirmText('Controlla se i due percorsi sono simili.')
-                    ->confirmButtonText('Validare')
+                    ->confirmText('Sei sicuro di voler validare questo percorso?')
+                    ->confirmButtonText('Confermo')
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
