@@ -58,7 +58,7 @@ Route::name('api.')->group(function () {
     Route::prefix('v1')->name('v1')->group(function () {
         Route::get('/hiking-routes/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist'])->name('hr-ids-by-region');
         Route::get('/hiking-routes-osm/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingrouteosmlist'])->name('hr_osmids_by_region');
-        Route::get('/hiking-routes/{sda}', [HikingRoutesRegionController::class, 'hikingroutebyid'])->name('hr_by_id');
-        Route::get('/hiking-routes-osm/{sda}', [HikingRoutesRegionController::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
+        Route::get('/hiking-route/{id}', [HikingRoutesRegionController::class, 'hikingroutebyid'])->name('hr_by_id');
+        Route::get('/hiking-route-osm/{id}', [HikingRoutesRegionController::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
     });
 });
