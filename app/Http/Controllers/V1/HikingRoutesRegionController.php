@@ -9,6 +9,43 @@ use Illuminate\Http\Request;
 
 class HikingRoutesRegionController extends Controller
 {
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes",
+     *     description="Everything about your Projects",
+     * )
+     * 
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes/region/{regione_code}/{sda}",
+     *      tags={"hiking-routes"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the hiking routes IDs base on the given region code and SDA number.",
+     *      ),
+     *     @OA\Parameter(
+     *         name="regione_code",
+     *         in="path",
+     *         description="Regione code (e.g. 'l' for tuscany)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="Number of SDA 'stato di accatastamento' (e.g. 3 or 3,1 or 0,1,2)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     * 
+     */
     public function hikingroutelist(string $region_id,string $sda) {
         $region_id = strtoupper($region_id);
         
