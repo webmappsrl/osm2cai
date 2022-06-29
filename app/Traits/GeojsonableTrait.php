@@ -23,8 +23,61 @@ trait GeojsonableTrait
         if(is_null($obj)) {
             return null;
         }
-
         $geom = $obj->geom;
+
+        if (isset($geom)) {
+            return [
+                "type" => "Feature",
+                "properties" => [],
+                "geometry" => json_decode($geom, true)
+            ];
+        } else
+            return null;
+    }
+
+    /**
+     * Calculate the geojson of a model with only the geometry
+     *
+     * @return array
+     */
+    public function getGeojsonForMapView(): ?array
+    {
+        $model = get_class($this);
+        $obj = $model::where('id', '=', $this->id)
+            ->select(
+                DB::raw("ST_AsGeoJSON(geometry) as geom")
+            )
+            ->first();
+
+        if(is_null($obj)) {
+            return null;
+        }
+        $geom = $obj->geom;
+
+        $obj_raw_data = $model::where('id', '=', $this->id)
+            ->select(
+                DB::raw("ST_AsGeoJSON(geometry_raw_data) as geom_raw")
+            )
+            ->first();
+        $geom_raw = $obj_raw_data->geom_raw;
+
+        if (isset($geom_raw) && isset($geom)) {
+            return [
+                "type" => "FeatureCollection",
+                "features" => [
+                    0 => [
+                        "type" => "Feature",
+                        "properties" => [],
+                        "geometry" => json_decode($geom, true),
+                    ],
+                    1 => [
+                        "type" => "Feature",
+                        "properties" => [],
+                        "geometry" => json_decode($geom_raw, true),
+                    ],
+                ]
+            ];
+        }
 
         if (isset($geom)) {
             return [

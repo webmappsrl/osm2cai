@@ -1,0 +1,3 @@
+div.leaflet-pane.leaflet-overlay-pane > svg > g > path:nth-child(2) {
+    stroke: red!important;
+}

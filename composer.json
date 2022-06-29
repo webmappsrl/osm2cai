@@ -10,6 +10,7 @@
   "require": {
     "php": "^7.4|^8.0",
     "ext-json": "*",
+    "darkaonline/l5-swagger": "^8.3",
     "digital-creative/conditional-container": "^1.4",
     "dkulyk/nova-tabs": "^1.1",
     "doctrine/dbal": "^2.9",
@@ -27,7 +28,8 @@
     "mstaack/laravel-postgis": "^5.2",
     "spatie/db-dumper": "^2.21",
     "subfission/cas": "^4",
-    "suenerds/nova-searchable-belongs-to-filter": "^1.0"
+    "suenerds/nova-searchable-belongs-to-filter": "^1.0",
+    "symm/gisconverter": "^1.0"
   },
   "require-dev": {
     "facade/ignition": "^2.5",
