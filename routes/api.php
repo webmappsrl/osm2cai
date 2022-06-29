@@ -5,6 +5,7 @@ use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\V1\HikingRoutesRegionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -52,5 +53,12 @@ Route::name('api.')->group(function () {
         Route::get('/province/{id}', [ProvinceController::class, 'kml'])->name('province');
         Route::get('/area/{id}', [AreaController::class, 'kml'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'kml'])->name('sector');
+    });
+
+    Route::prefix('v1')->name('v1')->group(function () {
+        Route::get('/hiking-routes/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist'])->name('hr-ids-by-region');
+        Route::get('/hiking-routes-osm/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingrouteosmlist'])->name('hr_osmids_by_region');
+        Route::get('/hiking-route/{id}', [HikingRoutesRegionController::class, 'hikingroutebyid'])->name('hr_by_id');
+        Route::get('/hiking-route-osm/{id}', [HikingRoutesRegionController::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
     });
 });

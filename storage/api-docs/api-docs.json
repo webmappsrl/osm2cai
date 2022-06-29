@@ -1,0 +1,154 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "OSM2CAI",
+        "description": "Api documentation",
+        "contact": {
+            "email": "info@webmapp.lt"
+        },
+        "version": "1.0.0",
+        "x-logo": {
+            "url": "http://localhost:8000/assets/images/logo_sosec.jpg"
+        }
+    },
+    "paths": {
+        "/api/v1/hiking-routes/region/{regione_code}/{sda}": {
+            "get": {
+                "tags": [
+                    "hiking-routes"
+                ],
+                "operationId": "2be1181d637f69dcaf6bb16da6e24d27",
+                "parameters": [
+                    {
+                        "name": "regione_code",
+                        "in": "path",
+                        "description": "Regione code (e.g. 'l' for tuscany)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "Number of SDA 'stato di accatastamento' (e.g. 3 or 3,1 or 0,1,2)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes IDs base on the given region code and SDA number."
+                    }
+                }
+            }
+        },
+        "/api/v1/hiking-routes-osm/region/{regione_code}/{sda}": {
+            "get": {
+                "tags": [
+                    "hiking-routes-osm"
+                ],
+                "operationId": "340d693a1b1601da4a57e6c84497bc36",
+                "parameters": [
+                    {
+                        "name": "regione_code",
+                        "in": "path",
+                        "description": "Regione code (e.g. 'l' for tuscany)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "Number of SDA 'stato di accatastamento' (e.g. 3 or 3,1 or 0,1,2)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM IDs base on the given region code and SDA number."
+                    }
+                }
+            }
+        },
+        "/api/v1/hiking-route/{id}": {
+            "get": {
+                "tags": [
+                    "hiking-route"
+                ],
+                "operationId": "11427b4f47709888e728c843ba71736e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The ID of a specific Hiking Route (e.g. 2421)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the geojson of a Hiking Route based on the give ID"
+                    }
+                }
+            }
+        },
+        "/api/v1/hiking-route-osm/{id}": {
+            "get": {
+                "tags": [
+                    "hiking-route"
+                ],
+                "operationId": "d93bd37d1a815ded43468b397a6757fe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The OSM ID of a specific Hiking Route (e.g. 13442719)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the geojson of a Hiking Route based on the give OSM ID"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "hiking-routes",
+            "description": "Hiking route ID list based on regione and SDA"
+        },
+        {
+            "name": "hiking-routes-osm",
+            "description": "Hiking route OSM ID list based on regione and SDA"
+        },
+        {
+            "name": "hiking-route",
+            "description": "Geojson of a Hiking Route based on the give ID"
+        },
+        {
+            "name": "hiking-route-osm",
+            "description": "Geojson of a Hiking Route based on the give OSM ID"
+        }
+    ]
+}
