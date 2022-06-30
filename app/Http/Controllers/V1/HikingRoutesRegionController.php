@@ -209,7 +209,7 @@ class HikingRoutesRegionController extends Controller
      * 
      * @OA\Get(
      *      path="/api/v1/hiking-route-osm/{id}",
-     *      tags={"hiking-route"},
+     *      tags={"hiking-route-osm"},
      *      @OA\Response(
      *          response=200,
      *          description="Returns the geojson of a Hiking Route based on the give OSM ID",
