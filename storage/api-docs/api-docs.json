@@ -110,7 +110,7 @@
         "/api/v1/hiking-route-osm/{id}": {
             "get": {
                 "tags": [
-                    "hiking-route"
+                    "hiking-route-osm"
                 ],
                 "operationId": "d93bd37d1a815ded43468b397a6757fe",
                 "parameters": [
