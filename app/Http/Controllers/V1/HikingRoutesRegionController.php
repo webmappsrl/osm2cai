@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Models\HikingRoute;
 use App\Models\Region;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,18 +15,18 @@ class HikingRoutesRegionController extends Controller
     /**
      * @OA\Tag(
      *     name="hiking-routes",
-     *     description="Hiking route ID list based on regione and SDA",
+     *     description="Hiking route ID list based on region and SDA",
      * )
      * 
      * @OA\Get(
-     *      path="/api/v1/hiking-routes/region/{regione_code}/{sda}",
+     *      path="/api/v1/hiking-routes/region/{region_code}/{sda}",
      *      tags={"hiking-routes"},
      *      @OA\Response(
      *          response=200,
-     *          description="Returns all the hiking routes IDs base on the given region code and SDA number.",
+     *          description="Returns all the hiking routes IDs based on the given region code and SDA number.",
      *      ),
      *     @OA\Parameter(
-     *         name="regione_code",
+     *         name="region_code",
      *         in="path",
      *         description="Regione code (e.g. 'l' for tuscany)",
      *         required=true,
@@ -37,7 +38,7 @@ class HikingRoutesRegionController extends Controller
      *      @OA\Parameter(
      *         name="sda",
      *         in="path",
-     *         description="Number of SDA 'stato di accatastamento' (e.g. 3 or 3,1 or 0,1,2)",
+     *         description="Number of SDA 'stato di accatastamento' (e.g. 3 or 3,1 or 0,1,2 or 0,1,2,3)",
      *         required=true,
      *         @OA\Schema(
      *             type="string",
@@ -47,12 +48,12 @@ class HikingRoutesRegionController extends Controller
      * )
      * 
      */
-    public function hikingroutelist(string $region_id,string $sda) {
-        $region_id = strtoupper($region_id);
+    public function hikingroutelist(string $region_code,string $sda) {
+        $region_code = strtoupper($region_code);
         
         $sda = explode(',',$sda);
         $list = HikingRoute::query();
-        $list = HikingRoute::whereHas('regions',function($query) use ($region_id) { $query->where('code',$region_id); })->where(function ($query) use ($sda) {
+        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) { $query->where('code',$region_code); })->where(function ($query) use ($sda) {
             if (count($sda) == 1) {
                 return $query->where('osm2cai_status', $sda[0]);
             }
@@ -95,14 +96,14 @@ class HikingRoutesRegionController extends Controller
      * )
      * 
      * @OA\Get(
-     *      path="/api/v1/hiking-routes-osm/region/{regione_code}/{sda}",
+     *      path="/api/v1/hiking-routes-osm/region/{region_code}/{sda}",
      *      tags={"hiking-routes-osm"},
      *      @OA\Response(
      *          response=200,
-     *          description="Returns all the hiking routes OSM IDs base on the given region code and SDA number.",
+     *          description="Returns all the hiking routes OSM IDs based on the given region code and SDA number.",
      *      ),
      *     @OA\Parameter(
-     *         name="regione_code",
+     *         name="region_code",
      *         in="path",
      *         description="Regione code (e.g. 'l' for tuscany)",
      *         required=true,
@@ -124,12 +125,14 @@ class HikingRoutesRegionController extends Controller
      * )
      * 
      */
-    public function hikingrouteosmlist(string $region_id,string $sda) {
-        $region_id = strtoupper($region_id);
+    public function hikingrouteosmlist(string $region_code,string $sda) {
+        $region_code = strtoupper($region_code);
         
         $sda = explode(',',$sda);
         $list = HikingRoute::query();
-        $list = HikingRoute::whereHas('regions',function($query) use ($region_id) { $query->where('code',$region_id); })->where(function ($query) use ($sda) {
+        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) {
+                $query->where('code',$region_code);
+            })->where(function ($query) use ($sda) {
             if (count($sda) == 1) {
                 return $query->where('osm2cai_status', $sda[0]);
             }
@@ -264,11 +267,11 @@ class HikingRoutesRegionController extends Controller
                     "validation_date" => $item->validation_date,
                     "user_id" => $item->user_id,
                     "ref" => $item->ref,
+                    "ref_REI" => $item->ref_REI,
                     "old_ref" => $item->old_ref,
                     "source" => $item->source,
                     "source_ref" => $item->source_ref,
                     "survey_date" => $item->survey_date,
-                    "tags" => $item->tags,
                     "cai_scale" => $item->cai_scale,
                     "from" => $item->from,
                     "to" => $item->to,
@@ -280,16 +283,10 @@ class HikingRoutesRegionController extends Controller
                     "ascent" => $item->ascent,
                     "descent" => $item->descent,
                     "distance" => $item->distance,
+                    "distance_comp" => $item->distance_comp,
                     "duration_forward" => $item->duration_forward,
                     "duration_backward" => $item->duration_backward,
                     "operator" => $item->operator,
-                    "state" => $item->state,
-                    "description" => $item->description,
-                    "website" => $item->website,
-                    "wikimedia_commons" => $item->wikimedia_commons,
-                    "maintenance" => $item->maintenance,
-                    "note" => $item->note,
-                    "note_project_page" => $item->note_project_page,
                 ],
                 "geometry" => json_decode($geom, true)
             ];

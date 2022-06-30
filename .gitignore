@@ -15,4 +15,5 @@ yarn-error.log
 .idea
 .editorconfig
 .vscode
+.api-docs
 dump.sql
