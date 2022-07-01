@@ -25,6 +25,17 @@ class HikingRoutesRegionController extends Controller
      *          response=200,
      *          description="Returns all the hiking routes OSM2CAI IDs based on the given region code and SDA number. 
      *                       These ids can be used in the geojson API hiking-route",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id",
+     *                     description="Internal osm2cai Identifier",
+     *                     type="integer"
+     *                 ),
+     *                 example={1269,652,273,}
+     *             )
+     *         )     
      *      ),
      *     @OA\Parameter(
      *         name="region_code",
@@ -126,6 +137,17 @@ Regione code according to CAI convention: <br/>
      *                       OSMID can be used in hiking-route-osm API or directly in OpenStreetMap relation by the following URL:
      *                       https://openstreetmap.org/relation/{OSMID}. Remember that the data on OSM can be differente from data in 
      *                       OSM2CAI after validation.",
+     *      @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="OSM",
+     *                     description="Open Streen Map identification",
+     *                     type="integer"
+     *                 ),
+     *                 example={7766787,3151885,2736729}
+     *             )
+     *         )     
      *      ),
      *     @OA\Parameter(
      *         name="region_code",
@@ -225,12 +247,36 @@ Regione code according to CAI convention: <br/>
      *      tags={"hiking-route"},
      *      @OA\Response(
      *          response=200,
-     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties section
-     *                       has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and over must be survey:CAI or 
-     *                       other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE),
-     *                       from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants)
-     *                       sda (stato di accatastamento).
-     *                       Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties    section has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and  over must be survey:CAI or other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE), from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants) sda (stato di accatastamento). Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+     *      @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="type",
+     *                     description="Geojson type",
+     *                     type="string"
+     *                 ),
+     *                  @OA\Property(
+     *                     property="properties",
+     *                     type="object",
+     *                     @OA\Property( property="id", type="integer",  description="OSM2CAI ID"),
+     *                     @OA\Property( property="relation_ID", type="integer",  description="OSMID"),
+     *                     @OA\Property( property="source", type="string",  description="from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source"),
+     *                     @OA\Property( property="cai_scale", type="string",  description="CAI scale difficulty: T E EE"),
+     *                     @OA\Property( property="from", type="string",  description="start point"),
+     *                     @OA\Property( property="to", type="string",  description="end point"),
+     *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                 ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon"),
+     *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
+     *                 ),
+     *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *             )
+     *         )   
      *      ),
      *      @OA\Parameter(
      *         name="id",
@@ -272,6 +318,35 @@ Regione code according to CAI convention: <br/>
      *                       from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants)
      *                       sda (stato di accatastamento).
      *                       Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+     *      @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="type",
+     *                     description="Geojson type",
+     *                     type="string"
+     *                 ),
+     *                  @OA\Property(
+     *                     property="properties",
+     *                     type="object",
+     *                     @OA\Property( property="id", type="integer",  description="OSM2CAI ID"),
+     *                     @OA\Property( property="relation_ID", type="integer",  description="OSMID"),
+     *                     @OA\Property( property="source", type="string",  description="from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source"),
+     *                     @OA\Property( property="cai_scale", type="string",  description="CAI scale difficulty: T E EE"),
+     *                     @OA\Property( property="from", type="string",  description="start point"),
+     *                     @OA\Property( property="to", type="string",  description="end point"),
+     *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                 ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon"),
+     *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
+     *                 ),
+     *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *             )
+     *         )   
      *      ),
      *      @OA\Parameter(
      *         name="id",
