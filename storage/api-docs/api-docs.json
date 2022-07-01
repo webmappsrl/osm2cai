@@ -138,7 +138,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties    section has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and  over must be survey:CAI or other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE), from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants) sda (stato di accatastamento). Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -187,7 +187,7 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon",
+                                                    "description": "Postgis geometry types: LineString, MultiLineString",
                                                     "type": "string"
                                                 },
                                                 "coordinates": {
@@ -254,7 +254,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties section\n     *                       has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and over must be survey:CAI or \n     *                       other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE),\n     *                       from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants)\n     *                       sda (stato di accatastamento).\n     *                       Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -303,7 +303,7 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon",
+                                                    "description": "Postgis geometry types: LineString, MultiLineString",
                                                     "type": "string"
                                                 },
                                                 "coordinates": {

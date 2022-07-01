@@ -86,36 +86,10 @@ Regione code according to CAI convention: <br/>
         
         $sda = explode(',',$sda);
         $list = HikingRoute::query();
-        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) { $query->where('code',$region_code); })->where(function ($query) use ($sda) {
-            if (count($sda) == 1) {
-                return $query->where('osm2cai_status', $sda[0]);
-            }
-            if (count($sda) == 2) {
-                return $query->where('osm2cai_status', $sda[0])
-                             ->orWhere('osm2cai_status', '=', $sda[1]);
-            }
-            if (count($sda) == 3) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2]);
-            }
-            if (count($sda) == 4) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2])
-                            ->orWhere('osm2cai_status', '=', $sda[3]);
-            }
-            if (count($sda) == 5) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2])
-                            ->orWhere('osm2cai_status', '=', $sda[3])
-                            ->orWhere('osm2cai_status', '=', $sda[4]);
-            }
-        })
-        ->get();
+        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) { 
+                $query->where('code',$region_code); 
+            })->whereIn('osm2cai_status',$sda)->get();
 
-        // $list = $list->pluck('ref_REI_comp')->toArray();
         $list = $list->pluck('id')->toArray();
 
         // Return
@@ -200,40 +174,13 @@ Regione code according to CAI convention: <br/>
         $list = HikingRoute::query();
         $list = HikingRoute::whereHas('regions',function($query) use ($region_code) {
                 $query->where('code',$region_code);
-            })->where(function ($query) use ($sda) {
-            if (count($sda) == 1) {
-                return $query->where('osm2cai_status', $sda[0]);
-            }
-            if (count($sda) == 2) {
-                return $query->where('osm2cai_status', $sda[0])
-                             ->orWhere('osm2cai_status', '=', $sda[1]);
-            }
-            if (count($sda) == 3) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2]);
-            }
-            if (count($sda) == 4) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2])
-                            ->orWhere('osm2cai_status', '=', $sda[3]);
-            }
-            if (count($sda) == 5) {
-                return $query->where('osm2cai_status', $sda[0])
-                            ->orWhere('osm2cai_status', '=', $sda[1])
-                            ->orWhere('osm2cai_status', '=', $sda[2])
-                            ->orWhere('osm2cai_status', '=', $sda[3])
-                            ->orWhere('osm2cai_status', '=', $sda[4]);
-            }
-        })
-        ->get();
+            })->whereIn('osm2cai_status',$sda)->get();
 
-        // $list = $list->pluck('ref_REI_comp')->toArray();
         $list = $list->pluck('relation_id')->toArray();
 
         // Return
         return response($list, 200, ['Content-type' => 'application/json']);
+        
     }
     
     /**
@@ -247,7 +194,7 @@ Regione code according to CAI convention: <br/>
      *      tags={"hiking-route"},
      *      @OA\Response(
      *          response=200,
-     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties    section has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and  over must be survey:CAI or other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE), from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants) sda (stato di accatastamento). Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
      *      @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
@@ -269,7 +216,7 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon"),
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
@@ -293,9 +240,13 @@ Regione code according to CAI convention: <br/>
      */
     public function hikingroutebyid(int $id) {
         
-        $item = HikingRoute::where('id', $id)->first();
+        try{
+            $item = HikingRoute::find($id);
+            $HR = $this->createGeoJSONFromModel($item);
+        } catch( Exception $e) {
+            return response('No Hiking Route found with this id', 404, ['Content-type' => 'application/json']);
+        }
 
-        $HR = $this->createGeoJSONFromModel($item);
 
         // Return
         return response($HR, 200, ['Content-type' => 'application/json']);
@@ -312,12 +263,7 @@ Regione code according to CAI convention: <br/>
      *      tags={"hiking-route-osm"},
      *      @OA\Response(
      *          response=200,
-     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID. The properties section
-     *                       has the following metadata: id (OSM2CAI ID), relation_ID (OSMID), source (from SDA=3 and over must be survey:CAI or 
-     *                       other values accepted by CAI as valid source), cai_scale (CAI scale difficulty: T,E,EE),
-     *                       from (start point), to (end point), ref (local ref hiking route number must be three number and a letter only in last position for variants)
-     *                       sda (stato di accatastamento).
-     *                       Geometry section contains all hiking routes coordinates (WGS84), according to geojson standard.",
+     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
      *      @OA\MediaType(
      *             mediaType="application/json",
      *             @OA\Schema(
@@ -339,7 +285,7 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon"),
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
@@ -362,10 +308,14 @@ Regione code according to CAI convention: <br/>
      * 
      */
     public function hikingroutebyosmid(int $id) {
-        
-        $item = HikingRoute::where('relation_id', $id)->first();
 
-        $HR = $this->createGeoJSONFromModel($item);
+        try{
+            $item = HikingRoute::where('relation_id', $id)->get();
+            $HR = $this->createGeoJSONFromModel($item[0]);
+        } catch( Exception $e) {
+            return response('No Hiking Route found with this OSMid', 404, ['Content-type' => 'application/json']);
+        }
+
 
         // Return
         return response($HR, 200, ['Content-type' => 'application/json']);
