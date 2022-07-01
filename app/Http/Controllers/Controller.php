@@ -18,7 +18,7 @@ use Illuminate\Routing\Controller as BaseController;
  *      title="OSM2CAI",
  *      description="Api documentation",
  *      @OA\Contact(
- *          email="info@webmapp.lt"
+ *          email="catastorei@cai.it"
  *      ),
  * )
  */
