@@ -59,7 +59,7 @@ class CasLoginController extends Controller
         if ($casUser->exists()) {// yes, get it
             $casUser = $casUser->first();
             //get the User
-            $user = $casUser->first()->user()->first();
+            $user = $casUser->user;
         }// yes, get it
         else {// no, create a new CasUser and maybe an User
 
