@@ -14,7 +14,7 @@ class Osm2CaiSyncHinkingRoute extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:sync
+    protected $signature = 'osm2cai:sync-old
                                 {osmid? : Hiking Route OSMID to be synced. Leave it blank to sync all already existing routes} 
                             ';
 

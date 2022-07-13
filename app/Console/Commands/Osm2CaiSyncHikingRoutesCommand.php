@@ -4,8 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\HikingRoute;
 use App\Models\HikingRoutes;
+use App\Models\HikingRoutesOsm;
 use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Osm2CaiSyncHikingRoutesCommand extends Command
 {
@@ -14,9 +17,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:sync_hiking_routes 
-                            {code : Zone REI code, set to "italy" to import and sync all italy} 
-                            {--dry-mode : Do not run sync, show only what is going on.}';
+    protected $signature = 'osm2cai:sync';
 
     /**
      * The console command description.
@@ -28,121 +29,81 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
     private $provider;
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(Osm2CaiHikingRoutesServiceProvider $provider)
-    {
-        parent::__construct();
-        $this->provider = $provider;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
-        $routes = [];
-        $code = $this->argument('code');
-        if ($code == 'italy') {
-            $routes = $this->getAllItaly($this->provider);
-        } else {
-            if ($this->provider->checkCode($code)) {
-                $routes = $this->getZone($code, $this->provider);
+        // Retrieve routes from hiking_routes_osm table
+        $routes = HikingRoutesOsm::get();
+        $counter = 0; $tot = $routes->count();
+        foreach($routes as $route) {
+            $counter++;
+            Log::info("$counter/$tot https://openstreetmap.org/relation/{$route->relation_id}");
+            $this->sync($route,$counter,$tot);
+        }
+    }
+
+    public function sync($route_osm,$counter,$tot)
+    {
+        $this->info('');
+        $this->info("$counter/$tot https://openstreetmap.org/relation/{$route_osm->relation_id}");
+        // Convert Object to array
+        $route_osm_array = (array) $route_osm;
+        // Map keys
+        $route_cai_array = [];
+        foreach ($route_osm_array as $k => $v) {
+            if ($k == 'relation_id') {
+                ;
+            } else if ($k == 'tags') {
+                // TODO: json data convert
+                // $route_cai_array['tags_osm']=$v;
+            } else if ($k == 'geom') {
+                $route_cai_array['geometry_osm'] = $v;
             } else {
-                $this->error('Bad code.');
+                $route_cai_array[$k . '_osm'] = $v;
             }
         }
 
-        if (count($routes) == 0) {
-            $this->warn('No routes found');
-            return 1;
-        } else {
-            if ($this->option('dry-mode')) {
-                $this->info('Running in DRY mode: showing routes ID that would be synced.');
-                $this->showRoutes($routes);
-            } else {
-                $this->sync($routes, $this->provider);
-            }
+        $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route_osm->relation_id]);
+
+        if($route_cai->osm2cai_status == 4 ) {
+            $this->info("Route has status {$route_cai->osm2cai_status }: Skip SYNC");
+            return;
         }
-    }
+    
+        $this->info("Route has status {$route_cai->osm2cai_status }: SYNC");
 
-    public function showRoutes($routes)
-    {
-        if (count($routes) > 0) {
-            foreach ($routes as $route) {
-                $this->info("ID: $route->relation_id / REF: $route->ref");
-            }
-            $this->info(" ");
-            $this->info("Found " . count($routes) . " routes to be synced");
-        }
-    }
+        // Set fields to compute status
+        $route_cai->cai_scale_osm = $route_osm->cai_scale;
+        $route_cai->source_osm = $route_osm->source;
+        $route_cai->setOsm2CaiStatus();
+        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");        
+        $route_cai->save();
 
-    public function sync($routes, Osm2CaiHikingRoutesServiceProvider $provider)
-    {
-        if (count($routes) > 0) {
-            foreach ($routes as $route) {
-                $this->info("Sync $route->relation_id (REF:$route->ref)");
-                // Retrieve data
-                $route_osm = $this->provider->getHikingRoute($route->relation_id);
-                if ($route_osm) {
-                    // Convert Object to array
-                    $route_osm_array = (array)$route_osm;
-                    // Map keys
-                    $route_cai_array = [];
-                    foreach ($route_osm_array as $k => $v) {
-                        if ($k == 'relation_id') {
-                            ;
-                        } else if ($k == 'tags') {
-                            // TODO: json data convert
-                            // $route_cai_array['tags_osm']=$v;
-                        } else if ($k == 'geom') {
-                            $route_cai_array['geometry_osm'] = $v;
-                        } else {
-                            $route_cai_array[$k . '_osm'] = $v;
-                        }
-                    }
-                    $this->info('  --> Creating or loadinf route');
-                    $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route->relation_id]);
-
-                    $this->info('  --> Set Osm fields');
-                    $route_cai->fill($route_cai_array);
-
-                    $this->info('  --> Set Status');
-                    $route_cai->setOsm2CaiStatus();
-
-                    $this->info('  --> Copy fields from osm 2 cai (only if status is not 4)');
-                    $route_cai->copyFromOsm2Cai();
-
-                    $this->info('  --> Saving first');
-                    $route_cai->save();
-
-                    $this->info('  --> Computing tech info');
-                    $route_cai->computeAndSetTechInfo();
-
-                    $this->info('  --> Setting Territorial Units');
-                    $route_cai->computeAndSetTerritorialUnits();
-
-                    $this->info('  --> Saving second time');
-                    $route_cai->save();
-                }
-            }
+        // FILL OSM FIELDS
+        foreach ([
+            'ref', 'old_ref', 'source_ref', 'survey_date', 'name', 'rwn_name', 'ref_REI',
+            'from', 'to', 'osmc_symbol', 'network', 'roundtrip', 'symbol', 'symbol_it',
+            'ascent', 'descent', 'distance', 'duration_forward', 'duration_backward',
+            'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons', 
+            'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page'
+        ] as $k) {
+            $k_osm=$k.'_osm';
+            $route_cai->$k_osm=$route_osm->$k;
         }
 
+        $route_cai->geometry_osm=$route_osm->geom;
+        $route_cai->save();
+        $route_cai->copyFromOsm2Cai();
+        $route_cai->save();
+        $route_cai->computeAndSetTechInfo();
+        $route_cai->computeAndSetTerritorialUnits();
+        $route_cai->save();
+
+        return;
     }
 
 
-    public function getAllItaly(Osm2CaiHikingRoutesServiceProvider $provider)
-    {
-        $this->info('Sync ALL ITALY.');
-        return $provider->getAllRoutes();
-    }
-
-    public static function getZone($code, Osm2CaiHikingRoutesServiceProvider $provider)
-    {
-        return $provider->getHikingRoutes($code);
-    }
 }
