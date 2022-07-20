@@ -48,7 +48,6 @@ class CasLoginController extends Controller
          * Prepare CasUser model fillable attributes
          */
         $casUserFill = [
-            'user_uuid' => $userAttributes['userUuid'],
             'uid' => $userEmail
         ];
 
@@ -82,6 +81,7 @@ class CasLoginController extends Controller
 
             //create a new CasUser
             $casUserFill = array_merge($casUserFill, [
+                'user_uuid' => $userAttributes['userUuid'],
                 'cas_id' => $userAttributes['id'],
                 'firstname' => $userAttributes['firstname'],
                 'lastname' => $userAttributes['lastname']
