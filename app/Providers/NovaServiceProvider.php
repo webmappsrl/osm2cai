@@ -90,12 +90,15 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         $cards = [];
         switch (Auth::user()->getTerritorialRole()) {
+            case 'admin' :
+                $cards = $this->_nationalCards();
+                break;
             case 'national' :
                 $cards = $this->_nationalCards();
                 break;
             case 'regional' :
-                $cards = $this->_regionalCards();
-                break;
+            $cards = $this->_regionalCards();
+            break;
             default :
                 $cards = [
                     (new TextCard())

@@ -527,19 +527,24 @@ EOF;
 
             if ($contentType) {
                 switch ($contentType) {
+                    case "GeometryCollection":
+                        foreach($content->geometries as $item) {
+                            if ($item->type=='LineString') {
+                                $contentGeometry=$item;
+                            }
+                        }
+                        break;
                     case "FeatureCollection":
                         $contentGeometry = $content->features[0]->geometry;
-                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
                         break;
                     case "LineString":
-                        $contentGeometry = $content;
-                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
-                        break;
+                    $contentGeometry = $content;
+                    break;
                     default:
                         $contentGeometry = $content->geometry;
-                        $geometry = DB::raw("(ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "')))");
                         break;
                 }
+                $geometry = DB::select(DB::raw("select (ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "'))) as g "))[0]->g;
             }
         }
 
