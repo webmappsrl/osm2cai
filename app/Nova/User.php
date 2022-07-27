@@ -79,15 +79,8 @@ class User extends Resource {
 
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
-            BelongsTo::make('Region')->hideWhenCreating(function () {
-                $user = \App\Models\User::getEmulatedUser();
+            BelongsTo::make('Region')->nullable(),
 
-                return !$user->is_administrator && !$user->is_national_referent;
-            })->hideWhenUpdating(function () {
-                $user = \App\Models\User::getEmulatedUser();
-
-                return !$user->is_administrator && !$user->is_national_referent;
-            }),
             Text::make(__('Provinces'), function () {
                 $result = [];
                 foreach ($this->provinces as $province) {
