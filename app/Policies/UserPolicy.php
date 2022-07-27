@@ -42,35 +42,35 @@ class UserPolicy {
     }
 
     public function viewAny(User $user): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function view(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function create(User $user): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function update(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function delete(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function restore(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function forceDelete(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function emulate(User $user, User $model): bool {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     private function _canProvince(User $user, Province $province) {
@@ -122,15 +122,15 @@ class UserPolicy {
     }
 
     public function attachProvince(User $user, User $model, Province $province) {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function detachProvince(User $user, User $model, Province $province) {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function attachArea(User $user, User $model, Area $area) {
-        return $user->is_administrator || $user->is_national_referent;
+        return $user->is_administrator;
     }
 
     public function detachArea(User $user, User $model, Area $area) {
