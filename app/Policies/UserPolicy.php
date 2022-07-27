@@ -42,57 +42,35 @@ class UserPolicy {
     }
 
     public function viewAny(User $user): bool {
-        return true;
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function view(User $user, User $model): bool {
-        //        $user = $this->_getEmulatedUser($user);
-        //        return $this->_isManager($user, $model);
-        return true;
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function create(User $user): bool {
-        $user = User::getEmulatedUser($user);
-
-        return $user->is_administrator || $user->is_national_referent || isset($user->region);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function update(User $user, User $model): bool {
-        $user = User::getEmulatedUser($user);
-
-        return $this->_isManager($user, $model);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function delete(User $user, User $model): bool {
-        $user = User::getEmulatedUser($user);
-        $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
-
-        return !$hasRelations && (
-                $user->is_administrator ||
-                ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent)
-            );
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function restore(User $user, User $model): bool {
-        $user = User::getEmulatedUser($user);
-
-        return $user->is_administrator || ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function forceDelete(User $user, User $model): bool {
-        $user = User::getEmulatedUser($user);
-        $hasRelations = count($model->provinces) + count($model->areas) + count($model->sectors) > 0;
-
-        return !$hasRelations && (
-                $user->is_administrator ||
-                ($user->is_national_referent && !$model->is_administrator && !$model->is_national_referent)
-            );
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function emulate(User $user, User $model): bool {
-        $user = User::getEmulatedUser($user);
-
-        return $this->_isManager($user, $model, false);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     private function _canProvince(User $user, Province $province) {
@@ -144,19 +122,19 @@ class UserPolicy {
     }
 
     public function attachProvince(User $user, User $model, Province $province) {
-        return $this->_canProvince($user, $province);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function detachProvince(User $user, User $model, Province $province) {
-        return $this->_canProvince($user, $province);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function attachArea(User $user, User $model, Area $area) {
-        return $this->_canArea($user, $area);
+        return $user->is_administrator || $user->is_national_referent;
     }
 
     public function detachArea(User $user, User $model, Area $area) {
-        return $this->_canArea($user, $area);
+        return $user->is_administrator;
     }
 
     public function attachSector(User $user, User $model, Sector $sector) {
