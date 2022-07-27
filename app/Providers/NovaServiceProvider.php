@@ -242,7 +242,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  <p>&nbsp;</p>
-                 <p>Attenzione: ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
+                 <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
  
                  ')
                 ->textAsHtml(),
