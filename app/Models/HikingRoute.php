@@ -498,7 +498,7 @@ EOF;
     public function fileToGeometry($fileContent = '') {
         $geometry = $contentType = null;
         if ($fileContent) {
-            if (substr($fileContent, 0, 5) == "<?xml") {
+            if (strpos($fileContent,'<?xml') !== false && strpos($fileContent,'<?xml') < 10 ) {
                 $geojson = '';
                 if ('' === $geojson) {
                     try {
