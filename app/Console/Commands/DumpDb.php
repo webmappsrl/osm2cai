@@ -15,7 +15,7 @@ class DumpDb extends Command {
      *
      * @var string
      */
-    protected $signature = 'osm2cai:dump_db';
+    protected $signature = 'osm2cai:dump_db {--local : to save the db dump in local storage (storage/app/database/osm2cai) instead of AWS}';
     /**
      * The console command description.
      *
@@ -38,9 +38,16 @@ class DumpDb extends Command {
      * @return int
      */
     public function handle() {
+
+        $saveInLocal = $this->option('local');
+
         try {
             Log::info('osm2cai:dump_db -> is started');
-            $wmdumps = Storage::disk('wmdumps');
+            if ($saveInLocal) {
+                $wmdumps = Storage::disk('local');
+            } else {
+                $wmdumps = Storage::disk('wmdumps');
+            }
             $local = Storage::disk('local');
             $local->makeDirectory('database');
             $dumpName = 'dump_' . date('Y-M-d_h-m-s') . '.sql';
@@ -58,12 +65,21 @@ class DumpDb extends Command {
             $local->delete('database/' . $dumpName . '.gz');
 
             Log::info('osm2cai:dump_db -> START upload to aws');
-            $wmdumps->put('osm2cai/' . $dumpName . '.gz', $lastLocalDump);
-            Log::info('osm2cai:dump_db -> DONE upload to aws');
-            //TODO: CREATE LAST DUMP ON REMOTE
-            Log::info('osm2cai:dump_db -> START create last-dump to aws');
-            $wmdumps->put('osm2cai/last-dump.sql.gz', $lastLocalDump);
-            Log::info('osm2cai:dump_db -> DONE create last-dump to aws');
+            if ($saveInLocal) {
+                $wmdumps->put('database/osm2cai/' . $dumpName . '.gz', $lastLocalDump);
+                Log::info('osm2cai:dump_db -> DONE upload to aws');
+                //TODO: CREATE LAST DUMP ON REMOTE
+                Log::info('osm2cai:dump_db -> START create last-dump to aws');
+                $wmdumps->put('database/osm2cai/last-dump.sql.gz', $lastLocalDump);
+                Log::info('osm2cai:dump_db -> DONE create last-dump to aws');
+            } else {
+                $wmdumps->put('osm2cai/' . $dumpName . '.gz', $lastLocalDump);
+                Log::info('osm2cai:dump_db -> DONE upload to aws');
+                //TODO: CREATE LAST DUMP ON REMOTE
+                Log::info('osm2cai:dump_db -> START create last-dump to aws');
+                $wmdumps->put('osm2cai/last-dump.sql.gz', $lastLocalDump);
+                Log::info('osm2cai:dump_db -> DONE create last-dump to aws');
+            }
 
             Log::info('osm2cai:dump_db -> finished');
             return 0;
