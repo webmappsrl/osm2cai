@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CasLoginController;
+use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -31,3 +32,14 @@ Route::get('/nova/cas-login', CasLoginController::class . '@casLogin')
 Route::get('/nova/cas-logout', function () {
     cas()->logout();
 })->middleware('cas.auth');
+
+
+Route::get('/hiking-route/id/{id}',function($id){
+    $hikingroute = HikingRoute::find($id);
+    if ($hikingroute == null) {
+        abort(404);
+    }
+    return view('hikingroute',[
+        'hikingroute' => $hikingroute
+    ]);
+});

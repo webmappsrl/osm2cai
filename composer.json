@@ -10,6 +10,7 @@
   "require": {
     "php": "^7.4|^8.0",
     "ext-json": "*",
+    "chriskonnertz/open-graph": "^2.0",
     "darkaonline/l5-swagger": "^8.3",
     "digital-creative/conditional-container": "^1.4",
     "dkulyk/nova-tabs": "^1.1",
@@ -27,6 +28,7 @@
     "m-a-k-o/nova-custom-table-card": "^3.2",
     "mstaack/laravel-postgis": "^5.2",
     "spatie/db-dumper": "^2.21",
+    "spatie/schema-org": "^3.9",
     "subfission/cas": "^4",
     "suenerds/nova-searchable-belongs-to-filter": "^1.0",
     "symm/gisconverter": "^1.0"
