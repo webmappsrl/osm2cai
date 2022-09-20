@@ -39,6 +39,7 @@ class HikingRoute extends Model
         'distance' => 'float',
         'distance_osm' => 'float',
         'distance_comp' => 'float',
+        'validation_date' => 'datetime:Y-m-d H:i:s',
     ];
 
     public static array $info_fields = [
@@ -487,7 +488,9 @@ EOF;
         return $res[0]->json_build_object;
     }
 
-    public function validateSDA() {
+    public function validateSDA($user_id, $date) {
+        $this->validation_date = $date;
+        $this->user_id = $user_id;
         $this->osm2cai_status = 4;
         $this->save();
     }
