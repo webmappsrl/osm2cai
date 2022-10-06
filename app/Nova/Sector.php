@@ -67,7 +67,19 @@ class Sector extends Resource
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
-            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+            $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+        }
+
+        /**
+         * @var \App\Models\User
+         */
+        $user = auth()->user();
+        if ( $user instanceof User && $user->region && $user->is_national_referent )
+        {
+            $query->whereHas( 'area.province.region',function( $eloquentBuilder ) use ($user){
+                $eloquentBuilder->where('id', $user->region->id );
+             });
+             //$this->area->province->region
         }
 
         return $query;
