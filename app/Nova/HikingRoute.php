@@ -45,7 +45,25 @@ class HikingRoute extends Resource
      *
      * @var string
      */
-    public static string $title = 'id';
+    //public static string $title = 'id';
+    public function title(){
+        $supplementaryString = ' - ';
+
+        if ( $this->name )
+        {
+            $supplementaryString .= $this->name;
+        }
+
+        if ( $this->ref )
+            $supplementaryString .= 'ref: ' . $this->ref;
+
+        if ( $this->sectors->count() )
+        {
+            $supplementaryString .= " (" . $this->sectors->pluck('name')->implode(', ') . ")";
+        }
+
+        return $this->id . $supplementaryString ;
+    }
 
     /**
      * The columns that should be searched.
