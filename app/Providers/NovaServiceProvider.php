@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Helpers\Osm2CaiHelper;
+use App\Models\Area;
 use App\Models\HikingRoute;
+use App\Models\Province;
 use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
@@ -25,6 +27,7 @@ use App\Nova\Metrics\TotalSectorsCount;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -89,13 +92,27 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function cards()
     {
         $cards = [];
-        switch (Auth::user()->getTerritorialRole()) {
+        /**
+         * @var \App\Models\User
+         */
+        $user = Auth::user();
+        switch ($user->getTerritorialRole()) {
             case 'admin' :
                 $cards = $this->_nationalCards();
                 break;
             case 'national' :
                 $cards = $this->_nationalCards();
                 break;
+            //define local cards
+            //"smallest" model related to user win
+            case 'local' :
+                if ( $user->sectors->count() )
+                    $cards = $this->_localCardsByModelClassName( Sector::class);
+                elseif ( $user->areas->count() )
+                    $cards = $this->_localCardsByModelClassName( Area::class);
+                else
+                    $cards = $this->_localCardsByModelClassName( Province::class);
+            break;
             case 'regional' :
             $cards = $this->_regionalCards();
             break;
@@ -243,7 +260,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  <p>&nbsp;</p>
                  <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
- 
+
                  ')
                 ->textAsHtml(),
 
@@ -275,6 +292,160 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         ];
 
         $cards = array_merge($cards, [$this->_getSectorsTableCard()]);
+
+        return $cards;
+
+    }
+
+    /**
+     * Get dashboard cards for authenticated user with "local" territorial code
+     * @see \App\Model\User->getTerritorialCode()
+     *
+     * @return void
+     */
+    private function _localCardsByModelClassName( $modelClassName )
+    {
+        $abstractModel = (new $modelClassName);
+        $table = $abstractModel->getTable();
+        $view = $abstractModel->getView();
+        $user = Auth::user();
+
+
+
+
+        $data = DB::table($view)
+            ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
+            ->whereIn('id', $user->$table->pluck('id')->all() )
+            ->get();
+        $numbers[1] = $data->sum('tot1');
+        $numbers[2] = $data->sum('tot2');
+        $numbers[3] = $data->sum('tot3');
+        $numbers[4] = $data->sum('tot4');
+
+        $num_provinces = 0;
+        $num_areas = 0;
+        $num_sectors = 0;
+        $salHtml = '';
+
+
+        if ( $table == 'provinces' )
+        {
+            $num_provinces = $user->provinces->count();
+            foreach ($user->provinces as $province) {
+
+                $sal = $province->getSal();
+                $sal_color = Osm2CaiHelper::getSalColor($sal);
+                $salHtml .= $province->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+
+                $num_areas += $province->areas->count();
+                if ($province->areas->count() > 0) {
+                    foreach ($province->areas as $area) {
+                        $num_sectors += $area->sectors->count();
+                    }
+                }
+            }
+
+        }
+        elseif ( $table == 'areas'){
+
+            if ($user->areas->count() > 0) {
+                $num_areas = $user->areas->count();
+                foreach ($user->areas as $area) {
+                    $sal = $area->getSal();
+                    $sal_color = Osm2CaiHelper::getSalColor($sal);
+                    $salHtml .= $area->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                    $num_sectors += $area->sectors->count();
+                }
+            }
+        }
+        elseif ( $table == 'sectors'){
+            $num_sectors = $user->sectors->count();
+            foreach ( $user->sectors as $sector )
+            {
+                $sal = $sector->getSal();
+                $sal_color = Osm2CaiHelper::getSalColor($sal);
+                $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+            }
+
+        }
+
+
+
+
+        $tableSingular = Str::singular($table);
+        ob_start();
+        foreach ( $user->$table as $relatedModel )
+        {
+        $id = $relatedModel->id;
+        ?>
+                <h5><?= $relatedModel->name ?>: </h5>
+                <a href="<?= route("api.geojson.$tableSingular", ['id' => $id])?>" >Download geojson Percorsi</a>
+                <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id])?>" >Download shape Settori</a>
+        <?php
+        }
+        $downloadLiks = ob_get_clean();
+
+        $cards = [
+            (new TextCard())
+                ->width('1/4')
+                ->heading($user->name)
+                ->text('Username')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading($user->getPermissionString())
+                ->text('Permessi')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading('TBI')
+                ->text('LastLogin')
+                ->center(false),
+            (new TextCard())
+                ->width('1/4')
+                ->heading($salHtml)
+                ->headingAsHtml(),
+                //->text('SAL ' . $user->region->name),
+
+//                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
+            (new TextCard())
+                ->forceFullWidth()
+                ->text('<div class="font-light">
+                <p>&nbsp;</p>' .
+                $downloadLiks .
+                '<p>&nbsp;</p>
+                 <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
+                 </div>')
+                ->textAsHtml(),
+
+            // General Info
+            (new TextCard())
+                ->width('1/4')
+                ->heading((string) $num_provinces)
+                ->text('#province'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading((string) $num_areas)
+                ->text('#aree'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading((string) $num_sectors)
+                ->text('#settori')
+                ->width('1/4'),
+            (new TextCard())
+                ->width('1/4')
+                ->heading( (string) (array_sum($numbers)) )
+                ->text('#tot percorsi'),
+
+            $this->_getSdaCard(1, $numbers[1]),
+            $this->_getSdaCard(2, $numbers[2]),
+            $this->_getSdaCard(3, $numbers[3]),
+            $this->_getSdaCard(4, $numbers[4]),
+
+
+        ];
+
+        $cards = array_merge($cards, [$this->_getSectorsTableCardByModelClassName($modelClassName)]);
 
         return $cards;
 
@@ -377,6 +548,102 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 }
             }
         }
+
+        // Extract data from views
+        // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
+        $items = DB::table('sectors_view')
+            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->whereIn('id', $sectors_id)
+            ->get();
+
+        $data = [];
+        foreach ($items as $item) {
+
+            $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
+            $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
+            $sal_color = Osm2CaiHelper::getSalColor($sal);
+            $sector = Sector::find($item->id);
+
+            $row = new Row(
+                new Cell("{$item->full_code}"),
+                new Cell($sector->human_name),
+                new Cell($item->tot1),
+                new Cell($item->tot2),
+                new Cell($item->tot3),
+                new Cell($item->tot4),
+                new Cell($tot),
+                new Cell($item->num_expected),
+                new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
+                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
+            );
+            $data[] = $row;
+        }
+
+        $sectorsCard->data($data);
+
+        return $sectorsCard;
+    }
+
+    /**
+     * A copy of $this->_getSectorsTableCard() dynamicized with modelClassName parameter
+     * to load cards for: provinces, areas and sectors models
+     *
+     * @param string $name - the class path to load the model with its properties
+     * @return CustomTableCard
+     */
+    private function _getSectorsTableCardByModelClassName($modelClassName): CustomTableCard
+    {
+
+        $sectorsCard = new CustomTableCard();
+
+        $user = Auth::user();
+        $table = (new $modelClassName)->getTable();
+        $modelNamesString = $user->$table->pluck('name')->implode(', ');
+
+        $sectorsCard->title(__('SDA e SAL Settori - ' . $modelNamesString));
+
+        // Headings
+        $sectorsCard->header([
+            new Cell(__('Settore')),
+            new Cell(__('Nome')),
+            new Cell(__('#1')),
+            new Cell(__('#2')),
+            new Cell(__('#3')),
+            new Cell(__('#4')),
+            new Cell(__('#tot')),
+            new Cell(__('#att')),
+            new Cell(__('SAL')),
+            new Cell(__('Actions')),
+        ]);
+
+        // Get sectors_id
+        $sectors_id = [];
+
+        if ( $table == 'provinces' )
+        {
+            foreach ($user->provinces as $province) {
+                if (Arr::accessible($province->areas)) {
+                    foreach ($province->areas as $area) {
+                        if (Arr::accessible($area->sectors)) {
+                            $sectors_id = array_merge($sectors_id, $area->sectors->pluck('id')->toArray());
+                        }
+                    }
+                }
+            }
+        }
+        elseif ( $table == 'areas' )
+        {
+            foreach ($user->areas as $area) {
+                if (Arr::accessible($area->sectors)) {
+                    $sectors_id = array_merge($sectors_id, $area->sectors->pluck('id')->toArray());
+                }
+            }
+        }
+        elseif ( $table == 'sectors')
+        {
+            $sectors_id = $user->sectors->pluck('id')->toArray();
+        }
+
 
         // Extract data from views
         // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
