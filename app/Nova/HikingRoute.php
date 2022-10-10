@@ -198,6 +198,16 @@ class HikingRoute extends Resource
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
         if (!is_null($hr)) {
+
+
+            $statoDiAccatastamento = 'Stato di accatastamento';
+
+            if ( $hr->validation_date )
+                $statoDiAccatastamento .= "<h5 class=\"font-light\">Data di validazione: {$hr->validation_date->format('d/m/Y')}</h5>";
+
+            if( $hr->validator )
+                $statoDiAccatastamento .= "<h5 class=\"font-light\">Validatore: {$hr->validator->name} ({$hr->validator->email})</h5>";
+
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
             return [
                 (new TextCard())
@@ -220,7 +230,9 @@ class HikingRoute extends Resource
                     ->onlyOnDetail()
                     ->width('1/4')
                     ->heading($hr->osm2cai_status)
-                    ->text('Stato di accatastamento'),
+                    ->text($statoDiAccatastamento)
+                    ->textAsHtml()
+                    ,
             ];
         }
         return [];
