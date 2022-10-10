@@ -20,18 +20,20 @@
 
 <dropdown-menu slot="menu" width="200" direction="rtl">
     <ul class="list-reset">
-        <li>
-            <router-link :to="{
-                name: 'detail',
-                params: {
-                    resourceName: 'users',
-                    resourceId: '{{ $emulatedUserId > 0 ? $emulatedUserId : $user->id }}'
-                }
-            }" class="block no-underline text-90 hover:bg-30 p-3"
-                         id="wm-user-profile-button">
-                {{ __('Profile') }}
-            </router-link>
-        </li>
+        @if ($user->is_administrator > 0)
+            <li>
+                <router-link :to="{
+                    name: 'detail',
+                    params: {
+                        resourceName: 'users',
+                        resourceId: '{{ $emulatedUserId > 0 ? $emulatedUserId : $user->id }}'
+                    }
+                }" class="block no-underline text-90 hover:bg-30 p-3"
+                            id="wm-user-profile-button">
+                    {{ __('Profile') }}
+                </router-link>
+            </li>
+        @endif
         @if ($emulatedUserId > 0)
             <li>
                 <a href="{{ route('emulatedUser.restore') }}" class="block no-underline text-90 hover:bg-30 p-3">

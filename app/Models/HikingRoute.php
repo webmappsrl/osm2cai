@@ -90,7 +90,7 @@ class HikingRoute extends Model
 
     public function validator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function regions()
@@ -408,8 +408,8 @@ EOF;
         $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\') as geom'));
         $geom = $res[0]->geom;
 
-        $query = 'SELECT id 
-            FROM hiking_routes 
+        $query = 'SELECT id
+            FROM hiking_routes
             WHERE ST_intersects(' . $geometry_field . ',ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\')) AND
             osm2cai_status=' . $osm2cai_status;
         $res = DB::select(DB::raw($query));
@@ -465,8 +465,8 @@ FROM
         "maintenance", "maintenance_it", "note", "note_it", "note_project_page",
         "operator_osm", "state_osm", "description_osm", "description_it_osm", "website_osm", "wikimedia_commons_osm",
         "maintenance_osm", "maintenance_it_osm", "note_osm", "note_it_osm", "note_project_page_osm",
-        $geometry_field 
-        FROM hiking_routes WHERE id IN ($where)) AS 
+        $geometry_field
+        FROM hiking_routes WHERE id IN ($where)) AS
 
       t(id,created_at,updated_at,osm2cai_status,validation_date,relation_id,
         ref, old_ref, source, source_ref, survey_date, name, rwn_name,

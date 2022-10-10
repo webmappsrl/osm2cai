@@ -45,7 +45,25 @@ class HikingRoute extends Resource
      *
      * @var string
      */
-    public static string $title = 'id';
+    //public static string $title = 'id';
+    public function title(){
+        $supplementaryString = ' - ';
+
+        if ( $this->name )
+        {
+            $supplementaryString .= $this->name;
+        }
+
+        if ( $this->ref )
+            $supplementaryString .= 'ref: ' . $this->ref;
+
+        if ( $this->sectors->count() )
+        {
+            $supplementaryString .= " (" . $this->sectors->pluck('name')->implode(', ') . ")";
+        }
+
+        return $this->id . $supplementaryString ;
+    }
 
     /**
      * The columns that should be searched.
@@ -139,7 +157,7 @@ class HikingRoute extends Resource
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
                 ->zoom(12)
                 ->hideFromIndex(),
-            Text::make('Legenda', function(){ return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>"; })->asHtml(),
+            Text::make('Legenda', function(){ return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>"; })->asHtml()->onlyOnDetail(),
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),
@@ -180,6 +198,16 @@ class HikingRoute extends Resource
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
         if (!is_null($hr)) {
+
+
+            $statoDiAccatastamento = 'Stato di accatastamento';
+
+            if ( $hr->validation_date )
+                $statoDiAccatastamento .= "<h5 class=\"font-light\">Data di validazione: {$hr->validation_date->format('d/m/Y')}</h5>";
+
+            if( $hr->validator )
+                $statoDiAccatastamento .= "<h5 class=\"font-light\">Validatore: {$hr->validator->name} ({$hr->validator->email})</h5>";
+
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
             return [
                 (new TextCard())
@@ -202,7 +230,9 @@ class HikingRoute extends Resource
                     ->onlyOnDetail()
                     ->width('1/4')
                     ->heading($hr->osm2cai_status)
-                    ->text('Stato di accatastamento'),
+                    ->text($statoDiAccatastamento)
+                    ->textAsHtml()
+                    ,
             ];
         }
         return [];
