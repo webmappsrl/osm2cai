@@ -237,9 +237,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
                 ->text('<h4 class="font-light">
+                <p>&nbsp;</p>
                 <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
                 <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
+                 <p>&nbsp;</p>
+                 <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
+ 
                  ')
                 ->textAsHtml(),
 

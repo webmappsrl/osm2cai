@@ -139,7 +139,7 @@ class HikingRoute extends Resource
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
                 ->zoom(12)
                 ->hideFromIndex(),
-
+            Text::make('Legenda', function(){ return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>"; })->asHtml(),
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),
