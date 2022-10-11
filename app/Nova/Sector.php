@@ -19,6 +19,10 @@ use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Helpers\NovaCurrentResourceActionHelper;
 use App\Nova\Filters\HikingRoutesSectorFilter;
+use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
+use App\Nova\Lenses\NoNameSectorsColumnsLens;
+use App\Nova\Lenses\NoNumExpectedColumnsLens;
+use App\Nova\Lenses\SectorsColumnsLens;
 
 class Sector extends Resource
 {
@@ -104,7 +108,7 @@ class Sector extends Resource
             Number::make(__('Numero Atteso'),'num_expected'),
             Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
-                return $this->area->province->region->name;
+                return $this->area->province->region->name ?? '';
             })->hideWhenUpdating(),
             Text::make(__('Province'), 'area_id', function () {
                 return $this->area->province->name;
@@ -217,7 +221,11 @@ class Sector extends Resource
      */
     public function lenses(Request $request)
     {
-        return [];
+        return [
+            new NoResponsabileSectorsColumnsLens,
+            new NoNameSectorsColumnsLens,
+            new NoNumExpectedColumnsLens
+        ];
     }
 
     /**
