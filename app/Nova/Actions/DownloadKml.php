@@ -13,6 +13,8 @@ class DownloadKml extends Action
 {
     use InteractsWithQueue, Queueable;
 
+    public $name = "Download settori KML";
+
     public $showOnDetail = true;
     public $showOnIndex = false;
     public $showOnTableRow = true;
