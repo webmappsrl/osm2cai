@@ -16,13 +16,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\SectorsAreaFilter;
+use App\Nova\Lenses\SectorsColumnsLens;
+use App\Nova\Filters\SectorsRegionFilter;
+use App\Nova\Filters\SectorsProvinceFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Helpers\NovaCurrentResourceActionHelper;
-use App\Nova\Filters\HikingRoutesSectorFilter;
-use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
-use App\Nova\Lenses\SectorsColumnsLens;
+use App\Nova\Filters\HikingRoutesSectorFilter;
+use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 
 class Sector extends Resource
 {
@@ -204,12 +207,23 @@ class Sector extends Resource
      * Get the filters available for the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
      * @return array
      */
     public function filters(Request $request)
     {
-        return [];
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            return [
+                (new SectorsProvinceFilter()),
+                (new SectorsAreaFilter())
+            ];
+
+        } else {
+            return [
+                (new SectorsRegionFilter()),
+                (new SectorsProvinceFilter()),
+                (new SectorsAreaFilter())
+            ];
+        }
     }
 
     /**
