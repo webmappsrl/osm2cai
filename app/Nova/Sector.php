@@ -25,6 +25,7 @@ use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Nova\Filters\SectorsNullableFilter;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 
 class Sector extends Resource
@@ -211,19 +212,27 @@ class Sector extends Resource
      */
     public function filters(Request $request)
     {
-        if (Auth::user()->getTerritorialRole() == 'regional') {
-            return [
-                (new SectorsProvinceFilter()),
-                (new SectorsAreaFilter())
-            ];
+        /**
+         * @var \App\Models\User
+         */
+        $loggedInUser = Auth::user();
 
-        } else {
-            return [
-                (new SectorsRegionFilter()),
-                (new SectorsProvinceFilter()),
-                (new SectorsAreaFilter())
-            ];
+        //default filters
+        $filters = [
+            new SectorsRegionFilter,
+            new SectorsProvinceFilter,
+            new SectorsAreaFilter
+        ];
+
+        if ($loggedInUser->getTerritorialRole() == 'regional') {
+            unset($filters[0]);
         }
+
+        if ($loggedInUser->is_administrator) {
+            $filters[] = new SectorsNullableFilter;
+        }
+
+        return $filters;
     }
 
     /**
