@@ -29,6 +29,26 @@ class Province extends TerritorialUnit
         return $this->areas->pluck('id')->toArray();
     }
 
+    /**
+     * Alias
+     */
+    public function children(){
+        return $this->areas();
+    }
+    /**
+     * Alias
+     */
+    public function childrenIds() {
+        return $this->areasIds();
+    }
+    /**
+     * Alias
+     */
+    public function parent(){
+        return $this->region();
+    }
+
+
     public function sectorsIds(): array
     {
         $result = [];
