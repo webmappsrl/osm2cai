@@ -2,21 +2,31 @@
 
 namespace App\Nova;
 
-use App\Helpers\NovaCurrentResourceActionHelper;
-use App\Helpers\Osm2CaiHelper;
-use App\Nova\Actions\DownloadGeojson;
-use App\Nova\Actions\DownloadKml;
-use App\Nova\Actions\DownloadShape;
-use Ericlagarda\NovaTextCard\TextCard;
+use Laravel\Nova\Nova;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Imumz\LeafletMap\LeafletMap;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
+use App\Helpers\Osm2CaiHelper;
+use Laravel\Nova\Fields\Number;
+use Imumz\LeafletMap\LeafletMap;
+use App\Nova\Actions\DownloadKml;
+use Illuminate\Support\Facades\DB;
+use App\Nova\Actions\DownloadShape;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Nova\Actions\DownloadGeojson;
+use Ericlagarda\NovaTextCard\TextCard;
+use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\SectorsAreaFilter;
+use App\Nova\Lenses\SectorsColumnsLens;
+use App\Nova\Filters\SectorsRegionFilter;
+use App\Nova\Filters\SectorsProvinceFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Lenses\NoNameSectorsColumnsLens;
+use App\Nova\Lenses\NoNumExpectedColumnsLens;
+use App\Nova\Filters\HikingRoutesSectorFilter;
+use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Nova\Filters\SectorsNullableFilter;
+use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 
 class Sector extends Resource
 {
@@ -65,7 +75,19 @@ class Sector extends Resource
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
-            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+            $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+        }
+
+        /**
+         * @var \App\Models\User
+         */
+        $user = auth()->user();
+        if ( $user instanceof User && $user->region )
+        {
+            $query->whereHas( 'area.province.region',function( $eloquentBuilder ) use ($user){
+                $eloquentBuilder->where('id', $user->region->id );
+             });
+             //$this->area->province->region
         }
 
         return $query;
@@ -90,7 +112,7 @@ class Sector extends Resource
             Number::make(__('Numero Atteso'),'num_expected'),
             Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
-                return $this->area->province->region->name;
+                return $this->area->province->region->name ?? '';
             })->hideWhenUpdating(),
             Text::make(__('Province'), 'area_id', function () {
                 return $this->area->province->name;
@@ -102,7 +124,7 @@ class Sector extends Resource
         ];
 
         if (NovaCurrentResourceActionHelper::isDetail($request)) {
-            $fields[] = 
+            $fields[] =
                 LeafletMap::make('Mappa')
                 ->type('GeoJson')
                 ->geoJson(json_encode($this->getEmptyGeojson()))
@@ -160,8 +182,21 @@ class Sector extends Resource
 
     private function _getSdaCard(int $sda, int $num): TextCard
     {
+        $link = '#sda ' . $sda;
+        if ( $num > 0 )
+        {
+            $resourceId = request()->get('resourceId');
+            $filter = base64_encode(json_encode([
+                ['class' => HikingRoutesSectorFilter::class, 'value' => $resourceId]
+            ]));
+            $companyLinkWithFilter = trim(Nova::path(),'/') . "/resources/hiking-routes/lens/hiking-routes-status-$sda-lens?hiking-routes_filter=$filter";
+
+            $link = "<a href=\"{$companyLinkWithFilter}\" target='_blank'>#sda $sda</a>";
+        }
+
+
         return (new TextCard())->width('1/4')
-            ->text('<div>#sda ' . $sda . '</div>')
+            ->text('<div>' . $link . '</div>')
             ->textAsHtml()
             ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor($sda) . '; color: white; font-size: xx-large">' . $num . '</div>')
             ->headingAsHtml()
@@ -173,12 +208,31 @@ class Sector extends Resource
      * Get the filters available for the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
      * @return array
      */
     public function filters(Request $request)
     {
-        return [];
+        /**
+         * @var \App\Models\User
+         */
+        $loggedInUser = Auth::user();
+
+        //default filters
+        $filters = [
+            new SectorsRegionFilter,
+            new SectorsProvinceFilter,
+            new SectorsAreaFilter
+        ];
+
+        if ($loggedInUser->getTerritorialRole() == 'regional') {
+            unset($filters[0]);
+        }
+
+        if ($loggedInUser->is_administrator) {
+            $filters[] = new SectorsNullableFilter;
+        }
+
+        return $filters;
     }
 
     /**
@@ -190,7 +244,11 @@ class Sector extends Resource
      */
     public function lenses(Request $request)
     {
-        return [];
+        return [
+            new NoResponsabileSectorsColumnsLens,
+            new NoNameSectorsColumnsLens,
+            new NoNumExpectedColumnsLens
+        ];
     }
 
     /**

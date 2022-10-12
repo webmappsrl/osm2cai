@@ -3,19 +3,17 @@
 namespace App\Nova\Actions;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadShape extends Action
+class DownloadRegionRoutesGeojson extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = "Download settori Shape";
+    public $name = "Download percorsi Geojson";
 
     public $showOnDetail = true;
     public $showOnIndex = false;
@@ -26,7 +24,7 @@ class DownloadShape extends Action
      * Perform the action on the given models.
      *
      * @param \Laravel\Nova\Fields\ActionFields $fields
-     * @param \Illuminate\Support\Collection $models
+     * @param Collection $models
      *
      * @return mixed
      */
@@ -35,8 +33,9 @@ class DownloadShape extends Action
         $model = $models->first();
         $type = strtolower(last(explode('\\', get_class($model))));
         $id = $model->id;
+        $name = $model->name;
 
-        return Action::redirect(route('api.shapefile.' . $type, ['id' => $id]));
+        return Action::download(route('api.geojson_complete.' . $type, ['id' => $id]), $name . '.geojson');
     }
 
     /**
