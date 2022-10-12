@@ -30,4 +30,11 @@ class Sector extends TerritorialUnit
         return $this->belongsToMany(HikingRoute::class);
     }
 
+    /**
+     * Alias
+     */
+    public function parent(){
+        return $this->area();
+    }
+
 }

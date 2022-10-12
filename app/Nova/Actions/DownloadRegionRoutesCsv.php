@@ -6,16 +6,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadShape extends Action
+class DownloadRegionRoutesCsv extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = "Download settori Shape";
+    public $name = "Download percorsi CSV";
 
     public $showOnDetail = true;
     public $showOnIndex = false;
@@ -27,7 +25,6 @@ class DownloadShape extends Action
      *
      * @param \Laravel\Nova\Fields\ActionFields $fields
      * @param \Illuminate\Support\Collection $models
-     *
      * @return mixed
      */
     public function handle(ActionFields $fields, Collection $models)
@@ -35,8 +32,9 @@ class DownloadShape extends Action
         $model = $models->first();
         $type = strtolower(last(explode('\\', get_class($model))));
         $id = $model->id;
+        $name = $model->name;
 
-        return Action::redirect(route('api.shapefile.' . $type, ['id' => $id]));
+        return Action::download(route('api.csv.' . $type, ['id' => $id]), $name . '.kml');
     }
 
     /**

@@ -2,14 +2,18 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\DownloadGeojson;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Number;
 use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
+use App\Nova\Actions\DownloadGeojson;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Actions\DownloadRegionRoutesCsv;
+use App\Nova\Actions\DownloadRegionRoutesKml;
+use App\Nova\Actions\DownloadRegionRoutesShape;
+use App\Nova\Actions\DownloadRegionRoutesGeojson;
 
 class Region extends Resource
 {
@@ -172,6 +176,12 @@ class Region extends Resource
                 return $request->user()->can('downloadShape', $zone);
             }),
             (new DownloadKml)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
+            }),
+            (new DownloadRegionRoutesGeojson)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadGeojson', $zone);
+            }),
+            (new DownloadRegionRoutesCsv)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             })
 

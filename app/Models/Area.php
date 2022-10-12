@@ -35,4 +35,23 @@ class Area extends TerritorialUnit
         return $this->belongsToMany(HikingRoute::class);
     }
 
+    /**
+     * Alias
+     */
+    public function children(){
+        return $this->sectors();
+    }
+    /**
+     * Alias
+     */
+    public function childrenIds() {
+        return $this->sectorsIds();
+    }
+    /**
+     * Alias
+     */
+    public function parent(){
+        return $this->province();
+    }
+
 }

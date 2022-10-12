@@ -16,9 +16,17 @@ use Illuminate\Support\Facades\Auth;
 use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\SectorsAreaFilter;
+use App\Nova\Lenses\SectorsColumnsLens;
+use App\Nova\Filters\SectorsRegionFilter;
+use App\Nova\Filters\SectorsProvinceFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Nova\Lenses\NoNameSectorsColumnsLens;
+use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
+use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Nova\Filters\SectorsNullableFilter;
+use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 
 class Sector extends Resource
 {
@@ -104,7 +112,7 @@ class Sector extends Resource
             Number::make(__('Numero Atteso'),'num_expected'),
             Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating(),
             Text::make(__('Region'), 'area_id', function () {
-                return $this->area->province->region->name;
+                return $this->area->province->region->name ?? '';
             })->hideWhenUpdating(),
             Text::make(__('Province'), 'area_id', function () {
                 return $this->area->province->name;
@@ -200,12 +208,31 @@ class Sector extends Resource
      * Get the filters available for the resource.
      *
      * @param \Illuminate\Http\Request $request
-     *
      * @return array
      */
     public function filters(Request $request)
     {
-        return [];
+        /**
+         * @var \App\Models\User
+         */
+        $loggedInUser = Auth::user();
+
+        //default filters
+        $filters = [
+            new SectorsRegionFilter,
+            new SectorsProvinceFilter,
+            new SectorsAreaFilter
+        ];
+
+        if ($loggedInUser->getTerritorialRole() == 'regional') {
+            unset($filters[0]);
+        }
+
+        if ($loggedInUser->is_administrator) {
+            $filters[] = new SectorsNullableFilter;
+        }
+
+        return $filters;
     }
 
     /**
@@ -217,7 +244,11 @@ class Sector extends Resource
      */
     public function lenses(Request $request)
     {
-        return [];
+        return [
+            new NoResponsabileSectorsColumnsLens,
+            new NoNameSectorsColumnsLens,
+            new NoNumExpectedColumnsLens
+        ];
     }
 
     /**
