@@ -209,6 +209,7 @@ class HikingRoute extends Resource
                 $statoDiAccatastamento .= "<h5 class=\"font-light\">Validatore: {$hr->validator->name} ({$hr->validator->email})</h5>";
 
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
+            $wmt = "https://hiking.waymarkedtrails.org/#route?id= " . $hr->relation_id;
             return [
                 (new TextCard())
                     ->center(false)
@@ -221,9 +222,11 @@ class HikingRoute extends Resource
                     ->center(false)
                     ->onlyOnDetail()
                     ->width('1/4')
-                    ->heading('<a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a>')
-                    ->text('OSMID')
-                    ->headingAsHtml(),
+                    ->text(
+                        '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
+                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>'
+                        )
+                    ->textAsHtml(),
 
                 (new TextCard())
                     ->center(false)
