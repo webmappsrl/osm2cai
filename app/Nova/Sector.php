@@ -120,6 +120,7 @@ class Sector extends Resource
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             })->hideWhenUpdating(),
+            BelongsToMany::make('Moderators','users')
 
         ];
 

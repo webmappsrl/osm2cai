@@ -42,7 +42,7 @@ class UserPolicy {
     }
 
     public function viewAny(User $user): bool {
-        return $user->is_administrator;
+        return true;
     }
 
     public function view(User $user, User $model): bool {
