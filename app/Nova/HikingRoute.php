@@ -299,7 +299,7 @@ class HikingRoute extends Resource
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
                 (new ValidateHikingRouteAction)
-                    ->confirmText('Sei sicuro di voler validare questo percorso?')
+                    ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                     ->confirmButtonText('Confermo')
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
