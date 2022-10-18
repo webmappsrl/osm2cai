@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Models\User;
 use Laravel\Nova\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -26,7 +27,7 @@ use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
-use App\Models\User;
+use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
@@ -132,8 +133,12 @@ class Sector extends Resource
                 ->type('GeoJson')
                 ->geoJson(json_encode($this->getEmptyGeojson()))
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
-                ->zoom(12)
+                ->zoom(9)
                 ->onlyOnDetail();
+                // MapMultiPolygonNova3::make('geometry')->withMeta([
+                //     'geojson' => json_encode($this->getEmptyGeojson()),
+                //     'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                // ])->onlyOnDetail();
         }
 
         return $fields;
