@@ -762,7 +762,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return [
             (new NovaSidebar())->hydrate([
                 'Tools' => [
-                    ['Mappa', 'http://osm2cai.j.webmapp.it']
+                    ['Mappa', 'http://osm2cai.j.webmapp.it'],
+                    ['Mappa Percorsi', 'https://26.app.geohub.webmapp.it/'],
                 ],
             ])
         ];
