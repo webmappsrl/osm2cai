@@ -26,6 +26,7 @@ use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
+use App\Models\User;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
