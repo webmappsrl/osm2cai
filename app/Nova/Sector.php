@@ -19,14 +19,15 @@ use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectorsAreaFilter;
 use App\Nova\Lenses\SectorsColumnsLens;
 use App\Nova\Filters\SectorsRegionFilter;
+use App\Nova\Filters\SectorsNullableFilter;
 use App\Nova\Filters\SectorsProvinceFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
-use App\Nova\Filters\SectorsNullableFilter;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
+use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
 class Sector extends Resource
 {
@@ -271,6 +272,9 @@ class Sector extends Resource
             (new DownloadKml())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             }),
+            (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
+                return $request->user()->can('attachUser', $zone);
+            })
         ];
     }
 }
