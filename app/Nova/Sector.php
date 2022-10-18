@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Models\User;
 use Laravel\Nova\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
@@ -19,14 +20,16 @@ use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectorsAreaFilter;
 use App\Nova\Lenses\SectorsColumnsLens;
 use App\Nova\Filters\SectorsRegionFilter;
+use App\Nova\Filters\SectorsNullableFilter;
 use App\Nova\Filters\SectorsProvinceFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Lenses\NoNameSectorsColumnsLens;
 use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
-use App\Nova\Filters\SectorsNullableFilter;
+use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
+use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
 class Sector extends Resource
 {
@@ -120,6 +123,7 @@ class Sector extends Resource
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             })->hideWhenUpdating(),
+            BelongsToMany::make('Moderators','users')
 
         ];
 
@@ -129,8 +133,12 @@ class Sector extends Resource
                 ->type('GeoJson')
                 ->geoJson(json_encode($this->getEmptyGeojson()))
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
-                ->zoom(12)
+                ->zoom(9)
                 ->onlyOnDetail();
+                // MapMultiPolygonNova3::make('geometry')->withMeta([
+                //     'geojson' => json_encode($this->getEmptyGeojson()),
+                //     'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                // ])->onlyOnDetail();
         }
 
         return $fields;
@@ -270,6 +278,9 @@ class Sector extends Resource
             (new DownloadKml())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             }),
+            (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
+                return $request->user()->can('attachUser', $zone);
+            })
         ];
     }
 }

@@ -31,7 +31,8 @@
     "spatie/schema-org": "^3.9",
     "subfission/cas": "^4",
     "suenerds/nova-searchable-belongs-to-filter": "^1.0",
-    "symm/gisconverter": "^1.0"
+    "symm/gisconverter": "^1.0",
+    "wm/map-multi-polygon-nova3": "dev-main"
   },
   "require-dev": {
     "facade/ignition": "^2.5",

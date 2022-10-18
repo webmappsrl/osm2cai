@@ -10,20 +10,8 @@ use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
-use App\Nova\Dashboards\RegionReferentDashboard;
-use App\Nova\Dashboards\UserSectors;
-use App\Nova\Metrics\AreasNumberByMyRegionValueMetric;
-use App\Nova\Metrics\HikingRoutesNumberByMyRegionValueMetric;
-use App\Nova\Metrics\HikingRoutesNumberStatus1ByMyRegionValueMetric;
-use App\Nova\Metrics\HikingRoutesNumberStatus2ByMyRegionValueMetric;
-use App\Nova\Metrics\HikingRoutesNumberStatus3ByMyRegionValueMetric;
-use App\Nova\Metrics\HikingRoutesNumberStatus4ByMyRegionValueMetric;
-use App\Nova\Metrics\ProvincesNumberByMyRegionValueMetric;
-use App\Nova\Metrics\SectorsNumberByMyRegionValueMetric;
-use App\Nova\Metrics\TotalAreasCount;
-use App\Nova\Metrics\TotalProvincesCount;
-use App\Nova\Metrics\TotalRegionsCount;
-use App\Nova\Metrics\TotalSectorsCount;
+use App\Nova\Dashboards\SectorsDashboard;
+use App\Services\CardsService;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
 use Illuminate\Support\Arr;
@@ -31,7 +19,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Nova\Cards\Help;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 use Mako\CustomTableCard\CustomTableCard;
@@ -298,11 +285,12 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $provinceCards[] = $this->_getChildrenTableCardByModel($province);//areas
         }
 
+        $cardsService = new CardsService;
         $cards = array_merge(
             $cards,
             [$this->_getChildrenTableCardByModel($user->region)],//provinces
             $provinceCards,//areas
-            [$this->_getSectorsTableCard()]//sectors
+            [$cardsService->getSectorsTableCard()]//sectors
         );
 
 
@@ -527,75 +515,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return $regionsCard;
     }
 
-    /**
-     * @return CustomTableCard
-     */
-    private function _getSectorsTableCard(): CustomTableCard
-    {
 
-        $sectorsCard = new CustomTableCard();
-        $sectorsCard->title(__('SDA e SAL Settori - ' . Auth::user()->region->name));
-
-        // Headings
-        $sectorsCard->header([
-            new Cell(__('Settore')),
-            new Cell(__('Nome')),
-            new Cell(__('#1')),
-            new Cell(__('#2')),
-            new Cell(__('#3')),
-            new Cell(__('#4')),
-            new Cell(__('#tot')),
-            new Cell(__('#att')),
-            new Cell(__('SAL')),
-            new Cell(__('Actions')),
-        ]);
-
-        // Get sectors_id
-        $sectors_id = [];
-        foreach (Auth::user()->region->provinces as $province) {
-            if (Arr::accessible($province->areas)) {
-                foreach ($province->areas as $area) {
-                    if (Arr::accessible($area->sectors)) {
-                        $sectors_id = array_merge($sectors_id, $area->sectors->pluck('id')->toArray());
-                    }
-                }
-            }
-        }
-
-        // Extract data from views
-        // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
-        $items = DB::table('sectors_view')
-            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
-            ->whereIn('id', $sectors_id)
-            ->get();
-
-        $data = [];
-        foreach ($items as $item) {
-
-            $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
-            $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
-            $sal_color = Osm2CaiHelper::getSalColor($sal);
-            $sector = Sector::find($item->id);
-
-            $row = new Row(
-                new Cell("{$item->full_code}"),
-                new Cell($sector->human_name),
-                new Cell($item->tot1),
-                new Cell($item->tot2),
-                new Cell($item->tot3),
-                new Cell($item->tot4),
-                new Cell($tot),
-                new Cell($item->num_expected),
-                new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
-            );
-            $data[] = $row;
-        }
-
-        $sectorsCard->data($data);
-
-        return $sectorsCard;
-    }
 
     /**
      * A copy of $this->_getSectorsTableCard() dynamicized with modelClassName parameter
@@ -816,9 +736,20 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     protected function dashboards()
     {
-        return [
-            (new ItalyDashboard()),
+        $dashboards = [
+            new ItalyDashboard,
         ];
+
+        /**
+         * @var \App\Models\User
+         */
+        $loggedInUser = Auth::user();
+        if ( $loggedInUser->getTerritorialRole() == 'regional' )
+        {
+            $dashboards[] = new SectorsDashboard;
+        }
+
+        return $dashboards;
     }
 
     /**
@@ -831,7 +762,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return [
             (new NovaSidebar())->hydrate([
                 'Tools' => [
-                    ['Mappa', 'http://osm2cai.j.webmapp.it']
+                    ['Mappa Settori', 'http://osm2cai.j.webmapp.it/#/main/map'],
+                    ['Mappa Percorsi', 'https://26.app.geohub.webmapp.it/#/map'],
+                    ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map']
                 ],
             ])
         ];
