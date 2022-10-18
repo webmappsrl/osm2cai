@@ -13,6 +13,14 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Moderator extends Resource {
+
+     /**
+     * Indicates if the resource should be displayed in the sidebar.
+     *
+     * @var bool
+     */
+    public static $displayInNavigation = false;
+
     public static string $model = \App\Models\User::class;
     public static string $title = 'name';
     public static array $search = [
