@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59dda5577086a2e9e9a0b621d39cdfd3",
+    "content-hash": "77ba1989b6568dd0648c046f53569dfe",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -7604,6 +7604,52 @@
             "time": "2021-03-09T10:59:23+00:00"
         },
         {
+            "name": "wm/map-multi-polygon-nova3",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webmappsrl/map-multi-polygon-nova3.git",
+                "reference": "c643e8f6ae36dd3032987ea5d25e0a04cedb22d7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webmappsrl/map-multi-polygon-nova3/zipball/c643e8f6ae36dd3032987ea5d25e0a04cedb22d7",
+                "reference": "c643e8f6ae36dd3032987ea5d25e0a04cedb22d7",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Wm\\MapMultiPolygonNova3\\FieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Wm\\MapMultiPolygonNova3\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova field.",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "support": {
+                "issues": "https://github.com/webmappsrl/map-multi-polygon-nova3/issues",
+                "source": "https://github.com/webmappsrl/map-multi-polygon-nova3/tree/main"
+            },
+            "time": "2022-09-08T08:16:30+00:00"
+        },
+        {
             "name": "zircote/swagger-php",
             "version": "4.4.5",
             "source": {
@@ -10232,7 +10278,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "wm/map-multi-polygon-nova3": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

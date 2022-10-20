@@ -94,4 +94,9 @@ class SectorPolicy
     {
         return false;
     }
+
+    public function attachUser(User $user, Sector $sector, User $userToAttach)
+    {
+        return ! $sector->users->contains($userToAttach);
+    }
 }
