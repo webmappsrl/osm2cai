@@ -279,7 +279,7 @@ class Sector extends Resource
                 return $request->user()->can('downloadKml', $zone);
             }),
             (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
-                return $request->user()->can('attachUser', $zone);
+                return $request->user()->can('bulkAssignUser', $zone);
             })
         ];
     }

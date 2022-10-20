@@ -95,8 +95,13 @@ class SectorPolicy
         return false;
     }
 
-    public function attachUser(User $user, Sector $sector, User $userToAttach)
+    public function attachUser(User $user, Sector $sector, $userToAttach)
     {
         return ! $sector->users->contains($userToAttach);
+    }
+
+    public function bulkAssignUser( User $user, Sector $sector )
+    {
+        return true;
     }
 }
