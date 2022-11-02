@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Traits\SallableTrait;
+use App\Traits\OwnableModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Province extends TerritorialUnit
 {
-    use HasFactory, SallableTrait;
+    use HasFactory, SallableTrait, OwnableModelTrait;
 
     protected $fillable = [
         'num_expected',

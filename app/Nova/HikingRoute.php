@@ -89,13 +89,14 @@ class HikingRoute extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        if (Auth::user()->getTerritorialRole() == 'regional') {
-            $value = Auth::user()->region->id;
-            return $query->whereHas('regions', function ($query) use ($value) {
-                $query->where('region_id', $value);
-            });
+        $loggedInUser = Auth::user();
+        $role = $loggedInUser->getTerritorialRole();
+        if ( $role != "admin")
+        {
+            $query->ownedBy($loggedInUser);
         }
-        return parent::indexQuery($request, $query);
+
+        return $query;
     }
 
     /**

@@ -85,15 +85,8 @@ class Sector extends Resource
          * @var \App\Models\User
          */
         $user = auth()->user();
-        if ( $user instanceof User && $user->region )
-        {
-            $query->whereHas( 'area.province.region',function( $eloquentBuilder ) use ($user){
-                $eloquentBuilder->where('id', $user->region->id );
-             });
-             //$this->area->province->region
-        }
 
-        return $query;
+        return $query->ownedBy($user);
     }
 
     /**

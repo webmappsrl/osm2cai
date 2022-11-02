@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\GeojsonableTrait;
+use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,7 @@ use Symm\Gisconverter\Gisconverter;
  */
 class HikingRoute extends Model
 {
-    use HasFactory, GeojsonableTrait;
+    use HasFactory, GeojsonableTrait, OwnableModelTrait;
 
     protected $fillable = [
         'relation_id',
@@ -563,4 +564,32 @@ EOF;
                 ->zoom(12)
         ];
     }
+
+    /**
+     * Scope a query to only include models owned by a certain user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Model\User  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOwnedBy($query, User $user)
+    {
+
+        //collect all possible hiking route partents model related to user
+        $userModels = collect([
+            [$user->region],//force array
+            $user->provinces->all(),//array
+            $user->areas->all(),//array
+            $user->sectors->all()//array
+        ])->filter()->collapse();
+
+        $userHikingRoutes = $userModels->filter()->map( function($model){
+            //iterate over them to get children up to hikingRoutes
+            return $model->getHikingRoutes();
+        } )->collapse()->unique();
+
+        $userHikingRoutesIds = $userHikingRoutes->pluck('id');
+        return $query->whereIn('id', $userHikingRoutesIds);
+    }
+
 }
