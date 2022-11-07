@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\DB;
+use Symm\Gisconverter\Gisconverter;
+use Symm\Gisconverter\Exceptions\InvalidText;
 
 trait GeojsonableTrait
 {
@@ -20,7 +22,7 @@ trait GeojsonableTrait
             )
             ->first();
 
-        if(is_null($obj)) {
+        if (is_null($obj)) {
             return null;
         }
         $geom = $obj->geom;
@@ -49,7 +51,7 @@ trait GeojsonableTrait
             )
             ->first();
 
-        if(is_null($obj)) {
+        if (is_null($obj)) {
             return null;
         }
         $geom = $obj->geom;
@@ -105,12 +107,12 @@ trait GeojsonableTrait
             )
             ->first();
 
-            if(is_null($obj)) {
-                return null;
-            }
+        if (is_null($obj)) {
+            return null;
+        }
 
         $geom = $obj->geom;
-    
+
         if (isset($geom)) {
             return [
                 "type" => "Feature",
@@ -133,4 +135,78 @@ trait GeojsonableTrait
         return null;
     }
 
+
+
+    public function textToGeojson($text = '')
+    {
+        $geometry = $contentType = null;
+        if ($text) {
+            if (strpos($text, '<?xml') !== false && strpos($text, '<?xml') < 10) {
+                $geojson = '';
+                if ('' === $geojson) {
+                    try {
+                        $geojson = Gisconverter::gpxToGeojson($text);
+                        $content = json_decode($geojson);
+                        $contentType = @$content->type;
+                    } catch (InvalidText $ec) {
+                    }
+                }
+
+                if ('' === $geojson) {
+                    try {
+                        $geojson = Gisconverter::kmlToGeojson($text);
+                        $content = json_decode($geojson);
+                        $contentType = @$content->type;
+                    } catch (InvalidText $ec) {
+                    }
+                }
+            } else {
+                $content = json_decode($text);
+                $isJson = json_last_error() === JSON_ERROR_NONE;
+                if ($isJson) {
+                    $contentType = $content->type;
+                }
+            }
+
+            if ($contentType) {
+                switch ($contentType) {
+                    case "GeometryCollection":
+                        foreach ($content->geometries as $item) {
+                            if ($item->type == 'LineString') {
+                                $contentGeometry = $item;
+                            }
+                        }
+                        break;
+                    case "FeatureCollection":
+                        $contentGeometry = $content->features[0]->geometry;
+                        break;
+                    case "LineString":
+                        $contentGeometry = $content;
+                        break;
+                    default:
+                        $contentGeometry = $content->geometry;
+                        break;
+                }
+
+                $geometry = json_encode($contentGeometry);
+            }
+        }
+
+        return $geometry;
+    }
+
+
+
+    /**
+     * @param string json encoded geometry.
+     */
+    public function fileToGeometry($fileContent = '')
+    {
+        $geometry = null;
+        $geojson = $this->textToGeojson($fileContent);
+        if ( $geojson )
+            $geometry = DB::select( DB::raw("select (ST_Force3D(ST_GeomFromGeoJSON('" . $geojson . "'))) as g "))[0]->g;
+
+        return $geometry;
+    }
 }

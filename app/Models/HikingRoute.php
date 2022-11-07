@@ -496,64 +496,7 @@ EOF;
         $this->save();
     }
 
-    /**
-     * @param string json encoded geometry.
-     */
-    public function fileToGeometry($fileContent = '') {
-        $geometry = $contentType = null;
-        if ($fileContent) {
-            if (strpos($fileContent,'<?xml') !== false && strpos($fileContent,'<?xml') < 10 ) {
-                $geojson = '';
-                if ('' === $geojson) {
-                    try {
-                        $geojson = Gisconverter::gpxToGeojson($fileContent);
-                        $content = json_decode($geojson);
-                        $contentType = @$content->type;
-                    } catch (InvalidText $ec) {
-                    }
-                }
 
-                if ('' === $geojson) {
-                    try {
-                        $geojson = Gisconverter::kmlToGeojson($fileContent);
-                        $content = json_decode($geojson);
-                        $contentType = @$content->type;
-                    } catch (InvalidText $ec) {
-                    }
-                }
-            } else {
-                $content = json_decode($fileContent);
-                $isJson = json_last_error() === JSON_ERROR_NONE;
-                if ($isJson) {
-                    $contentType = $content->type;
-                }
-            }
-
-            if ($contentType) {
-                switch ($contentType) {
-                    case "GeometryCollection":
-                        foreach($content->geometries as $item) {
-                            if ($item->type=='LineString') {
-                                $contentGeometry=$item;
-                            }
-                        }
-                        break;
-                    case "FeatureCollection":
-                        $contentGeometry = $content->features[0]->geometry;
-                        break;
-                    case "LineString":
-                    $contentGeometry = $content;
-                    break;
-                    default:
-                        $contentGeometry = $content->geometry;
-                        break;
-                }
-                $geometry = DB::select(DB::raw("select (ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "'))) as g "))[0]->g;
-            }
-        }
-
-        return $geometry;
-    }
 
     public function addLayerToMap($geometry,$getCentroid) {
         return [
@@ -564,6 +507,7 @@ EOF;
                 ->zoom(12)
         ];
     }
+
 
     /**
      * Scope a query to only include models owned by a certain user.

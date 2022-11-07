@@ -30,6 +30,7 @@ use App\Helpers\NovaCurrentResourceActionHelper;
 use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
+use App\Nova\Actions\UploadSectorGeometryDataAction;
 
 class Sector extends Resource
 {
@@ -273,7 +274,13 @@ class Sector extends Resource
             }),
             (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
                 return $request->user()->can('bulkAssignUser', $zone);
-            })
+            }),
+            (new UploadSectorGeometryDataAction)
+            ->confirmText('Inserire un file con la nuova geometria del settore.')
+            ->confirmButtonText('Aggiorna geometria')
+            ->cancelButtonText("Annulla")
+            ->canSee(function ($request) { return true;})
+            ->canRun(function ($request, $user) { return true;}),
         ];
     }
 }
