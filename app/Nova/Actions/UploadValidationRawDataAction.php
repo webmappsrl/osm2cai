@@ -25,7 +25,7 @@ class UploadValidationRawDataAction extends Action
 
     public function __construct($HR = null)
     {
-        
+
         $this->HR = HikingRoute::find($HR); ;
 
     }
@@ -40,7 +40,7 @@ class UploadValidationRawDataAction extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         $model = $models->first();
-        
+
         if ($fields->geometry) {
             $path = $fields->geometry->storeAs('local',explode('.',$fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
             $content = Storage::get($path);
@@ -48,8 +48,12 @@ class UploadValidationRawDataAction extends Action
 
             $model->geometry_raw_data = $geom;
             $model->save();
+            return Action::message('File caricato e geometria aggiornata con successo!');
         }
-        return Action::message('It worked!');
+
+        return Action::danger("Impossibile aggiornare la geometry. Inserisci un file valido.");
+
+
     }
 
     /**

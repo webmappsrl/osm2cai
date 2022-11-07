@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\SallableTrait;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\OwnableModelTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Region extends TerritorialUnit
 {
-    use HasFactory, SallableTrait;
+    use HasFactory, SallableTrait, OwnableModelTrait;
 
     protected $fillable = [
         'num_expected',
@@ -153,4 +154,19 @@ class Region extends TerritorialUnit
         $g['features']=$features;
         return json_encode($g);
     }
+
+
+    /**
+     * Scope a query to only include models owned by a certain user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Model\User  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOwnedBy($query, User $user)
+    {
+        $userModelIds = $user->region->pluck('id');
+        return $query->whereIn('id', $userModelIds);
+    }
+
 }

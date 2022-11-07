@@ -285,12 +285,12 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $provinceCards[] = $this->_getChildrenTableCardByModel($province);//areas
         }
 
-        $cardsService = new CardsService;
+        //$cardsService = new CardsService;
         $cards = array_merge(
             $cards,
             [$this->_getChildrenTableCardByModel($user->region)],//provinces
             $provinceCards,//areas
-            [$cardsService->getSectorsTableCard()]//sectors
+            //[$cardsService->getSectorsTableCard()]//sectors
         );
 
 

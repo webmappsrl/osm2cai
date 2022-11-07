@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\GeojsonableTrait;
+use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,7 @@ use Symm\Gisconverter\Gisconverter;
  */
 class HikingRoute extends Model
 {
-    use HasFactory, GeojsonableTrait;
+    use HasFactory, GeojsonableTrait, OwnableModelTrait;
 
     protected $fillable = [
         'relation_id',
@@ -495,64 +496,7 @@ EOF;
         $this->save();
     }
 
-    /**
-     * @param string json encoded geometry.
-     */
-    public function fileToGeometry($fileContent = '') {
-        $geometry = $contentType = null;
-        if ($fileContent) {
-            if (strpos($fileContent,'<?xml') !== false && strpos($fileContent,'<?xml') < 10 ) {
-                $geojson = '';
-                if ('' === $geojson) {
-                    try {
-                        $geojson = Gisconverter::gpxToGeojson($fileContent);
-                        $content = json_decode($geojson);
-                        $contentType = @$content->type;
-                    } catch (InvalidText $ec) {
-                    }
-                }
 
-                if ('' === $geojson) {
-                    try {
-                        $geojson = Gisconverter::kmlToGeojson($fileContent);
-                        $content = json_decode($geojson);
-                        $contentType = @$content->type;
-                    } catch (InvalidText $ec) {
-                    }
-                }
-            } else {
-                $content = json_decode($fileContent);
-                $isJson = json_last_error() === JSON_ERROR_NONE;
-                if ($isJson) {
-                    $contentType = $content->type;
-                }
-            }
-
-            if ($contentType) {
-                switch ($contentType) {
-                    case "GeometryCollection":
-                        foreach($content->geometries as $item) {
-                            if ($item->type=='LineString') {
-                                $contentGeometry=$item;
-                            }
-                        }
-                        break;
-                    case "FeatureCollection":
-                        $contentGeometry = $content->features[0]->geometry;
-                        break;
-                    case "LineString":
-                    $contentGeometry = $content;
-                    break;
-                    default:
-                        $contentGeometry = $content->geometry;
-                        break;
-                }
-                $geometry = DB::select(DB::raw("select (ST_Force3D(ST_GeomFromGeoJSON('" . json_encode($contentGeometry) . "'))) as g "))[0]->g;
-            }
-        }
-
-        return $geometry;
-    }
 
     public function addLayerToMap($geometry,$getCentroid) {
         return [
@@ -563,4 +507,33 @@ EOF;
                 ->zoom(12)
         ];
     }
+
+
+    /**
+     * Scope a query to only include models owned by a certain user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Model\User  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOwnedBy($query, User $user)
+    {
+
+        //collect all possible hiking route partents model related to user
+        $userModels = collect([
+            [$user->region],//force array
+            $user->provinces->all(),//array
+            $user->areas->all(),//array
+            $user->sectors->all()//array
+        ])->filter()->collapse();
+
+        $userHikingRoutes = $userModels->filter()->map( function($model){
+            //iterate over them to get children up to hikingRoutes
+            return $model->getHikingRoutes();
+        } )->collapse()->unique();
+
+        $userHikingRoutesIds = $userHikingRoutes->pluck('id');
+        return $query->whereIn('id', $userHikingRoutesIds);
+    }
+
 }
