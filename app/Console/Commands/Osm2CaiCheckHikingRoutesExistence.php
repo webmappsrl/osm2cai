@@ -13,7 +13,7 @@ class Osm2CaiCheckHikingRoutesExistence extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:check_hikig_routes_existence';
+    protected $signature = 'osm2cai:check_hiking_routes_existence';
 
     /**
      * The console command description.
@@ -39,7 +39,7 @@ class Osm2CaiCheckHikingRoutesExistence extends Command
      */
     public function handle()
     {
-        $service = new OsmService();
+        $service = OsmService::getService();
         HikingRoute::where('deleted_on_osm',false)->get()->map( function($hr) use ($service) {
             $this->info("Checking {$hr->name} (id:{$hr->id} | relation_id:{$hr->relation_id})");
             if ( $service->hikingRouteExists( $hr->relation_id ) === false )
