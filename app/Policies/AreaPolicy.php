@@ -30,6 +30,9 @@ class AreaPolicy
 
     public function view(User $user, Area $area)
     {
+        if($user->is_administrator || $user->is_national_referent) {
+            return true;
+        }
         return false;
     }
 
