@@ -211,6 +211,7 @@ class HikingRoute extends Resource
 
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
             $wmt = "https://hiking.waymarkedtrails.org/#route?id= " . $hr->relation_id;
+            $analyzer = "https://ra.osmsurround.org/analyzeRelation?relationId=" . $hr->relation_id . "&noCache=true&_noCache=on";
             return [
                 (new TextCard())
                     ->center(false)
@@ -225,7 +226,8 @@ class HikingRoute extends Resource
                     ->width('1/4')
                     ->text(
                         '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>'
+                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
+                        '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
                         )
                     ->textAsHtml(),
 
