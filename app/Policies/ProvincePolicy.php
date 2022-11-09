@@ -30,6 +30,9 @@ class ProvincePolicy
 
     public function view(User $user, Province $province)
     {
+        if($user->is_administrator || $user->is_national_referent) {
+            return true;
+        }
         return false;
     }
 
