@@ -33,7 +33,7 @@ class HikingRoute extends Model
         'tags_osm', 'geometry_osm',
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
         'ascent_osm', 'descent_osm', 'distance_osm', 'duration_forward_osm', 'duration_backward_comp',
-        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data','osm2cai_status'
+        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status'
     ];
 
     protected $casts = [
@@ -91,7 +91,7 @@ class HikingRoute extends Model
 
     public function validator()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function regions()
@@ -216,14 +216,14 @@ class HikingRoute extends Model
                 // Compute from CAI geometry
                 // Distance
                 $this->distance_comp = round(DB::table('hiking_routes')
-                        ->selectRaw('ST_length(geometry,true) as length')
-                        ->find($this->id)->length / 1000.0, 2);
+                    ->selectRaw('ST_length(geometry,true) as length')
+                    ->find($this->id)->length / 1000.0, 2);
             } else {
                 // Compute from OSM geometry
                 // Distance
                 $this->distance_comp = round(DB::table('hiking_routes')
-                        ->selectRaw('ST_length(geometry_osm,true) as length')
-                        ->find($this->id)->length / 1000.0, 2);
+                    ->selectRaw('ST_length(geometry_osm,true) as length')
+                    ->find($this->id)->length / 1000.0, 2);
             }
         }
     }
@@ -287,7 +287,6 @@ class HikingRoute extends Model
         ;
 EOF;
         DB::update(DB::raw($q));
-
     }
 
     /**
@@ -489,7 +488,8 @@ EOF;
         return $res[0]->json_build_object;
     }
 
-    public function validateSDA($user_id, $date) {
+    public function validateSDA($user_id, $date)
+    {
         $this->validation_date = $date;
         $this->user_id = $user_id;
         $this->osm2cai_status = 4;
@@ -498,9 +498,10 @@ EOF;
 
 
 
-    public function addLayerToMap($geometry,$getCentroid) {
+    public function addLayerToMap($geometry, $getCentroid)
+    {
         return [
-        LeafletMap::make('Mappa')
+            LeafletMap::make('Mappa')
                 ->type('GeoJson')
                 ->geoJson(json_encode($geometry))
                 ->center($getCentroid[1], $getCentroid[0])
@@ -521,19 +522,32 @@ EOF;
 
         //collect all possible hiking route partents model related to user
         $userModels = collect([
-            [$user->region],//force array
-            $user->provinces->all(),//array
-            $user->areas->all(),//array
-            $user->sectors->all()//array
+            [$user->region], //force array
+            $user->provinces->all(), //array
+            $user->areas->all(), //array
+            $user->sectors->all() //array
         ])->filter()->collapse();
 
-        $userHikingRoutes = $userModels->filter()->map( function($model){
+        $userHikingRoutes = $userModels->filter()->map(function ($model) {
             //iterate over them to get children up to hikingRoutes
             return $model->getHikingRoutes();
-        } )->collapse()->unique();
+        })->collapse()->unique();
 
         $userHikingRoutesIds = $userHikingRoutes->pluck('id');
         return $query->whereIn('id', $userHikingRoutesIds);
     }
 
+
+
+    public function hasCorrectGeometry()
+    {
+        $geojson = $this->query()->where('id', $this->id)->selectRaw('ST_AsGeoJSON(geometry) as geom')->get()->pluck('geom')->first();
+        $geom = json_decode($geojson, TRUE);
+        $type = $geom['type'];
+        $nseg = count($geom['coordinates']);
+        if ($nseg > 1 && $this->osm2cai_status == 4)
+            return false;
+
+        return true;
+    }
 }
