@@ -29,7 +29,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Imumz\LeafletMap\LeafletMap;
-
+use Laravel\Nova\Fields\Boolean;
 
 class HikingRoute extends Resource
 {
@@ -109,7 +109,7 @@ class HikingRoute extends Resource
     public function fields(Request $request)
     {
 
-        return [
+        $fields = [
             Text::make('Regioni', function () {
                 $val = "ND";
                 if (Arr::accessible($this->regions)) {
@@ -166,6 +166,15 @@ class HikingRoute extends Resource
                 'Other' => $this->getMetaFields('other'),
             ]))->withToolbar(),
         ];
+
+        $loggedInUser = auth()->user();
+        $role = $loggedInUser->getTerritorialRole();
+        if ( in_array( $role , ['admin','national','regional']) )
+        {
+            $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
+        }
+
+        return $fields;
     }
 
     private function getMetaFields($group): array
