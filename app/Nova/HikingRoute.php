@@ -165,7 +165,7 @@ class HikingRoute extends Resource
                 'General' => $this->getMetaFields('general'),
                 'Tech' => $this->getMetaFields('tech'),
                 'Other' => $this->getMetaFields('other'),
-            ]))->withToolbar(),
+            ])),
         ];
 
         $loggedInUser = auth()->user();
