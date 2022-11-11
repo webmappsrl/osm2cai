@@ -2,34 +2,35 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\UploadValidationRawDataAction;
-use App\Nova\Filters\HikingRoutesAreaFilter;
-use App\Nova\Filters\HikingRoutesProvinceFilter;
-use App\Nova\Filters\HikingRoutesRegionFilter;
-use App\Nova\Filters\HikingRoutesSectorFilter;
+use DKulyk\Nova\Tabs;
+use Laravel\Nova\Panel;
+use Illuminate\Support\Arr;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Number;
+use Imumz\LeafletMap\LeafletMap;
+use Laravel\Nova\Fields\Boolean;
+use Illuminate\Support\Facades\Auth;
+use Ericlagarda\NovaTextCard\TextCard;
 use App\Nova\Filters\HikingRouteStatus;
-use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Lenses\HikingRoutesStatusLens;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Filters\HikingRoutesAreaFilter;
 use App\Nova\Lenses\HikingRoutesStatus0Lens;
 use App\Nova\Lenses\HikingRoutesStatus1Lens;
 use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
-use App\Nova\Lenses\HikingRoutesStatusLens;
-use DKulyk\Nova\Tabs;
+use App\Nova\Actions\OsmSyncHikingRouteAction;
+use App\Nova\Filters\HikingRoutesRegionFilter;
+use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Actions\ValidateHikingRouteAction;
-use Ericlagarda\NovaTextCard\TextCard;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel;
+use App\Nova\Filters\HikingRoutesProvinceFilter;
+use App\Nova\Actions\UploadValidationRawDataAction;
+use App\Nova\Filters\HikingRoutesTerritorialFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
-use Imumz\LeafletMap\LeafletMap;
-use Laravel\Nova\Fields\Boolean;
 
 class HikingRoute extends Resource
 {
@@ -317,6 +318,14 @@ class HikingRoute extends Resource
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
+
+                (new OsmSyncHikingRouteAction)
+                    ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
+                    ->confirmButtonText('Aggiorna con dati osm')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+
             ];
     }
 }
