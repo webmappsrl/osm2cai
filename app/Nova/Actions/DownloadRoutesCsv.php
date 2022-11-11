@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 
-class DownloadRegionRoutesCsv extends Action
+class DownloadRoutesCsv extends Action
 {
     use InteractsWithQueue, Queueable;
 

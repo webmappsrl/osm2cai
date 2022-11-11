@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Actions\DownloadRoutesCsv;
 use App\Nova\Filters\SectorsAreaFilter;
 use App\Nova\Lenses\SectorsColumnsLens;
 use App\Nova\Filters\SectorsRegionFilter;
@@ -290,6 +291,9 @@ class Sector extends Resource
                 ->canRun(function ($request, $user) {
                     return true;
                 }),
+                (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
+                    return $request->user()->can('downloadKml', $zone);
+                })
         ];
     }
 }
