@@ -147,8 +147,8 @@ class HikingRoute extends Resource
                 }
                 return $val;
             })->onlyOnIndex(),
-            Text::make('REF', 'ref')->onlyOnIndex(),
-            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
+            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex()->sortable(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
