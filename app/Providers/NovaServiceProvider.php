@@ -138,12 +138,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $tot = array_sum($numbers);
 
 
-        $sal = (HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
-            HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
-            HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
-            HikingRoute::where('osm2cai_status', 4)->count()
-        ) / Region::sum('num_expected');
-        $sal_color = Osm2CaiHelper::getSalColor($sal);
+        $cardsService = new CardsService;
 
         $cards = [
             (new TextCard())
@@ -161,12 +156,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            (new TextCard())
-                ->width('1/4')
-                ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
-                ->headingAsHtml()
-                ->text('SAL Nazionale'),
-
+                $cardsService->getNationalSalCard(),
             (new TextCard())->width('1/4')
                 ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
                 ->textAsHtml()

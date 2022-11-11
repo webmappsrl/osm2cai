@@ -4,6 +4,7 @@ namespace App\Nova\Dashboards;
 
 use Laravel\Nova\Dashboard;
 use App\Helpers\Osm2CaiHelper;
+use App\Services\CardsService;
 use Illuminate\Support\Facades\DB;
 use App\Nova\Metrics\TotalAreasCount;
 use Ericlagarda\NovaTextCard\TextCard;
@@ -45,6 +46,7 @@ class ItalyDashboard extends Dashboard
         }
 
         $tot = array_sum($numbers) - $numbers[0];
+        $cardsService = new CardsService;
 
         return [
             (new TotalProvincesCount())->width('1/4'),
@@ -60,6 +62,7 @@ class ItalyDashboard extends Dashboard
                 ->text('#sda 3')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
                 ->text('#sda 4')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+            $cardsService->getNationalSalCard()
 
         ];
     }
