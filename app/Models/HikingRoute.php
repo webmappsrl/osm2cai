@@ -50,6 +50,7 @@ class HikingRoute extends Model
             'survey_date' => ['type' => 'string', 'comp' => false, 'label' => 'Data ricognizione'],
             'source_ref' => ['type' => 'string', 'comp' => false, 'label' => 'Codice Sezione CAI'],
             'old_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF precedente'],
+            'ref_REI' => [ 'type' => 'string' , 'comp' => false, 'label' => 'REF rei']
         ],
         'general' => [
             'from' => ['type' => 'string', 'comp' => false, 'label' => 'Località di partenza'],
