@@ -29,7 +29,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Imumz\LeafletMap\LeafletMap;
-
+use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
 class HikingRoute extends Resource
 {
@@ -152,12 +152,21 @@ class HikingRoute extends Resource
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
 
-            LeafletMap::make('Mappa')
-                ->type('GeoJson')
-                ->geoJson(json_encode($this->getGeojsonForMapView()))
-                ->center($this->getCentroid()[1], $this->getCentroid()[0])
-                ->zoom(12)
-                ->hideFromIndex(),
+            // LeafletMap::make('Mappa leaflet')
+            //     ->type('GeoJson')
+            //     ->geoJson(json_encode($this->getGeojsonForMapView()))
+            //     ->center($this->getCentroid()[1], $this->getCentroid()[0])
+            //     ->zoom(12)
+            //     ->hideFromIndex(),
+
+            MapMultiLinestringNova::make('Mappa')->withMeta([
+                'center' => [$this->getCentroid()[1], $this->getCentroid()[0]],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'defaultZoom' => 10,
+                'geojson' => json_encode($this->getGeojsonForMapView())
+            ])->hideFromIndex(),
+            
             Text::make('Legenda', function(){ return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>"; })->asHtml()->onlyOnDetail(),
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
