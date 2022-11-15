@@ -57,4 +57,17 @@ class SectorController extends Controller {
 
         return response($sector->getKml(), 200, $headers);
     }
+
+    public function csv(string $id)
+    {
+        $sector = Sector::find($id);
+
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_settore_' . $sector->name . '.csv"',
+        ];
+
+        return response($sector->getCsv(), 200, $headers);
+
+    }
 }

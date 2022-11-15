@@ -2,34 +2,35 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\UploadValidationRawDataAction;
-use App\Nova\Filters\HikingRoutesAreaFilter;
-use App\Nova\Filters\HikingRoutesProvinceFilter;
-use App\Nova\Filters\HikingRoutesRegionFilter;
-use App\Nova\Filters\HikingRoutesSectorFilter;
+use DKulyk\Nova\Tabs;
+use Laravel\Nova\Panel;
+use Illuminate\Support\Arr;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Number;
+use Imumz\LeafletMap\LeafletMap;
+use Laravel\Nova\Fields\Boolean;
+use Illuminate\Support\Facades\Auth;
+use Ericlagarda\NovaTextCard\TextCard;
 use App\Nova\Filters\HikingRouteStatus;
-use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Lenses\HikingRoutesStatusLens;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Filters\HikingRoutesAreaFilter;
 use App\Nova\Lenses\HikingRoutesStatus0Lens;
 use App\Nova\Lenses\HikingRoutesStatus1Lens;
 use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
-use App\Nova\Lenses\HikingRoutesStatusLens;
-use DKulyk\Nova\Tabs;
+use App\Nova\Actions\OsmSyncHikingRouteAction;
+use App\Nova\Filters\HikingRoutesRegionFilter;
+use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Actions\ValidateHikingRouteAction;
-use Ericlagarda\NovaTextCard\TextCard;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel;
+use App\Nova\Filters\HikingRoutesProvinceFilter;
+use App\Nova\Actions\UploadValidationRawDataAction;
+use App\Nova\Filters\HikingRoutesTerritorialFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
-use Imumz\LeafletMap\LeafletMap;
-
 
 class HikingRoute extends Resource
 {
@@ -109,7 +110,7 @@ class HikingRoute extends Resource
     public function fields(Request $request)
     {
 
-        return [
+        $fields = [
             Text::make('Regioni', function () {
                 $val = "ND";
                 if (Arr::accessible($this->regions)) {
@@ -146,8 +147,8 @@ class HikingRoute extends Resource
                 }
                 return $val;
             })->onlyOnIndex(),
-            Text::make('REF', 'ref')->onlyOnIndex(),
-            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex(),
+            Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
+            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex()->sortable(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
@@ -164,8 +165,18 @@ class HikingRoute extends Resource
                 'General' => $this->getMetaFields('general'),
                 'Tech' => $this->getMetaFields('tech'),
                 'Other' => $this->getMetaFields('other'),
-            ]))->withToolbar(),
+            ])),
         ];
+
+        $loggedInUser = auth()->user();
+        $role = $loggedInUser->getTerritorialRole();
+        if ( in_array( $role , ['admin','national','regional']) )
+        {
+            $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
+            $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')->onlyOnIndex()->sortable();
+        }
+
+        return $fields;
     }
 
     private function getMetaFields($group): array
@@ -211,6 +222,7 @@ class HikingRoute extends Resource
 
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
             $wmt = "https://hiking.waymarkedtrails.org/#route?id= " . $hr->relation_id;
+            $analyzer = "https://ra.osmsurround.org/analyzeRelation?relationId=" . $hr->relation_id . "&noCache=true&_noCache=on";
             return [
                 (new TextCard())
                     ->center(false)
@@ -225,7 +237,8 @@ class HikingRoute extends Resource
                     ->width('1/4')
                     ->text(
                         '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>'
+                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
+                        '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
                         )
                     ->textAsHtml(),
 
@@ -305,6 +318,14 @@ class HikingRoute extends Resource
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
+
+                (new OsmSyncHikingRouteAction)
+                    ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
+                    ->confirmButtonText('Aggiorna con dati osm')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+
             ];
     }
 }

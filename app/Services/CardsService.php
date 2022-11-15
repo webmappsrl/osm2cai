@@ -2,17 +2,36 @@
 
 namespace App\Services;
 
-use App\Helpers\Osm2CaiHelper;
+use App\Models\Region;
 use App\Models\Sector;
+use App\Models\HikingRoute;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
+use App\Helpers\Osm2CaiHelper;
 use Illuminate\Support\Facades\DB;
-use Mako\CustomTableCard\CustomTableCard;
-use Mako\CustomTableCard\Table\Cell;
 use Mako\CustomTableCard\Table\Row;
+use Illuminate\Support\Facades\Auth;
+use Mako\CustomTableCard\Table\Cell;
+use Ericlagarda\NovaTextCard\TextCard;
+use Mako\CustomTableCard\CustomTableCard;
 
 
 class CardsService {
+
+
+    public function getNationalSalCard(){
+        $sal = (HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
+            HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
+            HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
+            HikingRoute::where('osm2cai_status', 4)->count()
+        ) / Region::sum('num_expected');
+        $sal_color = Osm2CaiHelper::getSalColor($sal);
+
+        return (new TextCard())
+        ->width('1/4')
+        ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
+        ->headingAsHtml()
+        ->text('SAL Nazionale');
+    }
 
 
   /**

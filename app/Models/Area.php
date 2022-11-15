@@ -78,11 +78,11 @@ class Area extends TerritorialUnit
         if ($user->provinces->count()) {
 
             if ($hasUserPermission) {
-                $query->orWhereHas('province', function ($eloquentBuilder) use ($user) {
+                $query->orWhereHas('provinces', function ($eloquentBuilder) use ($user) {
                     $eloquentBuilder->whereIn('id', $user->provinces->pluck('id'));
                 });
             } else {
-                $query->whereHas('province', function ($eloquentBuilder) use ($user) {
+                $query->whereHas('provinces', function ($eloquentBuilder) use ($user) {
                     $eloquentBuilder->whereIn('id', $user->provinces->pluck('id'));
                 });
             }
@@ -90,11 +90,11 @@ class Area extends TerritorialUnit
             $hasUserPermission = true;
         }
 
-        if ($user->area->count()) {
+        if ($user->areas->count()) {
             if ($hasUserPermission) {
-                $query->orWhereIn('id', $user->area->pluck('id'));
+                $query->orWhereIn('id', $user->areas->pluck('id'));
             } else {
-                $query->whereIn('id', $user->area->pluck('id'));
+                $query->whereIn('id', $user->areas->pluck('id'));
             }
             $hasUserPermission = true;
         }

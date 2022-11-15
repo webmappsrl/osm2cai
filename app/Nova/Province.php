@@ -62,7 +62,7 @@ class Province extends Resource
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
-            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+            $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
 
         return $query->ownedBy( auth()->user() );

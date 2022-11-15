@@ -22,7 +22,7 @@ class ProvincePolicy
 
     public function viewAny(User $user)
     {
-        if($user->is_administrator || $user->is_national_referent) {
+        if($user->is_administrator || $user->is_national_referent || $user->region->count() ) {
             return true;
         }
         return false;
@@ -30,6 +30,9 @@ class ProvincePolicy
 
     public function view(User $user, Province $province)
     {
+        if($user->is_administrator || $user->is_national_referent || $province->isOwnedBy( $user ) ) {
+            return true;
+        }
         return false;
     }
 

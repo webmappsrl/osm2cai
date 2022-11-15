@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\CsvableModelTrait;
 use App\Traits\SallableTrait;
 use App\Traits\GeojsonableTrait;
 use App\Traits\OwnableModelTrait;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Sector extends TerritorialUnit
 {
-    use HasFactory, SallableTrait, GeojsonableTrait, OwnableModelTrait;
+    use HasFactory, SallableTrait, GeojsonableTrait, OwnableModelTrait, CsvableModelTrait;
 
     public function area()
     {
@@ -107,4 +108,6 @@ class Sector extends TerritorialUnit
 
         return $query;
     }
+
+
 }

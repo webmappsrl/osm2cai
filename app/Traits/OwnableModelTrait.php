@@ -8,6 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 trait OwnableModelTrait
 {
 
+  /**
+   * Undocumented function
+   *
+   * @param User $user
+   * @return boolean
+   */
+  public function isOwnedBy( User $user )
+  {
+    $modelQuery = $this->query();
+    $userModels = $modelQuery->ownedBy( $user )->get('id');
+    return $userModels->contains($this->id);
+  }
+
 
   /**
    * Scope a query to only include models owned by a certain user.

@@ -70,4 +70,35 @@ class Province extends TerritorialUnit
         return $this->belongsToMany(HikingRoute::class);
     }
 
+    /**
+     * Scope a query to only include models owned by a certain user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Model\User  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOwnedBy($query, User $user)
+    {
+        $hasUserPermission = false;
+        if ($user->region) {
+            $query->whereHas('region', function ($eloquentBuilder) use ($user) {
+                $eloquentBuilder->where('id', $user->region->id);
+            });
+            $hasUserPermission = true;
+        }
+
+        if ($user->provinces->count()) {
+
+            if ($hasUserPermission) {
+                $query->orWhereIn('id', $user->provinces->pluck('id'));
+            } else {
+                $query->whereIn('id', $user->provinces->pluck('id'));
+            }
+            $hasUserPermission = true;
+        }
+
+
+        return $query;
+    }
+
 }
