@@ -152,13 +152,6 @@ class HikingRoute extends Resource
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
 
-            // LeafletMap::make('Mappa leaflet')
-            //     ->type('GeoJson')
-            //     ->geoJson(json_encode($this->getGeojsonForMapView()))
-            //     ->center($this->getCentroid()[1], $this->getCentroid()[0])
-            //     ->zoom(12)
-            //     ->hideFromIndex(),
-
             MapMultiLinestringNova::make('Mappa')->withMeta([
                 'center' => [$this->getCentroid()[1], $this->getCentroid()[0]],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
