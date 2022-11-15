@@ -11,7 +11,9 @@
         "build-wm-map": "cd nova-components/WmMap && npm run dev",
         "build-wm-map-prod": "cd nova-components/WmMap && npm run prod",
         "build-UserSectorsListCard": "cd nova-components/UserSectorsListCard && npm run dev",
-        "build-UserSectorsListCard-prod": "cd nova-components/UserSectorsListCard && npm run prod"
+        "build-UserSectorsListCard-prod": "cd nova-components/UserSectorsListCard && npm run prod",
+        "build-map-multi-linestring-nova": "cd nova-components/MapMultiLinestringNova && npm run dev",
+        "build-map-multi-linestring-nova-prod": "cd nova-components/MapMultiLinestringNova && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.21",
