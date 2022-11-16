@@ -2,7 +2,10 @@
 
 namespace App\Traits;
 
+use App\Services\GeometryService;
 use Illuminate\Support\Facades\DB;
+use Symm\Gisconverter\Gisconverter;
+use Symm\Gisconverter\Exceptions\InvalidText;
 
 trait GeojsonableTrait
 {
@@ -20,7 +23,7 @@ trait GeojsonableTrait
             )
             ->first();
 
-        if(is_null($obj)) {
+        if (is_null($obj)) {
             return null;
         }
         $geom = $obj->geom;
@@ -49,7 +52,7 @@ trait GeojsonableTrait
             )
             ->first();
 
-        if(is_null($obj)) {
+        if (is_null($obj)) {
             return null;
         }
         $geom = $obj->geom;
@@ -105,12 +108,12 @@ trait GeojsonableTrait
             )
             ->first();
 
-            if(is_null($obj)) {
-                return null;
-            }
+        if (is_null($obj)) {
+            return null;
+        }
 
         $geom = $obj->geom;
-    
+
         if (isset($geom)) {
             return [
                 "type" => "Feature",
@@ -133,4 +136,30 @@ trait GeojsonableTrait
         return null;
     }
 
+
+
+    public function textToGeojson($text = '')
+    {
+        return  GeometryService::getService()->textToGeojson($text);
+    }
+
+
+    public function geojsonToGeometry( $geojson )
+    {
+        return GeometryService::getService()->geojsonToGeometry($geojson);
+    }
+
+
+    /**
+     * @param string json encoded geometry.
+     */
+    public function fileToGeometry($fileContent = '')
+    {
+        $geometry = null;
+        $geojson = $this->textToGeojson($fileContent);
+        if ( $geojson )
+            $geometry = $this->geojsonToGeometry($geojson);
+
+        return $geometry;
+    }
 }

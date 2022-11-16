@@ -33,7 +33,7 @@ class SectorPolicy
 
     public function create(User $user)
     {
-        return false;
+        return $user->is_administrator;
     }
 
     public function update(User $user, Sector $sector)

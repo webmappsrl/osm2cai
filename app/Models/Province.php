@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use App\Traits\SallableTrait;
+use App\Traits\OwnableModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Province extends TerritorialUnit
 {
-    use HasFactory, SallableTrait;
+    use HasFactory, SallableTrait, OwnableModelTrait;
 
     protected $fillable = [
         'num_expected',
@@ -67,6 +68,37 @@ class Province extends TerritorialUnit
     public function hikingRoutes()
     {
         return $this->belongsToMany(HikingRoute::class);
+    }
+
+    /**
+     * Scope a query to only include models owned by a certain user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  \App\Model\User  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOwnedBy($query, User $user)
+    {
+        $hasUserPermission = false;
+        if ($user->region) {
+            $query->whereHas('region', function ($eloquentBuilder) use ($user) {
+                $eloquentBuilder->where('id', $user->region->id);
+            });
+            $hasUserPermission = true;
+        }
+
+        if ($user->provinces->count()) {
+
+            if ($hasUserPermission) {
+                $query->orWhereIn('id', $user->provinces->pluck('id'));
+            } else {
+                $query->whereIn('id', $user->provinces->pluck('id'));
+            }
+            $hasUserPermission = true;
+        }
+
+
+        return $query;
     }
 
 }

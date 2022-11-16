@@ -53,13 +53,15 @@ class Area extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
+
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
-            return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
+            $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
 
-        return $query;
+        $test = $query->ownedBy( auth()->user() );
+        return $test ;
     }
 
     /**

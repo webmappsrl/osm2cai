@@ -22,7 +22,7 @@ class AreaPolicy
 
     public function viewAny(User $user)
     {
-        if($user->is_administrator || $user->is_national_referent) {
+        if($user->is_administrator || $user->is_national_referent || $user->region_id ) {
             return true;
         }
         return false;
@@ -30,6 +30,9 @@ class AreaPolicy
 
     public function view(User $user, Area $area)
     {
+        if($user->is_administrator || $user->is_national_referent || $area->isOwnedBy( $user ) ) {
+            return true;
+        }
         return false;
     }
 

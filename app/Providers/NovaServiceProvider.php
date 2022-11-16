@@ -84,26 +84,26 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
          */
         $user = Auth::user();
         switch ($user->getTerritorialRole()) {
-            case 'admin' :
+            case 'admin':
                 $cards = $this->_nationalCards();
                 break;
-            case 'national' :
+            case 'national':
                 $cards = $this->_nationalCards();
                 break;
-            //define local cards
-            //"smallest" model related to user win
-            case 'local' :
-                if ( $user->sectors->count() )
-                    $cards = $this->_localCardsByModelClassName( Sector::class);
-                elseif ( $user->areas->count() )
-                    $cards = $this->_localCardsByModelClassName( Area::class);
+                //define local cards
+                //"smallest" model related to user win
+            case 'local':
+                if ($user->sectors->count())
+                    $cards = $this->_localCardsByModelClassName(Sector::class);
+                elseif ($user->areas->count())
+                    $cards = $this->_localCardsByModelClassName(Area::class);
                 else
-                    $cards = $this->_localCardsByModelClassName( Province::class);
-            break;
-            case 'regional' :
-            $cards = $this->_regionalCards();
-            break;
-            default :
+                    $cards = $this->_localCardsByModelClassName(Province::class);
+                break;
+            case 'regional':
+                $cards = $this->_regionalCards();
+                break;
+            default:
                 $cards = [
                     (new TextCard())
                         ->forceFullWidth()
@@ -138,13 +138,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $tot = array_sum($numbers);
 
 
-        $sal = (
-                HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
-                HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
-                HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
-                HikingRoute::where('osm2cai_status', 4)->count()
-            ) / Region::sum('num_expected');
-        $sal_color = Osm2CaiHelper::getSalColor($sal);
+        $cardsService = new CardsService;
 
         $cards = [
             (new TextCard())
@@ -162,23 +156,18 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-            (new TextCard())
-                ->width('1/4')
-                ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
-                ->headingAsHtml()
-                ->text('SAL Nazionale'),
-
+                $cardsService->getNationalSalCard(),
             (new TextCard())->width('1/4')
                 ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
                 ->textAsHtml()
-                ->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(1).'; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
+                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(1) . '; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
                 ->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 2')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(2).'; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+                ->text('#sda 2')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 3')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(3).'; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+                ->text('#sda 3')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 4')->heading('<div style="background-color: '.Osm2CaiHelper::getSdaColor(4).'; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+                ->text('#sda 4')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
 
 
         ];
@@ -186,7 +175,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $cards = array_merge($cards, [$this->_getRegionsTableCard()]);
 
         return $cards;
-
     }
 
     private function _regionalCards()
@@ -236,7 +224,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->headingAsHtml()
                 ->text('SAL ' . Auth::user()->region->name),
 
-//                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
+            //                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
             (new TextCard())
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
@@ -280,22 +268,20 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         $user = Auth::user();
         $provinceCards = [];
-        foreach( $user->region->provinces as $province )
-        {
-            $provinceCards[] = $this->_getChildrenTableCardByModel($province);//areas
+        foreach ($user->region->provinces as $province) {
+            $provinceCards[] = $this->_getChildrenTableCardByModel($province); //areas
         }
 
-        $cardsService = new CardsService;
+        //$cardsService = new CardsService;
         $cards = array_merge(
             $cards,
-            [$this->_getChildrenTableCardByModel($user->region)],//provinces
-            $provinceCards,//areas
-            [$cardsService->getSectorsTableCard()]//sectors
+            [$this->_getChildrenTableCardByModel($user->region)], //provinces
+            $provinceCards, //areas
+            //[$cardsService->getSectorsTableCard()]//sectors
         );
 
 
         return $cards;
-
     }
 
     /**
@@ -304,7 +290,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      *
      * @return void
      */
-    private function _localCardsByModelClassName( $modelClassName )
+    private function _localCardsByModelClassName($modelClassName)
     {
         $abstractModel = (new $modelClassName);
         $table = $abstractModel->getTable();
@@ -316,7 +302,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         $data = DB::table($view)
             ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
-            ->whereIn('id', $user->$table->pluck('id')->all() )
+            ->whereIn('id', $user->$table->pluck('id')->all())
             ->get();
         $numbers[1] = $data->sum('tot1');
         $numbers[2] = $data->sum('tot2');
@@ -329,8 +315,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $salHtml = '';
 
 
-        if ( $table == 'provinces' )
-        {
+        if ($table == 'provinces') {
             $num_provinces = $user->provinces->count();
             foreach ($user->provinces as $province) {
 
@@ -345,9 +330,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     }
                 }
             }
-
-        }
-        elseif ( $table == 'areas'){
+        } elseif ($table == 'areas') {
 
             if ($user->areas->count() > 0) {
                 $num_areas = $user->areas->count();
@@ -358,16 +341,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     $num_sectors += $area->sectors->count();
                 }
             }
-        }
-        elseif ( $table == 'sectors'){
+        } elseif ($table == 'sectors') {
             $num_sectors = $user->sectors->count();
-            foreach ( $user->sectors as $sector )
-            {
+            foreach ($user->sectors as $sector) {
                 $sal = $sector->getSal();
                 $sal_color = Osm2CaiHelper::getSalColor($sal);
                 $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
             }
-
         }
 
 
@@ -375,14 +355,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
         $tableSingular = Str::singular($table);
         ob_start();
-        foreach ( $user->$table as $relatedModel )
-        {
-        $id = $relatedModel->id;
-        ?>
-                <h5><?= $relatedModel->name ?>: </h5>
-                <a href="<?= route("api.geojson.$tableSingular", ['id' => $id])?>" >Download geojson Percorsi</a>
-                <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id])?>" >Download shape Settori</a>
-        <?php
+        foreach ($user->$table as $relatedModel) {
+            $id = $relatedModel->id;
+?>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+<?php
         }
         $downloadLiks = ob_get_clean();
 
@@ -406,15 +385,15 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4')
                 ->heading($salHtml)
                 ->headingAsHtml(),
-                //->text('SAL ' . $user->region->name),
+            //->text('SAL ' . $user->region->name),
 
-//                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
+            //                <a href="' . route('api.hiking-routes-shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Percorsi</a>
             (new TextCard())
                 ->forceFullWidth()
                 ->text('<div class="font-light">
                 <p>&nbsp;</p>' .
-                $downloadLiks .
-                '<p>&nbsp;</p>
+                    $downloadLiks .
+                    '<p>&nbsp;</p>
                  <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
                  </div>')
                 ->textAsHtml(),
@@ -435,7 +414,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->width('1/4'),
             (new TextCard())
                 ->width('1/4')
-                ->heading( (string) (array_sum($numbers)) )
+                ->heading((string) (array_sum($numbers)))
                 ->text('#tot percorsi'),
 
             $this->_getSdaCard(1, $numbers[1]),
@@ -449,7 +428,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $cards = array_merge($cards, [$this->_getSectorsTableCardByModelClassName($modelClassName)]);
 
         return $cards;
-
     }
 
     private function _getSdaCard(int $sda, int $num): TextCard
@@ -552,8 +530,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         // Get sectors_id
         $sectors_id = [];
 
-        if ( $table == 'provinces' )
-        {
+        if ($table == 'provinces') {
             foreach ($user->provinces as $province) {
                 if (Arr::accessible($province->areas)) {
                     foreach ($province->areas as $area) {
@@ -563,17 +540,13 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     }
                 }
             }
-        }
-        elseif ( $table == 'areas' )
-        {
+        } elseif ($table == 'areas') {
             foreach ($user->areas as $area) {
                 if (Arr::accessible($area->sectors)) {
                     $sectors_id = array_merge($sectors_id, $area->sectors->pluck('id')->toArray());
                 }
             }
-        }
-        elseif ( $table == 'sectors')
-        {
+        } elseif ($table == 'sectors') {
             $sectors_id = $user->sectors->pluck('id')->toArray();
         }
 
@@ -581,7 +554,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         // Extract data from views
         // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
         $items = DB::table('sectors_view')
-            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->select('id', 'full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
             ->whereIn('id', $sectors_id)
             ->get();
 
@@ -603,7 +576,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
+                new Cell('<a href="/resources/sectors/' . $item->id . '">[VIEW]</a>'),
             );
             $data[] = $row;
         }
@@ -624,9 +597,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
 
 
-            $modelName = $model->name;
-            $childrenAbstractModel = $model->children()->getRelated();
-            $childrenIds = $model->childrenIds();
+        $modelName = $model->name;
+        $childrenAbstractModel = $model->children()->getRelated();
+        $childrenIds = $model->childrenIds();
 
 
 
@@ -635,7 +608,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
 
 
-        $sectorsCard->title("SDA e SAL $childrenTable - $modelName" );
+        $sectorsCard->title("SDA e SAL $childrenTable - $modelName");
 
         // Headings
         $sectorsCard->header([
@@ -655,7 +628,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         // Extract data from views
         // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
         $items = DB::table($childrenAbstractModel->getView())
-            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->select('id', 'full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
             ->whereIn('id', $childrenIds)
             ->get();
 
@@ -677,7 +650,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
+                new Cell('<a href="/resources/' . ( $childrenTable == 'regions' ? 'region' : $childrenTable )  . '/' . $item->id . '">[VIEW]</a>'),
             );
             $data[] = $row;
         }
@@ -744,8 +717,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
          * @var \App\Models\User
          */
         $loggedInUser = Auth::user();
-        if ( $loggedInUser->getTerritorialRole() == 'regional' )
-        {
+        if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;
         }
 
@@ -764,7 +736,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 'Tools' => [
                     ['Mappa Settori', 'http://osm2cai.j.webmapp.it/#/main/map'],
                     ['Mappa Percorsi', 'https://26.app.geohub.webmapp.it/#/map'],
-                    ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map']
+                    ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
+                    ['Guida Utente','https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
                 ],
             ])
         ];

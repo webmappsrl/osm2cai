@@ -10,7 +10,7 @@ use App\Nova\Actions\DownloadKml;
 use App\Nova\Actions\DownloadShape;
 use App\Nova\Actions\DownloadGeojson;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Nova\Actions\DownloadRegionRoutesCsv;
+use App\Nova\Actions\DownloadRoutesCsv;
 use App\Nova\Actions\DownloadRegionRoutesKml;
 use App\Nova\Actions\DownloadRegionRoutesShape;
 use App\Nova\Actions\DownloadRegionRoutesGeojson;
@@ -63,7 +63,7 @@ class Region extends Resource
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
 
-        return $query;
+        return $query->ownedBy( auth()->user() );
     }
 
     /**
@@ -181,7 +181,7 @@ class Region extends Resource
             (new DownloadRegionRoutesGeojson)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadGeojson', $zone);
             }),
-            (new DownloadRegionRoutesCsv)->canRun(function ($request, $zone) {
+            (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             })
 
