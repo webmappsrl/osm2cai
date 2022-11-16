@@ -138,7 +138,7 @@ class User extends Authenticatable
         }
         return $role;
     }
-    
+
     /**
      * Get the current logged User
      *
@@ -168,5 +168,24 @@ class User extends Authenticatable
             $result = User::find($emulateUserId);
 
         return $result;
+    }
+
+    public function scopeOfRegion($query, Region $region)
+    {
+        $regionCode = $region->code;
+
+        $query->whereHas( 'region' , function( $query ) use ($regionCode){
+            $query->where( 'code' , $regionCode);
+        } )
+        ->orWhereHas( 'provinces' , function( $query ) use ($regionCode){
+            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
+        } )
+        ->orWherehas( 'areas' , function( $query ) use ($regionCode){
+            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
+        } )
+        ->orWhereHas( 'sectors' , function( $query ) use ($regionCode){
+            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
+        } );
+
     }
 }
