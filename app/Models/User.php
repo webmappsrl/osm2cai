@@ -174,10 +174,7 @@ class User extends Authenticatable
     {
         $regionCode = $region->code;
 
-        $query->whereHas( 'region' , function( $query ) use ($regionCode){
-            $query->where( 'code' , $regionCode);
-        } )
-        ->orWhereHas( 'provinces' , function( $query ) use ($regionCode){
+        $query->whereHas( 'provinces' , function( $query ) use ($regionCode){
             $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
         } )
         ->orWherehas( 'areas' , function( $query ) use ($regionCode){
