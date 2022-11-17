@@ -178,7 +178,16 @@ class HikingRoute extends Resource
             $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
 
         }
-        $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')->hideWhenCreating()->hideWhenUpdating()->sortable();
+        $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')
+        ->hideWhenCreating()
+        ->hideWhenUpdating()
+        ->sortable();
+
+        $fields[] = Boolean::make('Coerenza ref REI' , function(){
+            return $this->ref_REI == $this->ref_REI_comp;
+        })->onlyOnDetail()
+        ->trueValue('ref_REI uguale a ref_REI_comp')
+        ->falseValue('ref_REI diverso da ref_REI_comp');
 
         return $fields;
     }
