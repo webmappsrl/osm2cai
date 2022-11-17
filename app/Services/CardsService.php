@@ -106,5 +106,34 @@ class CardsService {
 
 
 
+    public function getTotalKmSda3Sda4Card(){
+        $tot = DB::table('regions_view')->selectRaw('SUM(km_tot3) + SUM (km_tot4) as total')
+            ->get();
+
+
+        $formatted = doubleval( $tot->first()->total );
+
+        return (new TextCard())
+            ->width('1/4')
+            ->text('Totale km #sda3 e #sda4')
+            ->heading('<div style="font-size: xx-large">' . $formatted . '</div>')
+            ->headingAsHtml();
+    }
+
+    public function getTotalKmSda4Card(){
+        $tot = DB::table('regions_view')->selectRaw('SUM (km_tot4) as total')
+            ->get();
+
+
+        $formatted = doubleval( $tot->first()->total );
+
+        return (new TextCard())
+            ->width('1/4')
+            ->text('Totale km #sda4')
+            ->heading('<div style="font-size: xx-large">' . $formatted . '</div>')
+            ->headingAsHtml();
+    }
+
+
 
 }
