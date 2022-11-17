@@ -108,13 +108,13 @@ class Sector extends Resource
                 ->sortable()
                 ->help('Modifica il nome del settore')->required()
                 ->rules('max:254'),
-            Text::make(__('Code'), 'code')->sortable()->hideWhenUpdating()->required()->rules('max:1'),
+            Text::make(__('Code'), 'code')->sortable()->required()->rules('max:1'),
             Text::make(__('Responsabili'), 'manager')->hideFromIndex(),
             Text::make(__('Responsabili'), function(){
                 return $this->users->pluck('name')->implode(', ');
             })->onlyOnIndex(),
             Number::make(__('Numero Atteso'), 'num_expected')->required(),
-            Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating()->required()->rules('max:5'),
+            Text::make(__('Full code'), 'full_code')->sortable()->required()->rules('max:5'),
             Text::make(__('Region'), 'area_id', function () {
                 return $this->area->province->region->name;
             })->hideWhenUpdating()->hideWhenCreating(),
