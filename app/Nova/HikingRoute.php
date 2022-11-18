@@ -93,10 +93,10 @@ class HikingRoute extends Resource
     {
         $loggedInUser = Auth::user();
         $role = $loggedInUser->getTerritorialRole();
-        if ( $role != "admin")
-        {
-            $query->ownedBy($loggedInUser);
-        }
+        // if ( $role != "admin")
+        // {
+        //     $query->ownedBy($loggedInUser);
+        // }
 
         return $query;
     }
