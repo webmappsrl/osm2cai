@@ -62,7 +62,9 @@ class ItalyDashboard extends Dashboard
                 ->text('#sda 3')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
                 ->text('#sda 4')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
-            $cardsService->getNationalSalCard()
+            $cardsService->getNationalSalCard(),
+            $cardsService->getTotalKmSda3Sda4Card(),
+            $cardsService->getTotalKmSda4Card()
 
         ];
     }
