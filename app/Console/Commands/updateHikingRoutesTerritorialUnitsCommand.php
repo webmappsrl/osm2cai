@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\HikingRoute;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class updateHikingRoutesTerritorialUnitsCommand extends Command
 {
@@ -41,9 +43,17 @@ class updateHikingRoutesTerritorialUnitsCommand extends Command
     {
 
         HikingRoute::all()->map(function(HikingRoute $hr){
-            Log::info("Updating territorial units, Route ID:{$hr->id} REF:{$hr->ref}");
-            $hr->computeAndSetTerritorialUnits();
-            $hr->save();
+            try {
+                $this->info("Updating territorial units, Route ID:{$hr->id} REF:{$hr->ref}");
+                $hr->computeAndSetTerritorialUnits();
+                $hr->save();
+            }
+            catch( Exception|Throwable $e)
+            {
+                $this->error($e->getMessage());
+                Log::error($e->getMessage());
+            }
+
         });
 
 
