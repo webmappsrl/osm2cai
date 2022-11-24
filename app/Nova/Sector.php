@@ -31,7 +31,7 @@ use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
 use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
-use App\Nova\Actions\UploadSectorGeometryDataAction;
+use App\Nova\Actions\UploadSectorGeometryRawDataAction;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
@@ -284,7 +284,7 @@ class Sector extends Resource
             (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
                 return $request->user()->can('bulkAssignUser', $zone);
             }),
-            (new UploadSectorGeometryDataAction)
+            (new UploadSectorGeometryRawDataAction)
                 ->confirmText('Inserire un file con la nuova geometria del settore.')
                 ->confirmButtonText('Aggiorna geometria')
                 ->cancelButtonText("Annulla")

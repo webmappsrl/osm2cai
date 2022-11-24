@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use PhpParser\ErrorHandler\Throwing;
 use Throwable;
 
-class import extends Command
+class importRegionsGeometries extends Command
 {
     /**
      * The name and signature of the console command.
