@@ -177,9 +177,18 @@
                                                     "description": "local ref hiking route number must be three number and a letter only in last position for variants",
                                                     "type": "string"
                                                 },
+                                                "public_page": {
+                                                    "description": "public url for the hiking route",
+                                                    "type": "string"
+                                                },
                                                 "sda": {
                                                     "description": "stato di accatastamento",
                                                     "type": "integer"
+                                                },
+                                                "validation_date": {
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4",
+                                                    "type": "string",
+                                                    "format": "date"
                                                 }
                                             },
                                             "type": "object"
@@ -209,7 +218,9 @@
                                             "from": "Castellare",
                                             "to": "Campo di Croce",
                                             "ref": "117",
-                                            "sda": 3
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29T00:00:00.000000Z"
                                         },
                                         "geometry": {
                                             "type": "MultiLineString",
@@ -293,9 +304,18 @@
                                                     "description": "local ref hiking route number must be three number and a letter only in last position for variants",
                                                     "type": "string"
                                                 },
+                                                "public_page": {
+                                                    "description": "public url for the hiking route",
+                                                    "type": "string"
+                                                },
                                                 "sda": {
                                                     "description": "stato di accatastamento",
                                                     "type": "integer"
+                                                },
+                                                "validation_date": {
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4",
+                                                    "type": "string",
+                                                    "format": "date"
                                                 }
                                             },
                                             "type": "object"
@@ -325,7 +345,9 @@
                                             "from": "Castellare",
                                             "to": "Campo di Croce",
                                             "ref": "117",
-                                            "sda": 3
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29T00:00:00.000000Z"
                                         },
                                         "geometry": {
                                             "type": "MultiLineString",

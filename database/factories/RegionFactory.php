@@ -29,7 +29,7 @@ class RegionFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'geometry' => $res[0]->geom,
-            'code' => $this->faker->lexify('?')
+            'code' => strtoupper($this->faker->lexify('?'))
         ];
     }
 }

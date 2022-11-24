@@ -7,6 +7,7 @@ use App\Models\HikingRoute;
 use App\Models\Region;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class HikingRoutesRegionController extends Controller
@@ -213,14 +214,16 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="from", type="string",  description="start point"),
      *                     @OA\Property( property="to", type="string",  description="end point"),
      *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
-     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                      @OA\Property( property="public_page", type="string",  description="public url for the hiking route"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento"),
+     *                     @OA\Property( property="validation_date", type="date", description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd")
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
-     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29T00:00:00.000000Z"},"geometry":
      * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *             )
      *         )   
@@ -282,14 +285,17 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="from", type="string",  description="start point"),
      *                     @OA\Property( property="to", type="string",  description="end point"),
      *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
-     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                     @OA\Property( property="public_page", type="string",  description="public url for the hiking route"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento"),
+     *                     @OA\Property( property="validation_date", type="date",  description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd")
+     *
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
-     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29T00:00:00.000000Z"},"geometry":
      * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *             )
      *         )   
@@ -335,7 +341,7 @@ Regione code according to CAI convention: <br/>
         $geom = $obj->geom;
 
         if (isset($geom)) {
-            return [
+            $response = [
                 "type" => "Feature",
                 "properties" => [
                     "id" => $item->id,
@@ -345,8 +351,8 @@ Regione code according to CAI convention: <br/>
                     "from" => $item->from,
                     "to" => $item->to,
                     "ref" => $item->ref,
+                    "public_page"=>$item->getPublicPage(),
                     "sda" => $item->osm2cai_status,
-
                     // "name" => $item->name,
                     // "survey_date" => $item->survey_date,
                     // "rwn_name" => $item->rwn_name,
@@ -378,6 +384,10 @@ Regione code according to CAI convention: <br/>
                 ],
                 "geometry" => json_decode($geom, true)
             ];
+            if($item->osm2cai_status==4)
+            $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
+            return $response;
+
         } 
     }
 }
