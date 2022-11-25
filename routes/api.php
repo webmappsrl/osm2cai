@@ -63,5 +63,6 @@ Route::name('api.')->group(function () {
         Route::get('/hiking-route-osm/{id}', [HikingRoutesRegionController::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
         Route::get('/hiking-routes/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist_bb'])->name('hr-ids-by-bb');
         Route::get('/hiking-routes-osm/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingrouteosmlist_bb'])->name('hr-osmids-by-bb');
+        Route::get('/hiking-routes-collection/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist_collection'])->name('hr-collection-by-bb');
     });
 });

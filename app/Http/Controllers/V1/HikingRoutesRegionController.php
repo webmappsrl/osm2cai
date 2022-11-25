@@ -6,12 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\HikingRoute;
 use App\Models\Region;
 use Exception;
+use GeoJson\Geometry\LineString;
+use GeoJson\Geometry\Polygon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
+define('_BOUNDIG_BOX_LIMIT',0.1);
+
 class HikingRoutesRegionController extends Controller
 {
+
 
     /**
      * @OA\Tag(
@@ -505,5 +510,68 @@ Regione code according to CAI convention: <br/>
             ->whereIn('osm2cai_status',explode(',',$sda))
             ->pluck('relation_id')->toArray();
         return response($list, 200, ['Content-type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes-collection-bb",
+     *     description="Hiking route OSM ID list based on bouding box and SDA",
+     * )
+     *
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes-collection/bb/{bounding_box}/{sda}",
+     *      tags={"hiking-routes-collection-bb"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the feautures collection based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="collection",
+     *                     description="Feature Collection",
+     *                     type="json"
+     *                 ),
+     *                 example={},
+     *             )
+     *         )
+     *      ),
+     *     @OA\Parameter(
+     *         name="bounding_box",
+     *         in="path",
+     *         description="List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingroutelist_collection(string $bb,string $sda){
+        $boundingBox = explode(',',$bb);
+        $area = $this->getAreaBoundingBox(floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
+        if($area>_BOUNDIG_BOX_LIMIT)
+            return response(['error'=>"Bounding box is too large"], 500, ['Content-type' => 'application/json']);
+        else{
+            return HikingRoute::geojsonByBoundingBox($sda,floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
+        }
+
+    }
+
+    public function getAreaBoundingBox($la0,$lo0,$la1,$lo1){
+        $res = DB::select(DB::raw("SELECT ST_area(ST_makeenvelope($la0,$lo0,$la1,$lo1))"));
+        return floatval($res[0]->st_area);
     }
 }
