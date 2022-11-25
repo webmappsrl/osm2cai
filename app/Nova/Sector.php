@@ -124,7 +124,7 @@ class Sector extends Resource
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             })->hideWhenUpdating()->hideWhenCreating(),
-            BelongsToMany::make('Moderators', 'users'),
+            BelongsToMany::make('Moderators', 'users')->searchable(),
             BelongsTo::make('Area')->onlyOnForms()->hideWhenUpdating(),
             File::make('Geometry')->store(function (Request $request, $model) {
                 return $model->fileToGeometry($request->geometry->get());
