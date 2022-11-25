@@ -186,7 +186,7 @@
                                                     "type": "integer"
                                                 },
                                                 "validation_date": {
-                                                    "description": "date of validation of the hiking route, visible only for sda = 4",
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
                                                     "type": "string",
                                                     "format": "date"
                                                 }
@@ -313,7 +313,7 @@
                                                     "type": "integer"
                                                 },
                                                 "validation_date": {
-                                                    "description": "date of validation of the hiking route, visible only for sda = 4",
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
                                                     "type": "string",
                                                     "format": "date"
                                                 }
@@ -371,6 +371,59 @@
                     }
                 }
             }
+        },
+        "/api/v1/hiking-routes/bb/{bounding_box}/{sda}": {
+            "get": {
+                "tags": [
+                    "hiking-routes-bb"
+                ],
+                "operationId": "9f5e516865448220fcf8ef960334f3cb",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM2CAI IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.\n     *                       These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        1269,
+                                        652,
+                                        273
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "tags": [
@@ -389,6 +442,10 @@
         {
             "name": "hiking-route-osm",
             "description": "Geojson (https://datatracker.ietf.org/doc/html/rfc7946) of a Hiking Route based on the given OSM relation ID"
+        },
+        {
+            "name": "hiking-routes-bb",
+            "description": "Hiking route ID list based on bouding box  and SDA"
         }
     ]
 }
