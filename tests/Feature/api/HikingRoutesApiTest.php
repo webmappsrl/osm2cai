@@ -166,7 +166,7 @@ class HikingRoutesApiTest extends TestCase
         $response = $this->get(url('/').'/api/v1/hiking-routes-osm/bb/'.$bb_montepisano.'/4')
             ->assertStatus(200);
         $responseData = json_decode($response->content(),true)[0];
-        $this->assertEquals($hr_interno->id,$responseData);
+        $this->assertEquals($hr_interno->relation_id,$responseData);
     }
 
 
