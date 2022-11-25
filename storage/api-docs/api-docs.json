@@ -424,6 +424,59 @@
                     }
                 }
             }
+        },
+        "/api/v1/hiking-routes-odm/bb/{bounding_box}/{sda}": {
+            "get": {
+                "tags": [
+                    "hiking-routes-bb-osm"
+                ],
+                "operationId": "71b6a0716350ebf84353b6bde90351cb",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.\n     *                       These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "OSM Identifier",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": [
+                                        1269,
+                                        652,
+                                        273
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "tags": [
@@ -445,7 +498,11 @@
         },
         {
             "name": "hiking-routes-bb",
-            "description": "Hiking route ID list based on bouding box  and SDA"
+            "description": "Hiking route ID list based on bouding box and SDA"
+        },
+        {
+            "name": "hiking-routes-bb-osm",
+            "description": "Hiking route OSM ID list based on bouding box and SDA"
         }
     ]
 }

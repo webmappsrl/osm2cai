@@ -394,7 +394,7 @@ Regione code according to CAI convention: <br/>
     /**
      * @OA\Tag(
      *     name="hiking-routes-bb",
-     *     description="Hiking route ID list based on bouding box  and SDA",
+     *     description="Hiking route ID list based on bouding box and SDA",
      * )
      *
      * @OA\Get(
@@ -446,6 +446,64 @@ Regione code according to CAI convention: <br/>
             ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
             ->whereIn('osm2cai_status',explode(',',$sda))
             ->pluck('id')->toArray();
+        return response($list, 200, ['Content-type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes-bb-osm",
+     *     description="Hiking route OSM ID list based on bouding box and SDA",
+     * )
+     *
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes-osm/bb/{bounding_box}/{sda}",
+     *      tags={"hiking-routes-bb-osm"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the hiking routes OSM IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.
+     *                       These ids can be used in the geojson API hiking-route",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id",
+     *                     description="OSM Identifier",
+     *                     type="integer"
+     *                 ),
+     *                 example={1269,652,273,}
+     *             )
+     *         )
+     *      ),
+     *     @OA\Parameter(
+     *         name="bounding_box",
+     *         in="path",
+     *         description="List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingrouteosmlist_bb(string $bb,string $sda){
+        $coordinates = explode(',',$bb);
+        $list = DB::table('hiking_routes')
+            ->select('relation_id')
+            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
+            ->whereIn('osm2cai_status',explode(',',$sda))
+            ->pluck('relation_id')->toArray();
         return response($list, 200, ['Content-type' => 'application/json']);
     }
 }

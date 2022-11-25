@@ -151,5 +151,23 @@ class HikingRoutesApiTest extends TestCase
         $this->assertEquals($hr_interno->id,$responseData);
     }
 
+    /**
+     * @test
+     */
+    public function hiking_routes_osm_bb_api_return_ids_of_selected_bb_and_sda()
+    {
+        $bb_interno = new LineString([[10.37, 43.68], [10.6, 43.7]]);
+        $res_interno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_interno->jsonSerialize()) . '\') as geom'));
+        $hr_interno = HikingRoute::factory()->create(['geometry' => $res_interno[0]->geom,'osm2cai_status'=>4]);
+        $bb_esterno = new LineString([[10.2, 43.68], [10.2, 40.68]]);
+        $res_esterno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_esterno->jsonSerialize()) . '\') as geom'));
+        $hr_esterno = HikingRoute::factory()->create(['geometry' => $res_esterno[0]->geom,'osm2cai_status'=>4]);
+        $bb_montepisano = "10.363097,43.672057,10.638464,43.851693";
+        $response = $this->get(url('/').'/api/v1/hiking-routes-osm/bb/'.$bb_montepisano.'/4')
+            ->assertStatus(200);
+        $responseData = json_decode($response->content(),true)[0];
+        $this->assertEquals($hr_interno->id,$responseData);
+    }
+
 
 }
