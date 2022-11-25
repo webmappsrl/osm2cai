@@ -6,11 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\HikingRoute;
 use App\Models\Region;
 use Exception;
+use GeoJson\Geometry\LineString;
+use GeoJson\Geometry\Polygon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+
+define('_BOUNDIG_BOX_LIMIT',0.1);
 
 class HikingRoutesRegionController extends Controller
 {
+
 
     /**
      * @OA\Tag(
@@ -213,14 +219,16 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="from", type="string",  description="start point"),
      *                     @OA\Property( property="to", type="string",  description="end point"),
      *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
-     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                      @OA\Property( property="public_page", type="string",  description="public url for the hiking route"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento"),
+     *                     @OA\Property( property="validation_date", type="date", description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd")
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
-     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29T00:00:00.000000Z"},"geometry":
      * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *             )
      *         )   
@@ -282,14 +290,17 @@ Regione code according to CAI convention: <br/>
      *                     @OA\Property( property="from", type="string",  description="start point"),
      *                     @OA\Property( property="to", type="string",  description="end point"),
      *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
-     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento")
+     *                     @OA\Property( property="public_page", type="string",  description="public url for the hiking route"),
+     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento"),
+     *                     @OA\Property( property="validation_date", type="date",  description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd")
+     *
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
-     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","sda":3},"geometry":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29T00:00:00.000000Z"},"geometry":
      * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *             )
      *         )   
@@ -335,7 +346,7 @@ Regione code according to CAI convention: <br/>
         $geom = $obj->geom;
 
         if (isset($geom)) {
-            return [
+            $response = [
                 "type" => "Feature",
                 "properties" => [
                     "id" => $item->id,
@@ -345,8 +356,8 @@ Regione code according to CAI convention: <br/>
                     "from" => $item->from,
                     "to" => $item->to,
                     "ref" => $item->ref,
+                    "public_page"=>$item->getPublicPage(),
                     "sda" => $item->osm2cai_status,
-
                     // "name" => $item->name,
                     // "survey_date" => $item->survey_date,
                     // "rwn_name" => $item->rwn_name,
@@ -378,6 +389,189 @@ Regione code according to CAI convention: <br/>
                 ],
                 "geometry" => json_decode($geom, true)
             ];
+            if($item->osm2cai_status==4)
+            $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
+            return $response;
+
         } 
+    }
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes-bb",
+     *     description="Hiking route ID list based on bouding box and SDA",
+     * )
+     *
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes/bb/{bounding_box}/{sda}",
+     *      tags={"hiking-routes-bb"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the hiking routes OSM2CAI IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.
+     *                       These ids can be used in the geojson API hiking-route",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id",
+     *                     description="Internal osm2cai Identifier",
+     *                     type="integer"
+     *                 ),
+     *                 example={1269,652,273,}
+     *             )
+     *         )
+     *      ),
+     *     @OA\Parameter(
+     *         name="bounding_box",
+     *         in="path",
+     *         description="List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingroutelist_bb(string $bb,string $sda){
+        $coordinates = explode(',',$bb);
+        $list = DB::table('hiking_routes')
+            ->select('id')
+            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
+            ->whereIn('osm2cai_status',explode(',',$sda))
+            ->pluck('id')->toArray();
+        return response($list, 200, ['Content-type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes-bb-osm",
+     *     description="Hiking route OSM ID list based on bouding box and SDA",
+     * )
+     *
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes-osm/bb/{bounding_box}/{sda}",
+     *      tags={"hiking-routes-bb-osm"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the hiking routes OSM IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.
+     *                       These ids can be used in the geojson API hiking-route",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id",
+     *                     description="OSM Identifier",
+     *                     type="integer"
+     *                 ),
+     *                 example={1269,652,273,}
+     *             )
+     *         )
+     *      ),
+     *     @OA\Parameter(
+     *         name="bounding_box",
+     *         in="path",
+     *         description="List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingrouteosmlist_bb(string $bb,string $sda){
+        $coordinates = explode(',',$bb);
+        $list = DB::table('hiking_routes')
+            ->select('relation_id')
+            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
+            ->whereIn('osm2cai_status',explode(',',$sda))
+            ->pluck('relation_id')->toArray();
+        return response($list, 200, ['Content-type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Tag(
+     *     name="hiking-routes-collection-bb",
+     *     description="Hiking route OSM ID list based on bouding box and SDA",
+     * )
+     *
+     * @OA\Get(
+     *      path="/api/v1/hiking-routes-collection/bb/{bounding_box}/{sda}",
+     *      tags={"hiking-routes-collection-bb"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the feautures collection based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="collection",
+     *                     description="Feature Collection",
+     *                     type="json"
+     *                 ),
+     *                 example={},
+     *             )
+     *         )
+     *      ),
+     *     @OA\Parameter(
+     *         name="bounding_box",
+     *         in="path",
+     *         description="List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar",
+     *         )
+     *     ),
+     *      @OA\Parameter(
+     *         name="sda",
+     *         in="path",
+     *         description="SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string",
+     *             format="varchar"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingroutelist_collection(string $bb,string $sda){
+        $boundingBox = explode(',',$bb);
+        $area = $this->getAreaBoundingBox(floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
+        if($area>_BOUNDIG_BOX_LIMIT)
+            return response(['error'=>"Bounding box is too large"], 500, ['Content-type' => 'application/json']);
+        else{
+            return HikingRoute::geojsonByBoundingBox($sda,floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
+        }
+
+    }
+
+    public function getAreaBoundingBox($la0,$lo0,$la1,$lo1){
+        $res = DB::select(DB::raw("SELECT ST_area(ST_makeenvelope($la0,$lo0,$la1,$lo1))"));
+        return floatval($res[0]->st_area);
     }
 }

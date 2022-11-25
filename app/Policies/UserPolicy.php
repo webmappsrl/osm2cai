@@ -42,7 +42,12 @@ class UserPolicy {
     }
 
     public function viewAny(User $user): bool {
-        return true;
+
+        $territorialRole = $user->getTerritorialRole();
+        if ( $territorialRole == 'local' || $territorialRole == 'unknown' )
+            return false;
+        else
+            return true;
     }
 
     public function view(User $user, User $model): bool {

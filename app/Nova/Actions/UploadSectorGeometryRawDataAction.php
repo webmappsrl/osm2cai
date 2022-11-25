@@ -17,7 +17,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Throwable;
 
-class UploadSectorGeometryDataAction extends Action
+class UploadSectorGeometryRawDataAction extends Action
 {
     use InteractsWithQueue, Queueable;
 

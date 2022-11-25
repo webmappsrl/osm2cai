@@ -551,4 +551,8 @@ EOF;
 
         return true;
     }
+
+    public function getPublicPage(){
+        return url('/').'/hiking-route/id/'.$this->id;
+    }
 }

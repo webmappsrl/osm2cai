@@ -31,7 +31,7 @@ use App\Nova\Lenses\NoNumExpectedColumnsLens;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Helpers\NovaCurrentResourceActionHelper;
 use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
-use App\Nova\Actions\UploadSectorGeometryDataAction;
+use App\Nova\Actions\UploadSectorGeometryRawDataAction;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
 
@@ -108,10 +108,13 @@ class Sector extends Resource
                 ->sortable()
                 ->help('Modifica il nome del settore')->required()
                 ->rules('max:254'),
-            Text::make(__('Code'), 'code')->sortable()->hideWhenUpdating()->required()->rules('max:1'),
-            Text::make(__('Responsabili'), 'manager'),
+            Text::make(__('Code'), 'code')->sortable()->required()->rules('max:1'),
+            Text::make(__('Responsabili'), 'manager')->hideFromIndex(),
+            Text::make(__('Responsabili'), function(){
+                return $this->users->pluck('name')->implode(', ');
+            })->onlyOnIndex(),
             Number::make(__('Numero Atteso'), 'num_expected')->required(),
-            Text::make(__('Full code'), 'full_code')->sortable()->hideWhenUpdating()->required()->rules('max:5'),
+            Text::make(__('Full code'), 'full_code')->sortable()->required()->rules('max:5'),
             Text::make(__('Region'), 'area_id', function () {
                 return $this->area->province->region->name;
             })->hideWhenUpdating()->hideWhenCreating(),
@@ -281,7 +284,7 @@ class Sector extends Resource
             (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
                 return $request->user()->can('bulkAssignUser', $zone);
             }),
-            (new UploadSectorGeometryDataAction)
+            (new UploadSectorGeometryRawDataAction)
                 ->confirmText('Inserire un file con la nuova geometria del settore.')
                 ->confirmButtonText('Aggiorna geometria')
                 ->cancelButtonText("Annulla")
