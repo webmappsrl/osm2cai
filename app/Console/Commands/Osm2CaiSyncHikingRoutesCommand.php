@@ -50,21 +50,21 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
         $this->info('');
         $this->info("$counter/$tot https://openstreetmap.org/relation/{$route_osm->relation_id}");
         // Convert Object to array
-        $route_osm_array = (array) $route_osm;
+        // $route_osm_array = (array) $route_osm;
         // Map keys
-        $route_cai_array = [];
-        foreach ($route_osm_array as $k => $v) {
-            if ($k == 'relation_id') {
-                ;
-            } else if ($k == 'tags') {
-                // TODO: json data convert
-                // $route_cai_array['tags_osm']=$v;
-            } else if ($k == 'geom') {
-                $route_cai_array['geometry_osm'] = $v;
-            } else {
-                $route_cai_array[$k . '_osm'] = $v;
-            }
-        }
+        // $route_cai_array = [];
+        // foreach ($route_osm_array as $k => $v) {
+        //     if ($k == 'relation_id') {
+        //         ;
+        //     } else if ($k == 'tags') {
+        //         // TODO: json data convert
+        //         // $route_cai_array['tags_osm']=$v;
+        //     } else if ($k == 'geom') {
+        //         $route_cai_array['geometry_osm'] = $v;
+        //     } else {
+        //         $route_cai_array[$k . '_osm'] = $v;
+        //     }
+        // }
 
         $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route_osm->relation_id]);
 
@@ -72,14 +72,14 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $this->info("Route has status {$route_cai->osm2cai_status }: Skip SYNC");
             return;
         }
-    
+
         $this->info("Route has status {$route_cai->osm2cai_status }: SYNC");
 
         // Set fields to compute status
         $route_cai->cai_scale_osm = $route_osm->cai_scale;
         $route_cai->source_osm = $route_osm->source;
         $route_cai->setOsm2CaiStatus();
-        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");        
+        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");
         $route_cai->save();
 
         // FILL OSM FIELDS
@@ -87,7 +87,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             'ref', 'old_ref', 'source_ref', 'survey_date', 'name', 'rwn_name', 'ref_REI',
             'from', 'to', 'osmc_symbol', 'network', 'roundtrip', 'symbol', 'symbol_it',
             'ascent', 'descent', 'distance', 'duration_forward', 'duration_backward',
-            'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons', 
+            'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons',
             'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page'
         ] as $k) {
             $k_osm=$k.'_osm';
