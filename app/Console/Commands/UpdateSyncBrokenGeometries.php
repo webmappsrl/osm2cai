@@ -73,6 +73,7 @@ class UpdateSyncBrokenGeometries extends Command
                     $osmGeo = $osmService->getHikingRouteGeometry($relationId);
                     $hr->geometry = $osmGeo;
                     $message = "Hiking route model {$hr->id} updated via osm api sync";
+                    $hr->save();
                     $logger->info($message);
                     $this->info($message);
                 } else {
