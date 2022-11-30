@@ -188,8 +188,8 @@ class HikingRoute extends Model
             $this->ref_REI = $this->ref_REI_osm;
 
             // Geometry
-            $service = app()->make(GeometryService::class);
-            $this->geometry = $service->geometryTo4326Srid($this->geometry_osm);
+
+            $this->geometry = $this->geometry_osm;
 
             // Meta
             foreach (self::$info_fields as $group => $fields) {

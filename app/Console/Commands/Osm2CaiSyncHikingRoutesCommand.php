@@ -5,10 +5,11 @@ namespace App\Console\Commands;
 use App\Models\HikingRoute;
 use App\Models\HikingRoutes;
 use App\Models\HikingRoutesOsm;
-use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 use Illuminate\Console\Command;
+use App\Services\GeometryService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 
 class Osm2CaiSyncHikingRoutesCommand extends Command
 {
@@ -97,7 +98,10 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $route_cai->$k_osm=$route_osm->$k;
         }
 
-        $route_cai->geometry_osm=$route_osm->geom;
+        $service = app()->make(GeometryService::class);
+
+        //force srid 4326
+        $route_cai->geometry_osm = $service->geometryTo4326Srid($route_osm->geom);
         $route_cai->save();
         $route_cai->copyFromOsm2Cai();
         $route_cai->save();
