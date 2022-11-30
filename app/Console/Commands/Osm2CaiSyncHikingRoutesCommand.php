@@ -66,6 +66,9 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
         //     }
         // }
 
+        /**
+         * @var \App\Models\HikingRoute
+         */
         $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route_osm->relation_id]);
 
         if($route_cai->osm2cai_status == 4 ) {

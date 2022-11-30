@@ -42,6 +42,13 @@ class GeometryService
     ) as g "))[0]->g;
   }
 
+  public function geometryTo4326Srid($geometry)
+  {
+    return DB::select(DB::raw("select (
+      ST_Transform('" . $geometry . "', 4326)
+    ) as g "))[0]->g;
+  }
+
 
   public function textToGeojson($text)
   {

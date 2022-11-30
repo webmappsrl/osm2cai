@@ -49,43 +49,38 @@ class UpdateSyncBrokenGeometries extends Command
         $osmService = app()->make(OsmService::class);
         $connection = DB::connection();
         $relations = $connection->select('Select id, parts from planet_osm_rels');
-        foreach ( $relations as $relation )
-        {
+        foreach ($relations as $relation) {
             $relationId = $relation->id;
 
-            preg_match_all('#\d+#',$relation->parts,$parts);
+            preg_match_all('#\d+#', $relation->parts, $parts);
             $parts = collect($parts[0]);
 
             $waysRelated = $connection->table('hiking_ways_osm')->whereIn('way_id', $parts)->get();
 
             $message = "Relation id $relationId";
-            if ( $waysRelated->unique()->count() !== $parts->unique()->count() )
-            {
+            if ($waysRelated->unique()->count() !== $parts->unique()->count()) {
                 $waysRelatedIds = $waysRelated->pluck('way_id')->all();
                 $waysDiff = $parts->diff($waysRelatedIds)->implode(', ');
-                $waysOk = $parts->intersect($waysRelatedIds )->implode(', ');
+                $waysOk = $parts->intersect($waysRelatedIds)->implode(', ');
 
                 $message .= " ways missing: $waysDiff | ways ok: $waysOk";
                 $this->error("$message");
                 $logger->warning($message);
 
 
-                $hr = HikingRoute::firstWhere('relation_id',$relationId);
-                if ( $hr )
-                {
-                    $osmService->updateHikingRouteModelWithOsmData($hr);
-
+                $hr = HikingRoute::firstWhere('relation_id', $relationId);
+                if ($hr) {
+                    $osmGeo = $osmService->getHikingRouteGeometry($relationId);
+                    $hr->geometry = $osmGeo;
                     $message = "Hiking route model {$hr->id} updated via osm api sync";
-                    $logger->info( $message);
+                    $logger->info($message);
                     $this->info($message);
-                }
-                else {
+                } else {
                     $message = "Impossible found an hiking route model with relation id $relationId";
                     $logger->error($message);
                     $this->error($message);
                 }
-            }
-            else {
+            } else {
                 //$this->line("$message OK" );
             }
         }

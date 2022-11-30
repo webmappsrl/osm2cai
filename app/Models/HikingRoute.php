@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\GeometryService;
 use App\Traits\GeojsonableTrait;
 use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
@@ -187,7 +188,8 @@ class HikingRoute extends Model
             $this->ref_REI = $this->ref_REI_osm;
 
             // Geometry
-            $this->geometry = $this->geometry_osm;
+            $service = app()->make(GeometryService::class);
+            $this->geometry = $service->geometryTo4326Srid($this->geometry_osm);
 
             // Meta
             foreach (self::$info_fields as $group => $fields) {
@@ -216,6 +218,10 @@ class HikingRoute extends Model
             if (!is_null($this->geometry)) {
                 // Compute from CAI geometry
                 // Distance
+                if ( $this->id == 22289 )
+                {
+                    $stop = 'here';
+                }
                 $this->distance_comp = round(DB::table('hiking_routes')
                     ->selectRaw('ST_length(geometry,true) as length')
                     ->find($this->id)->length / 1000.0, 2);
