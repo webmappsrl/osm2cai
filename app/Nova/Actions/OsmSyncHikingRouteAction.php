@@ -37,8 +37,9 @@ class OsmSyncHikingRouteAction extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
 
-        $models->map( function( $model ) {
-            $this->updateModelWithOsmData($model);
+        $service = app()->make(OsmService::class);
+        $models->map( function( $model ) use ($service) {
+            $service->updateHikingRouteModelWithOsmData($model);
         } );
 
         $count = $models->count();
@@ -51,34 +52,7 @@ class OsmSyncHikingRouteAction extends Action
         return Action::message("Percorsi aggiornati con successo!");
     }
 
-    public function updateModelWithOsmData( HikingRoute $model )
-    {
-        $relationId = $model->relation_id;
 
-        /**
-         * @var \App\Services\OsmService
-         */
-        $service = OsmService::getService();
-
-        $osmHr = $service->getHikingRoute( $relationId );
-        $osmGeo = $service->getHikingRouteGeometry( $relationId );
-
-        if ( $osmGeo !== $model->geometry )
-        {
-            $model->geometry = $osmGeo;
-        }
-
-        foreach ( $osmHr as $attribute => $val )
-        {
-            $model->$attribute = $val;
-        }
-
-        $model->save();
-        $model->computeAndSetTechInfo();
-        //$model->computeAndSetTerritorialUnits();//it doesnt work
-
-        return $model->save();
-    }
 
     /**
      * Get the fields available on the action.
