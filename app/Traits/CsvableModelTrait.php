@@ -28,7 +28,7 @@ trait CsvableModelTrait {
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
                 $line .= $hr->osm2cai_status . ',';
-                $line .= $hr->mainSector()->full_code . ',';
+                $line .= $hr->mainSector()->full_code ?? '' . ',';
                 $line .= $hr->ref . ',';
                 $line .= $hr->from . ',';
                 $line .= $hr->to . ',';

@@ -73,8 +73,14 @@ class OsmSyncHikingRouteAction extends Action
             $model->$attribute = $val;
         }
 
+
         $model->save();
+
         $model->computeAndSetTechInfo();
+        $model->revertValidation();
+
+        $model->geometry_check = $model->hasCorrectGeometry();
+        $model->setRefREIComp();
         //$model->computeAndSetTerritorialUnits();//it doesnt work
 
         return $model->save();

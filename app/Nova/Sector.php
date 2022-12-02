@@ -175,14 +175,14 @@ class Sector extends Resource
             $sal = $sector->getSal();
 
             return [
-                (new TextCard())->width('1/4')->text($sector->manager)->heading('Resposabili di settore')->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text($sector->manager)->heading('Responsabili di settore')->onlyOnDetail(),
                 (new TextCard())
                     ->width('1/4')
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSalColor($sal) . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
                     ->headingAsHtml()
                     ->text('SAL')->onlyOnDetail(),
                 (new TextCard())->width('1/4')->text('Numero percorsi sda 3/4')->heading($numbers[3] + $numbers[4])->onlyOnDetail(),
-                (new TextCard())->width('1/4')->text('Numero percorsi atttesi')->heading($sector->num_expected)->onlyOnDetail(),
+                (new TextCard())->width('1/4')->text('Numero percorsi attesi')->heading($sector->num_expected)->onlyOnDetail(),
                 $this->_getSdaCard(1, $numbers[1]),
                 $this->_getSdaCard(2, $numbers[2]),
                 $this->_getSdaCard(3, $numbers[3]),

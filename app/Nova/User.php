@@ -172,6 +172,7 @@ class User extends Resource {
                 ->canRun(function ($request, $zone) {
                     return $request->user()->can('emulate', $zone);
                 }),
+                new Actions\DownloadUsersCsv()
         ];
     }
 
@@ -231,4 +232,5 @@ class User extends Resource {
 
         return $query;
     }
+
 }

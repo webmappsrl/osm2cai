@@ -4,6 +4,7 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\V1\HikingRoutesRegionController;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ Route::name('api.')->group(function () {
     Route::prefix('csv')->name('csv.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'csv'])->name('region');
         Route::get('/sector/{id}', [SectorController::class, 'csv'])->name('sector');
+        Route::get('/users/', [UserController::class, 'csv'])->name('users');
     });
     Route::prefix('geojson/complete')->name('geojson_complete.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'geojsonComplete'])->name('region');

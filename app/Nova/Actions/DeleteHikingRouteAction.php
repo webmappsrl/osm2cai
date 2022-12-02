@@ -2,7 +2,11 @@
 
 namespace App\Nova\Actions;
 
+use App\Models\Area;
 use App\Models\HikingRoute;
+use App\Models\Province;
+use App\Models\Region;
+use App\Models\Sector;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -14,17 +18,18 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Actions\Action;
+use Laravel\Nova\Actions\DestructiveAction;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 
-class ValidateHikingRouteAction extends Action
+class DeleteHikingRouteAction extends DestructiveAction
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
-    public $showOnDetail = true;
+    public $showOnTableRow = true;
 
-    public $name='VALIDATE';
+    public $name='ELIMINA';
 
     /**
      * Perform the action on the given models.
@@ -35,27 +40,16 @@ class ValidateHikingRouteAction extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        $user = auth()->user();
-        $date = Carbon::now();
 
-        if (!$user && $user == null)
-            return Action::danger('User info is not available');
-
-        $model = $models->first();
-        if ($model->osm2cai_status != 3)
-            return Action::danger('The SDA is not 3!');
-
-        if (!$model->geometry_raw_data)
-            return Action::danger('Upload a GPX first!');
-
-        if (!$model->geometry_check)
-            return Action::danger('Geometry is not correct');
-
-
-
-        $model->validateSDA($user->id,$date);
-
-        return Action::redirect($model->id);
+        foreach ($models as $m){
+            $m->regions()->sync([]);
+            $m->provinces()->sync([]);
+            $m->areas()->sync([]);
+            $m->sectors()->sync([]);
+            $m->save();
+            $m->delete();
+        }
+        return Action::redirect('/resources/hiking-routes');
     }
 
     /**

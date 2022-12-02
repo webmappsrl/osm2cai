@@ -42,7 +42,8 @@ class HikingRoutePolicy
 
     public function delete(User $user, HikingRoute $route)
     {
-        return false;
+        //todo inserire vincoli autori
+        return true;
     }
 
 

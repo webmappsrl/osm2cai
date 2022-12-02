@@ -2,6 +2,8 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\DeleteHikingRouteAction;
+use App\Nova\Actions\RevertValidateHikingRouteAction;
 use DKulyk\Nova\Tabs;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
@@ -73,7 +75,7 @@ class HikingRoute extends Resource
      * @var array
      */
     public static array $search = [
-        'ref_REI', 'relation_id', 'ref'
+        'ref_REI', 'relation_id', 'ref','ref_REI_comp'
     ];
 
     public static string $group = 'Territorio';
@@ -150,6 +152,7 @@ class HikingRoute extends Resource
             })->onlyOnIndex(),
             Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
+            Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
@@ -331,10 +334,21 @@ class HikingRoute extends Resource
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
-
                 (new OsmSyncHikingRouteAction)
                     ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
                     ->confirmButtonText('Aggiorna con dati osm')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+                (new RevertValidateHikingRouteAction)
+                    ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+                (new DeleteHikingRouteAction())
+                    ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
                     ->cancelButtonText("Annulla")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
