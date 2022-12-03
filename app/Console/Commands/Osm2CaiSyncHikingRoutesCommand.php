@@ -72,19 +72,15 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
          */
         $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route_osm->relation_id]);
 
-        if($route_cai->osm2cai_status == 4 ) {
-            $this->info("Route has status {$route_cai->osm2cai_status }: Skip SYNC");
-            return;
-        }
+
 
         $this->info("Route has status {$route_cai->osm2cai_status }: SYNC");
 
         // Set fields to compute status
         $route_cai->cai_scale_osm = $route_osm->cai_scale;
         $route_cai->source_osm = $route_osm->source;
-        $route_cai->setOsm2CaiStatus();
-        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");
-        $route_cai->save();
+
+
 
         // FILL OSM FIELDS
         foreach ([
@@ -98,11 +94,24 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $route_cai->$k_osm=$route_osm->$k;
         }
 
-        $service = app()->make(GeometryService::class);
 
+        $service = app()->make(GeometryService::class);
         //force srid 4326
         $route_cai->geometry_osm = $service->geometryTo4326Srid($route_osm->geom);
+
+
+
+        if($route_cai->osm2cai_status == 4 ) {
+            $route_cai->save();
+            $this->info("Route has status {$route_cai->osm2cai_status }: SYNC only osm field");
+            return;
+        }
+
+
+        $route_cai->setOsm2CaiStatus();
         $route_cai->save();
+        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");
+
         $route_cai->copyFromOsm2Cai();
         $route_cai->save();
         $route_cai->computeAndSetTechInfo();
