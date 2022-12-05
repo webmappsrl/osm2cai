@@ -200,14 +200,15 @@ class HikingRoute extends Resource
         $fields = [];
         foreach (\App\Models\HikingRoute::getInfoFields()[$group] as $field => $field_data) {
             $fields[] = Text::make($field_data['label'], function () use ($field, $field_data) {
+
                 $field_osm = $field . '_osm';
                 if ($field_data['comp']) {
                     $field_comp = $field . '_comp';
-                    return sprintf('%s (%s / %s)', $this->$field, $this->$field_osm, $this->$field_comp);
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>VALORE CALCOLATO: {$this->$field_comp}</p>";
                 } else {
-                    return sprintf('%s (%s)', $this->$field, $this->$field_osm);
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p>";
                 }
-            })->onlyOnDetail();
+            })->onlyOnDetail()->asHtml();
         }
         return $fields;
     }

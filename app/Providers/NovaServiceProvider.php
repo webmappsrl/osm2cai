@@ -11,6 +11,7 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\SectorsDashboard;
+use App\Services\CacheService;
 use App\Services\CardsService;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
@@ -202,6 +203,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $sal = Auth::user()->region->getSal();
         $sal_color = Osm2CaiHelper::getSalColor($sal);
 
+        $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
+
         $cards = [
             (new TextCard())
                 ->width('1/4')
@@ -234,7 +237,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  <p>&nbsp;</p>
-                 <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
+                 <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
 
                  ')
                 ->textAsHtml(),
@@ -364,6 +367,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 <?php
         }
         $downloadLiks = ob_get_clean();
+        $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
 
         $cards = [
             (new TextCard())
@@ -394,7 +398,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 <p>&nbsp;</p>' .
                     $downloadLiks .
                     '<p>&nbsp;</p>
-                 <p>ATTENZIONE: i file scaricati contengono dati aggiornati fino alle 48 ore precedenti.</p>
+                 <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
                  </div>')
                 ->textAsHtml(),
 

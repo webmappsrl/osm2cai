@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+
 use App\Models\HikingRoute;
-use App\Models\HikingRoutes;
+use App\Services\CacheService;
 use App\Models\HikingRoutesOsm;
 use Illuminate\Console\Command;
 use App\Services\GeometryService;
@@ -44,6 +45,8 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             Log::info("$counter/$tot https://openstreetmap.org/relation/{$route->relation_id}");
             $this->sync($route,$counter,$tot);
         }
+
+        app()->make(CacheService::class)->setOsmSyncDate();
     }
 
     public function sync($route_osm,$counter,$tot)

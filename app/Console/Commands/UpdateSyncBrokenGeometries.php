@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use App\Models\HikingRoute;
 use App\Services\OsmService;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class UpdateSyncBrokenGeometries extends Command
 {
@@ -73,9 +75,16 @@ class UpdateSyncBrokenGeometries extends Command
                     $osmGeo = $osmService->getHikingRouteGeometry($relationId);
                     $hr->geometry = $osmGeo;
                     $message = "Hiking route model {$hr->id} updated via osm api sync";
-                    $hr->save();
-                    $logger->info($message);
-                    $this->info($message);
+                    try{
+                        $hr->save();
+                        $logger->info($message);
+                        $this->info($message);
+                    }
+                    catch( Throwable | Exception $e )
+                    {
+                        $this->error( $e->getMessage() );
+                        $logger->error( $e->getMessage() );
+                    }
                 } else {
                     $message = "Impossible found an hiking route model with relation id $relationId";
                     $logger->error($message);
