@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\HikingRoute;
+use App\Models\HikingRoutesOsm;
 use App\Services\OsmService;
 use Exception;
 use Illuminate\Console\Command;
@@ -70,13 +71,13 @@ class UpdateSyncBrokenGeometries extends Command
                 $logger->warning($message);
 
 
-                $hr = HikingRoute::firstWhere('relation_id', $relationId);
-                if ($hr) {
-                    $osmGeo = $osmService->getHikingRouteGeometry($relationId);
-                    $hr->geometry = $osmGeo;
-                    $message = "Hiking route model {$hr->id} updated via osm api sync";
+                $hr_osm = HikingRoutesOsm::firstWhere('relation_id', $relationId);
+                if ($hr_osm) {
+                    $osmGeo = $osmService->getHikingRouteGeometry3857($relationId);
+                    $hr_osm->geom = $osmGeo;
+                    $message = "Hiking route OSM model geom {$hr_osm->relation_id} updated via osm api sync";
                     try{
-                        $hr->save();
+                        $hr_osm->save();
                         $logger->info($message);
                         $this->info($message);
                     }

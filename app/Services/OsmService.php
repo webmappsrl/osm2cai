@@ -165,6 +165,29 @@ class OsmService
     return false;
   }
 
+   /**
+   * Get route gpx geometry by relation id
+   * convert gpx in geojson
+   * convert geojson in MULTILINESTRING postgis geometry with OSM SRID (3857)
+   *
+   * @param string|int $relationId
+   * @return string|false geometry on success, false otherwise
+   */
+  function getHikingRouteGeometry3857($relationId)
+  {
+
+    //todo
+    $gpx = $this->getHikingRouteGpx($relationId);
+    if ( $gpx )
+    {
+      $service = GeometryService::getService();
+      $geojson = $service->textToGeojson($gpx);
+      $geometry = $service->geojsonToMultilinestringGeometry3857($geojson);
+      return $geometry;
+    }
+    return false;
+  }
+
 
   public function updateHikingRouteModelWithOsmData( HikingRoute $model )
     {
