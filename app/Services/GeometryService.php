@@ -34,11 +34,24 @@ class GeometryService
   public function geojsonToMultilinestringGeometry($geojson)
   {
     return DB::select(DB::raw("select (
-      ST_Force3D(
         ST_Multi(
           ST_GeomFromGeoJSON('" . $geojson . "')
         )
-      )
+    ) as g "))[0]->g;
+  }
+
+    /**
+   * Convert geojson in MULTILINESTRING postgis geometry with 3857 SRID
+   *
+   * @param string $geojson
+   * @return string - the postgis geometry in string format
+   */
+  public function geojsonToMultilinestringGeometry3857($geojson)
+  {
+    return DB::select(DB::raw("select (
+        ST_Multi(
+          ST_Transform( ST_GeomFromGeoJSON('" . $geojson . "' ) , 3857 )
+        )
     ) as g "))[0]->g;
   }
 
