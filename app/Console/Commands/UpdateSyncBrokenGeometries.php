@@ -73,7 +73,7 @@ class UpdateSyncBrokenGeometries extends Command
 
                 $hr_osm = HikingRoutesOsm::firstWhere('relation_id', $relationId);
                 if ($hr_osm) {
-                    $osmGeo = $osmService->getHikingRouteGeometry3857($relationId);
+                    $osmGeo = $osmService->getHikingRouteGeometry($relationId);
                     $hr_osm->geom = $osmGeo;
                     $message = "Hiking route OSM model geom {$hr_osm->relation_id} updated via osm api sync";
                     try{
