@@ -37,6 +37,9 @@ class OsmSyncHikingRouteAction extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
 
+        /**
+         * @var \App\Services\OsmService
+         */
         $service = app()->make(OsmService::class);
         $models->map( function( $model ) use ($service) {
             $service->updateHikingRouteModelWithOsmData($model);

@@ -110,6 +110,7 @@ class OsmService
         if ( in_array( $key , $allowedKeys ) )
         {
           $return[$key.'_osm'] = (string) $tag['v'];
+          $return[$key] = (string) $tag['v'];
         }
 
       }
