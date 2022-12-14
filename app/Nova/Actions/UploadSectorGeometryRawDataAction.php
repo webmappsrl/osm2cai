@@ -3,6 +3,7 @@
 namespace App\Nova\Actions;
 
 use Exception;
+use Throwable;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Bus\Queueable;
@@ -11,11 +12,11 @@ use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Actions\Action;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Laravel\Nova\Fields\ActionFields;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Throwable;
 
 class UploadSectorGeometryRawDataAction extends Action
 {
@@ -37,7 +38,7 @@ class UploadSectorGeometryRawDataAction extends Action
 
         if ($fields->geometry) {
             $content = $fields->geometry->get();
-            $geojson = $model->textToGeojson( $content );
+            //$geojson = $model->textToGeojson( $content );
             $geom = $model->fileToGeometry($content);
 
 
@@ -55,9 +56,15 @@ class UploadSectorGeometryRawDataAction extends Action
                 $model->save();
 
 
+                //save area geometry
+                $area = $model->parent;
+                /**
+                 * @var \App\Services\AreaModelService
+                 */
+                $service = app()->make(\App\Services\AreaModelService::class );
+                $service->computeAndSaveGeometryBySectors( $area );
+
                 $hrs = $model->children;
-
-
                 //iterate over sector hr
                 $hrs->map( function($hr) {
                     $hr->computeAndSetTechInfo();
@@ -65,11 +72,14 @@ class UploadSectorGeometryRawDataAction extends Action
                     $hr->save();
                 } );
 
+
+
                 DB::commit();
             }
             catch( Throwable $t)
             {
                 DB::rollBack();
+                Log::error($t->getMessage());
                 return Action::danger("Impossibile aggiornare la geometry. Qualcosa è andato storto: " . $t->getMessage());
             }
 

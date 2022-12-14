@@ -129,8 +129,8 @@ class Region extends TerritorialUnit
      */
     public function scopeOwnedBy($query, User $user)
     {
-        $userModelIds = $user->region->pluck('id');
-        return $query->whereIn('id', $userModelIds);
+        $userModelId = $user->region ? $user->region->id : 0;
+        return $query->where('id', $userModelId);
     }
 
 }

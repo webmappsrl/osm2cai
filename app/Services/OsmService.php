@@ -110,6 +110,7 @@ class OsmService
         if ( in_array( $key , $allowedKeys ) )
         {
           $return[$key.'_osm'] = (string) $tag['v'];
+          $return[$key] = (string) $tag['v'];
         }
 
       }
@@ -142,16 +143,74 @@ class OsmService
     return $return;
   }
 
+  /**
+   * Get route gpx geometry by relation id
+   * convert gpx in geojson
+   * convert geojson in MULTILINESTRING postgis geometry with correct SRID
+   *
+   * @param string|int $relationId
+   * @return string|false geometry on success, false otherwise
+   */
   function getHikingRouteGeometry($relationId)
   {
 
-    $geojson = $this->getHikingRouteGpx($relationId);
-    if ( $geojson )
+    //todo
+    $gpx = $this->getHikingRouteGpx($relationId);
+    if ( $gpx )
     {
       $service = GeometryService::getService();
-      $geometry = $service->textToGeojson($geojson);
+      $geojson = $service->textToGeojson($gpx);
+      $geometry = $service->geojsonToMultilinestringGeometry($geojson);
       return $geometry;
     }
     return false;
   }
+
+   /**
+   * Get route gpx geometry by relation id
+   * convert gpx in geojson
+   * convert geojson in MULTILINESTRING postgis geometry with OSM SRID (3857)
+   *
+   * @param string|int $relationId
+   * @return string|false geometry on success, false otherwise
+   */
+  function getHikingRouteGeometry3857($relationId)
+  {
+
+    //todo
+    $gpx = $this->getHikingRouteGpx($relationId);
+    if ( $gpx )
+    {
+      $service = GeometryService::getService();
+      $geojson = $service->textToGeojson($gpx);
+      $geometry = $service->geojsonToMultilinestringGeometry3857($geojson);
+      return $geometry;
+    }
+    return false;
+  }
+
+
+  public function updateHikingRouteModelWithOsmData( HikingRoute $model )
+    {
+        $relationId = $model->relation_id;
+
+        $osmHr = $this->getHikingRoute( $relationId );
+        $osmGeo = $this->getHikingRouteGeometry( $relationId );
+
+        if ( $osmGeo !== $model->geometry )
+        {
+          $model->geometry = $osmGeo;
+        }
+
+        foreach ( $osmHr as $attribute => $val )
+        {
+            $model->$attribute = $val;
+        }
+
+        $model->save();
+        $model->computeAndSetTechInfo();
+        //$model->computeAndSetTerritorialUnits();//it doesnt work
+
+        return $model->save();
+    }
 }

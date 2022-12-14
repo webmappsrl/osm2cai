@@ -108,6 +108,11 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'sync' => [
+            'path' => storage_path('logs/sync.log'),
+            'driver' => 'single',
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
     ],
 
 ];

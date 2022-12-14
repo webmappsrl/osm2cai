@@ -2,13 +2,15 @@
 
 namespace App\Console\Commands;
 
+
 use App\Models\HikingRoute;
-use App\Models\HikingRoutes;
+use App\Services\CacheService;
 use App\Models\HikingRoutesOsm;
-use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 use Illuminate\Console\Command;
+use App\Services\GeometryService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Providers\Osm2CaiHikingRoutesServiceProvider;
 
 class Osm2CaiSyncHikingRoutesCommand extends Command
 {
@@ -43,6 +45,8 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             Log::info("$counter/$tot https://openstreetmap.org/relation/{$route->relation_id}");
             $this->sync($route,$counter,$tot);
         }
+
+        app()->make(CacheService::class)->setOsmSyncDate();
     }
 
     public function sync($route_osm,$counter,$tot)
@@ -50,52 +54,67 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
         $this->info('');
         $this->info("$counter/$tot https://openstreetmap.org/relation/{$route_osm->relation_id}");
         // Convert Object to array
-        $route_osm_array = (array) $route_osm;
+        // $route_osm_array = (array) $route_osm;
         // Map keys
-        $route_cai_array = [];
-        foreach ($route_osm_array as $k => $v) {
-            if ($k == 'relation_id') {
-                ;
-            } else if ($k == 'tags') {
-                // TODO: json data convert
-                // $route_cai_array['tags_osm']=$v;
-            } else if ($k == 'geom') {
-                $route_cai_array['geometry_osm'] = $v;
-            } else {
-                $route_cai_array[$k . '_osm'] = $v;
-            }
-        }
+        // $route_cai_array = [];
+        // foreach ($route_osm_array as $k => $v) {
+        //     if ($k == 'relation_id') {
+        //         ;
+        //     } else if ($k == 'tags') {
+        //         // TODO: json data convert
+        //         // $route_cai_array['tags_osm']=$v;
+        //     } else if ($k == 'geom') {
+        //         $route_cai_array['geometry_osm'] = $v;
+        //     } else {
+        //         $route_cai_array[$k . '_osm'] = $v;
+        //     }
+        // }
 
+        /**
+         * @var \App\Models\HikingRoute
+         */
         $route_cai = HikingRoute::firstOrCreate(['relation_id' => $route_osm->relation_id]);
 
-        if($route_cai->osm2cai_status == 4 ) {
-            $this->info("Route has status {$route_cai->osm2cai_status }: Skip SYNC");
-            return;
-        }
-    
+
+
         $this->info("Route has status {$route_cai->osm2cai_status }: SYNC");
 
         // Set fields to compute status
         $route_cai->cai_scale_osm = $route_osm->cai_scale;
         $route_cai->source_osm = $route_osm->source;
-        $route_cai->setOsm2CaiStatus();
-        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");        
-        $route_cai->save();
+
+
 
         // FILL OSM FIELDS
         foreach ([
             'ref', 'old_ref', 'source_ref', 'survey_date', 'name', 'rwn_name', 'ref_REI',
             'from', 'to', 'osmc_symbol', 'network', 'roundtrip', 'symbol', 'symbol_it',
             'ascent', 'descent', 'distance', 'duration_forward', 'duration_backward',
-            'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons', 
+            'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons',
             'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page'
         ] as $k) {
             $k_osm=$k.'_osm';
             $route_cai->$k_osm=$route_osm->$k;
         }
 
-        $route_cai->geometry_osm=$route_osm->geom;
+
+        $service = app()->make(GeometryService::class);
+        //force srid 4326
+        $route_cai->geometry_osm = $service->geometryTo4326Srid($route_osm->geom);
+
+
+
+        if($route_cai->osm2cai_status == 4 ) {
+            $route_cai->save();
+            $this->info("Route has status {$route_cai->osm2cai_status }: SYNC only osm field");
+            return;
+        }
+
+
+        $route_cai->setOsm2CaiStatus();
         $route_cai->save();
+        $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");
+
         $route_cai->copyFromOsm2Cai();
         $route_cai->save();
         $route_cai->computeAndSetTechInfo();

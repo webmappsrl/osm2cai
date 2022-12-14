@@ -289,10 +289,10 @@ class Sector extends Resource
                 ->confirmButtonText('Aggiorna geometria')
                 ->cancelButtonText("Annulla")
                 ->canSee(function ($request) {
-                    return true;
+                    return $request->user()->is_administrator;
                 })
                 ->canRun(function ($request, $user) {
-                    return true;
+                    return $request->user()->is_administrator;
                 }),
                 (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
                     return $request->user()->can('downloadKml', $zone);
