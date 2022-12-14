@@ -207,6 +207,9 @@ class OsmService
             $model->$attribute = $val;
         }
 
+        $model->revertValidation();
+        $model->setRefREIComp();
+
         $model->save();
         $model->computeAndSetTechInfo();
         //$model->computeAndSetTerritorialUnits();//it doesnt work
