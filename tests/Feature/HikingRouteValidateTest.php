@@ -123,17 +123,4 @@ class HikingRouteValidateTest extends TestCase
     }
 
 
-    /**
-     * @test
-     */
-    public function can_delete_hiking_route(){
-        $user = User::factory()->create();
-        $this->actingAs($user);
-        $hr = HikingRoute::factory()->create();
-        $action = new DeleteHikingRouteAction();
-        $f = new ActionFields(Collection::make(),Collection::make());
-        $res = $action->handle($f,Collection::make([0=>$hr]));
-        $this->assertModelMissing($hr);
-    }
-
 }

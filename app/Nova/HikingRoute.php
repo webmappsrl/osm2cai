@@ -313,6 +313,11 @@ class HikingRoute extends Resource
         ];
     }
 
+    public function authorizedToDelete(Request $request)
+    {
+        return false;
+    }
+
     /**
      * Get the actions available for the resource.
      *

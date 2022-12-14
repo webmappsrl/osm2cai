@@ -2,32 +2,20 @@
 
 namespace App\Nova\Actions;
 
-use App\Models\Area;
-use App\Models\HikingRoute;
-use App\Models\Province;
-use App\Models\Region;
-use App\Models\Sector;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\DestructiveAction;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Fields\File;
-use Laravel\Nova\Fields\Text;
 
 class DeleteHikingRouteAction extends DestructiveAction
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
     public $showOnTableRow = true;
+    public $onlyOnIndex = true;
 
     public $name='ELIMINA';
 
@@ -40,14 +28,23 @@ class DeleteHikingRouteAction extends DestructiveAction
      */
     public function handle(ActionFields $fields, Collection $models)
     {
+        $user = auth()->user();
+        if (!$user && $user == null)
+            return Action::danger('User info is not available');
+        if (($user->is_national_referent == false) or ($user->is_administrator == false))
+            return Action::danger('You do not have permissions to delete this Hiking Route');
 
         foreach ($models as $m){
-            $m->regions()->sync([]);
-            $m->provinces()->sync([]);
-            $m->areas()->sync([]);
-            $m->sectors()->sync([]);
-            $m->save();
-            $m->delete();
+            if(!$m->delete_on_osm)
+                return Action::danger('You can not delete this Hiking Route');
+            else {
+                $m->regions()->sync([]);
+                $m->provinces()->sync([]);
+                $m->areas()->sync([]);
+                $m->sectors()->sync([]);
+                $m->save();
+                $m->delete();
+            }
         }
         return Action::redirect('/resources/hiking-routes');
     }
