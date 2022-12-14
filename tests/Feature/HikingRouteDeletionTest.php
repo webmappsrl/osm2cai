@@ -25,7 +25,7 @@ class HikingRouteDeletionTest extends TestCase
         $user = User::factory(["is_administrator" => false,"is_national_referent" => false])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
-        $hr->delete_on_osm = true;
+        $hr->deleted_on_osm = true;
         $hr->save();
         $action = new DeleteHikingRouteAction();
         $f = new ActionFields(Collection::make(),Collection::make());
@@ -40,7 +40,7 @@ class HikingRouteDeletionTest extends TestCase
         $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
-        $hr->delete_on_osm = true;
+        $hr->deleted_on_osm = true;
         $hr->save();
         $action = new DeleteHikingRouteAction();
         $f = new ActionFields(Collection::make(),Collection::make());
@@ -55,7 +55,7 @@ class HikingRouteDeletionTest extends TestCase
         $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
-        $hr->delete_on_osm = true;
+        $hr->deleted_on_osm = false;
         $hr->save();
         $action = new DeleteHikingRouteAction();
         $f = new ActionFields(Collection::make(),Collection::make());

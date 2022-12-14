@@ -35,7 +35,7 @@ class DeleteHikingRouteAction extends DestructiveAction
             return Action::danger('You do not have permissions to delete this Hiking Route');
 
         foreach ($models as $m){
-            if(!$m->delete_on_osm)
+            if(!$m->deleted_on_osm)
                 return Action::danger('You can not delete this Hiking Route');
             else {
                 $m->regions()->sync([]);
