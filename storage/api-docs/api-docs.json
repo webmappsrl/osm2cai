@@ -15,7 +15,7 @@
         "/api/v1/hiking-routes/region/{region_code}/{sda}": {
             "get": {
                 "tags": [
-                    "hiking-routes"
+                    "Api V1"
                 ],
                 "operationId": "d6b251f086821ba0af123f1f21b6cb7e",
                 "parameters": [
@@ -68,7 +68,7 @@
         "/api/v1/hiking-routes-osm/region/{region_code}/{sda}": {
             "get": {
                 "tags": [
-                    "hiking-routes-osm"
+                    "Api V1"
                 ],
                 "operationId": "bc33a73211d35e85ee642851e575cd23",
                 "parameters": [
@@ -121,7 +121,7 @@
         "/api/v1/hiking-route/{id}": {
             "get": {
                 "tags": [
-                    "hiking-route"
+                    "Api V1"
                 ],
                 "operationId": "11427b4f47709888e728c843ba71736e",
                 "parameters": [
@@ -248,7 +248,7 @@
         "/api/v1/hiking-route-osm/{id}": {
             "get": {
                 "tags": [
-                    "hiking-route-osm"
+                    "Api V1"
                 ],
                 "operationId": "d93bd37d1a815ded43468b397a6757fe",
                 "parameters": [
@@ -375,7 +375,7 @@
         "/api/v1/hiking-routes/bb/{bounding_box}/{sda}": {
             "get": {
                 "tags": [
-                    "hiking-routes-bb"
+                    "Api V1"
                 ],
                 "operationId": "9f5e516865448220fcf8ef960334f3cb",
                 "parameters": [
@@ -428,7 +428,7 @@
         "/api/v1/hiking-routes-osm/bb/{bounding_box}/{sda}": {
             "get": {
                 "tags": [
-                    "hiking-routes-bb-osm"
+                    "Api V1"
                 ],
                 "operationId": "e0dc7b2e557672fe6506790cf3f5c6c4",
                 "parameters": [
@@ -467,9 +467,9 @@
                                     },
                                     "type": "object",
                                     "example": [
-                                        1269,
-                                        652,
-                                        273
+                                        7766787,
+                                        3151885,
+                                        2736729
                                     ]
                                 }
                             }
@@ -481,7 +481,7 @@
         "/api/v1/hiking-routes-collection/bb/{bounding_box}/{sda}": {
             "get": {
                 "tags": [
-                    "hiking-routes-collection-bb"
+                    "Api V1"
                 ],
                 "operationId": "695d4c362238a995cd1aff26cc062564",
                 "parameters": [
@@ -519,7 +519,613 @@
                                         }
                                     },
                                     "type": "object",
-                                    "example": []
+                                    "example": {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "id": 2421,
+                                            "relation_id": 4179533,
+                                            "source": "survey:CAI",
+                                            "cai_scale": "E",
+                                            "from": "Castellare",
+                                            "to": "Campo di Croce",
+                                            "ref": "117",
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29T00:00:00.000000Z"
+                                        },
+                                        "geometry": {
+                                            "type": "MultiLineString",
+                                            "coordinates": [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ]
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-routes/region/{region_code}/{sda}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "0a2803bbbbb933ecc0f542d5390c1f82",
+                "parameters": [
+                    {
+                        "name": "region_code",
+                        "in": "path",
+                        "description": "Regione code according to CAI convention: <br/>\n    <br />A -> Friuli Venezia Giulia\n    <br />B -> Veneto\n    <br />C -> Trentino Alto Adige\n    <br />D -> Lombardia\n    <br />E -> Piemonte\n    <br />F -> Val d'Aosta\n    <br />G -> Liguria\n    <br />H -> Emilia Romagna\n    <br />L -> Toscana\n    <br />M -> Marche\n    <br />N -> Umbria\n    <br />O -> Lazio\n    <br />P -> Abruzzo\n    <br />Q -> Molise\n    <br />S -> Campania\n    <br />R -> Puglia\n    <br />T -> Basilicata\n    <br />U -> Calabria\n    <br />V -> Sicilia\n    <br />Z -> Sardegna",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM2CAI IDs based on the given region code and SDA number.\n     *                       These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update od hiking route",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "1269": "2022-12-03 12:34:25",
+                                        "652": "2022-07-31 18:23:34",
+                                        "273": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-routes-osm/region/{region_code}/{sda}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "e6644eefcb68a1812f4f1122ce583049",
+                "parameters": [
+                    {
+                        "name": "region_code",
+                        "in": "path",
+                        "description": "Regione code according to CAI convention: <br/>\n    <br />A -> Friuli Venezia Giulia\n    <br />B -> Veneto\n    <br />C -> Trentino Alto Adige\n    <br />D -> Lombardia\n    <br />E -> Piemonte\n    <br />F -> Val d'Aosta\n    <br />G -> Liguria\n    <br />H -> Emilia Romagna\n    <br />L -> Toscana\n    <br />M -> Marche\n    <br />N -> Umbria\n    <br />O -> Lazio\n    <br />P -> Abruzzo\n    <br />Q -> Molise\n    <br />S -> Campania\n    <br />R -> Puglia\n    <br />T -> Basilicata\n    <br />U -> Calabria\n    <br />V -> Sicilia\n    <br />Z -> Sardegna",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM IDs based on the given region code and SDA number.\n     *                       OSMID can be used in hiking-route-osm API or directly in OpenStreetMap relation by the following URL:\n     *                       https://openstreetmap.org/relation/{OSMID}. Remember that the data on OSM can be differente from data in\n     *                       OSM2CAI after validation.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "OSM": {
+                                            "description": "Open Streen Map identification",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update od hiking route",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "7766787": "2022-12-03 12:34:25",
+                                        "3151885": "2022-07-31 18:23:34",
+                                        "2736729": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-route/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "832bfde9eb1997bc9c0efe63ee283a35",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The OSM2CAI ID of a specific Hiking Route (e.g. 2421)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Geojson type",
+                                            "type": "string"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "OSM2CAI ID",
+                                                    "type": "integer"
+                                                },
+                                                "relation_ID": {
+                                                    "description": "OSMID",
+                                                    "type": "integer"
+                                                },
+                                                "source": {
+                                                    "description": "from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source",
+                                                    "type": "string"
+                                                },
+                                                "cai_scale": {
+                                                    "description": "CAI scale difficulty: T E EE",
+                                                    "type": "string"
+                                                },
+                                                "from": {
+                                                    "description": "start point",
+                                                    "type": "string"
+                                                },
+                                                "to": {
+                                                    "description": "end point",
+                                                    "type": "string"
+                                                },
+                                                "ref": {
+                                                    "description": "local ref hiking route number must be three number and a letter only in last position for variants",
+                                                    "type": "string"
+                                                },
+                                                "public_page": {
+                                                    "description": "public url for the hiking route",
+                                                    "type": "string"
+                                                },
+                                                "sda": {
+                                                    "description": "stato di accatastamento",
+                                                    "type": "integer"
+                                                },
+                                                "validation_date": {
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "updated_at": {
+                                                    "description": "date of last update of the hiking route format YYYY-mm-dd H:i:s",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry types: LineString, MultiLineString",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "hiking routes coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "id": 2421,
+                                            "relation_id": 4179533,
+                                            "source": "survey:CAI",
+                                            "cai_scale": "E",
+                                            "from": "Castellare",
+                                            "to": "Campo di Croce",
+                                            "ref": "117",
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29",
+                                            "updated_at": "2022-07-29 10:11:23"
+                                        },
+                                        "geometry": {
+                                            "type": "MultiLineString",
+                                            "coordinates": [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ]
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-route-osm/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "9eb8b9f1c28d0ab0eae8e3e7690a2c7c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The OSM relation ID of a specific Hiking Route (e.g. 13442719)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the geojson of a Hiking Route based on the given OSM ID.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Geojson type",
+                                            "type": "string"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "OSM2CAI ID",
+                                                    "type": "integer"
+                                                },
+                                                "relation_ID": {
+                                                    "description": "OSMID",
+                                                    "type": "integer"
+                                                },
+                                                "source": {
+                                                    "description": "from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source",
+                                                    "type": "string"
+                                                },
+                                                "cai_scale": {
+                                                    "description": "CAI scale difficulty: T E EE",
+                                                    "type": "string"
+                                                },
+                                                "from": {
+                                                    "description": "start point",
+                                                    "type": "string"
+                                                },
+                                                "to": {
+                                                    "description": "end point",
+                                                    "type": "string"
+                                                },
+                                                "ref": {
+                                                    "description": "local ref hiking route number must be three number and a letter only in last position for variants",
+                                                    "type": "string"
+                                                },
+                                                "public_page": {
+                                                    "description": "public url for the hiking route",
+                                                    "type": "string"
+                                                },
+                                                "sda": {
+                                                    "description": "stato di accatastamento",
+                                                    "type": "integer"
+                                                },
+                                                "validation_date": {
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "updated_at": {
+                                                    "description": "date of last update of the hiking route format YYYY-mm-dd H:i:s",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry types: LineString, MultiLineString",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "hiking routes coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "id": 2421,
+                                            "relation_id": 4179533,
+                                            "source": "survey:CAI",
+                                            "cai_scale": "E",
+                                            "from": "Castellare",
+                                            "to": "Campo di Croce",
+                                            "ref": "117",
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29",
+                                            "updated_at": "2022-07-29 10:11:23"
+                                        },
+                                        "geometry": {
+                                            "type": "MultiLineString",
+                                            "coordinates": [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ]
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-routes/bb/{bounding_box}/{sda}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "b5a317b501af0a3f15e643c61fe19d7f",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM2CAI IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.\n     *                       These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update od hiking route",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "1269": "2022-12-03 12:34:25",
+                                        "652": "2022-07-31 18:23:34",
+                                        "273": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-routes-osm/bb/{bounding_box}/{sda}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "a68bfc904806e456fb2112ccedbd1ee2",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM IDs based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.\n     *                       These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "OSM Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update od hiking route",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "7766787": "2022-12-03 12:34:25",
+                                        "3151885": "2022-07-31 18:23:34",
+                                        "2736729": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/hiking-routes-collection/bb/{bounding_box}/{sda}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "64d7f0968622d0c97db62c1f7b535e97",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "List of WGS84 lat,lon cordinates in this order(xmin,ymin,xmax,ymax)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    },
+                    {
+                        "name": "sda",
+                        "in": "path",
+                        "description": "SDA (stato di accatastamento) (e.g. 3 or 3,1 or 0,1,2). SDA=3 means ready to be validated, SDA=4 means validated by CAI expert",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "varchar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns all the feautures collection based on the given bounding box coordinates( xmin,ymin,xmax,ymax)  and SDA number.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "collection": {
+                                            "description": "Feature Collection",
+                                            "type": "json"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "id": 2421,
+                                            "relation_id": 4179533,
+                                            "source": "survey:CAI",
+                                            "cai_scale": "E",
+                                            "from": "Castellare",
+                                            "to": "Campo di Croce",
+                                            "ref": "117",
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29",
+                                            "updated_at": "2022-07-29 10:11:23"
+                                        },
+                                        "geometry": {
+                                            "type": "MultiLineString",
+                                            "coordinates": [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ]
+                                                ]
+                                            ]
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -527,35 +1133,5 @@
                 }
             }
         }
-    },
-    "tags": [
-        {
-            "name": "hiking-routes",
-            "description": "Hiking route ID list based on region and SDA"
-        },
-        {
-            "name": "hiking-routes-osm",
-            "description": "Hiking route OSM ID list based on regione CAI code and SDA"
-        },
-        {
-            "name": "hiking-route",
-            "description": "Geojson (https://datatracker.ietf.org/doc/html/rfc7946) of a Hiking Route based on the given OSM2CAI ID"
-        },
-        {
-            "name": "hiking-route-osm",
-            "description": "Geojson (https://datatracker.ietf.org/doc/html/rfc7946) of a Hiking Route based on the given OSM relation ID"
-        },
-        {
-            "name": "hiking-routes-bb",
-            "description": "Hiking route ID list based on bouding box and SDA"
-        },
-        {
-            "name": "hiking-routes-bb-osm",
-            "description": "Hiking route OSM ID list based on bouding box and SDA"
-        },
-        {
-            "name": "hiking-routes-collection-bb",
-            "description": "Hiking route OSM ID list based on bouding box and SDA"
-        }
-    ]
+    }
 }
