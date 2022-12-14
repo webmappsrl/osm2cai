@@ -17,7 +17,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "d6b251f086821ba0af123f1f21b6cb7e",
+                "operationId": "d922aa0cee8e6e55fea74c19c15c7207",
                 "parameters": [
                     {
                         "name": "region_code",
@@ -70,7 +70,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "bc33a73211d35e85ee642851e575cd23",
+                "operationId": "84c59d8d72f6c4a56cf94ac44da49f4e",
                 "parameters": [
                     {
                         "name": "region_code",
@@ -123,7 +123,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "11427b4f47709888e728c843ba71736e",
+                "operationId": "e869406b8e9e4e692223146594a3fede",
                 "parameters": [
                     {
                         "name": "id",
@@ -250,7 +250,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "d93bd37d1a815ded43468b397a6757fe",
+                "operationId": "c8e797f06c1465d75c57f4daffd2fcf5",
                 "parameters": [
                     {
                         "name": "id",
@@ -377,7 +377,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "9f5e516865448220fcf8ef960334f3cb",
+                "operationId": "3bcb3c038e56fb57544d32075e7de134",
                 "parameters": [
                     {
                         "name": "bounding_box",
@@ -430,7 +430,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "e0dc7b2e557672fe6506790cf3f5c6c4",
+                "operationId": "1e31cbc5755444319afde8070eb5efa8",
                 "parameters": [
                     {
                         "name": "bounding_box",
@@ -483,7 +483,7 @@
                 "tags": [
                     "Api V1"
                 ],
-                "operationId": "695d4c362238a995cd1aff26cc062564",
+                "operationId": "caf67c7249fa674f9d00b525d654bf18",
                 "parameters": [
                     {
                         "name": "bounding_box",

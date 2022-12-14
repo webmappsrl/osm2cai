@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 define('_BOUNDIG_BOX_LIMIT',0.1);
 
-class HikingRoutesRegionController extends Controller
+class HikingRoutesRegionControllerV1 extends Controller
 {
 
 
@@ -316,69 +316,6 @@ Regione code according to CAI convention: <br/>
         return response($HR, 200, ['Content-type' => 'application/json']);
     }
 
-    public function createGeoJSONFromModel($item) {
-        $obj = HikingRoute::where('id', '=', $item->id)
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry) as geom")
-            )
-            ->first();
-
-        if(is_null($obj)) {
-            return null;
-        }
-
-        $geom = $obj->geom;
-
-        if (isset($geom)) {
-            $response = [
-                "type" => "Feature",
-                "properties" => [
-                    "id" => $item->id,
-                    "relation_id" => $item->relation_id,
-                    "source" => $item->source,
-                    "cai_scale" => $item->cai_scale,
-                    "from" => $item->from,
-                    "to" => $item->to,
-                    "ref" => $item->ref,
-                    "public_page"=>$item->getPublicPage(),
-                    "sda" => $item->osm2cai_status,
-                    // "name" => $item->name,
-                    // "survey_date" => $item->survey_date,
-                    // "rwn_name" => $item->rwn_name,
-                    // "created_at" => $item->created_at,
-                    // "updated_at" => $item->updated_at,
-                    // "validation_date" => $item->validation_date,
-                    // "user_id" => $item->user_id,
-                    // "old_ref" => $item->old_ref,
-                    // "source_ref" => $item->source_ref,
-                    // "tags" => $item->tags,
-                    // "osmc_symbol" => $item->osmc_symbol,
-                    // "network" => $item->network,
-                    // "roundtrip" => $item->roundtrip,
-                    // "symbol" => $item->symbol,
-                    // "symbol_it" => $item->symbol_it,
-                    // "ascent" => $item->ascent,
-                    // "descent" => $item->descent,
-                    // "distance" => $item->distance,
-                    // "duration_forward" => $item->duration_forward,
-                    // "duration_backward" => $item->duration_backward,
-                    // "operator" => $item->operator,
-                    // "state" => $item->state,
-                    // "description" => $item->description,
-                    // "website" => $item->website,
-                    // "wikimedia_commons" => $item->wikimedia_commons,
-                    // "maintenance" => $item->maintenance,
-                    // "note" => $item->note,
-                    // "note_project_page" => $item->note_project_page,
-                ],
-                "geometry" => json_decode($geom, true)
-            ];
-            if($item->osm2cai_status==4)
-            $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
-            return $response;
-
-        } 
-    }
 
     /**
      *
@@ -547,5 +484,68 @@ Regione code according to CAI convention: <br/>
     public function getAreaBoundingBox($la0,$lo0,$la1,$lo1){
         $res = DB::select(DB::raw("SELECT ST_area(ST_makeenvelope($la0,$lo0,$la1,$lo1))"));
         return floatval($res[0]->st_area);
+    }
+    public function createGeoJSONFromModel($item) {
+        $obj = HikingRoute::where('id', '=', $item->id)
+            ->select(
+                DB::raw("ST_AsGeoJSON(geometry) as geom")
+            )
+            ->first();
+
+        if(is_null($obj)) {
+            return null;
+        }
+
+        $geom = $obj->geom;
+
+        if (isset($geom)) {
+            $response = [
+                "type" => "Feature",
+                "properties" => [
+                    "id" => $item->id,
+                    "relation_id" => $item->relation_id,
+                    "source" => $item->source,
+                    "cai_scale" => $item->cai_scale,
+                    "from" => $item->from,
+                    "to" => $item->to,
+                    "ref" => $item->ref,
+                    "public_page"=>$item->getPublicPage(),
+                    "sda" => $item->osm2cai_status,
+                    // "name" => $item->name,
+                    // "survey_date" => $item->survey_date,
+                    // "rwn_name" => $item->rwn_name,
+                    // "created_at" => $item->created_at,
+                    // "updated_at" => $item->updated_at,
+                    // "validation_date" => $item->validation_date,
+                    // "user_id" => $item->user_id,
+                    // "old_ref" => $item->old_ref,
+                    // "source_ref" => $item->source_ref,
+                    // "tags" => $item->tags,
+                    // "osmc_symbol" => $item->osmc_symbol,
+                    // "network" => $item->network,
+                    // "roundtrip" => $item->roundtrip,
+                    // "symbol" => $item->symbol,
+                    // "symbol_it" => $item->symbol_it,
+                    // "ascent" => $item->ascent,
+                    // "descent" => $item->descent,
+                    // "distance" => $item->distance,
+                    // "duration_forward" => $item->duration_forward,
+                    // "duration_backward" => $item->duration_backward,
+                    // "operator" => $item->operator,
+                    // "state" => $item->state,
+                    // "description" => $item->description,
+                    // "website" => $item->website,
+                    // "wikimedia_commons" => $item->wikimedia_commons,
+                    // "maintenance" => $item->maintenance,
+                    // "note" => $item->note,
+                    // "note_project_page" => $item->note_project_page,
+                ],
+                "geometry" => json_decode($geom, true)
+            ];
+            if($item->osm2cai_status==4)
+                $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
+            return $response;
+
+        }
     }
 }
