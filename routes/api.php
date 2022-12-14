@@ -6,7 +6,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HikingRouteController;
-use App\Http\Controllers\V1\HikingRoutesRegionController;
+use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,13 +60,13 @@ Route::name('api.')->group(function () {
     });
 
     Route::prefix('v1')->name('v1')->group(function () {
-        Route::get('/hiking-routes/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist'])->name('hr-ids-by-region');
-        Route::get('/hiking-routes-osm/region/{regione_code}/{sda}', [HikingRoutesRegionController::class, 'hikingrouteosmlist'])->name('hr_osmids_by_region');
-        Route::get('/hiking-route/{id}', [HikingRoutesRegionController::class, 'hikingroutebyid'])->name('hr_by_id');
-        Route::get('/hiking-route-osm/{id}', [HikingRoutesRegionController::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
-        Route::get('/hiking-routes/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist_bb'])->name('hr-ids-by-bb');
-        Route::get('/hiking-routes-osm/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingrouteosmlist_bb'])->name('hr-osmids-by-bb');
-        Route::get('/hiking-routes-collection/bb/{bounding_box}/{sda}', [HikingRoutesRegionController::class, 'hikingroutelist_collection'])->name('hr-collection-by-bb');
+        Route::get('/hiking-routes/region/{regione_code}/{sda}', [HikingRoutesRegionControllerV1::class, 'hikingroutelist'])->name('hr-ids-by-region');
+        Route::get('/hiking-routes-osm/region/{regione_code}/{sda}', [HikingRoutesRegionControllerV1::class, 'hikingrouteosmlist'])->name('hr_osmids_by_region');
+        Route::get('/hiking-route/{id}', [HikingRoutesRegionControllerV1::class, 'hikingroutebyid'])->name('hr_by_id');
+        Route::get('/hiking-route-osm/{id}', [HikingRoutesRegionControllerV1::class, 'hikingroutebyosmid'])->name('hr_by_osmid');
+        Route::get('/hiking-routes/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV1::class, 'hikingroutelist_bb'])->name('hr-ids-by-bb');
+        Route::get('/hiking-routes-osm/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV1::class, 'hikingrouteosmlist_bb'])->name('hr-osmids-by-bb');
+        Route::get('/hiking-routes-collection/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV1::class, 'hikingroutelist_collection'])->name('hr-collection-by-bb');
     });
 
 
