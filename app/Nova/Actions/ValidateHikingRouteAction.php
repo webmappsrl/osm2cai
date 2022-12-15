@@ -42,6 +42,8 @@ class ValidateHikingRouteAction extends Action
             return Action::danger('User info is not available');
 
         $model = $models->first();
+        if (!$user->canManageHikingRoute($model))
+            return Action::danger('You don\'t have permissions on this Hiking Route');
         if ($model->osm2cai_status != 3)
             return Action::danger('The SDA is not 3!');
 

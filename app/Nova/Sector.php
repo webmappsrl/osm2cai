@@ -114,7 +114,7 @@ class Sector extends Resource
                 return $this->users->pluck('name')->implode(', ');
             })->onlyOnIndex(),
             Number::make(__('Numero Atteso'), 'num_expected')->required(),
-            Text::make(__('Full code'), 'full_code')->sortable()->required()->rules('max:5'),
+            Text::make(__('Full code'), 'full_code')->readonly(),
             Text::make(__('Region'), 'area_id', function () {
                 return $this->area->province->region->name;
             })->hideWhenUpdating()->hideWhenCreating(),
@@ -125,7 +125,7 @@ class Sector extends Resource
                 return $this->area->name;
             })->hideWhenUpdating()->hideWhenCreating(),
             BelongsToMany::make('Moderators', 'users')->searchable(),
-            BelongsTo::make('Area')->onlyOnForms()->hideWhenUpdating(),
+            BelongsTo::make('Area')->onlyOnForms(),
             File::make('Geometry')->store(function (Request $request, $model) {
                 return $model->fileToGeometry($request->geometry->get());
             })->onlyOnForms()->hideWhenUpdating()->required()
@@ -299,4 +299,5 @@ class Sector extends Resource
                 })
         ];
     }
+
 }

@@ -2,7 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Area;
 use App\Models\HikingRoute;
+use App\Models\Province;
+use App\Models\Region;
+use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
@@ -26,7 +30,7 @@ class HikingRouteValidateTest extends TestCase
      * @test
      */
     public function cant_validate_hiking_routes_if_geometry_check_is_false(){
-        $user = User::factory()->create();
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
         $hr->osm2cai_status = 3;
@@ -44,7 +48,7 @@ class HikingRouteValidateTest extends TestCase
      * @test
      */
     public function can_validate_hiking_routes_if_geometry_check_is_false(){
-        $user = User::factory()->create();
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
         $hr->osm2cai_status = 3;
@@ -61,7 +65,7 @@ class HikingRouteValidateTest extends TestCase
      * @test
      */
     public function after_osmsync_data_validation_fields_are_null(){
-        $user = User::factory()->create();
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
         $hr->osm2cai_status = 4;
@@ -84,7 +88,7 @@ class HikingRouteValidateTest extends TestCase
      * @test
      */
     public function cant_revert_validate_where_sda_different_from_4(){
-        $user = User::factory()->create();
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
         $hr->osm2cai_status = 3;
@@ -103,7 +107,7 @@ class HikingRouteValidateTest extends TestCase
      * @test
      */
     public function can_revert_validate_where_sda_is_4(){
-        $user = User::factory()->create();
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
         $this->actingAs($user);
         $hr = HikingRoute::factory()->create();
         $hr->osm2cai_status = 4;
@@ -123,6 +127,89 @@ class HikingRouteValidateTest extends TestCase
         $this->assertNull($hr->geometry_raw_data);
         $this->assertNull($hr->user_id);
     }
+
+    /**
+     * @test
+     */
+    public function administrator_can_manage_all_hiking_route(){
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => false])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory('10')->create();
+        foreach ($hr as $h){
+           $this->assertTrue($user->canManageHikingRoute($h));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function national_referent_can_manage_all_hiking_route(){
+        $user = User::factory(["is_administrator" => false,"is_national_referent" => true])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory('10')->create();
+        foreach ($hr as $h){
+            $this->assertTrue($user->canManageHikingRoute($h));
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function regional_referent_can_manage_only_our_region_hiking_route_(){
+        $regions = Region::factory(2)->create();
+        $user = User::factory(["is_administrator" => false,"is_national_referent" => false,"region_id"=>$regions[0]->id])->create();
+        $this->actingAs($user);
+        $hr_can_manage= HikingRoute::factory()->create();
+        $hr_can_manage->regions()->sync([
+            $regions[0]->id
+        ]);
+        $hr_cant_manage= HikingRoute::factory()->create();
+        $hr_cant_manage->regions()->sync([
+            $regions[1]->id
+        ]);
+        $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
+        $this->assertFalse($user->canManageHikingRoute($hr_cant_manage));
+    }
+
+    /**
+     * @test
+     */
+    public function local_referent_can_manage_only_our_sector_area_province_hiking_route_(){
+        $regions = Region::factory(2)->create();
+        $areas = Area::factory(2)->create();
+        $provinces = Province::factory(2)->create();
+        $sectors = Sector::factory(2)->create();
+        $user = User::factory()->create();
+        $user->provinces()->sync([
+            $provinces[0]->id
+        ]);
+        $this->actingAs($user);
+        $hr_can_manage= HikingRoute::factory()->create();
+        $hr_can_manage->areas()->sync([
+            $areas[0]->id
+        ]);
+        $hr_can_manage->sectors()->sync([
+            $sectors[0]->id
+        ]);
+        $hr_can_manage->provinces()->sync([
+            $provinces[0]->id
+        ]);
+        $hr_cant_manage= HikingRoute::factory()->create();
+        $hr_cant_manage->areas()->sync([
+            $areas[1]->id
+        ]);
+        $hr_cant_manage->sectors()->sync([
+            $sectors[1]->id
+        ]);
+        $hr_cant_manage->provinces()->sync([
+            $provinces[1]->id
+        ]);
+
+        $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
+        $this->assertFalse($user->canManageHikingRoute($hr_cant_manage));
+    }
+
+
 
 
 }

@@ -35,8 +35,16 @@ class RevertValidateHikingRouteAction extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
+        $user = auth()->user();
 
+        if (!$user && $user == null)
+            return Action::danger('User info is not available');
         $model = $models->first();
+
+
+        if (!$user->canManageHikingRoute($model))
+            return Action::danger('You don\'t have permissions on this Hiking Route');
+
         if ($model->osm2cai_status != 4)
             return Action::danger('The SDA is not 4!');
 

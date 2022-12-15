@@ -11,6 +11,7 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\SectorsDashboard;
+use App\Observers\SectorObserver;
 use App\Services\CacheService;
 use App\Services\CardsService;
 use Ericlagarda\NovaTextCard\TextCard;
@@ -41,6 +42,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             \Laravel\Nova\Http\Controllers\LoginController::class
         );
         Nova::style('admin', public_path('css/admin.css'));
+        Sector::observe(SectorObserver::class);
     }
 
     /**

@@ -173,7 +173,7 @@ class HikingRoutesApiV2Test extends TestCase
         $response = $this->get(url('/').'/api/v2/hiking-routes-osm/bb/'.$bb_montepisano.'/4')
             ->assertStatus(200);
         $responseData = json_decode($response->content(),true);
-        $checkResult[$hr_interno->relation_id] = $updated_at;
+        $checkResult[intval($hr_interno->relation_id)] = $updated_at;
         $this->assertEquals($checkResult,$responseData);
     }
 
