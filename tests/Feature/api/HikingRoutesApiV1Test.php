@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
-class HikingRoutesApiTest extends TestCase
+class HikingRoutesApiV1Test extends TestCase
 {
     use RefreshDatabase;
 
