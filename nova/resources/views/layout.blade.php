@@ -56,7 +56,7 @@
                     @if (count(\Laravel\Nova\Nova::globallySearchableResources(request())) > 0)
                         <global-search dusk="global-search-component"></global-search>
                     @endif
-
+                    <span class="ml-auto h-9 flex items-center">Osm2Cai v{{ \Illuminate\Support\Facades\Config::get('app.version').'-'.\Illuminate\Support\Facades\Config::get('app.release_date')}}</span>
                     <dropdown class="ml-auto h-9 flex items-center dropdown-right">
                         @include('nova::partials.user')
                     </dropdown>
