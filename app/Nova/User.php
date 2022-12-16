@@ -39,11 +39,10 @@ class User extends Resource {
          * @var \App\Models\User
          */
         $user = auth()->user();
-
         if( $user->getTerritorialRole() == 'regional' )
         {
-            $region = $user->region;
-            $query->ofRegion($region);
+            $region = $user->region_id;
+            $query->where('region_id',$region);
 
         }
 

@@ -190,11 +190,11 @@ class OsmService
   }
 
 
-  public function updateHikingRouteModelWithOsmData( HikingRoute $model )
+  public function updateHikingRouteModelWithOsmData( HikingRoute $model,$osmHr = null )
     {
         $relationId = $model->relation_id;
-
-        $osmHr = $this->getHikingRoute( $relationId );
+        if(is_null($osmHr))
+            $osmHr = $this->getHikingRoute( $relationId );
         $osmGeo = $this->getHikingRouteGeometry( $relationId );
 
         if ( $osmGeo !== $model->geometry )
@@ -202,11 +202,20 @@ class OsmService
           $model->geometry = $osmGeo;
         }
 
-        foreach ( $osmHr as $attribute => $val )
+        foreach ( $this->getRelationApiFieldsKey() as $attribute )
         {
-            $model->$attribute = $val;
+            $key = $attribute;
+            $key_osm = $attribute.'_osm';
+            if(isset($osmHr[$key]))
+                $model->$key = $osmHr[$key];
+            else
+                $model->$key = null;
+            if(isset($osmHr[$key_osm]))
+                $model->$key_osm = $osmHr[$key_osm];
+            else
+                $model->$key_osm = null;
         }
-
+        $model->setGeometrySync();
         $model->revertValidation();
         $model->setRefREIComp();
 

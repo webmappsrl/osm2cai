@@ -177,7 +177,7 @@ class HikingRouteValidateTest extends TestCase
     public function local_referent_can_manage_only_our_sector_area_province_hiking_route_(){
         $regions = Region::factory(2)->create();
         $areas = Area::factory(2)->create();
-        $provinces = Province::factory(2)->create();
+        $provinces = Province::factory(5)->create();
         $sectors = Sector::factory(2)->create();
         $user = User::factory()->create();
         $user->provinces()->sync([
@@ -195,19 +195,107 @@ class HikingRouteValidateTest extends TestCase
             $provinces[0]->id
         ]);
         $hr_cant_manage= HikingRoute::factory()->create();
-        $hr_cant_manage->areas()->sync([
-            $areas[1]->id
-        ]);
-        $hr_cant_manage->sectors()->sync([
-            $sectors[1]->id
-        ]);
+        $hr_cant_manage->provinces()->sync([]);
+        $hr_cant_manage->fresh();
         $hr_cant_manage->provinces()->sync([
-            $provinces[1]->id
+            $provinces[3]->id
         ]);
-
-        $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
+        $hr_cant_manage->fresh();
         $this->assertFalse($user->canManageHikingRoute($hr_cant_manage));
+        $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
+
     }
+
+    /**
+     * @test
+     */
+    public function after_syncwithosmdata_all_fields_of_hr_are_updated(){
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory()->create();
+        $hr->relation_id = 9744403;
+        $hr->save();
+        $service = app()->make(OsmService::class);
+        $hr_relation = $this->mockGetHRRelation('full');
+        $service->updateHikingRouteModelWithOsmData($hr,$hr_relation);
+        $hr->fresh();
+        foreach ($service->getRelationApiFieldsKey() as $f){
+            $key = $f;
+            $key_osm = $f.'_osm';
+            if(isset($hr_relation[$f])) {
+                $this->assertEquals($hr_relation[$key_osm], $hr->$key_osm);
+                $this->assertEquals($hr_relation[$key], $hr->$key);
+            }
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function after_syncwithosmdata_all_fields_not_compild_are_null(){
+        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory()->create();
+        $hr->relation_id = 9744403;
+        $hr->save();
+        $service = app()->make(OsmService::class);
+        $hr_relation = $this->mockGetHRRelation('full');
+        $service->updateHikingRouteModelWithOsmData($hr,$hr_relation);
+        $hr->fresh();
+        $newRelation = $this->mockGetHRRelation('simple');
+        $service->updateHikingRouteModelWithOsmData($hr,$newRelation);
+        foreach ($service->getRelationApiFieldsKey() as $f){
+            $key = $f;
+            $key_osm = $f.'_osm';
+            if(isset($newRelation[$f])) {
+                $this->assertEquals($newRelation[$key_osm], $hr->$key_osm);
+                $this->assertEquals($newRelation[$key], $hr->$key);
+            }
+            else {
+                $this->assertNull($hr->$key_osm);
+                $this->assertNull($hr->$key);
+            }
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function after_syncwithosmdata_geometry_sync_is_true_if_geometry_and_geometry_osm_are_equals()
+    {
+        $user = User::factory(["is_administrator" => true, "is_national_referent" => true])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory()->create();
+        $hr->relation_id = 9744403;
+        $hr->geometry_sync = false;
+        $hr->save();
+        $service = app()->make(OsmService::class);
+        $hr->geometry_osm = $hr->geometry;
+        $hr->save();
+        $hr->fresh();
+        $hr->setGeometrySync();
+        $this->assertTrue($hr->geometry_sync);
+    }
+
+    /**
+     * @test
+     */
+    public function after_syncwithosmdata_geometry_sync_is_false_if_geometry_and_geometry_osm_are_differents()
+    {
+        $user = User::factory(["is_administrator" => true, "is_national_referent" => true])->create();
+        $this->actingAs($user);
+        $hr = HikingRoute::factory()->create();
+        $hr->relation_id = 9744403;
+        $hr->geometry_sync = false;
+        $hr->save();
+        $service = app()->make(OsmService::class);
+        $hr->geometry_osm = null;
+        $hr->save();
+        $hr->fresh();
+        $hr->setGeometrySync();
+        $this->assertFalse($hr->geometry_sync);
+    }
+
 
 
 

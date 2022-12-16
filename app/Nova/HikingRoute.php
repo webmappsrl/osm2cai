@@ -4,6 +4,8 @@ namespace App\Nova;
 
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\RevertValidateHikingRouteAction;
+use App\Nova\Actions\SectorRefactoring;
+use App\Nova\Filters\GeometrySyncFilter;
 use DKulyk\Nova\Tabs;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
@@ -192,6 +194,12 @@ class HikingRoute extends Resource
         ->trueValue('ref_REI uguale a ref_REI_comp')
         ->falseValue('ref_REI diverso da ref_REI_comp');
 
+        $fields[] = Boolean::make('Geometry Sync' , function(){
+            return $this->geometry_sync;
+        })->onlyOnDetail()
+            ->trueValue('geometry uguale a geometry_osm')
+            ->falseValue('geometry div erso a geometry_osm');
+
         return $fields;
     }
 
@@ -285,6 +293,7 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new GeometrySyncFilter())
             ];
 
         } else {
@@ -293,6 +302,7 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new GeometrySyncFilter())
             ];
         }
     }
@@ -358,6 +368,14 @@ class HikingRoute extends Resource
                     ->cancelButtonText("Annulla")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
+                (new SectorRefactoring())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Sei sicuro di voler rifattorizzare i settori per il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
 
             ];
     }
