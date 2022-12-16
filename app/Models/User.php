@@ -212,8 +212,6 @@ class User extends Authenticatable
                 $manage = false;
                 if (count($this->areas)>0){
                     foreach ($this->areas as $item){
-                        if($manage==true)
-                            continue;
                         foreach($hr->areas()->get() as $hr_item){
                             if($item->id == $hr_item->id){
                                 $manage = true;
@@ -223,8 +221,6 @@ class User extends Authenticatable
                 }
                 if (count($this->sectors)>0){
                     foreach ($this->sectors as $item){
-                        if($manage==true)
-                            continue;
                         foreach($hr->sectors()->get() as $hr_item){
                             if($item->id == $hr_item->id){
                                 $manage = true;
@@ -234,8 +230,6 @@ class User extends Authenticatable
                 }
                 if (count($this->provinces)>0){
                     foreach ($this->provinces as $item){
-                        if($manage==true)
-                            continue;
                         foreach($hr->provinces()->get() as $hr_item){
                             if($item->id == $hr_item->id){
                                 $manage = true;
@@ -243,7 +237,10 @@ class User extends Authenticatable
                         }
                     }
                 }
-                return $manage;
+                if($manage==true)
+                    return true;
+                else
+                    return false;
                 break;
         }
 

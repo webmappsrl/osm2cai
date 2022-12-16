@@ -43,6 +43,8 @@ class OsmSyncHikingRouteAction extends Action
         $service = app()->make(OsmService::class);
         $models->map( function( $model ) use ($service) {
             $service->updateHikingRouteModelWithOsmData($model);
+            //rifattorizzazione dei settori
+            $model->computeAndSetSectors();
         } );
 
         $count = $models->count();

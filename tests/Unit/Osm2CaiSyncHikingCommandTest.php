@@ -39,4 +39,6 @@ class Osm2CaiSyncHikingCommandTest extends TestCase
         $this->assertTrue(is_array($routes_new));
         $this->assertEquals(2,count($routes_new));
     }
+
+
 }
