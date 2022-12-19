@@ -22,7 +22,7 @@ class SectorsTest extends TestCase
         $sector->area_id = $area2->id;
         $sector->save();
         $sector->refresh();
-        $newFullCode = 'X'.$area2->name;
+        $newFullCode = $area2->name.'X';
         $this->assertEquals($sector->full_code,$newFullCode);
     }
 

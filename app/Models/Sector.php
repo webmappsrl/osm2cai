@@ -111,7 +111,7 @@ class Sector extends TerritorialUnit
 
     public function calculateFullCode(){
         $area = \App\Models\Area::where('id',$this->area_id)->first();
-        $this->full_code = $this->code.$area->name;
+        $this->name = $this->full_code = $area->name.$this->code;
         $this->saveQuietly();
     }
 
