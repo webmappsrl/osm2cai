@@ -5,8 +5,10 @@ namespace App\Nova;
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\RevertValidateHikingRouteAction;
 use App\Nova\Actions\SectorRefactoring;
+use App\Nova\Filters\DeleteOnOsmFilter;
 use App\Nova\Filters\GeometrySyncFilter;
 use DKulyk\Nova\Tabs;
+use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
@@ -293,7 +295,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
-                (new GeometrySyncFilter())
+                (new GeometrySyncFilter()),
+                (new DeleteOnOsmFilter())
             ];
 
         } else {
@@ -302,7 +305,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
-                (new GeometrySyncFilter())
+                (new GeometrySyncFilter()),
+                (new DeleteOnOsmFilter())
             ];
         }
     }
@@ -326,7 +330,12 @@ class HikingRoute extends Resource
 
     public function authorizedToDelete(Request $request)
     {
-        return false;
+        return $request instanceof ActionRequest;
+    }
+
+    public function authorizedToForceDelete(Request $request)
+    {
+        return $request instanceof ActionRequest;
     }
 
     /**

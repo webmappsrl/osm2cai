@@ -5,7 +5,7 @@ namespace App\Nova\Filters;
 use Illuminate\Http\Request;
 use Laravel\Nova\Filters\BooleanFilter;
 
-class GeometrySyncFilter extends BooleanFilter
+class DeleteOnOsmFilter extends BooleanFilter
 {
     /**
      * Apply the filter to the given query.
@@ -20,7 +20,7 @@ class GeometrySyncFilter extends BooleanFilter
 
     public function apply(Request $request, $query, $value)
     {
-        return $query->where('geometry_sync', $value);
+        return $query->where('deleted_on_osm', $value);
     }
 
     /**

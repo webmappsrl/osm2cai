@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\HikingRoute;
 use App\Models\User;
+use AWS\CRT\HTTP\Request;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class HikingRoutePolicy
@@ -42,9 +43,9 @@ class HikingRoutePolicy
 
     public function delete(User $user, HikingRoute $route)
     {
-        //todo inserire vincoli autori
         return true;
     }
+
 
 
 }
