@@ -196,11 +196,9 @@ class HikingRouteValidateTest extends TestCase
         ]);
         $hr_cant_manage= HikingRoute::factory()->create();
         $hr_cant_manage->provinces()->sync([]);
-        $hr_cant_manage->fresh();
         $hr_cant_manage->provinces()->sync([
-            $provinces[3]->id
+            $provinces[4]->id
         ]);
-        $hr_cant_manage->fresh();
         $this->assertFalse($user->canManageHikingRoute($hr_cant_manage));
         $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
 

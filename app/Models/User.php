@@ -237,7 +237,7 @@ class User extends Authenticatable
                         }
                     }
                 }
-                if($manage==true)
+                if($manage)
                     return true;
                 else
                     return false;
