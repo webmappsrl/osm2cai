@@ -561,4 +561,21 @@ EOF;
     public function getPublicPage(){
         return url('/').'/hiking-route/id/'.$this->id;
     }
+
+    public function revertValidation(){
+        if($this->osm2cai_status == 4)
+            $this->osm2cai_status = 3;
+        $this->validation_date = null;
+        $this->geometry_raw_data = null;
+        $this->user_id = null;
+        $this->save();
+    }
+
+    public function setGeometrySync(){
+        if($this->geometry == $this->geometry_osm)
+            $this->geometry_sync = true;
+        else
+            $this->geometry_sync = false;
+        $this->save();
+    }
 }

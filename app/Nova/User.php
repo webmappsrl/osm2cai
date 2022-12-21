@@ -39,11 +39,10 @@ class User extends Resource {
          * @var \App\Models\User
          */
         $user = auth()->user();
-
         if( $user->getTerritorialRole() == 'regional' )
         {
-            $region = $user->region;
-            $query->ofRegion($region);
+            $region = $user->region_id;
+            $query->where('region_id',$region);
 
         }
 
@@ -172,6 +171,7 @@ class User extends Resource {
                 ->canRun(function ($request, $zone) {
                     return $request->user()->can('emulate', $zone);
                 }),
+                new Actions\DownloadUsersCsv()
         ];
     }
 
@@ -231,4 +231,5 @@ class User extends Resource {
 
         return $query;
     }
+
 }

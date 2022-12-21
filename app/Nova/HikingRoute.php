@@ -2,7 +2,13 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\DeleteHikingRouteAction;
+use App\Nova\Actions\RevertValidateHikingRouteAction;
+use App\Nova\Actions\SectorRefactoring;
+use App\Nova\Filters\DeleteOnOsmFilter;
+use App\Nova\Filters\GeometrySyncFilter;
 use DKulyk\Nova\Tabs;
+use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
@@ -73,7 +79,7 @@ class HikingRoute extends Resource
      * @var array
      */
     public static array $search = [
-        'ref_REI', 'relation_id', 'ref'
+        'ref_REI', 'relation_id', 'ref','ref_REI_comp'
     ];
 
     public static string $group = 'Territorio';
@@ -149,7 +155,8 @@ class HikingRoute extends Resource
                 return $val;
             })->onlyOnIndex(),
             Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
-            Text::make('Cod. REI', 'ref_REI')->onlyOnIndex()->sortable(),
+            Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
+            Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
@@ -188,6 +195,12 @@ class HikingRoute extends Resource
         })->onlyOnDetail()
         ->trueValue('ref_REI uguale a ref_REI_comp')
         ->falseValue('ref_REI diverso da ref_REI_comp');
+
+        $fields[] = Boolean::make('Geometry Sync' , function(){
+            return $this->geometry_sync;
+        })->onlyOnDetail()
+            ->trueValue('geometry uguale a geometry_osm')
+            ->falseValue('geometry div erso a geometry_osm');
 
         return $fields;
     }
@@ -282,6 +295,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new GeometrySyncFilter()),
+                (new DeleteOnOsmFilter())
             ];
 
         } else {
@@ -290,6 +305,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new GeometrySyncFilter()),
+                (new DeleteOnOsmFilter())
             ];
         }
     }
@@ -309,6 +326,16 @@ class HikingRoute extends Resource
             (new HikingRoutesStatus3Lens()),
             (new HikingRoutesStatus4Lens()),
         ];
+    }
+
+    public function authorizedToDelete(Request $request)
+    {
+        return $request instanceof ActionRequest;
+    }
+
+    public function authorizedToForceDelete(Request $request)
+    {
+        return $request instanceof ActionRequest;
     }
 
     /**
@@ -332,13 +359,32 @@ class HikingRoute extends Resource
                     ->cancelButtonText("Non validare")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
-
                 (new OsmSyncHikingRouteAction)
                     ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
                     ->confirmButtonText('Aggiorna con dati osm')
                     ->cancelButtonText("Annulla")
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}),
+                (new RevertValidateHikingRouteAction)
+                    ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+                (new DeleteHikingRouteAction())
+                    ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}),
+                (new SectorRefactoring())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Sei sicuro di voler rifattorizzare i settori per il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
 
             ];
     }

@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Tests\Fixtures\TerritorialUnitsFixtures;
 use Tests\TestCase;
 
-class HikingRoutesApiTest extends TestCase
+class HikingRoutesApiV2Test extends TestCase
 {
     use RefreshDatabase;
 
@@ -27,11 +27,13 @@ class HikingRoutesApiTest extends TestCase
        foreach ($hikingRoutes as $k=>$hr){
            if ($k % 2 == 0) {
                $hr->osm2cai_status = 4;
+               $hr->updated_at = now();
                $hr->save();
                $hr->regions()->sync([
                    $regions[0]->id
                ]);
-               $idsHiking[] = $hr->id;
+
+               $idsHiking[intval($hr->id)] = $hr->updated_at->format('Y-m-d H:i:s');
            }
            else {
                $hr->osm2cai_status = 3;
@@ -41,12 +43,12 @@ class HikingRoutesApiTest extends TestCase
                $hr->save();
            }
        }
-       $response = $this->get(url('/').'/api/v1/hiking-routes/region/'.$regions[0]->code.'/4')
+       $response = $this->get(url('/').'/api/v2/hiking-routes/region/'.$regions[0]->code.'/4')
             ->assertStatus(200);
        $responseData = json_decode($response->content(),true);
-       sort($responseData);
-        sort($idsHiking);
-       $this->assertEquals($responseData,$idsHiking);
+       foreach ($responseData as $k=>$v){
+            $this->assertTrue(array_key_exists($k,$idsHiking));
+        }
     }
 
     /**
@@ -64,7 +66,7 @@ class HikingRoutesApiTest extends TestCase
                 $hr->regions()->sync([
                     $regions[0]->id
                 ]);
-                $idsHiking[] = $hr->relation_id;
+                $idsHiking[intval($hr->relation_id)] = $hr->updated_at->format('Y-m-d H:i:s');
             }
             else {
                 $hr->osm2cai_status = 3;
@@ -74,12 +76,12 @@ class HikingRoutesApiTest extends TestCase
                 $hr->save();
             }
         }
-        $response = $this->get(url('/').'/api/v1/hiking-routes-osm/region/'.$regions[0]->code.'/4')
+        $response = $this->get(url('/').'/api/v2/hiking-routes-osm/region/'.$regions[0]->code.'/4')
             ->assertStatus(200);
         $responseData = json_decode($response->content(),true);
-        sort($responseData);
-        sort($idsHiking);
-        $this->assertEquals($responseData,$idsHiking);
+        foreach ($responseData as $k=>$v){
+            $this->assertTrue(array_key_exists($k,$idsHiking));
+        }
     }
 
     /**
@@ -94,7 +96,7 @@ class HikingRoutesApiTest extends TestCase
         $hr->ref = 'REF';
         $hr->osm2cai_status = 2;
         $hr->save();
-        $response = $this->get(url('/').'/api/v1/hiking-route/'.$hr->id)
+        $response = $this->get(url('/').'/api/v2/hiking-route/'.$hr->id)
             ->assertStatus(200);
         $prop = json_decode($response->content(),true)['properties'];
         $this->assertEquals($hr->id,$prop['id']);
@@ -105,6 +107,7 @@ class HikingRoutesApiTest extends TestCase
         $this->assertEquals($hr->ref,$prop['ref']);
         $this->assertEquals($hr->osm2cai_status,$prop['sda']);
         $this->assertEquals($hr->getPublicPage(),$prop['public_page']);
+        $this->assertNotNull($prop['updated_at']);
 
     }
 
@@ -120,7 +123,7 @@ class HikingRoutesApiTest extends TestCase
         $hr->ref = 'REF';
         $hr->osm2cai_status = 2;
         $hr->save();
-        $response = $this->get(url('/').'/api/v1/hiking-route-osm/'.$hr->relation_id)
+        $response = $this->get(url('/').'/api/v2/hiking-route-osm/'.$hr->relation_id)
             ->assertStatus(200);
         $prop = json_decode($response->content(),true)['properties'];
         $this->assertEquals($hr->id,$prop['id']);
@@ -131,6 +134,7 @@ class HikingRoutesApiTest extends TestCase
         $this->assertEquals($hr->ref,$prop['ref']);
         $this->assertEquals($hr->osm2cai_status,$prop['sda']);
         $this->assertEquals($hr->getPublicPage(),$prop['public_page']);
+        $this->assertNotNull($prop['updated_at']);
     }
 
     /**
@@ -140,15 +144,17 @@ class HikingRoutesApiTest extends TestCase
     {
         $bb_interno = new LineString([[10.37, 43.68], [10.6, 43.7]]);
         $res_interno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_interno->jsonSerialize()) . '\') as geom'));
-        $hr_interno = HikingRoute::factory()->create(['geometry' => $res_interno[0]->geom,'osm2cai_status'=>4]);
+        $updated_at = now()->format('Y-m-d H:i:s');
+        $hr_interno = HikingRoute::factory()->create(['geometry' => $res_interno[0]->geom,'osm2cai_status'=>4,'updated_at'=>$updated_at]);
         $bb_esterno = new LineString([[10.2, 43.68], [10.2, 40.68]]);
         $res_esterno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_esterno->jsonSerialize()) . '\') as geom'));
         $hr_esterno = HikingRoute::factory()->create(['geometry' => $res_esterno[0]->geom,'osm2cai_status'=>4]);
         $bb_montepisano = "10.363097,43.672057,10.638464,43.851693";
-        $response = $this->get(url('/').'/api/v1/hiking-routes/bb/'.$bb_montepisano.'/4')
+        $response = $this->get(url('/').'/api/v2/hiking-routes/bb/'.$bb_montepisano.'/4')
             ->assertStatus(200);
-        $responseData = json_decode($response->content(),true)[0];
-        $this->assertEquals($hr_interno->id,$responseData);
+        $responseData = json_decode($response->content(),true);
+        $checkResult[$hr_interno->id] = $updated_at;
+        $this->assertEquals($checkResult,$responseData);
     }
 
     /**
@@ -158,15 +164,17 @@ class HikingRoutesApiTest extends TestCase
     {
         $bb_interno = new LineString([[10.37, 43.68], [10.6, 43.7]]);
         $res_interno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_interno->jsonSerialize()) . '\') as geom'));
+        $updated_at = now()->format('Y-m-d H:i:s');
         $hr_interno = HikingRoute::factory()->create(['geometry' => $res_interno[0]->geom,'osm2cai_status'=>4]);
         $bb_esterno = new LineString([[10.2, 43.68], [10.2, 40.68]]);
         $res_esterno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_esterno->jsonSerialize()) . '\') as geom'));
         $hr_esterno = HikingRoute::factory()->create(['geometry' => $res_esterno[0]->geom,'osm2cai_status'=>4]);
         $bb_montepisano = "10.363097,43.672057,10.638464,43.851693";
-        $response = $this->get(url('/').'/api/v1/hiking-routes-osm/bb/'.$bb_montepisano.'/4')
+        $response = $this->get(url('/').'/api/v2/hiking-routes-osm/bb/'.$bb_montepisano.'/4')
             ->assertStatus(200);
-        $responseData = json_decode($response->content(),true)[0];
-        $this->assertEquals($hr_interno->relation_id,$responseData);
+        $responseData = json_decode($response->content(),true);
+        $checkResult[intval($hr_interno->relation_id)] = $updated_at;
+        $this->assertEquals($checkResult,$responseData);
     }
 
     /**
@@ -181,7 +189,7 @@ class HikingRoutesApiTest extends TestCase
         $res_esterno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_esterno->jsonSerialize()) . '\') as geom'));
         $hr_esterno = HikingRoute::factory()->create(['geometry' => $res_esterno[0]->geom,'osm2cai_status'=>4]);
         $bb_montepisano = "10.363097,43.672057,10.638464,43.851693";
-        $response = $this->get(url('/').'/api/v1/hiking-routes-collection/bb/'.$bb_montepisano.'/4')
+        $response = $this->get(url('/').'/api/v2/hiking-routes-collection/bb/'.$bb_montepisano.'/4')
             ->assertStatus(200);
         $arrayResult = json_decode($response->getContent(),true);
         $this->assertEquals('FeatureCollection',$arrayResult['type']);
@@ -201,7 +209,7 @@ class HikingRoutesApiTest extends TestCase
         $res_esterno = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($bb_esterno->jsonSerialize()) . '\') as geom'));
         $hr_esterno = HikingRoute::factory()->create(['geometry' => $res_esterno[0]->geom,'osm2cai_status'=>4]);
         $bb_LARGE = "10.242016,43.53774,10.953066,43.890534";
-        $response = $this->get(url('/').'/api/v1/hiking-routes-collection/bb/'.$bb_LARGE.'/4')
+        $response = $this->get(url('/').'/api/v2/hiking-routes-collection/bb/'.$bb_LARGE.'/4')
             ->assertStatus(500);
     }
 

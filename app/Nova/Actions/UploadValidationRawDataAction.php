@@ -20,8 +20,10 @@ class UploadValidationRawDataAction extends Action
     use InteractsWithQueue, Queueable;
 
     public $showOnDetail = true;
+    public $showOnIndex = false;
     public $name='UPLOAD GPX/KML/GEOJSON';
     public $HR;
+
 
     public function __construct($HR = null)
     {

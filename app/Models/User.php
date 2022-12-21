@@ -185,4 +185,64 @@ class User extends Authenticatable
         } );
 
     }
+
+    public function canManageHikingRoute(HikingRoute $hr){
+        $role = $this->getTerritorialRole();
+        switch($role){
+            case 'unknown' :
+                return false;
+                break;
+            case 'admin' :
+                return true;
+                break;
+            case 'national' :
+                return true;
+                break;
+            case 'regional' :
+                $manage = false;
+                foreach ($hr->regions()->get() as $r){
+                    if($manage)
+                        continue;
+                    if($this->region_id==$r->id)
+                        $manage=true;
+                }
+                return $manage;
+                break;
+            case 'local' :
+                $manage = false;
+                if (count($this->areas)>0){
+                    foreach ($this->areas as $item){
+                        foreach($hr->areas()->get() as $hr_item){
+                            if($item->id == $hr_item->id){
+                                $manage = true;
+                            }
+                        }
+                    }
+                }
+                if (count($this->sectors)>0){
+                    foreach ($this->sectors as $item){
+                        foreach($hr->sectors()->get() as $hr_item){
+                            if($item->id == $hr_item->id){
+                                $manage = true;
+                            }
+                        }
+                    }
+                }
+                if (count($this->provinces)>0){
+                    foreach ($this->provinces as $item){
+                        foreach($hr->provinces()->get() as $hr_item){
+                            if($item->id == $hr_item->id){
+                                $manage = true;
+                            }
+                        }
+                    }
+                }
+                if($manage)
+                    return true;
+                else
+                    return false;
+                break;
+        }
+
+    }
 }

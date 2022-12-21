@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Psy\Formatter\Formatter;
+
 class Osm2CaiHelper
 {
     /**
@@ -64,4 +66,21 @@ class Osm2CaiHelper
         }
         return $color;
     }
+
+    public function exportCSV($entities,$namefile)
+    {
+
+
+        $csv = $entities->toCsv();
+
+        header('Content-Disposition: attachment; filename="export.csv"');
+        header("Cache-control: private");
+        header("Content-type: application/force-download");
+        header("Content-transfer-encoding: binary\n");
+
+        echo $csv;
+
+        exit;
+    }
+
 }
