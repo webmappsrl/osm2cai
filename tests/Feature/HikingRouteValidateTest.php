@@ -78,7 +78,6 @@ class HikingRouteValidateTest extends TestCase
         $service = app()->make(OsmService::class);
         $service->updateHikingRouteModelWithOsmData($hr);
         $hr->fresh();
-        $this->assertNull($hr->geometry_raw_data);
         $this->assertNull($hr->validation_date);
         $this->assertNull($hr->user_id);
         $this->assertEquals(3,$hr->osm2cai_status);
@@ -124,7 +123,6 @@ class HikingRouteValidateTest extends TestCase
         $hr->fresh();
         $this->assertEquals(3,$hr->osm2cai_status);
         $this->assertNull($hr->validation_date);
-        $this->assertNull($hr->geometry_raw_data);
         $this->assertNull($hr->user_id);
     }
 
