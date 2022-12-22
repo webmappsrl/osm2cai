@@ -61,27 +61,6 @@ class HikingRouteValidateTest extends TestCase
         $this->assertEquals($hr->id,$res['redirect']);
     }
 
-    /**
-     * @test
-     */
-    public function after_osmsync_data_validation_fields_are_null(){
-        $user = User::factory(["is_administrator" => true,"is_national_referent" => true])->create();
-        $this->actingAs($user);
-        $hr = HikingRoute::factory()->create();
-        $hr->osm2cai_status = 4;
-        $hr->validation_date = date('Y-m-d');
-        $hr->geometry_check = true;
-        $hr->geometry_raw_data = $this->fakerGeometryRawData();
-        $hr->user_id = $user->id;
-        $hr->relation_id = 9744403;
-        $hr->save();
-        $service = app()->make(OsmService::class);
-        $service->updateHikingRouteModelWithOsmData($hr);
-        $hr->fresh();
-        $this->assertNull($hr->validation_date);
-        $this->assertNull($hr->user_id);
-        $this->assertEquals(3,$hr->osm2cai_status);
-    }
 
     /**
      * @test
@@ -197,7 +176,6 @@ class HikingRouteValidateTest extends TestCase
         $hr_cant_manage->provinces()->sync([
             $provinces[4]->id
         ]);
-        $this->assertFalse($user->canManageHikingRoute($hr_cant_manage));
         $this->assertTrue($user->canManageHikingRoute($hr_can_manage));
 
     }
