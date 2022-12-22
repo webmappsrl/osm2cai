@@ -45,7 +45,7 @@ class OsmSyncHikingRouteAction extends Action
             $service->updateHikingRouteModelWithOsmData($model);
             //rifattorizzazione dei settori
             $model->computeAndSetSectors();
-        } );
+        });
 
         $count = $models->count();
         if ( $count == 1 )
