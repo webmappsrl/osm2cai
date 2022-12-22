@@ -201,33 +201,18 @@ class OsmService
         //AGGIORNO GEOMETRIA
         $model->geometry = $osmGeo;
         $model->geometry_osm = $osmGeo;
-        //STATO 4 - REVERT VALIDATION E AGGIORNO I CAMPI _OSM
-        if($model->osm2cai_status == 4){
-            $model->revertValidation();
-            foreach ( $this->getRelationApiFieldsKey() as $attribute )
-            {
-                $key_osm = $attribute.'_osm';
-                if(isset($osmHr[$key_osm]))
-                    $model->$key_osm = $osmHr[$key_osm];
-                else
-                    $model->$key_osm = null;
-            }
-        }
-        //STATO < 4 - CAMPI _OSM E I CAMPI OSM2CAI
-        else{
-            foreach ( $this->getRelationApiFieldsKey() as $attribute )
-            {
-                $key = $attribute;
-                $key_osm = $attribute.'_osm';
-                if(isset($osmHr[$key]))
-                    $model->$key = $osmHr[$key];
-                else
-                    $model->$key = null;
-                if(isset($osmHr[$key_osm]))
-                    $model->$key_osm = $osmHr[$key_osm];
-                else
-                    $model->$key_osm = null;
-            }
+        foreach ( $this->getRelationApiFieldsKey() as $attribute )
+        {
+            $key = $attribute;
+            $key_osm = $attribute.'_osm';
+            if(isset($osmHr[$key]))
+                $model->$key = $osmHr[$key];
+            else
+                $model->$key = null;
+            if(isset($osmHr[$key_osm]))
+                $model->$key_osm = $osmHr[$key_osm];
+            else
+                $model->$key_osm = null;
         }
         $model->setGeometrySync();
         $model->setRefREIComp();
