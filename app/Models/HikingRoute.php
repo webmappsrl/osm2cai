@@ -566,7 +566,6 @@ EOF;
         if($this->osm2cai_status == 4)
             $this->osm2cai_status = 3;
         $this->validation_date = null;
-        $this->geometry_raw_data = null;
         $this->user_id = null;
         $this->save();
     }
