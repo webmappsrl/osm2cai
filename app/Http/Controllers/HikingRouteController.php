@@ -20,4 +20,29 @@ class HikingRouteController extends Controller {
         // Return
         return response($geojson, 200, ['Content-type' => 'application/json']);
     }
+
+    public function gpx(Request $request){
+        $HR = HikingRoute::where('id',$request->input('id'))->first();
+        $gpx = $HR->getGPXGeometry('geometry');
+        $filename = 'Traccia Validata';
+        $this->downloadGPX($gpx,$filename);
+    }
+
+    public function gpx_osm(Request $request){
+        $HR = HikingRoute::where('id',$request->input('id'))->first();
+        $gpx = $HR->getGPXGeometry('geometry_osm');
+        $filename = 'Traccia OSM';
+        $this->downloadGPX($gpx,$filename);
+    }
+
+    public function gpx_raw(Request $request){
+        $HR = HikingRoute::where('id',$request->input('id'))->first();
+        $gpx = $HR->getGPXGeometry('geometry_raw');
+        $filename = 'Traccia RAW';
+        $this->downloadGPX($gpx,$filename);
+    }
+
+    private function dowloadGPX($gpx,$filename){
+        
+    }
 }

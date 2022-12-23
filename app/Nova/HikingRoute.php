@@ -8,6 +8,7 @@ use App\Nova\Actions\SectorRefactoring;
 use App\Nova\Filters\DeleteOnOsmFilter;
 use App\Nova\Filters\GeometrySyncFilter;
 use DKulyk\Nova\Tabs;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
@@ -99,11 +100,29 @@ class HikingRoute extends Resource
     {
         $loggedInUser = Auth::user();
         $role = $loggedInUser->getTerritorialRole();
-        // if ( $role != "admin")
-        // {
-        //     $query->ownedBy($loggedInUser);
-        // }
+        if($role=='regional'){
+            $query->whereHas('regions', function($query) use($loggedInUser) {
+                $query->where('region_id',$loggedInUser->region_id);
+            });
+        }
+        if($role=='local'){
+            if (count($loggedInUser->areas)>0){
+                $query->whereHas('areas', function($query) use($loggedInUser) {
+                    $query->whereIn('area_id',$loggedInUser->areas->pluck('id'));
+                });
+            }
+            if (count($loggedInUser->sectors)>0){
+                $query->orwhereHas('sectors', function($query) use($loggedInUser) {
+                    $query->whereIn('sector_id',$loggedInUser->sectors->pluck('id'));
+                });
+            }
+            if (count($loggedInUser->provinces)>0){
+                $query->orwhereHas('provinces', function($query) use($loggedInUser) {
+                    $query->whereIn('province_id',$loggedInUser->provinces->pluck('id'));
+                });
+            }
 
+        }
         return $query;
     }
 
@@ -200,7 +219,7 @@ class HikingRoute extends Resource
             return $this->geometry_sync;
         })->onlyOnDetail()
             ->trueValue('geometry uguale a geometry_osm')
-            ->falseValue('geometry div erso a geometry_osm');
+            ->falseValue('geometry diverso a geometry_osm');
 
         return $fields;
     }
@@ -250,6 +269,9 @@ class HikingRoute extends Resource
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
             $wmt = "https://hiking.waymarkedtrails.org/#route?id= " . $hr->relation_id;
             $analyzer = "https://ra.osmsurround.org/analyzeRelation?relationId=" . $hr->relation_id . "&noCache=true&_noCache=on";
+            $cardLinks ='<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
+                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
+                        '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>';
             return [
                 (new TextCard())
                     ->center(false)
@@ -263,9 +285,7 @@ class HikingRoute extends Resource
                     ->onlyOnDetail()
                     ->width('1/4')
                     ->text(
-                        '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
+                        $cardLinks
                         )
                     ->textAsHtml(),
 
@@ -276,7 +296,7 @@ class HikingRoute extends Resource
                     ->heading($hr->osm2cai_status)
                     ->text($statoDiAccatastamento)
                     ->textAsHtml()
-                    ,
+
             ];
         }
         return [];

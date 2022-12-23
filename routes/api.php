@@ -27,6 +27,11 @@ Route::name('api.')->group(function () {
         return $request->user();
     });
 
+    Route::prefix('gpx')->name('gpx.')->group(function () {
+        Route::get('/hiking-route/{id}/geometry', [HikingRouteController::class, 'gpx'])->name('geometry');
+        Route::get('/hiking-route/{id}/geometry-osm', [HikingRouteController::class, 'gpx_osm'])->name('geometry_osm');
+        Route::get('/hiking-route/{id}/geometry-raw', [HikingRouteController::class, 'gpx_raw'])->name('geometry-raw');
+    });
     Route::prefix('csv')->name('csv.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'csv'])->name('region');
         Route::get('/sector/{id}', [SectorController::class, 'csv'])->name('sector');

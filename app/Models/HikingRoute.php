@@ -577,4 +577,37 @@ EOF;
             $this->geometry_sync = false;
         $this->save();
     }
+
+    public function findByProvinces($items){
+        $hr= self::whereHas('provinces', function($query) use($items) {
+            $query->whereIn('province_id',$items);
+        });
+    }
+
+    public function findByAreas($items){
+        $hr= self::whereHas('areas', function($query) use($items) {
+            $query->whereIn('area_id',$items);
+        });
+    }
+    public function findBySectors($items){
+        $hr= self::whereHas('sectors', function($query) use($items) {
+            $query->whereIn('sector_id',$items);
+        });
+    }
+
+    public function getGPXGeometry($geometryType){
+        $obj = self::where('id', '=', $this->id)
+            ->select(
+                DB::raw("ST_AsGeoJSON(geometry) as geom")
+            )
+            ->first();
+        $geom = $obj->$geometryType;
+        $geojson = [
+            "type" => "Feature",
+            "properties" => [],
+            "geometry" => json_decode($geom, true)
+        ];
+        $gpx = Gisconverter::geojsonToGpx(json_encode($geojson));
+        return $gpx;
+    }
 }
