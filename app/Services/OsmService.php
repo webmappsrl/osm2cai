@@ -216,9 +216,11 @@ class OsmService
         }
         $model->setGeometrySync();
         $model->setRefREIComp();
+        $model->setOsm2CaiStatus();
         $model->save();
         $model->computeAndSetTechInfo();
-
+        //rifattorizzazione dei settori
+        $model->computeAndSetSectors();
         return $model->save();
     }
 }
