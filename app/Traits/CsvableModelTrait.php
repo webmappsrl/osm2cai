@@ -27,8 +27,9 @@ trait CsvableModelTrait {
         $line = 'sda,settore,ref,from,to,difficoltà,codice rei,osm,osm2cai' . PHP_EOL;
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
+
                 $line .= $hr->osm2cai_status . ',';
-                $line .= $hr->mainSector()->full_code ?? '' . ',';
+                $line .= ($hr->mainSector()->full_code ?? '')  . ',';
                 $line .= $hr->ref . ',';
                 $line .= $hr->from . ',';
                 $line .= $hr->to . ',';
