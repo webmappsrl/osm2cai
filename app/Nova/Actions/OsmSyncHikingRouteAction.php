@@ -41,14 +41,13 @@ class OsmSyncHikingRouteAction extends Action
          * @var \App\Services\OsmService
          */
         $service = app()->make(OsmService::class);
-        $models->map( function( $model ) use ($service) {
-            if ($model->osm2cai_status ==4)
-                return Action::danger('The SDA must be less than 4!');
-            $service->updateHikingRouteModelWithOsmData($model);
-            //rifattorizzazione dei settori
-            $model->computeAndSetSectors();
-        });
-
+        foreach ($models as $model){
+            if ($model->osm2cai_status>3)
+                return Action::danger('The SDA must be less than 4! Revert Validation to perform this action');
+            else {
+                $service->updateHikingRouteModelWithOsmData($model);
+            }
+        }
         $count = $models->count();
         if ( $count == 1 )
         {
