@@ -42,6 +42,7 @@ class HikingRoute extends Model
         'distance_osm' => 'float',
         'distance_comp' => 'float',
         'validation_date' => 'datetime:Y-m-d H:i:s',
+        'tdh' => 'array'
     ];
 
     public static array $info_fields = [
@@ -576,5 +577,41 @@ EOF;
         else
             $this->geometry_sync = false;
         $this->save();
+    }
+
+    /**
+     * Ritorna i campi mancanti per le API del TDH
+     *
+     * @return array
+     */
+    public function computeTdh() : array {
+        $tdh = [
+            'gpx_url' => 'TBI',
+            'cai_scale_string' => 'TBI',
+            'cai_scale_description' => 'TBI',
+            'from' => 'TBI',
+            'city_from' => 'TBI',
+            'city_from_istat' => 'TBI',
+            'region_from' => 'TBI',
+            'region_from_istat' => 'TBI',
+            'to' => 'TBI',
+            'city_to' => 'TBI',
+            'city_to_istat' => 'TBI',
+            'region_to' => 'TBI',
+            'region_to_istat' => 'TBI',
+            'roundtrip' => 'TBI',
+            'abstract' => 'TBI',
+            'distance' => 'TBI',
+            'ascent' => 'TBI',
+            'descent' => 'TBI',
+            'duration_forward' => 'TBI',
+            'duration_backward' => 'TBI',
+            'ele_from' => 'TBI',
+            'ele_to' => 'TBI',
+            'ele_max' => 'TBI',
+            'ele_min' => 'TBI',
+        ];
+
+        return $tdh;
     }
 }
