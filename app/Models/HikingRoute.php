@@ -579,8 +579,6 @@ EOF;
         $this->save();
     }
 
-
-
     /**
      * Restituisce l'etichetta breve della scala di difficoltà in multilingue
      *
@@ -676,6 +674,21 @@ EOF;
     }
 
     /**
+     * Return true if geometry is compatible with roundtrip hiking routes:
+     * The distance between first and last point must be lesser than OSM2CAI_ROUNDTRIP_THRASHOLD
+     *
+     * @return boolean
+     */
+    public function checkRoundTripFromGeometry(): bool {
+        // TODO: implement real check
+        $roundtrip = false;
+        if($this->roundtrip=='yes') {
+            $roundtrip = true;
+        }
+        return $roundtrip;
+    }
+
+    /**
      * Ritorna i campi mancanti per le API del TDH
      *
      * @return array
@@ -695,7 +708,7 @@ EOF;
             'city_to_istat' => 'TBI',
             'region_to' => 'TBI',
             'region_to_istat' => 'TBI',
-            'roundtrip' => 'TBI',
+            'roundtrip' => $this->checkRoundTripFromGeometry(),
             'abstract' => 'TBI',
             'distance' => 'TBI',
             'ascent' => 'TBI',
