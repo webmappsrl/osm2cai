@@ -42,6 +42,7 @@ class HikingRoute extends Model
         'distance_osm' => 'float',
         'distance_comp' => 'float',
         'validation_date' => 'datetime:Y-m-d H:i:s',
+        'tdh' => 'array'
     ];
 
     public static array $info_fields = [
@@ -576,5 +577,315 @@ EOF;
         else
             $this->geometry_sync = false;
         $this->save();
+    }
+
+    /**
+     * Restituisce l'etichetta breve della scala di difficoltà in multilingue
+     *
+     * @return array
+     */
+    public function getCaiScaleString(): array {
+        switch ($this->cai_scale) {
+            case 'T':
+                $v = [
+                    'it' => 'Turistico',
+                    'en' => 'Tourist',
+                    'de' => 'Tourist',
+                    'fr' => 'Touristique',
+                ];
+                break;
+            
+            case 'E':
+                $v = [
+                    'it' => 'Escursionistico',
+                    'en' => 'Hiking',
+                    'de' => 'Wandern',
+                    'fr' => 'Randonnée',
+                ];
+                break;
+                
+            case 'EE':
+                $v = [
+                    'it' => 'Escursionisti Esperti',
+                    'en' => 'Expert hikers',
+                    'de' => 'Erfahrene Wanderer',
+                    'fr' => 'Randonneurs experts',
+                ];
+                break;
+            
+                default:
+            $v = [
+                'it' => 'Difficoltà sconosciuta',
+                'en' => 'Unknown difficulty',
+                'de' => 'Unbekannte Schwierigkeit',
+                'fr' => 'Difficulté inconnue',
+            ];
+            break;
+        }
+
+        return $v;
+    }
+
+    /**
+     * Restituisce l'etichetta estesa della scala di difficoltà in multilingue
+     *
+     * @return array
+     */
+    public function getCaiScaleDescription(): array {
+        switch ($this->cai_scale) {
+            case 'T':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi su carrarecce, mulattiere o evidenti sentieri che non pongono incertezze o problemi di orientamento, con modeste pendenze e dislivelli contenuti. ABILITA’ E COMPETENZE: Richiedono conoscenze escursionistiche di base e preparazione fisica alla camminata. ATTREZZATURE: Sono comunque richiesti adeguato abbigliamento e calzature adatte.',
+                    'en' => 'TO BE TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+            
+            case 'E':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi che rappresentano la maggior parte degli itinerari escursionistici, quindi tra i più vari per ambienti naturali. Si svolgono su mulattiere, sentieri e talvolta tracce; su terreno diverso per contesto geomorfologico e vegetazionale (es. pascoli,sottobosco, detriti, pietraie). Sono generalmente segnalati e possono presentare tratti ripidi. Si possono incontrare facili passaggi su roccia, non esposti, che necessitano l’utilizzo delle mani per l’equilibrio. Eventuali punti esposti sono in genere protetti. Possono attraversare zone pianeggianti o poco inclinate su neve residua. ABILITA’ E COMPETENZE: Richiedono senso di orientamento ed esperienza escursionistica e adeguato allenamento. ATTREZZATURE: È richiesto idoneo equipaggiamento con particolare riguardo alle calzature.',
+                    'en' => 'TO BE TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+                
+            case 'EE':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi quasisempre segnalati che richiedono capacità di muoversi lungo sentieri e tracce su terreno impervio e/o infido (pendii ripidi e/o scivolosi di erba, roccette o detriti sassosi), spesso instabile e sconnesso. Possono presentare tratti esposti, traversi, cenge o tratti rocciosi con lievi difficoltà tecniche e/o attrezzati, mentre sono escluse le ferrate propriamente dette. Sisviluppano su pendenze medio‐alte. Può essere necessario l’attraversamento di tratti su neve, mentre sono esclusi tutti i percorsisu ghiacciaio. ABILITA’ E COMPETENZE: Necessitano di ottima esperienza escursionistica, capacità di orientamento, conoscenza delle caratteristiche dell’ambiente montano, passo sicuro e assenza di vertigini, capacità valutative e decisionali nonché di preparazione fisica adeguata. ATTREZZATURE: Richiedono equipaggiamento e attrezzatura adeguati all’itinerario programmato.',
+                    'en' => 'TO BE  TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+            
+                default:
+            $v = [
+                'it' => 'Difficoltà sconosciuta',
+                'en' => 'Unknown difficulty',
+                'de' => 'Unbekannte Schwierigkeit',
+                'fr' => 'Difficulté inconnue',
+            ];
+            break;
+        }
+
+        return $v;
+    }
+
+    /**
+     * Restituisce un array associativo con le informazioni del punto di partenza ricavate
+     * dal DB Istat dei comuni (tabella municipality_boundaries)
+     * 
+     * Per ricavare l'intersezione si usa la seguente query:
+     * SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat
+     * FROM municipality_boundaries as m, hiking_routes as hr 
+     * WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) 
+     *   AND hr.id=19222;
+     *
+     * 
+     * @return array
+     */
+    public function getFromInfo(): array {
+
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=19222;";
+        $res = DB::select($query);
+
+        $from = $this->from;
+        $info = [
+            'from' => $from,
+            'city_from' => 'Sconosciuto',
+            'city_from_istat' => 'Sconosciuto',
+            'region_from' => 'Sconosciuto',
+            'region_from_istat' => 'Sconosciuto',
+        ];
+
+        if(count($res)>0) {
+            $info['city_from'] = $res[0]->comune;
+            $info['city_from_istat'] = $res[0]->istat;
+            $info['region_from'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+            $info['region_from_istat'] = $res[0]->cod_reg; 
+            
+            if(empty($info['from'])) {
+                $info['from'] = $info['city_from'];
+            }
+        }
+
+        return $info;
+    }
+    /**
+     * Restituisce un array associativo con le informazioni del punto di partenza ricavate
+     * dal DB Istat dei comuni (tabella municipality_boundaries)
+     * 
+     * Per ricavare l'intersezione si usa la seguente query:
+     * SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat
+     * FROM municipality_boundaries as m, hiking_routes as hr 
+     * WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) 
+     *   AND hr.id=19222;
+     *
+     * 
+     * @return array
+     */
+    public function getToInfo(): array {
+
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=19222;";
+        $res = DB::select($query);
+
+        $to = $this->to;
+        $info = [
+            'to' => $to,
+            'city_to' => 'Sconosciuto',
+            'city_to_istat' => 'Sconosciuto',
+            'region_to' => 'Sconosciuto',
+            'region_to_istat' => 'Sconosciuto',
+        ];
+
+        if(count($res)>0) {
+            $info['city_to'] = $res[0]->comune;
+            $info['city_to_istat'] = $res[0]->istat;
+            $info['region_to'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+            $info['region_to_istat'] = $res[0]->cod_reg; 
+            
+            if(empty($info['to'])) {
+                $info['to'] = $info['city_to'];
+            }
+        }
+
+        return $info;
+    }
+
+    /**
+     * Return true if geometry is compatible with roundtrip hiking routes:
+     * The distance between first and last point must be lesser than OSM2CAI_ROUNDTRIP_THRASHOLD
+     *
+     * @return boolean
+     */
+    public function checkRoundTripFromGeometry(): bool {
+        // TODO: implement real check
+        $roundtrip = false;
+        if($this->roundtrip=='yes') {
+            $roundtrip = true;
+        }
+        return $roundtrip;
+    }
+
+
+    /**
+     * It gets INFO data from geohub and it returns it in hash.
+     *
+     * @return array
+     */
+    public function getTechInfoFromGeohub():array {
+
+        $info = [
+            'gpx_url' => 'Unknown',
+            'distance' => 'Unknown',
+            'ascent' => 'Unknown',
+            'descent' => 'Unknown',
+            'duration_forward' => 'Unknown',
+            'duration_backward' => 'Unknown',
+            'ele_from' => 'Unknown',
+            'ele_to' => 'Unknown',
+            'ele_max' => 'Unknown',
+            'ele_min' => 'Unknown',
+        ];
+
+        $geohub_url = 'https://geohub.webmapp.it/api/osf/track/osm2cai/'.$this->id;
+        try {
+            $geohub = json_decode(file_get_contents($geohub_url),true);
+            $properties=$geohub['properties'];
+            $info = [
+                'gpx_url' => $properties['gpx_url'],
+                'distance' => $properties['distance'],
+                'ascent' => $properties['ascent'],
+                'descent' => $properties['descent'],
+                'duration_forward' => $properties['duration_forward'],
+                'duration_backward' => $properties['duration_backward'],
+                'ele_from' => $properties['ele_from'],
+                'ele_to' => $properties['ele_to'],
+                'ele_max' => $properties['ele_max'],
+                'ele_min' => $properties['ele_min'],
+            ];
+            } catch (\Throwable $th) {
+                echo "ERROR ON getting data from geohub $geohub_url";
+        }
+
+        return $info;
+    }
+
+
+    /**
+     * Restituisce un abstract del percorso automatico, costruito a partire dai metadati del percorso stesso.
+     *
+     * @param array $from dati da getFromInfo
+     * @param array $to dati da getToInfo
+     * @param array $tech dati da getAbstract
+     * @return array
+     */
+    public function getAbstract(array $from, array $to, array $tech) : array {
+        $abstract = [];
+        $cai_scale_string = $this->getCaiScaleString();
+        if(! $this->checkRoundTripFromGeometry()) {
+            // Percorso AB
+            $abstract = [
+                'it' => "Il percorso escursionistico $this->ref parte da {$from['from']} situato nel Comune di {$from['city_from']} e termina a {$to['to']} nel comune di {$to['city_to']}, è classificato secondo lo standard CAI come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} km. L'altitudine del punto di partenza è {$tech['ele_from']} m s.l.m. e l'altitudine massima raggiunta è di {$tech['ele_max']} metri s.l.m., mentre l'altitudine minima è di {$tech['ele_min']} metri s.l.m.. Il percorso escursionistico è adatto a coloro che vogliono immergersi nella natura e godere di un'esperienza rilassante e rigenerante. Si consiglia di essere ben equipaggiati e preparati per le condizioni climatiche e i possibili ostacoli del percorso, che potrebbero presentarsi lungo il percorso",
+                'en' => "To be translated",
+                'de' => "To be translated",
+                'fr' => "To be translated",
+            ];
+        }
+        else {
+            // Percorso ad anello
+            $abstract = [
+            'it' => "Il percorso escursionistico ad anello $this->ref ha il suo punto di partenza e arrivo in {$from['from']}, nel Comune di {$from['city_from']}, è classificato secondo lo standard CAI come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} km. L'altitudine del punto di partenza è {$tech['ele_from']} m s.l.m. e l'altitudine massima raggiunta è di {$tech['ele_max']} metri s.l.m., mentre l'altitudine minima è di {$tech['ele_min']} metri s.l.m. Il percorso escursionistico ad anello è una bella opzione per coloro che vogliono godersi una giornata in mezzo alla natura, senza dover fare ritorno al punto di partenza. Si consiglia di essere ben equipaggiati e preparati per le condizioni climatiche e i possibili ostacoli del percorso, che potrebbero presentarsi lungo il percorso",
+            'en' => "To be translated",
+            'de' => "To be translated",
+            'fr' => "To be translated",
+            ];
+        }
+        return $abstract;
+    }
+
+    /**
+     * Ritorna i campi mancanti per le API del TDH
+     *
+     * @return array
+     */
+    public function computeTdh() : array {
+
+        $fromInfo = $this->getFromInfo();
+        $toInfo = $this->getToInfo();
+        $techInfo = $this->getTechInfoFromGeohub();
+
+        $tdh = [
+            'gpx_url' => $techInfo['gpx_url'],
+            'cai_scale_string' => $this->getCaiScaleString(),
+            'cai_scale_description' => $this->getCaiScaleDescription(),
+            'from' => $fromInfo['from'],
+            'city_from' => $fromInfo['city_from'],
+            'city_from_istat' => $fromInfo['city_from_istat'],
+            'region_from' => $fromInfo['region_from'],
+            'region_from_istat' => $fromInfo['region_from_istat'],
+            'to' => $toInfo['to'],
+            'city_to' => $toInfo['city_to'],
+            'city_to_istat' => $toInfo['city_to_istat'],
+            'region_to' => $toInfo['region_to'],
+            'region_to_istat' => $toInfo['region_to_istat'],
+            'roundtrip' => $this->checkRoundTripFromGeometry(),
+            'abstract' => $this->getAbstract($fromInfo,$toInfo,$techInfo),
+            'distance' => $techInfo['distance'],
+            'ascent' => $techInfo['ascent'],
+            'descent' => $techInfo['descent'],
+            'duration_forward' => $techInfo['duration_forward'],
+            'duration_backward' => $techInfo['duration_backward'],
+            'ele_from' => $techInfo['ele_from'],
+            'ele_to' => $techInfo['ele_to'],
+            'ele_max' => $techInfo['ele_max'],
+            'ele_min' => $techInfo['ele_min'],
+        ];
+
+        return $tdh;
     }
 }
