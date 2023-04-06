@@ -674,6 +674,89 @@ EOF;
     }
 
     /**
+     * Restituisce un array associativo con le informazioni del punto di partenza ricavate
+     * dal DB Istat dei comuni (tabella municipality_boundaries)
+     * 
+     * Per ricavare l'intersezione si usa la seguente query:
+     * SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat
+     * FROM municipality_boundaries as m, hiking_routes as hr 
+     * WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) 
+     *   AND hr.id=19222;
+     *
+     * 
+     * @return array
+     */
+    public function getFromInfo(): array {
+
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=19222;";
+        $res = DB::select($query);
+
+        $from = $this->from;
+        $info = [
+            'from' => $from,
+            'city_from' => 'Sconosciuto',
+            'city_from_istat' => 'Sconosciuto',
+            'region_from' => 'Sconosciuto',
+            'region_from_istat' => 'Sconosciuto',
+        ];
+
+        if(count($res)>0) {
+            $info['city_from'] = $res[0]->comune;
+            $info['city_from_istat'] = $res[0]->istat;
+            $info['region_from'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+            $info['region_from_istat'] = $res[0]->cod_reg; 
+            
+            if(empty($info['from'])) {
+                $info['from'] = $info['city_from'];
+            }
+        }
+
+        return $info;
+    }
+    /**
+     * Restituisce un array associativo con le informazioni del punto di partenza ricavate
+     * dal DB Istat dei comuni (tabella municipality_boundaries)
+     * 
+     * Per ricavare l'intersezione si usa la seguente query:
+     * SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat
+     * FROM municipality_boundaries as m, hiking_routes as hr 
+     * WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) 
+     *   AND hr.id=19222;
+     *
+     * 
+     * @return array
+     */
+    public function getToInfo(): array {
+
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=19222;";
+        $res = DB::select($query);
+
+        $to = $this->to;
+        $info = [
+            'to' => $to,
+            'city_to' => 'Sconosciuto',
+            'city_to_istat' => 'Sconosciuto',
+            'region_to' => 'Sconosciuto',
+            'region_to_istat' => 'Sconosciuto',
+        ];
+
+        if(count($res)>0) {
+            $info['city_to'] = $res[0]->comune;
+            $info['city_to_istat'] = $res[0]->istat;
+            $info['region_to'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+            $info['region_to_istat'] = $res[0]->cod_reg; 
+            
+            if(empty($info['to'])) {
+                $info['to'] = $info['city_to'];
+            }
+        }
+
+        return $info;
+    }
+
+    /**
      * Return true if geometry is compatible with roundtrip hiking routes:
      * The distance between first and last point must be lesser than OSM2CAI_ROUNDTRIP_THRASHOLD
      *
@@ -694,20 +777,24 @@ EOF;
      * @return array
      */
     public function computeTdh() : array {
+
+        $fromInfo = $this->getFromInfo();
+        $toInfo = $this->getToInfo();
+
         $tdh = [
             'gpx_url' => 'TBI',
             'cai_scale_string' => $this->getCaiScaleString(),
             'cai_scale_description' => $this->getCaiScaleDescription(),
-            'from' => 'TBI',
-            'city_from' => 'TBI',
-            'city_from_istat' => 'TBI',
-            'region_from' => 'TBI',
-            'region_from_istat' => 'TBI',
-            'to' => 'TBI',
-            'city_to' => 'TBI',
-            'city_to_istat' => 'TBI',
-            'region_to' => 'TBI',
-            'region_to_istat' => 'TBI',
+            'from' => $fromInfo['from'],
+            'city_from' => $fromInfo['city_from'],
+            'city_from_istat' => $fromInfo['city_from_istat'],
+            'region_from' => $fromInfo['region_from'],
+            'region_from_istat' => $fromInfo['region_from_istat'],
+            'to' => $toInfo['to'],
+            'city_to' => $toInfo['city_to'],
+            'city_to_istat' => $toInfo['city_to_istat'],
+            'region_to' => $toInfo['region_to'],
+            'region_to_istat' => $toInfo['region_to_istat'],
             'roundtrip' => $this->checkRoundTripFromGeometry(),
             'abstract' => 'TBI',
             'distance' => 'TBI',
