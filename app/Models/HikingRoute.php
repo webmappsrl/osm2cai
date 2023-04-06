@@ -815,6 +815,39 @@ EOF;
         return $info;
     }
 
+
+    /**
+     * Restituisce un abstract del percorso automatico, costruito a partire dai metadati del percorso stesso.
+     *
+     * @param array $from dati da getFromInfo
+     * @param array $to dati da getToInfo
+     * @param array $tech dati da getAbstract
+     * @return array
+     */
+    public function getAbstract(array $from, array $to, array $tech) : array {
+        $abstract = [];
+        $cai_scale_string = $this->getCaiScaleString();
+        if(! $this->checkRoundTripFromGeometry()) {
+            // Percorso AB
+            $abstract = [
+                'it' => "Il percorso escursionistico $this->ref parte da {$from['from']} situato nel Comune di {$from['city_from']} e termina a {$to['to']} nel comune di {$to['city_to']}, è classificato secondo lo standard CAI come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} km. L'altitudine del punto di partenza è {$tech['ele_from']} m s.l.m. e l'altitudine massima raggiunta è di {$tech['ele_max']} metri s.l.m., mentre l'altitudine minima è di {$tech['ele_min']} metri s.l.m.. Il percorso escursionistico è adatto a coloro che vogliono immergersi nella natura e godere di un'esperienza rilassante e rigenerante. Si consiglia di essere ben equipaggiati e preparati per le condizioni climatiche e i possibili ostacoli del percorso, che potrebbero presentarsi lungo il percorso",
+                'en' => "To be translated",
+                'de' => "To be translated",
+                'fr' => "To be translated",
+            ];
+        }
+        else {
+            // Percorso ad anello
+            $abstract = [
+            'it' => "Il percorso escursionistico ad anello $this->ref ha il suo punto di partenza e arrivo in {$from['from']}, nel Comune di {$from['city_from']}, è classificato secondo lo standard CAI come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} km. L'altitudine del punto di partenza è {$tech['ele_from']} m s.l.m. e l'altitudine massima raggiunta è di {$tech['ele_max']} metri s.l.m., mentre l'altitudine minima è di {$tech['ele_min']} metri s.l.m. Il percorso escursionistico ad anello è una bella opzione per coloro che vogliono godersi una giornata in mezzo alla natura, senza dover fare ritorno al punto di partenza. Si consiglia di essere ben equipaggiati e preparati per le condizioni climatiche e i possibili ostacoli del percorso, che potrebbero presentarsi lungo il percorso",
+            'en' => "To be translated",
+            'de' => "To be translated",
+            'fr' => "To be translated",
+            ];
+        }
+        return $abstract;
+    }
+
     /**
      * Ritorna i campi mancanti per le API del TDH
      *
@@ -841,7 +874,7 @@ EOF;
             'region_to' => $toInfo['region_to'],
             'region_to_istat' => $toInfo['region_to_istat'],
             'roundtrip' => $this->checkRoundTripFromGeometry(),
-            'abstract' => 'TBI',
+            'abstract' => $this->getAbstract($fromInfo,$toInfo,$techInfo),
             'distance' => $techInfo['distance'],
             'ascent' => $techInfo['ascent'],
             'descent' => $techInfo['descent'],
