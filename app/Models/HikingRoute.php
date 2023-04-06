@@ -780,6 +780,7 @@ EOF;
     public function getTechInfoFromGeohub():array {
 
         $info = [
+            'gpx_url' => 'Unknown',
             'distance' => 'Unknown',
             'ascent' => 'Unknown',
             'descent' => 'Unknown',
@@ -796,6 +797,7 @@ EOF;
             $geohub = json_decode(file_get_contents($geohub_url),true);
             $properties=$geohub['properties'];
             $info = [
+                'gpx_url' => $properties['gpx_url'],
                 'distance' => $properties['distance'],
                 'ascent' => $properties['ascent'],
                 'descent' => $properties['descent'],
@@ -825,7 +827,7 @@ EOF;
         $techInfo = $this->getTechInfoFromGeohub();
 
         $tdh = [
-            'gpx_url' => 'TBI',
+            'gpx_url' => $techInfo['gpx_url'],
             'cai_scale_string' => $this->getCaiScaleString(),
             'cai_scale_description' => $this->getCaiScaleDescription(),
             'from' => $fromInfo['from'],
