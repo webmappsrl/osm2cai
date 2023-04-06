@@ -771,6 +771,48 @@ EOF;
         return $roundtrip;
     }
 
+
+    /**
+     * It gets INFO data from geohub and it returns it in hash.
+     *
+     * @return array
+     */
+    public function getTechInfoFromGeohub():array {
+
+        $info = [
+            'distance' => 'Unknown',
+            'ascent' => 'Unknown',
+            'descent' => 'Unknown',
+            'duration_forward' => 'Unknown',
+            'duration_backward' => 'Unknown',
+            'ele_from' => 'Unknown',
+            'ele_to' => 'Unknown',
+            'ele_max' => 'Unknown',
+            'ele_min' => 'Unknown',
+        ];
+
+        $geohub_url = 'https://geohub.webmapp.it/api/osf/track/osm2cai/'.$this->id;
+        try {
+            $geohub = json_decode(file_get_contents($geohub_url),true);
+            $properties=$geohub['properties'];
+            $info = [
+                'distance' => $properties['distance'],
+                'ascent' => $properties['ascent'],
+                'descent' => $properties['descent'],
+                'duration_forward' => $properties['duration_forward'],
+                'duration_backward' => $properties['duration_backward'],
+                'ele_from' => $properties['ele_from'],
+                'ele_to' => $properties['ele_to'],
+                'ele_max' => $properties['ele_max'],
+                'ele_min' => $properties['ele_min'],
+            ];
+            } catch (\Throwable $th) {
+                echo "ERROR ON getting data from geohub $geohub_url";
+        }
+
+        return $info;
+    }
+
     /**
      * Ritorna i campi mancanti per le API del TDH
      *
@@ -780,6 +822,7 @@ EOF;
 
         $fromInfo = $this->getFromInfo();
         $toInfo = $this->getToInfo();
+        $techInfo = $this->getTechInfoFromGeohub();
 
         $tdh = [
             'gpx_url' => 'TBI',
@@ -797,15 +840,15 @@ EOF;
             'region_to_istat' => $toInfo['region_to_istat'],
             'roundtrip' => $this->checkRoundTripFromGeometry(),
             'abstract' => 'TBI',
-            'distance' => 'TBI',
-            'ascent' => 'TBI',
-            'descent' => 'TBI',
-            'duration_forward' => 'TBI',
-            'duration_backward' => 'TBI',
-            'ele_from' => 'TBI',
-            'ele_to' => 'TBI',
-            'ele_max' => 'TBI',
-            'ele_min' => 'TBI',
+            'distance' => $techInfo['distance'],
+            'ascent' => $techInfo['ascent'],
+            'descent' => $techInfo['descent'],
+            'duration_forward' => $techInfo['duration_forward'],
+            'duration_backward' => $techInfo['duration_backward'],
+            'ele_from' => $techInfo['ele_from'],
+            'ele_to' => $techInfo['ele_to'],
+            'ele_max' => $techInfo['ele_max'],
+            'ele_min' => $techInfo['ele_min'],
         ];
 
         return $tdh;

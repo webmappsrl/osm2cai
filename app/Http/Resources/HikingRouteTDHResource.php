@@ -47,7 +47,7 @@ class HikingRouteTDHResource extends JsonResource
                     "roundtrip" => $this->tdh['roundtrip'],
                     "abstract" => $this->tdh['abstract'],
                     "description" => $this->description,
-                    "distance" => $this->distance,
+                    "distance" => $this->tdh['distance'],
                     "ascent" => $this->tdh['ascent'],
                     "descent" => $this->tdh['descent'],
                     "duration_forward" => $this->tdh['duration_forward'],
