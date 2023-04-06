@@ -579,6 +579,102 @@ EOF;
         $this->save();
     }
 
+
+
+    /**
+     * Restituisce l'etichetta breve della scala di difficoltà in multilingue
+     *
+     * @return array
+     */
+    public function getCaiScaleString(): array {
+        switch ($this->cai_scale) {
+            case 'T':
+                $v = [
+                    'it' => 'Turistico',
+                    'en' => 'Tourist',
+                    'de' => 'Tourist',
+                    'fr' => 'Touristique',
+                ];
+                break;
+            
+            case 'E':
+                $v = [
+                    'it' => 'Escursionistico',
+                    'en' => 'Hiking',
+                    'de' => 'Wandern',
+                    'fr' => 'Randonnée',
+                ];
+                break;
+                
+            case 'EE':
+                $v = [
+                    'it' => 'Escursionisti Esperti',
+                    'en' => 'Expert hikers',
+                    'de' => 'Erfahrene Wanderer',
+                    'fr' => 'Randonneurs experts',
+                ];
+                break;
+            
+                default:
+            $v = [
+                'it' => 'Difficoltà sconosciuta',
+                'en' => 'Unknown difficulty',
+                'de' => 'Unbekannte Schwierigkeit',
+                'fr' => 'Difficulté inconnue',
+            ];
+            break;
+        }
+
+        return $v;
+    }
+
+    /**
+     * Restituisce l'etichetta estesa della scala di difficoltà in multilingue
+     *
+     * @return array
+     */
+    public function getCaiScaleDescription(): array {
+        switch ($this->cai_scale) {
+            case 'T':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi su carrarecce, mulattiere o evidenti sentieri che non pongono incertezze o problemi di orientamento, con modeste pendenze e dislivelli contenuti. ABILITA’ E COMPETENZE: Richiedono conoscenze escursionistiche di base e preparazione fisica alla camminata. ATTREZZATURE: Sono comunque richiesti adeguato abbigliamento e calzature adatte.',
+                    'en' => 'TO BE TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+            
+            case 'E':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi che rappresentano la maggior parte degli itinerari escursionistici, quindi tra i più vari per ambienti naturali. Si svolgono su mulattiere, sentieri e talvolta tracce; su terreno diverso per contesto geomorfologico e vegetazionale (es. pascoli,sottobosco, detriti, pietraie). Sono generalmente segnalati e possono presentare tratti ripidi. Si possono incontrare facili passaggi su roccia, non esposti, che necessitano l’utilizzo delle mani per l’equilibrio. Eventuali punti esposti sono in genere protetti. Possono attraversare zone pianeggianti o poco inclinate su neve residua. ABILITA’ E COMPETENZE: Richiedono senso di orientamento ed esperienza escursionistica e adeguato allenamento. ATTREZZATURE: È richiesto idoneo equipaggiamento con particolare riguardo alle calzature.',
+                    'en' => 'TO BE TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+                
+            case 'EE':
+                $v = [
+                    'it' => 'CARATTERISTICHE: Percorsi quasisempre segnalati che richiedono capacità di muoversi lungo sentieri e tracce su terreno impervio e/o infido (pendii ripidi e/o scivolosi di erba, roccette o detriti sassosi), spesso instabile e sconnesso. Possono presentare tratti esposti, traversi, cenge o tratti rocciosi con lievi difficoltà tecniche e/o attrezzati, mentre sono escluse le ferrate propriamente dette. Sisviluppano su pendenze medio‐alte. Può essere necessario l’attraversamento di tratti su neve, mentre sono esclusi tutti i percorsisu ghiacciaio. ABILITA’ E COMPETENZE: Necessitano di ottima esperienza escursionistica, capacità di orientamento, conoscenza delle caratteristiche dell’ambiente montano, passo sicuro e assenza di vertigini, capacità valutative e decisionali nonché di preparazione fisica adeguata. ATTREZZATURE: Richiedono equipaggiamento e attrezzatura adeguati all’itinerario programmato.',
+                    'en' => 'TO BE  TRANSLATED',
+                    'de' => 'TO BE TRANSLATED',
+                    'fr' => 'TO BE TRANSLATED',
+                ];
+                break;
+            
+                default:
+            $v = [
+                'it' => 'Difficoltà sconosciuta',
+                'en' => 'Unknown difficulty',
+                'de' => 'Unbekannte Schwierigkeit',
+                'fr' => 'Difficulté inconnue',
+            ];
+            break;
+        }
+
+        return $v;
+    }
+
     /**
      * Ritorna i campi mancanti per le API del TDH
      *
@@ -587,8 +683,8 @@ EOF;
     public function computeTdh() : array {
         $tdh = [
             'gpx_url' => 'TBI',
-            'cai_scale_string' => 'TBI',
-            'cai_scale_description' => 'TBI',
+            'cai_scale_string' => $this->getCaiScaleString(),
+            'cai_scale_description' => $this->getCaiScaleDescription(),
             'from' => 'TBI',
             'city_from' => 'TBI',
             'city_from_istat' => 'TBI',

@@ -31,6 +31,7 @@ class HikingRouteTDHResource extends JsonResource
                     "gpx_url" => $this->tdh['gpx_url'],
                     "cai_scale" => $this->cai_scale,
                     "cai_scale_string" => $this->tdh['cai_scale_string'],
+                    "cai_scale_description" => $this->tdh['cai_scale_description'],
                     "survey_date" => $this->survey_date,
                     "from" => $this->from,
                     "city_from" => $this->tdh['city_from'],
