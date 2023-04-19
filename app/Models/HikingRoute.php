@@ -589,27 +589,34 @@ EOF;
             case 'T':
                 $v = [
                     'it' => 'Turistico',
-                    'en' => 'Tourist',
-                    'de' => 'Tourist',
-                    'fr' => 'Touristique',
+                    'en' => 'Easy Hiking Trail',
+                    'es' => 'Turístico',
+                    'de' => 'Touristische Route',
+                    'fr' => 'Sentier touristique',
+                    'pt' => 'Turístico'
+                    
                 ];
                 break;
             
             case 'E':
                 $v = [
                     'it' => 'Escursionistico',
-                    'en' => 'Hiking',
-                    'de' => 'Wandern',
-                    'fr' => 'Randonnée',
+                    'en' => 'Hiking Trail',
+                    'es' => 'Excursionista',
+                    'de' => 'Wanderweg',
+                    'fr' => 'Sentier de randonnée',
+                    'pt' => 'Caminhadas'
                 ];
                 break;
                 
             case 'EE':
                 $v = [
                     'it' => 'Escursionisti Esperti',
-                    'en' => 'Expert hikers',
+                    'en' => 'Experienced Hikers',
+                    'es' => 'Excursionistas expertos',
                     'de' => 'Erfahrene Wanderer',
-                    'fr' => 'Randonneurs experts',
+                    'fr' => 'Randonneurs chevronnés',
+                    'pt' => 'Caminhantes Experientes'
                 ];
                 break;
             
@@ -635,28 +642,212 @@ EOF;
         switch ($this->cai_scale) {
             case 'T':
                 $v = [
-                    'it' => 'CARATTERISTICHE: Percorsi su carrarecce, mulattiere o evidenti sentieri che non pongono incertezze o problemi di orientamento, con modeste pendenze e dislivelli contenuti. ABILITA’ E COMPETENZE: Richiedono conoscenze escursionistiche di base e preparazione fisica alla camminata. ATTREZZATURE: Sono comunque richiesti adeguato abbigliamento e calzature adatte.',
-                    'en' => 'TO BE TRANSLATED',
-                    'de' => 'TO BE TRANSLATED',
-                    'fr' => 'TO BE TRANSLATED',
+                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+
+                    Percorsi su carrarecce, mulattiere o evidenti sentieri che non pongono incertezze o problemi di orientamento, con modeste pendenze e dislivelli contenuti.
+                    
+                    ABILITA’ E COMPETENZE
+                    
+                    Richiedono conoscenze escursionistiche di base e preparazione fisica alla camminata.
+                    
+                    ATTREZZATURE
+                    
+                    Sono comunque richiesti adeguato abbigliamento e calzature adatte.")),
+                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+
+                    Routes on bridle paths, mule tracks or obvious trails that do not present any uncertainties or orientation problems, with moderate gradients.
+                    
+                    SKILLS AND COMPETENCES
+                    
+                    Basic hiking knowledge and physical fitness for walking are required.
+                    
+                    EQUIPMENT
+                    
+                    Appropriate clothing and footwear are still required.")),
+                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Rutas por pistas, caminos o senderos obvios que no plantean incertidumbres o problemas de orientación, con pequeñas pendientes y desniveles contenidos.
+                    
+                    HABILIDADES Y COMPETENCIAS
+                    
+                    Requieren conocimientos básicos de excursionismo y preparación física para caminar.
+                    
+                    EQUIPO
+                    
+                    Se requiere igualmente ropa y calzado adecuados.")),
+                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE
+
+                    Routen auf Feldwegen, Saumpfaden oder offensichtlichen Wegen, die keine Unsicherheiten oder Orientierungsprobleme aufwerfen, mit bescheidenen Steigungen und geringen Höhenunterschieden.
+                    
+                    FÄHIGKEITEN und KOMPETENZEN
+                    
+                    Grundlegende Wanderkenntnisse und körperliche Vorbereitung auf das Gehen erforderlich.
+                    
+                    AUSRÜSTUNG
+                    
+                    Geeignete Kleidung und Schuhe sind in jedem Fall erforderlich.")),
+                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "Des parcours sur rails, des chemins muletiers ou des sentiers évidents qui ne posent pas d’incertitudes ou de problèmes d’orientation, avec des pentes modestes et des dénivelés limités.
+
+                    APTITUDES ET COMPÉTENCES
+                    
+                    Connaissances de base en randonnée et en préparation physique à la marche.
+                    
+                    ÉQUIPEMENT
+                    
+                    Cependant, des vêtements et des chaussures appropriés sont nécessaires.")),
+                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Percursos em carreiros, trilhas ou caminhos óbvios, que não apresentam dúvidas ou problemas de orientação, com declives modestos e desníveis moderados.
+                    
+                    HABILIDADES e COMPETÊNCIAS
+                    
+                    Exigem conhecimentos básicos de caminhada e preparação física para caminhada
+                    
+                    EQUIPAMENTO 
+                    
+                    Vestuário e calçado adequados são, no entanto, necessários.")),
                 ];
                 break;
             
             case 'E':
                 $v = [
-                    'it' => 'CARATTERISTICHE: Percorsi che rappresentano la maggior parte degli itinerari escursionistici, quindi tra i più vari per ambienti naturali. Si svolgono su mulattiere, sentieri e talvolta tracce; su terreno diverso per contesto geomorfologico e vegetazionale (es. pascoli,sottobosco, detriti, pietraie). Sono generalmente segnalati e possono presentare tratti ripidi. Si possono incontrare facili passaggi su roccia, non esposti, che necessitano l’utilizzo delle mani per l’equilibrio. Eventuali punti esposti sono in genere protetti. Possono attraversare zone pianeggianti o poco inclinate su neve residua. ABILITA’ E COMPETENZE: Richiedono senso di orientamento ed esperienza escursionistica e adeguato allenamento. ATTREZZATURE: È richiesto idoneo equipaggiamento con particolare riguardo alle calzature.',
-                    'en' => 'TO BE TRANSLATED',
-                    'de' => 'TO BE TRANSLATED',
-                    'fr' => 'TO BE TRANSLATED',
+                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+
+                    Percorsi che rappresentano la maggior parte degli itinerari escursionistici, quindi tra i più vari per ambienti naturali. Si svolgono per mulattiere, sentieri e talvolta tracce; su terreno diverso per contesto geomorfologico e vegetazionale (es. pascoli, sottobosco, detriti, pietraie). Sono generalmente segnalati e possono presentare tratti ripidi. Si possono incontrare facili passaggi su roccia, non esposti, che necessitano l’utilizzo delle mani per l’equilibrio. Eventuali punti esposti sono in genere protetti. Possono attraversare zone pianeggianti o poco inclinate su neve residua.
+                    
+                    ABILITA’ E COMPETENZE
+                    
+                    Richiedono senso di orientamento ed esperienza escursionistica e adeguato allenamento
+                    
+                    ATTREZZATURE
+                    
+                    È richiesto idoneo equipaggiamento con particolare riguardo alle calzature.")),
+                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+
+                    Routes that represent most of the hiking itineraries, and therefore among the most varied in terms of natural environments. They run along mule tracks, paths and sometimes tracks; on terrain that varies in geomorphological and vegetational context (e.g. pasture, undergrowth, scree, scree slopes). They are generally signposted and may have steep sections. Easy, unexposed rock sections may be encountered that require the use of hands for balance. Any exposed points are generally protected. They can pass across flat or gently sloping areas on residual snow.
+                    
+                    SKILLS AND COMPETENCES
+                    
+                    They require a sense of direction, hiking experience and adequate training
+                    
+                    EQUIPMENT
+                    
+                    Suitable equipment is required, particularly with regard to footwear.")),
+                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Rutas que representan la mayoría de los itinerarios de excursionismo, por lo que se encuentran en los más variados entornos naturales. Recorren caminos, senderos y, a veces, pistas; en diferentes terrenos en cuanto a entornos geomorfológicos y de vegetación (p. ej., pastizales, bosque bajo, roquedales, pedregales). Por lo general, están marcadas y pueden presentar tramos escarpados. Se pueden encontrar pasos fáciles en la roca, no expuestos, que requieren el uso de las manos para mantener el equilibrio. Por lo general, los puntos expuestos están protegidos. Pueden atravesar zonas llanas o poco inclinadas sobre nieve residual.
+                    
+                    HABILIDADES Y COMPETENCIAS
+                    
+                    Requieren sentido de la orientación, experiencia como excursionista y entrenamiento adecuado
+                    
+                    EQUIPO
+                    
+                    Se requiere un equipo adecuado, con especial atención al calzado.")),
+                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE
+
+                    Routen, die den größten Teil der Wanderwege ausmachen und aus diesem Grund zu den abwechslungsreichsten für natürliche Umgebungen gehören. Sie finden auf Saumpfaden, Wegen und manchmal Spuren statt; auf einem Gelände, das sich aufgrund des geomorphologischen und vegetativen Kontextes (z. B. Weiden, Waldboden, Trümmer, Steine) unterscheidet. Sie sind in der Regel gekennzeichnet und können steile Abschnitte aufweisen. Sie können auf einfache, unbelichtete Felspassagen stoßen, bei denen die Verwendung der Hände für das Gleichgewicht erforderlich ist. Alle exponierten Stellen sind in der Regel geschützt. Sie können flache oder wenig geneigte Bereiche auf Restschnee durchqueren.
+                    
+                    FÄHIGKEITEN und KOMPETENZEN
+                    
+                    Sie erfordern Orientierungssinn und Wandererfahrung sowie angemessenes Training
+                    
+                    AUSRÜSTUNG
+                    
+                    Eine geeignete Ausrüstung mit besonderem Augenmerk auf die Schuhe ist erforderlich.")),
+                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
+
+                    Des parcours qui représentent la plupart des itinéraires de randonnée, donc parmi les plus variés pour les environnements naturels. Ils se déroulent sur des chemins muletiers, des sentiers et parfois des pistes ; sur des terrains différents en raison de leur cadre géomorphologique et végétatif (par exemple, des pâturages, sous-bois, débris, pierres). Ils sont généralement signalés et peuvent présenter des tronçons raides. Vous pouvez rencontrer des passages faciles sur roche, non exposés, qui nécessitent l’utilisation des mains pour l’équilibre. Tous les points exposés sont généralement protégés. Ils peuvent traverser des zones plates ou peu inclinées sur la neige résiduelle.
+                    
+                    APTITUDES ET COMPÉTENCES
+                    
+                    Ils exigent un sens de l’orientation, de l’expérience de la randonnée et une formation adéquate.
+                    
+                    ÉQUIPEMENT
+                    
+                    Un équipement approprié est requis, en particulier en ce qui concerne les chaussures.")),
+                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Percursos que fazem parte da maioria das rotas de caminhada e que são, portanto, muito variadas em termos de ambiente natural. Desenvolvem-se em trilhas, caminhos e por vezes em traçados; em diferentes terrenos em termos de contexto geomorfológico e vegetacional (por ex. pastagens, mato, detritos, pedranceiras). Estão geralmente assinalados e podem apresentar trechos íngremes. Podem-se encontrar passagens fáceis na rocha, não expostas, que exigem o uso das mãos para o equilíbrio. Os eventuais pontos expostos estão geralmente protegidos. Podem atravessar áreas planas ou ligeiramente inclinadas na neve residual.
+                    
+                    HABILIDADES e COMPETÊNCIAS
+                    
+                    Exigem um sentido de orientação e experiência de caminhada e treino adequados
+                    
+                    EQUIPAMENTO
+                    
+                    É necessário equipamento adequado, especialmente no que diz respeito ao calçado.")),
                 ];
                 break;
                 
             case 'EE':
                 $v = [
-                    'it' => 'CARATTERISTICHE: Percorsi quasisempre segnalati che richiedono capacità di muoversi lungo sentieri e tracce su terreno impervio e/o infido (pendii ripidi e/o scivolosi di erba, roccette o detriti sassosi), spesso instabile e sconnesso. Possono presentare tratti esposti, traversi, cenge o tratti rocciosi con lievi difficoltà tecniche e/o attrezzati, mentre sono escluse le ferrate propriamente dette. Sisviluppano su pendenze medio‐alte. Può essere necessario l’attraversamento di tratti su neve, mentre sono esclusi tutti i percorsisu ghiacciaio. ABILITA’ E COMPETENZE: Necessitano di ottima esperienza escursionistica, capacità di orientamento, conoscenza delle caratteristiche dell’ambiente montano, passo sicuro e assenza di vertigini, capacità valutative e decisionali nonché di preparazione fisica adeguata. ATTREZZATURE: Richiedono equipaggiamento e attrezzatura adeguati all’itinerario programmato.',
-                    'en' => 'TO BE  TRANSLATED',
-                    'de' => 'TO BE TRANSLATED',
-                    'fr' => 'TO BE TRANSLATED',
+                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+
+                    Percorsi quasi sempre segnalati che richiedono capacità di muoversi lungo sentieri e tracce su terreno impervio e/o infido (pendii ripidi e/o scivolosi di erba, roccette o detriti sassosi), spesso instabile e sconnesso. Possono presentare tratti esposti, traversi, cenge o tratti rocciosi con lievi difficoltà tecniche e/o attrezzati, mentre sono escluse le ferrate propriamente dette. Si sviluppano su pendenze medio‐alte. Può essere necessario l’attraversamento di tratti su neve, mentre sono esclusi tutti i percorsi su ghiacciaio.
+                    
+                    ABILITA’ E COMPETENZE
+                    
+                    Necessitano di ottima esperienza escursionistica, capacità di orientamento, conoscenza delle caratteristiche dell’ambiente montano, passo sicuro e assenza di vertigini, capacità valutative e decisionali nonché di preparazione fisica adeguata.
+                    
+                    ATTREZZATURE
+                    
+                    Richiedono equipaggiamento e attrezzatura adeguati all’itinerario programmato. ")),
+                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+
+                    Routes that are almost always signposted and require the ability to move along paths and tracks over inaccessible and/or treacherous terrain (steep and/or slippery slopes of grass, rocks or stony debris), often unstable and uneven. They may have exposed sections, traverses, ledges or rocky sections with slight technical difficulties and/or structural aids, although there are no actual via ferratas. They extend over medium-steep slopes. Crossing sections on snow may be necessary, although no glacier routes are included.
+                    
+                    SKILLS AND COMPETENCES
+                    
+                    They require excellent hiking experience, orienteering skills, knowledge of the features of the mountain environment, sure-footedness, absence of vertigo and assessment and decision-making skills as well as adequate physical fitness.
+                    
+                    EQUIPMENT
+                    
+                    They require suitable equipment and gear for the planned route. ")),
+                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Rutas casi siempre señalizadas que requieren la capacidad de moverse a lo largo de senderos y pistas en terrenos difíciles o traicioneros (pendientes empinadas o resbaladizas de hierba, rocas o piedras), a menudo inestables y desiguales. Pueden presentar tramos expuestos, traviesas, cornisas o tramos rocosos con leves dificultades técnicas o que requieren el uso de equipos, mientras que se excluyen las vías ferratas propiamente dichas. Se desarrollan en pendientes medias-altas. Puede ser necesario atravesar tramos sobre nieve, mientras que se excluyen todas las rutas sobre hielo.
+                    
+                    HABILIDADES Y COMPETENCIAS
+                    
+                    Necesitan una excelente experiencia de excursionismo, capacidad de orientación, conocimiento de las características del entorno de montaña, tener un paso seguro y ausencia de vértigo, habilidades de evaluación y toma de decisiones, así como una preparación física adecuada.
+                    
+                    EQUIPO
+                    
+                    Requieren equipamiento y equipo adecuado para el itinerario programado. ")),
+                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE 
+
+                    Fast immer gekennzeichnete Wege, die die Fähigkeit erfordern, sich auf Wegen und Spuren auf unebenem und/oder tückischem Gelände (steilen und/oder rutschigen Hängen von Gras, Felsen oder steinigen Trümmern) fortzubewegen, oft instabil und uneben. Sie können freiliegende Abschnitte, Traversen, Böschungen oder felsige Abschnitte mit leichten technischen Schwierigkeiten aufweisen und/oder ausgerüstet sein, während die eigentlichen Klettersteige ausgeschlossen sind. Sie entwickeln sich auf mittleren bis hohen Steigungen. Es kann erforderlich sein, Abschnitte auf Schnee zu überqueren, während alle Gletscherrouten ausgeschlossen sind.
+                    
+                    FÄHIGKEITEN und KOMPETENZEN
+                    
+                    Es sind ausgezeichnete Wandererfahrung, Orientierungsfähigkeit, Kenntnis der Merkmale der Bergumgebung, sicheres Tempo erforderlich, man muss schwindelfrei sein und über Bewertungs- und Entscheidungsfähigkeit sowie eine angemessene körperliche Vorbereitung verfügen.
+                    
+                    AUSRÜSTUNG
+                    
+                    Sie benötigen Ausstattung und Ausrüstung, die an die geplante Route angepasst sind. ")),
+                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
+
+                    Des parcours presque toujours signalés qui nécessitent la capacité à se déplacer le long des sentiers et des pistes sur un terrain accidenté et/ou traître (pentes raides et/ou glissantes d’herbe, de rochers ou de débris de pierre), souvent instable et inégal. Ils peuvent comporter des tronçons exposés, des traverses, des cendres ou des tronçons rocheux présentant de légères difficultés techniques et/ou équipés, tandis que les ferrate proprement dites sont exclues. Ils se développent sur des pentes moyennes à élevées. Il peut être nécessaire de traverser des tronçons sur la neige, tandis que tous les parcours sur le glacier sont exclus.
+                    
+                    APTITUDES ET COMPÉTENCES
+                    
+                    Cela nécessite une excellente expérience de la randonnée, une capacité d’orientation, une connaissance des caractéristiques de l’environnement de montagne, un pas sûr et l’absence de vertiges, des capacités d’évaluation et de prise de décision, ainsi qu’une préparation physique adéquate.
+                    
+                    ÉQUIPEMENT
+                    
+                    Cela nécessite un équipement adapté à l’itinéraire prévu. ")),
+                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+
+                    Percursos quase sempre assinalados que exigem a capacidade para se mover ao longo de caminhos e trilhas de terreno acidentado e/ou traiçoeiro (encostas íngremes e/ou escorregadias, de erva, rochas ou detritos pedregosos), muitas vezes instáveis e desarticulados. Podem apresentar trechos expostos, travessias, saliências ou partes rochosas com ligeiras dificuldades técnicas e/ou equipadas, excluindo-se as vias ferratas propriamente ditas. Desenvolvem-se em declives médio-altos. Pode ser necessário atravessar trechos na neve, estando excluídos todos os percursos no gelo.
+                    
+                    HABILIDADES e COMPETÊNCIAS
+                    
+                    É necessário excelente experiência de caminhada, capacidade de orientação, conhecimento das características do ambiente de montanha, passo seguro e ausência de vertigens, capacidades de avaliação e de tomada de decisão, bem como preparação física adequada.
+                    
+                    EQUIPAMENTO
+                    
+                    Requer equipamento e dispositivos adequados ao itinerário planeado. ")),
                 ];
                 break;
             
