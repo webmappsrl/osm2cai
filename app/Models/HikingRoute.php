@@ -689,7 +689,7 @@ EOF;
     public function getFromInfo(): array {
 
         // Get data from ISTAT
-        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=19222;";
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=$this->id;";
         $res = DB::select($query);
 
         $from = $this->from;
@@ -730,7 +730,7 @@ EOF;
     public function getToInfo(): array {
 
         // Get data from ISTAT
-        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=19222;";
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=$this->id;";
         $res = DB::select($query);
 
         $to = $this->to;
