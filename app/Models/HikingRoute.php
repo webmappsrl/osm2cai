@@ -879,10 +879,6 @@ EOF;
      */
     public function getFromInfo(): array {
 
-        // Get data from ISTAT
-        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=$this->id;";
-        $res = DB::select($query);
-
         $from = $this->from;
         $info = [
             'from' => $from,
@@ -892,15 +888,24 @@ EOF;
             'region_from_istat' => 'Sconosciuto',
         ];
 
-        if(count($res)>0) {
-            $info['city_from'] = $res[0]->comune;
-            $info['city_from_istat'] = $res[0]->istat;
-            $info['region_from'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
-            $info['region_from_istat'] = $res[0]->cod_reg; 
-            
-            if(empty($info['from'])) {
-                $info['from'] = $info['city_from'];
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_startpoint(hr.geometry),4326)) AND hr.id=$this->id;";
+        try {
+            //code...
+            $res = DB::select($query);
+            if(count($res)>0) {
+                $info['city_from'] = $res[0]->comune;
+                $info['city_from_istat'] = $res[0]->istat;
+                $info['region_from'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+                $info['region_from_istat'] = $res[0]->cod_reg; 
+                
+                if(empty($info['from'])) {
+                    $info['from'] = $info['city_from'];
+                }
             }
+            } 
+        catch (\Throwable $th) {
+            echo "ERROR on query: $query (ID:$this->id)\n";
         }
 
         return $info;
@@ -920,10 +925,6 @@ EOF;
      */
     public function getToInfo(): array {
 
-        // Get data from ISTAT
-        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=$this->id;";
-        $res = DB::select($query);
-
         $to = $this->to;
         $info = [
             'to' => $to,
@@ -933,16 +934,28 @@ EOF;
             'region_to_istat' => 'Sconosciuto',
         ];
 
-        if(count($res)>0) {
-            $info['city_to'] = $res[0]->comune;
-            $info['city_to_istat'] = $res[0]->istat;
-            $info['region_to'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
-            $info['region_to_istat'] = $res[0]->cod_reg; 
-            
-            if(empty($info['to'])) {
-                $info['to'] = $info['city_to'];
+        // Get data from ISTAT
+        $query = "SELECT m.cod_reg as cod_reg, m.comune as comune, m.pro_com_t as istat FROM municipality_boundaries as m, hiking_routes as hr WHERE st_intersects(m.geom,ST_transform(ST_endpoint(ST_linemerge(hr.geometry)),4326)) AND hr.id=$this->id;";
+
+        try {
+            //code...
+            $res = DB::select($query);
+            if(count($res)>0) {
+                $info['city_to'] = $res[0]->comune;
+                $info['city_to_istat'] = $res[0]->istat;
+                $info['region_to'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
+                $info['region_to_istat'] = $res[0]->cod_reg; 
+                
+                if(empty($info['to'])) {
+                    $info['to'] = $info['city_to'];
+                }
             }
+    
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo "ERROR on query: $query (ID:$this->id)\n";
         }
+
 
         return $info;
     }
