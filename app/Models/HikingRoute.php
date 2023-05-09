@@ -579,6 +579,49 @@ EOF;
         $this->save();
     }
 
+
+    /**
+     * It returns a valid name for TDH export, even if the field name ha no value
+     * The name is not translated (it,en,es,de,fr,pt)
+     *
+     * @return array
+     */
+    public function getNameForTDH(): array {
+        $v = [];
+        if(!empty($this->name)) {
+            $v = [
+                'it' => $this->name,
+                'en' => $this->name,
+                'es' => $this->name,
+                'de' => $this->name,
+                'fr' => $this->name,
+                'pt' => $this->name,
+            ];
+        }
+        else if (!empty($this->ref)) {
+            $v = [
+                'it' => 'Sentiero '.$this->ref,
+                'en' => 'Path '.$this->ref,
+                'es' => 'Camino '.$this->ref,
+                'de' => 'Weg '.$this->ref,
+                'fr' => 'Chemin '.$this->ref,
+                'pt' => 'Caminho '.$this->ref,
+            ];
+
+        } else {
+            $info = $this->getFromInfo();
+            $v = [
+                'it' => 'Sentiero del Comune di '.$info['city_from'],
+                'en' => 'Path in the municipality of '.$info['city_from'],
+                'es' => 'Camino en el municipio de '.$info['city_from'],
+                'de' => 'Weg in der Gemeinde '.$info['city_from'],
+                'fr' => 'Chemin dans la municipalité de '.$info['city_from'],
+                'pt' => 'Caminho no município de '.$info['city_from'],
+            ];
+        }
+        return $v;
+    }
+
     /**
      * Restituisce l'etichetta breve della scala di difficoltà in multilingue
      *
@@ -593,8 +636,7 @@ EOF;
                     'es' => 'Turístico',
                     'de' => 'Touristische Route',
                     'fr' => 'Sentier touristique',
-                    'pt' => 'Turístico'
-                    
+                    'pt' => 'Turístico'                
                 ];
                 break;
             
