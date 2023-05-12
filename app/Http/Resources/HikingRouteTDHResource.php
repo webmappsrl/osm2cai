@@ -43,7 +43,7 @@ class HikingRouteTDHResource extends JsonResource
                     "city_to_istat" => $this->tdh['city_to_istat'],
                     "region_to" => $this->tdh['region_to'],
                     "region_to_istat" => $this->tdh['region_to_istat'],
-                    "name" => $this->name,
+                    "name" => $this->getNameForTDH(),
                     "roundtrip" => $this->tdh['roundtrip'],
                     "abstract" => $this->tdh['abstract'],
                     "distance" => $this->tdh['distance'],
