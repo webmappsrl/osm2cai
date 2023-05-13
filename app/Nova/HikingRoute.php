@@ -30,6 +30,7 @@ use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
+use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Actions\ValidateHikingRouteAction;
@@ -390,7 +391,14 @@ class HikingRoute extends Resource
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}
                     ),
-
+                (new ToggleRegionFavoriteHikingRouteAction())
+                    ->onlyOnDetail('true')
+                    ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
             ];
     }
 }
