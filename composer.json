@@ -26,14 +26,15 @@
         "laravel/tinker": "^2.5",
         "league/flysystem-aws-s3-v3": "~1.0",
         "m-a-k-o/nova-custom-table-card": "^3.2",
+        "maatwebsite/excel": "^3.1",
         "mstaack/laravel-postgis": "^5.2",
         "spatie/db-dumper": "^2.21",
         "spatie/schema-org": "^3.9",
         "subfission/cas": "^4",
         "suenerds/nova-searchable-belongs-to-filter": "^1.0",
         "symm/gisconverter": "^1.0",
-        "wm/map-multi-polygon-nova3": "dev-main",
-        "wm/map-multi-linestring-nova": "*"
+        "wm/map-multi-linestring-nova": "*",
+        "wm/map-multi-polygon-nova3": "dev-main"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
