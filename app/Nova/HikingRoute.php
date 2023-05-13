@@ -36,6 +36,7 @@ use App\Nova\Actions\ValidateHikingRouteAction;
 use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Actions\UploadValidationRawDataAction;
 use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
@@ -202,6 +203,8 @@ class HikingRoute extends Resource
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
+        $fields[] = Boolean::make('Region Favorite','region_favorite');
+
         return $fields;
     }
 
@@ -296,7 +299,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
                 (new GeometrySyncFilter()),
-                (new DeleteOnOsmFilter())
+                (new DeleteOnOsmFilter()),
+                (new RegionFavoriteHikingRouteFilter()),
             ];
 
         } else {
@@ -306,7 +310,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
                 (new GeometrySyncFilter()),
-                (new DeleteOnOsmFilter())
+                (new DeleteOnOsmFilter()),
+                (new RegionFavoriteHikingRouteFilter()),
             ];
         }
     }
