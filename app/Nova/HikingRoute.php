@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\AddFeatureImageToHikingRoute;
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\RevertValidateHikingRouteAction;
 use App\Nova\Actions\SectorRefactoring;
@@ -38,6 +39,8 @@ use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Actions\UploadValidationRawDataAction;
 use App\Nova\Filters\HikingRoutesTerritorialFilter;
 use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Nova\Fields\Textarea;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
@@ -177,6 +180,7 @@ class HikingRoute extends Resource
                 'General' => $this->getMetaFields('general'),
                 'Tech' => $this->getMetaFields('tech'),
                 'Other' => $this->getMetaFields('other'),
+                'Content' => $this->getEditorialContent(),
             ])),
         ];
 
@@ -227,6 +231,41 @@ class HikingRoute extends Resource
                 }
             })->onlyOnDetail()->asHtml();
         }
+        return $fields;
+    }
+
+    /**
+     * It returns the Editorial Content Fields (only in details)
+     *
+     * @return array
+     */
+    public function getEditorialContent(): array {
+        $fields = [];
+
+        // Automatic Name For TDH
+        $fields[] = Text::make('Automatic Name (computed for TDH)', function () {
+            return $this->getNameForTDH()['it'];
+        })->onlyOnDetail();
+
+        // Automatic Abstract For TDH
+        $fields[] = Textarea::make('Automatic Abstract (computed for TDH)', function () {
+            if(!empty($this->tdh) && !empty($this->tdh['abstract'])) {
+                return $this->tdh['abstract']['it'];
+            }
+            else {
+                return 'Abstract ancora non calcolato';
+            }
+            
+        })->onlyOnDetail()->alwaysShow();
+
+        // Feature Image
+        $fields[] = Text::make('Feature Image' , function () {
+            if(empty($this->feature_image)) {
+                return 'No Feature Image Uploaded';
+            }
+            return '<img src="'.Storage::url($this->feature_image).'"/>';
+        })->onlyOnDetail()->asHtml();
+
         return $fields;
     }
 
@@ -391,9 +430,17 @@ class HikingRoute extends Resource
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}
                     ),
-                (new ToggleRegionFavoriteHikingRouteAction())
+                    (new ToggleRegionFavoriteHikingRouteAction())
                     ->onlyOnDetail('true')
                     ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
+                    (new AddFeatureImageToHikingRoute())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
                     ->confirmButtonText('Confermo')
                     ->cancelButtonText("Annulla")
                     ->canSee(function ($request) { return true;})
