@@ -46,4 +46,8 @@ Route::get('/hiking-route/id/{id}',function($id){
     return view('hikingroute',[
         'hikingroute' => $hikingroute
     ]);
-});
+})->name('hiking-route-public-page');
+
+Route::get('hiking-route-map/{id}',function($id){
+    return view('hikingroutemap',['hikingroute'=>HikingRoute::findOrFail($id)]);
+})->name('hiking-route-public-map');

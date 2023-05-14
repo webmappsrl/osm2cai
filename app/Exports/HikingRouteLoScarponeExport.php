@@ -38,7 +38,7 @@ class HikingRouteLoScarponeExport implements FromArray
                     $hr->distance_comp,
                     'publish_TBD',
                     route('api.v2v2-hr_thd_by_id',['id'=>$hr->id]),
-                    'map_TBD',
+                    route('hiking-route-public-map',['id'=>$hr->id]),
                     empty($hr->feature_image) ? 'NO IMAGE' : config('app.url').Storage::url($hr->feature_image),
                     'https://openstreetmap.org/relation/'.$hr->relation_id
                 ];
