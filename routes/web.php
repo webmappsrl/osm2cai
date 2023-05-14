@@ -36,7 +36,7 @@ Route::get('/nova/cas-logout', function () {
 
 
 // Excel exports
-Route::get('loscarpone/export/', [HikingRouteLoscarponeExportController::class, 'export']);
+Route::get('loscarpone/export/', [HikingRouteLoscarponeExportController::class, 'export'])->name('loscarpone-export');
 
 Route::get('/hiking-route/id/{id}',function($id){
     $hikingroute = HikingRoute::find($id);
