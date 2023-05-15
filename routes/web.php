@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CasLoginController;
+use App\Http\Controllers\HikingRouteLoscarponeExportController;
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,9 @@ Route::get('/nova/cas-logout', function () {
 })->middleware('cas.auth');
 
 
+// Excel exports
+Route::get('loscarpone/export/', [HikingRouteLoscarponeExportController::class, 'export'])->name('loscarpone-export');
+
 Route::get('/hiking-route/id/{id}',function($id){
     $hikingroute = HikingRoute::find($id);
     if ($hikingroute == null) {
@@ -42,4 +46,8 @@ Route::get('/hiking-route/id/{id}',function($id){
     return view('hikingroute',[
         'hikingroute' => $hikingroute
     ]);
-});
+})->name('hiking-route-public-page');
+
+Route::get('hiking-route-map/{id}',function($id){
+    return view('hikingroutemap',['hikingroute'=>HikingRoute::findOrFail($id)]);
+})->name('hiking-route-public-map');

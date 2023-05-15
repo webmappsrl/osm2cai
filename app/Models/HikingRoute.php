@@ -42,7 +42,8 @@ class HikingRoute extends Model
         'distance_osm' => 'float',
         'distance_comp' => 'float',
         'validation_date' => 'datetime:Y-m-d H:i:s',
-        'tdh' => 'array'
+        'tdh' => 'array',
+        'region_favorite_publication_date' => 'date:Y-m-d'  
     ];
 
     public static array $info_fields = [

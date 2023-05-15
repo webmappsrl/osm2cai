@@ -2,6 +2,9 @@
 
 namespace App\Nova;
 
+use AddRegionFavoriteToHikingRoutesTable;
+use App\Nova\Actions\AddFeatureImageToHikingRoute;
+use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\RevertValidateHikingRouteAction;
 use App\Nova\Actions\SectorRefactoring;
@@ -30,12 +33,16 @@ use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
+use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Actions\ValidateHikingRouteAction;
 use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Actions\UploadValidationRawDataAction;
 use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Nova\Fields\Textarea;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
@@ -175,6 +182,7 @@ class HikingRoute extends Resource
                 'General' => $this->getMetaFields('general'),
                 'Tech' => $this->getMetaFields('tech'),
                 'Other' => $this->getMetaFields('other'),
+                'Content' => $this->getEditorialContent(),
             ])),
         ];
 
@@ -202,6 +210,9 @@ class HikingRoute extends Resource
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
+            $fields[] = Boolean::make('Region Favorite','region_favorite');
+            $fields[] = Date::make('Data publicazione LoScarpone','region_favorite_publication_date');
+
         return $fields;
     }
 
@@ -223,6 +234,41 @@ class HikingRoute extends Resource
                 }
             })->onlyOnDetail()->asHtml();
         }
+        return $fields;
+    }
+
+    /**
+     * It returns the Editorial Content Fields (only in details)
+     *
+     * @return array
+     */
+    public function getEditorialContent(): array {
+        $fields = [];
+
+        // Automatic Name For TDH
+        $fields[] = Text::make('Automatic Name (computed for TDH)', function () {
+            return $this->getNameForTDH()['it'];
+        })->onlyOnDetail();
+
+        // Automatic Abstract For TDH
+        $fields[] = Textarea::make('Automatic Abstract (computed for TDH)', function () {
+            if(!empty($this->tdh) && !empty($this->tdh['abstract'])) {
+                return $this->tdh['abstract']['it'];
+            }
+            else {
+                return 'Abstract ancora non calcolato';
+            }
+            
+        })->onlyOnDetail()->alwaysShow();
+
+        // Feature Image
+        $fields[] = Text::make('Feature Image' , function () {
+            if(empty($this->feature_image)) {
+                return 'No Feature Image Uploaded';
+            }
+            return '<img src="'.Storage::url($this->feature_image).'"/>';
+        })->onlyOnDetail()->asHtml();
+
         return $fields;
     }
 
@@ -296,7 +342,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
                 (new GeometrySyncFilter()),
-                (new DeleteOnOsmFilter())
+                (new DeleteOnOsmFilter()),
+                (new RegionFavoriteHikingRouteFilter()),
             ];
 
         } else {
@@ -306,7 +353,8 @@ class HikingRoute extends Resource
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
                 (new GeometrySyncFilter()),
-                (new DeleteOnOsmFilter())
+                (new DeleteOnOsmFilter()),
+                (new RegionFavoriteHikingRouteFilter()),
             ];
         }
     }
@@ -385,7 +433,33 @@ class HikingRoute extends Resource
                     ->canSee(function ($request) { return true;})
                     ->canRun(function ($request, $user) { return true;}
                     ),
-
+                    (new ToggleRegionFavoriteHikingRouteAction())
+                    ->onlyOnDetail('true')
+                    ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
+                    (new AddFeatureImageToHikingRoute())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText("Annulla")
+                    ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
+                    (new AddRegionFavoritePublicationDateToHikingRouteAction())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Imposta la data prevista per la publicazione sullo Scarpone Online')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText('Annulla')
+                    ->canSee(function ($request) {
+                        $u = auth()->user();
+                        return $u->is_administrator || $u->is_national_referent;
+                    })
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
             ];
     }
 }
