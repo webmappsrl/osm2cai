@@ -743,6 +743,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     ['Mappa Settori', 'http://osm2cai.j.webmapp.it/#/main/map'],
                     ['Mappa Percorsi', 'https://26.app.geohub.webmapp.it/#/map'],
                     ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
+                    ['LoScarpone-Export', route('loscarpone-export')],
+                    ['API', '/api/documentation'],
                     ['Guida Utente','https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
                 ],
             ])
