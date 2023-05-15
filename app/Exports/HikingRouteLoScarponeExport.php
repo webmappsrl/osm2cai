@@ -36,7 +36,7 @@ class HikingRouteLoScarponeExport implements FromArray
                     $hr->getNameForTDH()['it'],
                     $hr->cai_scale,
                     $hr->distance_comp,
-                    'publish_TBD',
+                    empty($hr->region_favorite_publication_date) ? 'NO PUBLICATION DATE' : $hr->region_favorite_publication_date,
                     route('api.v2v2-hr_thd_by_id',['id'=>$hr->id]),
                     route('hiking-route-public-map',['id'=>$hr->id]),
                     empty($hr->feature_image) ? 'NO IMAGE' : config('app.url').Storage::url($hr->feature_image),
