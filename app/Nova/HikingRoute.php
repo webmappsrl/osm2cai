@@ -2,7 +2,9 @@
 
 namespace App\Nova;
 
+use AddRegionFavoriteToHikingRoutesTable;
 use App\Nova\Actions\AddFeatureImageToHikingRoute;
+use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Actions\DeleteHikingRouteAction;
 use App\Nova\Actions\RevertValidateHikingRouteAction;
 use App\Nova\Actions\SectorRefactoring;
@@ -208,7 +210,8 @@ class HikingRoute extends Resource
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
-        $fields[] = Boolean::make('Region Favorite','region_favorite');
+            $fields[] = Boolean::make('Region Favorite','region_favorite');
+            $fields[] = Date::make('Data publicazione LoScarpone','region_favorite_publication_date');
 
         return $fields;
     }
@@ -444,6 +447,17 @@ class HikingRoute extends Resource
                     ->confirmButtonText('Confermo')
                     ->cancelButtonText("Annulla")
                     ->canSee(function ($request) { return true;})
+                    ->canRun(function ($request, $user) { return true;}
+                    ),
+                    (new AddRegionFavoritePublicationDateToHikingRouteAction())
+                    ->onlyOnDetail('true')
+                    ->confirmText('Imposta la data prevista per la publicazione sullo Scarpone Online')
+                    ->confirmButtonText('Confermo')
+                    ->cancelButtonText('Annulla')
+                    ->canSee(function ($request) {
+                        $u = auth()->user();
+                        return $u->is_administrator || $u->is_national_referent;
+                    })
                     ->canRun(function ($request, $user) { return true;}
                     ),
             ];
