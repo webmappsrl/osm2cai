@@ -1,5 +1,6 @@
 body {
-    height: 84vh;
+    height: 100vh;
+    margin: 0;
 }
 main {
     height: 100%;
@@ -15,7 +16,6 @@ main {
     .content-wrapper {
         height: 100%;
     }
-    
 }
 .LeafletMap {
     width: 100%;
