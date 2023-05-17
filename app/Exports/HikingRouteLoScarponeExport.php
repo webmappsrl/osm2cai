@@ -27,7 +27,7 @@ class HikingRouteLoScarponeExport implements FromArray
         ];
         $results = [];
         $results[]=$header;
-        $hrs = HikingRoute::where('region_favorite',true)->limit(10)->get();
+        $hrs = HikingRoute::where('region_favorite',true)->get();
         if (count($hrs)>0) {
             foreach ($hrs as $hr) {
                 $item = [
