@@ -1059,8 +1059,32 @@ EOF;
                 echo "ERROR ON getting data from geohub $geohub_url";
         }
 
+        // Update with OSM data ascent,discent,duration_forward,duration_backward
+        if(isset($this->ascent_osm) && !empty($this->ascent_osm)) {
+            $info['ascent'] = $this->ascent_osm;
+        }
+        if(isset($this->descent_osm) && !empty($this->descent_osm)) {
+            $info['descent'] = $this->descent_osm;
+        }
+        if(isset($this->duration_forward_osm) && !empty($this->duration_forward_osm)) {
+            $info['duration_forward'] = $this->h2m($this->duration_forward_osm);
+        }
+        if(isset($this->duration_backward_osm) && !empty($this->duration_backward_osm)) {
+            $info['duration_backward'] = $this->h2m($this->duration_backward_osm);
+        }
+
         return $info;
     }
+
+    public function h2m($strHourMinute) {
+        $strHourMinute = preg_replace('/[^0-9:]/', '', $strHourMinute);
+        $from = date('Y-m-d 00:00:00');
+        $to = date('Y-m-d '.$strHourMinute.':00');
+        $diff = strtotime($to) - strtotime($from);
+        $minutes = $diff / 60;
+        return (int) $minutes;
+    }
+    
 
 
     /**
