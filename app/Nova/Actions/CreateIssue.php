@@ -13,12 +13,13 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\ActionFields;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Laravel\Nova\Fields\Textarea;
 
 class CreateIssue extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = 'CREATE ISSUE';
+    public $name = 'PERCORRIBILITA';
 
     /**
      * Perform the action on the given models.
@@ -53,7 +54,7 @@ class CreateIssue extends Action
                 ->options(IssueStatus::cases())
                 ->displayUsingLabels()
                 ->rules('required'),
-            Text::make('Issues Description')
+            Textarea::make('Issues Description')
                 ->nullable()
 
         ];
