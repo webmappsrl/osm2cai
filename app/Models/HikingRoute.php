@@ -43,7 +43,7 @@ class HikingRoute extends Model
         'distance_comp' => 'float',
         'validation_date' => 'datetime:Y-m-d H:i:s',
         'tdh' => 'array',
-        'region_favorite_publication_date' => 'date:Y-m-d'  
+        'region_favorite_publication_date' => 'date:Y-m-d'
     ];
 
     public static array $info_fields = [
@@ -53,7 +53,7 @@ class HikingRoute extends Model
             'survey_date' => ['type' => 'string', 'comp' => false, 'label' => 'Data ricognizione'],
             'source_ref' => ['type' => 'string', 'comp' => false, 'label' => 'Codice Sezione CAI'],
             'old_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF precedente'],
-            'ref_REI' => [ 'type' => 'string' , 'comp' => false, 'label' => 'REF rei']
+            'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei']
         ],
         'general' => [
             'from' => ['type' => 'string', 'comp' => false, 'label' => 'Località di partenza'],
@@ -116,6 +116,11 @@ class HikingRoute extends Model
     public function sectors()
     {
         return $this->belongsToMany(Sector::class)->withPivot(['percentage']);
+    }
+
+    public function issuesUsers()
+    {
+        return $this->hasMany(User::class, 'id', 'issues_user_id');
     }
 
     public function mainSector()
@@ -220,8 +225,7 @@ class HikingRoute extends Model
             if (!is_null($this->geometry)) {
                 // Compute from CAI geometry
                 // Distance
-                if ( $this->id == 22289 )
-                {
+                if ($this->id == 22289) {
                     $stop = 'here';
                 }
                 $this->distance_comp = round(DB::table('hiking_routes')
@@ -560,20 +564,23 @@ EOF;
         return true;
     }
 
-    public function getPublicPage(){
-        return url('/').'/hiking-route/id/'.$this->id;
+    public function getPublicPage()
+    {
+        return url('/') . '/hiking-route/id/' . $this->id;
     }
 
-    public function revertValidation(){
-        if($this->osm2cai_status == 4)
+    public function revertValidation()
+    {
+        if ($this->osm2cai_status == 4)
             $this->osm2cai_status = 3;
         $this->validation_date = null;
         $this->user_id = null;
         $this->save();
     }
 
-    public function setGeometrySync(){
-        if($this->geometry == $this->geometry_osm)
+    public function setGeometrySync()
+    {
+        if ($this->geometry == $this->geometry_osm)
             $this->geometry_sync = true;
         else
             $this->geometry_sync = false;
@@ -587,9 +594,10 @@ EOF;
      *
      * @return array
      */
-    public function getNameForTDH(): array {
+    public function getNameForTDH(): array
+    {
         $v = [];
-        if(!empty($this->name)) {
+        if (!empty($this->name)) {
             $v = [
                 'it' => $this->name,
                 'en' => $this->name,
@@ -598,26 +606,24 @@ EOF;
                 'fr' => $this->name,
                 'pt' => $this->name,
             ];
-        }
-        else if (!empty($this->ref)) {
+        } else if (!empty($this->ref)) {
             $v = [
-                'it' => 'Sentiero '.$this->ref,
-                'en' => 'Path '.$this->ref,
-                'es' => 'Camino '.$this->ref,
-                'de' => 'Weg '.$this->ref,
-                'fr' => 'Chemin '.$this->ref,
-                'pt' => 'Caminho '.$this->ref,
+                'it' => 'Sentiero ' . $this->ref,
+                'en' => 'Path ' . $this->ref,
+                'es' => 'Camino ' . $this->ref,
+                'de' => 'Weg ' . $this->ref,
+                'fr' => 'Chemin ' . $this->ref,
+                'pt' => 'Caminho ' . $this->ref,
             ];
-
         } else {
             $info = $this->getFromInfo();
             $v = [
-                'it' => 'Sentiero del Comune di '.$info['city_from'],
-                'en' => 'Path in the municipality of '.$info['city_from'],
-                'es' => 'Camino en el municipio de '.$info['city_from'],
-                'de' => 'Weg in der Gemeinde '.$info['city_from'],
-                'fr' => 'Chemin dans la municipalité de '.$info['city_from'],
-                'pt' => 'Caminho no município de '.$info['city_from'],
+                'it' => 'Sentiero del Comune di ' . $info['city_from'],
+                'en' => 'Path in the municipality of ' . $info['city_from'],
+                'es' => 'Camino en el municipio de ' . $info['city_from'],
+                'de' => 'Weg in der Gemeinde ' . $info['city_from'],
+                'fr' => 'Chemin dans la municipalité de ' . $info['city_from'],
+                'pt' => 'Caminho no município de ' . $info['city_from'],
             ];
         }
         return $v;
@@ -628,7 +634,8 @@ EOF;
      *
      * @return array
      */
-    public function getCaiScaleString(): array {
+    public function getCaiScaleString(): array
+    {
         switch ($this->cai_scale) {
             case 'T':
                 $v = [
@@ -637,10 +644,10 @@ EOF;
                     'es' => 'Turístico',
                     'de' => 'Touristische Route',
                     'fr' => 'Sentier touristique',
-                    'pt' => 'Turístico'                
+                    'pt' => 'Turístico'
                 ];
                 break;
-            
+
             case 'E':
                 $v = [
                     'it' => 'Escursionistico',
@@ -651,7 +658,7 @@ EOF;
                     'pt' => 'Caminhadas'
                 ];
                 break;
-                
+
             case 'EE':
                 $v = [
                     'it' => 'Escursionisti Esperti',
@@ -662,15 +669,15 @@ EOF;
                     'pt' => 'Caminhantes Experientes'
                 ];
                 break;
-            
-                default:
-            $v = [
-                'it' => 'Difficoltà sconosciuta',
-                'en' => 'Unknown difficulty',
-                'de' => 'Unbekannte Schwierigkeit',
-                'fr' => 'Difficulté inconnue',
-            ];
-            break;
+
+            default:
+                $v = [
+                    'it' => 'Difficoltà sconosciuta',
+                    'en' => 'Unknown difficulty',
+                    'de' => 'Unbekannte Schwierigkeit',
+                    'fr' => 'Difficulté inconnue',
+                ];
+                break;
         }
 
         return $v;
@@ -681,11 +688,12 @@ EOF;
      *
      * @return array
      */
-    public function getCaiScaleDescription(): array {
+    public function getCaiScaleDescription(): array
+    {
         switch ($this->cai_scale) {
             case 'T':
                 $v = [
-                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+                    'it' => trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
 
                     Percorsi su carrarecce, mulattiere o evidenti sentieri che non pongono incertezze o problemi di orientamento, con modeste pendenze e dislivelli contenuti.
                     
@@ -696,7 +704,7 @@ EOF;
                     ATTREZZATURE
                     
                     Sono comunque richiesti adeguato abbigliamento e calzature adatte.")),
-                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+                    'en' => trim(preg_replace('/\s\s+/', ' ', "FEATURES
 
                     Routes on bridle paths, mule tracks or obvious trails that do not present any uncertainties or orientation problems, with moderate gradients.
                     
@@ -707,7 +715,7 @@ EOF;
                     EQUIPMENT
                     
                     Appropriate clothing and footwear are still required.")),
-                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'es' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Rutas por pistas, caminos o senderos obvios que no plantean incertidumbres o problemas de orientación, con pequeñas pendientes y desniveles contenidos.
                     
@@ -718,7 +726,7 @@ EOF;
                     EQUIPO
                     
                     Se requiere igualmente ropa y calzado adecuados.")),
-                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE
+                    'de' => trim(preg_replace('/\s\s+/', ' ', "MERKMALE
 
                     Routen auf Feldwegen, Saumpfaden oder offensichtlichen Wegen, die keine Unsicherheiten oder Orientierungsprobleme aufwerfen, mit bescheidenen Steigungen und geringen Höhenunterschieden.
                     
@@ -729,7 +737,7 @@ EOF;
                     AUSRÜSTUNG
                     
                     Geeignete Kleidung und Schuhe sind in jedem Fall erforderlich.")),
-                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "Des parcours sur rails, des chemins muletiers ou des sentiers évidents qui ne posent pas d’incertitudes ou de problèmes d’orientation, avec des pentes modestes et des dénivelés limités.
+                    'fr' => trim(preg_replace('/\s\s+/', ' ', "Des parcours sur rails, des chemins muletiers ou des sentiers évidents qui ne posent pas d’incertitudes ou de problèmes d’orientation, avec des pentes modestes et des dénivelés limités.
 
                     APTITUDES ET COMPÉTENCES
                     
@@ -738,7 +746,7 @@ EOF;
                     ÉQUIPEMENT
                     
                     Cependant, des vêtements et des chaussures appropriés sont nécessaires.")),
-                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'pt' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Percursos em carreiros, trilhas ou caminhos óbvios, que não apresentam dúvidas ou problemas de orientação, com declives modestos e desníveis moderados.
                     
@@ -751,10 +759,10 @@ EOF;
                     Vestuário e calçado adequados são, no entanto, necessários.")),
                 ];
                 break;
-            
+
             case 'E':
                 $v = [
-                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+                    'it' => trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
 
                     Percorsi che rappresentano la maggior parte degli itinerari escursionistici, quindi tra i più vari per ambienti naturali. Si svolgono per mulattiere, sentieri e talvolta tracce; su terreno diverso per contesto geomorfologico e vegetazionale (es. pascoli, sottobosco, detriti, pietraie). Sono generalmente segnalati e possono presentare tratti ripidi. Si possono incontrare facili passaggi su roccia, non esposti, che necessitano l’utilizzo delle mani per l’equilibrio. Eventuali punti esposti sono in genere protetti. Possono attraversare zone pianeggianti o poco inclinate su neve residua.
                     
@@ -765,7 +773,7 @@ EOF;
                     ATTREZZATURE
                     
                     È richiesto idoneo equipaggiamento con particolare riguardo alle calzature.")),
-                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+                    'en' => trim(preg_replace('/\s\s+/', ' ', "FEATURES
 
                     Routes that represent most of the hiking itineraries, and therefore among the most varied in terms of natural environments. They run along mule tracks, paths and sometimes tracks; on terrain that varies in geomorphological and vegetational context (e.g. pasture, undergrowth, scree, scree slopes). They are generally signposted and may have steep sections. Easy, unexposed rock sections may be encountered that require the use of hands for balance. Any exposed points are generally protected. They can pass across flat or gently sloping areas on residual snow.
                     
@@ -776,7 +784,7 @@ EOF;
                     EQUIPMENT
                     
                     Suitable equipment is required, particularly with regard to footwear.")),
-                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'es' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Rutas que representan la mayoría de los itinerarios de excursionismo, por lo que se encuentran en los más variados entornos naturales. Recorren caminos, senderos y, a veces, pistas; en diferentes terrenos en cuanto a entornos geomorfológicos y de vegetación (p. ej., pastizales, bosque bajo, roquedales, pedregales). Por lo general, están marcadas y pueden presentar tramos escarpados. Se pueden encontrar pasos fáciles en la roca, no expuestos, que requieren el uso de las manos para mantener el equilibrio. Por lo general, los puntos expuestos están protegidos. Pueden atravesar zonas llanas o poco inclinadas sobre nieve residual.
                     
@@ -787,7 +795,7 @@ EOF;
                     EQUIPO
                     
                     Se requiere un equipo adecuado, con especial atención al calzado.")),
-                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE
+                    'de' => trim(preg_replace('/\s\s+/', ' ', "MERKMALE
 
                     Routen, die den größten Teil der Wanderwege ausmachen und aus diesem Grund zu den abwechslungsreichsten für natürliche Umgebungen gehören. Sie finden auf Saumpfaden, Wegen und manchmal Spuren statt; auf einem Gelände, das sich aufgrund des geomorphologischen und vegetativen Kontextes (z. B. Weiden, Waldboden, Trümmer, Steine) unterscheidet. Sie sind in der Regel gekennzeichnet und können steile Abschnitte aufweisen. Sie können auf einfache, unbelichtete Felspassagen stoßen, bei denen die Verwendung der Hände für das Gleichgewicht erforderlich ist. Alle exponierten Stellen sind in der Regel geschützt. Sie können flache oder wenig geneigte Bereiche auf Restschnee durchqueren.
                     
@@ -798,7 +806,7 @@ EOF;
                     AUSRÜSTUNG
                     
                     Eine geeignete Ausrüstung mit besonderem Augenmerk auf die Schuhe ist erforderlich.")),
-                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
+                    'fr' => trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
 
                     Des parcours qui représentent la plupart des itinéraires de randonnée, donc parmi les plus variés pour les environnements naturels. Ils se déroulent sur des chemins muletiers, des sentiers et parfois des pistes ; sur des terrains différents en raison de leur cadre géomorphologique et végétatif (par exemple, des pâturages, sous-bois, débris, pierres). Ils sont généralement signalés et peuvent présenter des tronçons raides. Vous pouvez rencontrer des passages faciles sur roche, non exposés, qui nécessitent l’utilisation des mains pour l’équilibre. Tous les points exposés sont généralement protégés. Ils peuvent traverser des zones plates ou peu inclinées sur la neige résiduelle.
                     
@@ -809,7 +817,7 @@ EOF;
                     ÉQUIPEMENT
                     
                     Un équipement approprié est requis, en particulier en ce qui concerne les chaussures.")),
-                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'pt' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Percursos que fazem parte da maioria das rotas de caminhada e que são, portanto, muito variadas em termos de ambiente natural. Desenvolvem-se em trilhas, caminhos e por vezes em traçados; em diferentes terrenos em termos de contexto geomorfológico e vegetacional (por ex. pastagens, mato, detritos, pedranceiras). Estão geralmente assinalados e podem apresentar trechos íngremes. Podem-se encontrar passagens fáceis na rocha, não expostas, que exigem o uso das mãos para o equilíbrio. Os eventuais pontos expostos estão geralmente protegidos. Podem atravessar áreas planas ou ligeiramente inclinadas na neve residual.
                     
@@ -822,10 +830,10 @@ EOF;
                     É necessário equipamento adequado, especialmente no que diz respeito ao calçado.")),
                 ];
                 break;
-                
+
             case 'EE':
                 $v = [
-                    'it' =>trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
+                    'it' => trim(preg_replace('/\s\s+/', ' ', "CARATTERISTICHE
 
                     Percorsi quasi sempre segnalati che richiedono capacità di muoversi lungo sentieri e tracce su terreno impervio e/o infido (pendii ripidi e/o scivolosi di erba, roccette o detriti sassosi), spesso instabile e sconnesso. Possono presentare tratti esposti, traversi, cenge o tratti rocciosi con lievi difficoltà tecniche e/o attrezzati, mentre sono escluse le ferrate propriamente dette. Si sviluppano su pendenze medio‐alte. Può essere necessario l’attraversamento di tratti su neve, mentre sono esclusi tutti i percorsi su ghiacciaio.
                     
@@ -836,7 +844,7 @@ EOF;
                     ATTREZZATURE
                     
                     Richiedono equipaggiamento e attrezzatura adeguati all’itinerario programmato. ")),
-                    'en' =>trim(preg_replace('/\s\s+/', ' ', "FEATURES
+                    'en' => trim(preg_replace('/\s\s+/', ' ', "FEATURES
 
                     Routes that are almost always signposted and require the ability to move along paths and tracks over inaccessible and/or treacherous terrain (steep and/or slippery slopes of grass, rocks or stony debris), often unstable and uneven. They may have exposed sections, traverses, ledges or rocky sections with slight technical difficulties and/or structural aids, although there are no actual via ferratas. They extend over medium-steep slopes. Crossing sections on snow may be necessary, although no glacier routes are included.
                     
@@ -847,7 +855,7 @@ EOF;
                     EQUIPMENT
                     
                     They require suitable equipment and gear for the planned route. ")),
-                    'es' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'es' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Rutas casi siempre señalizadas que requieren la capacidad de moverse a lo largo de senderos y pistas en terrenos difíciles o traicioneros (pendientes empinadas o resbaladizas de hierba, rocas o piedras), a menudo inestables y desiguales. Pueden presentar tramos expuestos, traviesas, cornisas o tramos rocosos con leves dificultades técnicas o que requieren el uso de equipos, mientras que se excluyen las vías ferratas propiamente dichas. Se desarrollan en pendientes medias-altas. Puede ser necesario atravesar tramos sobre nieve, mientras que se excluyen todas las rutas sobre hielo.
                     
@@ -858,7 +866,7 @@ EOF;
                     EQUIPO
                     
                     Requieren equipamiento y equipo adecuado para el itinerario programado. ")),
-                    'de' =>trim(preg_replace('/\s\s+/', ' ', "MERKMALE 
+                    'de' => trim(preg_replace('/\s\s+/', ' ', "MERKMALE 
 
                     Fast immer gekennzeichnete Wege, die die Fähigkeit erfordern, sich auf Wegen und Spuren auf unebenem und/oder tückischem Gelände (steilen und/oder rutschigen Hängen von Gras, Felsen oder steinigen Trümmern) fortzubewegen, oft instabil und uneben. Sie können freiliegende Abschnitte, Traversen, Böschungen oder felsige Abschnitte mit leichten technischen Schwierigkeiten aufweisen und/oder ausgerüstet sein, während die eigentlichen Klettersteige ausgeschlossen sind. Sie entwickeln sich auf mittleren bis hohen Steigungen. Es kann erforderlich sein, Abschnitte auf Schnee zu überqueren, während alle Gletscherrouten ausgeschlossen sind.
                     
@@ -869,7 +877,7 @@ EOF;
                     AUSRÜSTUNG
                     
                     Sie benötigen Ausstattung und Ausrüstung, die an die geplante Route angepasst sind. ")),
-                    'fr' =>trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
+                    'fr' => trim(preg_replace('/\s\s+/', ' ', "CARACTÉRISTIQUES
 
                     Des parcours presque toujours signalés qui nécessitent la capacité à se déplacer le long des sentiers et des pistes sur un terrain accidenté et/ou traître (pentes raides et/ou glissantes d’herbe, de rochers ou de débris de pierre), souvent instable et inégal. Ils peuvent comporter des tronçons exposés, des traverses, des cendres ou des tronçons rocheux présentant de légères difficultés techniques et/ou équipés, tandis que les ferrate proprement dites sont exclues. Ils se développent sur des pentes moyennes à élevées. Il peut être nécessaire de traverser des tronçons sur la neige, tandis que tous les parcours sur le glacier sont exclus.
                     
@@ -880,7 +888,7 @@ EOF;
                     ÉQUIPEMENT
                     
                     Cela nécessite un équipement adapté à l’itinéraire prévu. ")),
-                    'pt' =>trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
+                    'pt' => trim(preg_replace('/\s\s+/', ' ', "CARACTERÍSTICAS
 
                     Percursos quase sempre assinalados que exigem a capacidade para se mover ao longo de caminhos e trilhas de terreno acidentado e/ou traiçoeiro (encostas íngremes e/ou escorregadias, de erva, rochas ou detritos pedregosos), muitas vezes instáveis e desarticulados. Podem apresentar trechos expostos, travessias, saliências ou partes rochosas com ligeiras dificuldades técnicas e/ou equipadas, excluindo-se as vias ferratas propriamente ditas. Desenvolvem-se em declives médio-altos. Pode ser necessário atravessar trechos na neve, estando excluídos todos os percursos no gelo.
                     
@@ -893,15 +901,15 @@ EOF;
                     Requer equipamento e dispositivos adequados ao itinerário planeado. ")),
                 ];
                 break;
-            
-                default:
-            $v = [
-                'it' => 'Difficoltà sconosciuta',
-                'en' => 'Unknown difficulty',
-                'de' => 'Unbekannte Schwierigkeit',
-                'fr' => 'Difficulté inconnue',
-            ];
-            break;
+
+            default:
+                $v = [
+                    'it' => 'Difficoltà sconosciuta',
+                    'en' => 'Unknown difficulty',
+                    'de' => 'Unbekannte Schwierigkeit',
+                    'fr' => 'Difficulté inconnue',
+                ];
+                break;
         }
 
         return $v;
@@ -920,7 +928,8 @@ EOF;
      * 
      * @return array
      */
-    public function getFromInfo(): array {
+    public function getFromInfo(): array
+    {
 
         $from = $this->from;
         $info = [
@@ -936,18 +945,17 @@ EOF;
         try {
             //code...
             $res = DB::select($query);
-            if(count($res)>0) {
+            if (count($res) > 0) {
                 $info['city_from'] = $res[0]->comune;
                 $info['city_from_istat'] = $res[0]->istat;
-                $info['region_from'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
-                $info['region_from_istat'] = $res[0]->cod_reg; 
-                
-                if(empty($info['from'])) {
+                $info['region_from'] = config('osm2cai.region_istat_name.' . $res[0]->cod_reg);
+                $info['region_from_istat'] = $res[0]->cod_reg;
+
+                if (empty($info['from'])) {
                     $info['from'] = $info['city_from'];
                 }
             }
-            } 
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
             echo "ERROR on query: $query (ID:$this->id)\n";
         }
 
@@ -966,7 +974,8 @@ EOF;
      * 
      * @return array
      */
-    public function getToInfo(): array {
+    public function getToInfo(): array
+    {
 
         $to = $this->to;
         $info = [
@@ -983,17 +992,16 @@ EOF;
         try {
             //code...
             $res = DB::select($query);
-            if(count($res)>0) {
+            if (count($res) > 0) {
                 $info['city_to'] = $res[0]->comune;
                 $info['city_to_istat'] = $res[0]->istat;
-                $info['region_to'] = config('osm2cai.region_istat_name.'.$res[0]->cod_reg);
-                $info['region_to_istat'] = $res[0]->cod_reg; 
-                
-                if(empty($info['to'])) {
+                $info['region_to'] = config('osm2cai.region_istat_name.' . $res[0]->cod_reg);
+                $info['region_to_istat'] = $res[0]->cod_reg;
+
+                if (empty($info['to'])) {
                     $info['to'] = $info['city_to'];
                 }
             }
-    
         } catch (\Throwable $th) {
             //throw $th;
             echo "ERROR on query: $query (ID:$this->id)\n";
@@ -1009,10 +1017,11 @@ EOF;
      *
      * @return boolean
      */
-    public function checkRoundTripFromGeometry(): bool {
+    public function checkRoundTripFromGeometry(): bool
+    {
         // TODO: implement real check
         $roundtrip = false;
-        if($this->roundtrip=='yes') {
+        if ($this->roundtrip == 'yes') {
             $roundtrip = true;
         }
         return $roundtrip;
@@ -1024,7 +1033,8 @@ EOF;
      *
      * @return array
      */
-    public function getTechInfoFromGeohub():array {
+    public function getTechInfoFromGeohub(): array
+    {
 
         $info = [
             'gpx_url' => 'Unknown',
@@ -1039,10 +1049,10 @@ EOF;
             'ele_min' => 'Unknown',
         ];
 
-        $geohub_url = 'https://geohub.webmapp.it/api/osf/track/osm2cai/'.$this->id;
+        $geohub_url = 'https://geohub.webmapp.it/api/osf/track/osm2cai/' . $this->id;
         try {
-            $geohub = json_decode(file_get_contents($geohub_url),true);
-            $properties=$geohub['properties'];
+            $geohub = json_decode(file_get_contents($geohub_url), true);
+            $properties = $geohub['properties'];
             $info = [
                 'gpx_url' => $properties['gpx_url'],
                 'distance' => $properties['distance'],
@@ -1055,36 +1065,37 @@ EOF;
                 'ele_max' => $properties['ele_max'],
                 'ele_min' => $properties['ele_min'],
             ];
-            } catch (\Throwable $th) {
-                echo "ERROR ON getting data from geohub $geohub_url";
+        } catch (\Throwable $th) {
+            echo "ERROR ON getting data from geohub $geohub_url";
         }
 
         // Update with OSM data ascent,discent,duration_forward,duration_backward
-        if(isset($this->ascent_osm) && !empty($this->ascent_osm)) {
+        if (isset($this->ascent_osm) && !empty($this->ascent_osm)) {
             $info['ascent'] = $this->ascent_osm;
         }
-        if(isset($this->descent_osm) && !empty($this->descent_osm)) {
+        if (isset($this->descent_osm) && !empty($this->descent_osm)) {
             $info['descent'] = $this->descent_osm;
         }
-        if(isset($this->duration_forward_osm) && !empty($this->duration_forward_osm)) {
+        if (isset($this->duration_forward_osm) && !empty($this->duration_forward_osm)) {
             $info['duration_forward'] = $this->h2m($this->duration_forward_osm);
         }
-        if(isset($this->duration_backward_osm) && !empty($this->duration_backward_osm)) {
+        if (isset($this->duration_backward_osm) && !empty($this->duration_backward_osm)) {
             $info['duration_backward'] = $this->h2m($this->duration_backward_osm);
         }
 
         return $info;
     }
 
-    public function h2m($strHourMinute) {
+    public function h2m($strHourMinute)
+    {
         $strHourMinute = preg_replace('/[^0-9:]/', '', $strHourMinute);
         $from = date('Y-m-d 00:00:00');
-        $to = date('Y-m-d '.$strHourMinute.':00');
+        $to = date('Y-m-d ' . $strHourMinute . ':00');
         $diff = strtotime($to) - strtotime($from);
         $minutes = $diff / 60;
         return (int) $minutes;
     }
-    
+
 
 
     /**
@@ -1095,10 +1106,11 @@ EOF;
      * @param array $tech dati da getAbstract
      * @return array
      */
-    public function getAbstract(array $from, array $to, array $tech) : array {
+    public function getAbstract(array $from, array $to, array $tech): array
+    {
         $abstract = [];
         $cai_scale_string = $this->getCaiScaleString();
-        if(! $this->checkRoundTripFromGeometry()) {
+        if (!$this->checkRoundTripFromGeometry()) {
             // Percorso AB
             $abstract = [
                 'it' => trim(preg_replace('/\s\s+/', ' ', "Il percorso escursionistico $this->ref parte da {$from['from']}, nel Comune di {$from['city_from']} e termina a {$to['to']}, nel comune di {$to['city_to']}. Secondo lo standard CAI, è classificato come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} chilometri.
@@ -1126,8 +1138,7 @@ EOF;
                 O percurso excursionista é adequado quem quer mergulhar na natureza e desfrutar de uma experiência relaxante e regeneradora.
                 É aconselhável estar bem equipado e preparado para lidar com as diferentes condições climatéricas e possíveis obstáculos que possam surgir ao longo do caminho.")),
             ];
-        }
-        else {
+        } else {
             // Percorso ad anello
             $abstract = [
                 'it' => trim(preg_replace('/\s\s+/', ' ', "Il percorso escursionistico ad anello $this->ref ha il suo punto di partenza e arrivo in {$from['from']}, nel Comune di {$from['city_from']}. Secondo lo standard CAI è classificato come {$cai_scale_string['it']} e copre una distanza totale di {$tech['distance']} chilometri.
@@ -1170,7 +1181,8 @@ EOF;
      *
      * @return array
      */
-    public function computeTdh() : array {
+    public function computeTdh(): array
+    {
 
         $fromInfo = $this->getFromInfo();
         $toInfo = $this->getToInfo();
@@ -1191,7 +1203,7 @@ EOF;
             'region_to' => $toInfo['region_to'],
             'region_to_istat' => $toInfo['region_to_istat'],
             'roundtrip' => $this->checkRoundTripFromGeometry(),
-            'abstract' => $this->getAbstract($fromInfo,$toInfo,$techInfo),
+            'abstract' => $this->getAbstract($fromInfo, $toInfo, $techInfo),
             'distance' => $techInfo['distance'],
             'ascent' => $techInfo['ascent'],
             'descent' => $techInfo['descent'],

@@ -2,16 +2,8 @@
 
 namespace App\Nova;
 
-use AddRegionFavoriteToHikingRoutesTable;
-use App\Nova\Actions\AddFeatureImageToHikingRoute;
-use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
-use App\Nova\Actions\DeleteHikingRouteAction;
-use App\Nova\Actions\RevertValidateHikingRouteAction;
-use App\Nova\Actions\SectorRefactoring;
-use App\Nova\Filters\DeleteOnOsmFilter;
-use App\Nova\Filters\GeometrySyncFilter;
+use App\Models\User;
 use DKulyk\Nova\Tabs;
-use Laravel\Nova\Http\Requests\ActionRequest;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
@@ -21,9 +13,16 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Fields\Boolean;
+use App\Nova\Actions\CreateIssue;
+use Laravel\Nova\Fields\Textarea;
 use Illuminate\Support\Facades\Auth;
 use Ericlagarda\NovaTextCard\TextCard;
+use App\Nova\Actions\SectorRefactoring;
+use App\Nova\Filters\DeleteOnOsmFilter;
 use App\Nova\Filters\HikingRouteStatus;
+use Illuminate\Support\Facades\Storage;
+use App\Nova\Filters\GeometrySyncFilter;
+use AddRegionFavoriteToHikingRoutesTable;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\HikingRoutesAreaFilter;
@@ -32,19 +31,22 @@ use App\Nova\Lenses\HikingRoutesStatus1Lens;
 use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
+use App\Nova\Actions\DeleteHikingRouteAction;
+use Laravel\Nova\Http\Requests\ActionRequest;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
-use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRoutesSectorFilter;
 use App\Nova\Actions\ValidateHikingRouteAction;
 use App\Nova\Filters\HikingRoutesProvinceFilter;
+use App\Nova\Actions\AddFeatureImageToHikingRoute;
 use App\Nova\Actions\UploadValidationRawDataAction;
 use App\Nova\Filters\HikingRoutesTerritorialFilter;
+use App\Nova\Actions\RevertValidateHikingRouteAction;
 use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
-use Illuminate\Support\Facades\Storage;
-use Laravel\Nova\Fields\Textarea;
-use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
+use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
+use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
 {
@@ -289,7 +291,11 @@ class HikingRoute extends Resource
                 return $this->issues_last_update;
             })->hideFromIndex(),
             Text::make('Issue Author', function () {
-                return $this->issues_user;
+                $user = User::find($this->issues_user_id);
+                if (empty($user)) {
+                    return 'ND';
+                }
+                return $user->name;
             })->hideFromIndex(),
         ];
 
@@ -520,6 +526,21 @@ class HikingRoute extends Resource
                         return true;
                     }
                 ),
+            (new CreateIssue())
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler creare un issue per questo percorso?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    $u = auth()->user();
+                    return $u->is_administrator || $u->is_national_referent;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
+
         ];
     }
 }

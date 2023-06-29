@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->belongsToMany(HikingRoutes::class);
     }
 
+    public function issue()
+    {
+        return $this->belongsTo(HikingRoute::class, 'issues_user_id', 'id');
+    }
+
     public function getSectors()
     {
         $sectorsIds = [];
@@ -114,9 +119,11 @@ class User extends Authenticatable
             return 'Referente nazionale';
         } else if (!is_null($this->region_id)) {
             return 'Referente regionale';
-        } else if (count($this->provinces) > 0
+        } else if (
+            count($this->provinces) > 0
             || count($this->areas) > 0
-            || count($this->sectors) > 0) {
+            || count($this->sectors) > 0
+        ) {
             return 'Referente di zona';
         }
         return 'Unknown';
@@ -131,9 +138,11 @@ class User extends Authenticatable
             return 'national';
         } else if (!is_null($this->region_id)) {
             return 'regional';
-        } else if (count($this->provinces) > 0
+        } else if (
+            count($this->provinces) > 0
             || count($this->areas) > 0
-            || count($this->sectors) > 0) {
+            || count($this->sectors) > 0
+        ) {
             return 'local';
         }
         return $role;
@@ -174,75 +183,74 @@ class User extends Authenticatable
     {
         $regionCode = $region->code;
 
-        $query->whereHas( 'provinces' , function( $query ) use ($regionCode){
-            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
-        } )
-        ->orWherehas( 'areas' , function( $query ) use ($regionCode){
-            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
-        } )
-        ->orWhereHas( 'sectors' , function( $query ) use ($regionCode){
-            $query->where( 'full_code' , 'LIKE' , $regionCode . '%' );
-        } );
-
+        $query->whereHas('provinces', function ($query) use ($regionCode) {
+            $query->where('full_code', 'LIKE', $regionCode . '%');
+        })
+            ->orWherehas('areas', function ($query) use ($regionCode) {
+                $query->where('full_code', 'LIKE', $regionCode . '%');
+            })
+            ->orWhereHas('sectors', function ($query) use ($regionCode) {
+                $query->where('full_code', 'LIKE', $regionCode . '%');
+            });
     }
 
-    public function canManageHikingRoute(HikingRoute $hr){
+    public function canManageHikingRoute(HikingRoute $hr)
+    {
         $role = $this->getTerritorialRole();
-        switch($role){
-            case 'unknown' :
+        switch ($role) {
+            case 'unknown':
                 return false;
                 break;
-            case 'admin' :
+            case 'admin':
                 return true;
                 break;
-            case 'national' :
+            case 'national':
                 return true;
                 break;
-            case 'regional' :
+            case 'regional':
                 $manage = false;
-                foreach ($hr->regions()->get() as $r){
-                    if($manage)
+                foreach ($hr->regions()->get() as $r) {
+                    if ($manage)
                         continue;
-                    if($this->region_id==$r->id)
-                        $manage=true;
+                    if ($this->region_id == $r->id)
+                        $manage = true;
                 }
                 return $manage;
                 break;
-            case 'local' :
+            case 'local':
                 $manage = false;
-                if (count($this->areas)>0){
-                    foreach ($this->areas as $item){
-                        foreach($hr->areas()->get() as $hr_item){
-                            if($item->id == $hr_item->id){
+                if (count($this->areas) > 0) {
+                    foreach ($this->areas as $item) {
+                        foreach ($hr->areas()->get() as $hr_item) {
+                            if ($item->id == $hr_item->id) {
                                 $manage = true;
                             }
                         }
                     }
                 }
-                if (count($this->sectors)>0){
-                    foreach ($this->sectors as $item){
-                        foreach($hr->sectors()->get() as $hr_item){
-                            if($item->id == $hr_item->id){
+                if (count($this->sectors) > 0) {
+                    foreach ($this->sectors as $item) {
+                        foreach ($hr->sectors()->get() as $hr_item) {
+                            if ($item->id == $hr_item->id) {
                                 $manage = true;
                             }
                         }
                     }
                 }
-                if (count($this->provinces)>0){
-                    foreach ($this->provinces as $item){
-                        foreach($hr->provinces()->get() as $hr_item){
-                            if($item->id == $hr_item->id){
+                if (count($this->provinces) > 0) {
+                    foreach ($this->provinces as $item) {
+                        foreach ($hr->provinces()->get() as $hr_item) {
+                            if ($item->id == $hr_item->id) {
                                 $manage = true;
                             }
                         }
                     }
                 }
-                if($manage)
+                if ($manage)
                     return true;
                 else
                     return false;
                 break;
         }
-
     }
 }
