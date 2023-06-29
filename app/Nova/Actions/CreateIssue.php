@@ -29,11 +29,13 @@ class CreateIssue extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        $user = User::find($fields->issues_user);
+        //set the user to the current logged in user
+        $user = User::find(auth()->user()->id);
         foreach ($models as $hikingRoute) {
             $hikingRoute->issues_status = $fields->issues_status ?? $hikingRoute->issues_status;
             $hikingRoute->issues_description = $fields->issues_description ?? $hikingRoute->issues_description;
-            $hikingRoute->issues_last_update = $fields->issues_last_update ?? $hikingRoute->issues_last_update;
+            //set the date field to the current date time when the action is performed
+            $hikingRoute->issues_last_update = now();
             $hikingRoute->issues_user_id = $user->id ?? $hikingRoute->issues_user_id;
             $hikingRoute->save();
         }
@@ -49,11 +51,11 @@ class CreateIssue extends Action
         return [
             Select::make('Issues Status')
                 ->options(IssueStatus::cases())
-                ->displayUsingLabels(),
-            Text::make('Issues Description'),
-            Date::make('Issues Last Update')
-                ->default(now()->format('Y-m-d')),
-            Select::make('Issues User')->options(User::pluck('name', 'id')),
+                ->displayUsingLabels()
+                ->rules('required'),
+            Text::make('Issues Description')
+                ->nullable()
+
         ];
     }
 }

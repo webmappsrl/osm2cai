@@ -118,9 +118,9 @@ class HikingRoute extends Model
         return $this->belongsToMany(Sector::class)->withPivot(['percentage']);
     }
 
-    public function issuesUsers()
+    public function issueUser()
     {
-        return $this->hasMany(User::class, 'id', 'issues_user_id');
+        return $this->belongsTo(User::class, 'id', 'issues_user_id');
     }
 
     public function mainSector()

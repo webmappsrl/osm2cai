@@ -527,7 +527,6 @@ class HikingRoute extends Resource
                     }
                 ),
             (new CreateIssue())
-                ->onlyOnDetail('true')
                 ->confirmText('Sei sicuro di voler creare un issue per questo percorso?')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Annulla")
