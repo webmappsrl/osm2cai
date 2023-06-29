@@ -61,23 +61,22 @@ class HikingRoute extends Resource
      * @var string
      */
     //public static string $title = 'id';
-    public function title(){
+    public function title()
+    {
         $supplementaryString = ' - ';
 
-        if ( $this->name )
-        {
+        if ($this->name) {
             $supplementaryString .= $this->name;
         }
 
-        if ( $this->ref )
+        if ($this->ref)
             $supplementaryString .= 'ref: ' . $this->ref;
 
-        if ( $this->sectors->count() )
-        {
+        if ($this->sectors->count()) {
             $supplementaryString .= " (" . $this->sectors->pluck('name')->implode(', ') . ")";
         }
 
-        return $this->id . $supplementaryString ;
+        return $this->id . $supplementaryString;
     }
 
     /**
@@ -86,7 +85,7 @@ class HikingRoute extends Resource
      * @var array
      */
     public static array $search = [
-        'ref_REI', 'relation_id', 'ref','ref_REI_comp'
+        'ref_REI', 'relation_id', 'ref', 'ref_REI_comp'
     ];
 
     public static string $group = 'Territorio';
@@ -176,42 +175,43 @@ class HikingRoute extends Resource
                 'geojson' => json_encode($this->getGeojsonForMapView())
             ])->hideFromIndex(),
 
-            Text::make('Legenda', function(){ return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>"; })->asHtml()->onlyOnDetail(),
+            Text::make('Legenda', function () {
+                return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>";
+            })->asHtml()->onlyOnDetail(),
             (new Tabs('Metadata', [
                 'Main' => $this->getMetaFields('main'),
                 'General' => $this->getMetaFields('general'),
                 'Tech' => $this->getMetaFields('tech'),
                 'Other' => $this->getMetaFields('other'),
                 'Content' => $this->getEditorialContent(),
+                'Issues' => $this->getIssuesContent(),
             ])),
         ];
 
         $loggedInUser = auth()->user();
         $role = $loggedInUser->getTerritorialRole();
-        if ( in_array( $role , ['admin','national','regional']) )
-        {
+        if (in_array($role, ['admin', 'national', 'regional'])) {
             $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
-
         }
         $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')
-        ->hideWhenCreating()
-        ->hideWhenUpdating()
-        ->sortable();
+            ->hideWhenCreating()
+            ->hideWhenUpdating()
+            ->sortable();
 
-        $fields[] = Boolean::make('Coerenza ref REI' , function(){
+        $fields[] = Boolean::make('Coerenza ref REI', function () {
             return $this->ref_REI == $this->ref_REI_comp;
         })->onlyOnDetail()
-        ->trueValue('ref_REI uguale a ref_REI_comp')
-        ->falseValue('ref_REI diverso da ref_REI_comp');
+            ->trueValue('ref_REI uguale a ref_REI_comp')
+            ->falseValue('ref_REI diverso da ref_REI_comp');
 
-        $fields[] = Boolean::make('Geometry Sync' , function(){
+        $fields[] = Boolean::make('Geometry Sync', function () {
             return $this->geometry_sync;
         })->onlyOnDetail()
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
-            $fields[] = Boolean::make('Region Favorite','region_favorite');
-            $fields[] = Date::make('Data publicazione LoScarpone','region_favorite_publication_date');
+        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
 
         return $fields;
     }
@@ -242,7 +242,8 @@ class HikingRoute extends Resource
      *
      * @return array
      */
-    public function getEditorialContent(): array {
+    public function getEditorialContent(): array
+    {
         $fields = [];
 
         // Automatic Name For TDH
@@ -252,22 +253,45 @@ class HikingRoute extends Resource
 
         // Automatic Abstract For TDH
         $fields[] = Textarea::make('Automatic Abstract (computed for TDH)', function () {
-            if(!empty($this->tdh) && !empty($this->tdh['abstract'])) {
+            if (!empty($this->tdh) && !empty($this->tdh['abstract'])) {
                 return $this->tdh['abstract']['it'];
-            }
-            else {
+            } else {
                 return 'Abstract ancora non calcolato';
             }
-            
         })->onlyOnDetail()->alwaysShow();
 
         // Feature Image
-        $fields[] = Text::make('Feature Image' , function () {
-            if(empty($this->feature_image)) {
+        $fields[] = Text::make('Feature Image', function () {
+            if (empty($this->feature_image)) {
                 return 'No Feature Image Uploaded';
             }
-            return '<img src="'.Storage::url($this->feature_image).'"/>';
+            return '<img src="' . Storage::url($this->feature_image) . '"/>';
         })->onlyOnDetail()->asHtml();
+
+        return $fields;
+    }
+
+    /**
+     * Returns the issues fields for the resource (only in details)
+     * 
+     * @return array
+     */
+    public function getIssuesContent(): array
+    {
+        $fields = [
+            Text::make('Issue Status', function () {
+                return $this->issues_status;
+            })->hideFromIndex(),
+            Text::make('Issue Description', function () {
+                return $this->issues_description;
+            })->hideFromIndex(),
+            Date::make('Issue Date', function () {
+                return $this->issues_last_update;
+            })->hideFromIndex(),
+            Text::make('Issue Author', function () {
+                return $this->issues_user;
+            })->hideFromIndex(),
+        ];
 
         return $fields;
     }
@@ -287,10 +311,10 @@ class HikingRoute extends Resource
 
             $statoDiAccatastamento = 'Stato di accatastamento';
 
-            if ( $hr->validation_date )
+            if ($hr->validation_date)
                 $statoDiAccatastamento .= "<h5 class=\"font-light\">Data di validazione: {$hr->validation_date->format('d/m/Y')}</h5>";
 
-            if( $hr->validator )
+            if ($hr->validator)
                 $statoDiAccatastamento .= "<h5 class=\"font-light\">Validatore: {$hr->validator->name} ({$hr->validator->email})</h5>";
 
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
@@ -310,9 +334,9 @@ class HikingRoute extends Resource
                     ->width('1/4')
                     ->text(
                         '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
-                        '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
-                        )
+                            '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
+                            '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
+                    )
                     ->textAsHtml(),
 
                 (new TextCard())
@@ -321,8 +345,7 @@ class HikingRoute extends Resource
                     ->width('1/4')
                     ->heading($hr->osm2cai_status)
                     ->text($statoDiAccatastamento)
-                    ->textAsHtml()
-                    ,
+                    ->textAsHtml(),
             ];
         }
         return [];
@@ -345,7 +368,6 @@ class HikingRoute extends Resource
                 (new DeleteOnOsmFilter()),
                 (new RegionFavoriteHikingRouteFilter()),
             ];
-
         } else {
             return [
                 (new HikingRoutesRegionFilter()),
@@ -394,72 +416,110 @@ class HikingRoute extends Resource
      */
     public function actions(Request $request)
     {
-            return [
-                (new UploadValidationRawDataAction)
-                    ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
-                    ->confirmButtonText('Carica')
-                    ->cancelButtonText("Non caricare")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}),
-                (new ValidateHikingRouteAction)
-                    ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Non validare")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}),
-                (new OsmSyncHikingRouteAction)
-                    ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
-                    ->confirmButtonText('Aggiorna con dati osm')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}),
-                (new RevertValidateHikingRouteAction)
-                    ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}),
-                (new DeleteHikingRouteAction())
-                    ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}),
-                (new SectorRefactoring())
-                    ->onlyOnDetail('true')
-                    ->confirmText('Sei sicuro di voler rifattorizzare i settori per il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}
-                    ),
-                    (new ToggleRegionFavoriteHikingRouteAction())
-                    ->onlyOnDetail('true')
-                    ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}
-                    ),
-                    (new AddFeatureImageToHikingRoute())
-                    ->onlyOnDetail('true')
-                    ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText("Annulla")
-                    ->canSee(function ($request) { return true;})
-                    ->canRun(function ($request, $user) { return true;}
-                    ),
-                    (new AddRegionFavoritePublicationDateToHikingRouteAction())
-                    ->onlyOnDetail('true')
-                    ->confirmText('Imposta la data prevista per la publicazione sullo Scarpone Online')
-                    ->confirmButtonText('Confermo')
-                    ->cancelButtonText('Annulla')
-                    ->canSee(function ($request) {
-                        $u = auth()->user();
-                        return $u->is_administrator || $u->is_national_referent;
-                    })
-                    ->canRun(function ($request, $user) { return true;}
-                    ),
-            ];
+        return [
+            (new UploadValidationRawDataAction)
+                ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
+                ->confirmButtonText('Carica')
+                ->cancelButtonText("Non caricare")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
+                    return true;
+                }),
+            (new ValidateHikingRouteAction)
+                ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Non validare")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
+                    return true;
+                }),
+            (new OsmSyncHikingRouteAction)
+                ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
+                ->confirmButtonText('Aggiorna con dati osm')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
+                    return true;
+                }),
+            (new RevertValidateHikingRouteAction)
+                ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
+                    return true;
+                }),
+            (new DeleteHikingRouteAction())
+                ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
+                    return true;
+                }),
+            (new SectorRefactoring())
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler rifattorizzare i settori per il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
+            (new ToggleRegionFavoriteHikingRouteAction())
+                ->onlyOnDetail('true')
+                ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
+            (new AddFeatureImageToHikingRoute())
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
+            (new AddRegionFavoritePublicationDateToHikingRouteAction())
+                ->onlyOnDetail('true')
+                ->confirmText('Imposta la data prevista per la publicazione sullo Scarpone Online')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText('Annulla')
+                ->canSee(function ($request) {
+                    $u = auth()->user();
+                    return $u->is_administrator || $u->is_national_referent;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
+        ];
     }
 }
