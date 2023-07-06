@@ -212,9 +212,6 @@ class HikingRoute extends Resource
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
-        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
-        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
-
         return $fields;
     }
 
@@ -269,6 +266,13 @@ class HikingRoute extends Resource
             }
             return '<img src="' . Storage::url($this->feature_image) . '"/>';
         })->onlyOnDetail()->asHtml();
+
+        //Region Favorite
+        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+
+        //Data pubblicazione LoScarpone
+        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
+
 
         return $fields;
     }
