@@ -538,7 +538,8 @@ class HikingRoute extends Resource
                 ->cancelButtonText("Annulla")
                 ->canSee(function ($request) {
                     $u = auth()->user();
-                    return $u->is_administrator || $u->is_national_referent;
+                    //can only see if the getTerritorialRole is not unknown
+                    return $u->getTerritorialRole() != 'unknown';
                 })
                 ->canRun(
                     function ($request, $user) {
