@@ -85,17 +85,18 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingroutelist(string $region_code,string $sda) {
+    public function hikingroutelist(string $region_code, string $sda)
+    {
         $region_code = strtoupper($region_code);
 
-        $sda = explode(',',$sda);
+        $sda = explode(',', $sda);
         $list = HikingRoute::query();
-        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) {
-            $query->where('code',$region_code);
-        })->whereIn('osm2cai_status',$sda)->get();
+        $list = HikingRoute::whereHas('regions', function ($query) use ($region_code) {
+            $query->where('code', $region_code);
+        })->whereIn('osm2cai_status', $sda)->get();
         $data = [];
-        foreach ($list as $hr){
-            $data[$hr->id]=$hr->updated_at->format('Y-m-d H:i:s');
+        foreach ($list as $hr) {
+            $data[$hr->id] = $hr->updated_at->format('Y-m-d H:i:s');
         }
         // Return
         return response($data, 200, ['Content-type' => 'application/json']);
@@ -172,22 +173,22 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingrouteosmlist(string $region_code,string $sda) {
+    public function hikingrouteosmlist(string $region_code, string $sda)
+    {
         $region_code = strtoupper($region_code);
 
-        $sda = explode(',',$sda);
+        $sda = explode(',', $sda);
         $list = HikingRoute::query();
-        $list = HikingRoute::whereHas('regions',function($query) use ($region_code) {
-            $query->where('code',$region_code);
-        })->whereIn('osm2cai_status',$sda)->get();
+        $list = HikingRoute::whereHas('regions', function ($query) use ($region_code) {
+            $query->where('code', $region_code);
+        })->whereIn('osm2cai_status', $sda)->get();
 
         $data = [];
-        foreach ($list as $hr){
-            $data[$hr->relation_id]=$hr->updated_at->format('Y-m-d H:i:s');
+        foreach ($list as $hr) {
+            $data[$hr->relation_id] = $hr->updated_at->format('Y-m-d H:i:s');
         }
         // Return
         return response($data, 200, ['Content-type' => 'application/json']);
-
     }
 
     /**
@@ -243,12 +244,13 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingroutebyid(int $id) {
+    public function hikingroutebyid(int $id)
+    {
 
-        try{
+        try {
             $item = HikingRoute::find($id);
             $HR = $this->createGeoJSONFromModel($item);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             return response('No Hiking Route found with this id', 404, ['Content-type' => 'application/json']);
         }
 
@@ -310,12 +312,13 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingroutebyosmid(int $id) {
+    public function hikingroutebyosmid(int $id)
+    {
 
-        try{
+        try {
             $item = HikingRoute::where('relation_id', $id)->get();
             $HR = $this->createGeoJSONFromModel($item[0]);
-        } catch( Exception $e) {
+        } catch (Exception $e) {
             return response('No Hiking Route found with this OSMid', 404, ['Content-type' => 'application/json']);
         }
 
@@ -372,15 +375,16 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingroutelist_bb(string $bb,string $sda){
-        $coordinates = explode(',',$bb);
+    public function hikingroutelist_bb(string $bb, string $sda)
+    {
+        $coordinates = explode(',', $bb);
         $list = DB::table('hiking_routes')
-            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
-            ->whereIn('osm2cai_status',explode(',',$sda))
+            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(" . $bb . ", 4326))")
+            ->whereIn('osm2cai_status', explode(',', $sda))
             ->get();
         $data = [];
-        foreach ($list as $hr){
-            $data[$hr->id]=Carbon::create($hr->updated_at)->format('Y-m-d H:i:s');
+        foreach ($list as $hr) {
+            $data[$hr->id] = Carbon::create($hr->updated_at)->format('Y-m-d H:i:s');
         }
         return response($data, 200, ['Content-type' => 'application/json']);
     }
@@ -434,15 +438,16 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingrouteosmlist_bb(string $bb,string $sda){
-        $coordinates = explode(',',$bb);
+    public function hikingrouteosmlist_bb(string $bb, string $sda)
+    {
+        $coordinates = explode(',', $bb);
         $list = DB::table('hiking_routes')
-            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(".$bb.", 4326))")
-            ->whereIn('osm2cai_status',explode(',',$sda))
+            ->whereRaw("ST_within(geometry,ST_MakeEnvelope(" . $bb . ", 4326))")
+            ->whereIn('osm2cai_status', explode(',', $sda))
             ->get();
         $data = [];
-        foreach ($list as $hr){
-            $data[$hr->relation_id]=Carbon::create($hr->updated_at)->format('Y-m-d H:i:s');
+        foreach ($list as $hr) {
+            $data[$hr->relation_id] = Carbon::create($hr->updated_at)->format('Y-m-d H:i:s');
         }
         return response($data, 200, ['Content-type' => 'application/json']);
     }
@@ -491,25 +496,26 @@ class HikingRoutesRegionControllerV2 extends Controller
      * )
      *
      */
-    public function hikingroutelist_collection(string $bb,string $sda){
-        $boundingBox = explode(',',$bb);
-        $area = $this->getAreaBoundingBox(floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
-        if($area>_BOUNDIG_BOX_LIMIT)
-            return response(['error'=>"Bounding box is too large"], 500, ['Content-type' => 'application/json']);
-        else{
-            return HikingRoute::geojsonByBoundingBox($sda,floatval($boundingBox[0]),floatval($boundingBox[1]),floatval($boundingBox[2]),floatval($boundingBox[3]));
+    public function hikingroutelist_collection(string $bb, string $sda)
+    {
+        $boundingBox = explode(',', $bb);
+        $area = $this->getAreaBoundingBox(floatval($boundingBox[0]), floatval($boundingBox[1]), floatval($boundingBox[2]), floatval($boundingBox[3]));
+        if ($area > _BOUNDIG_BOX_LIMIT)
+            return response(['error' => "Bounding box is too large"], 500, ['Content-type' => 'application/json']);
+        else {
+            return HikingRoute::geojsonByBoundingBox($sda, floatval($boundingBox[0]), floatval($boundingBox[1]), floatval($boundingBox[2]), floatval($boundingBox[3]));
         }
-
     }
 
-    public function createGeoJSONFromModel($item) {
+    public function createGeoJSONFromModel($item)
+    {
         $obj = HikingRoute::where('id', '=', $item->id)
             ->select(
                 DB::raw("ST_AsGeoJSON(geometry) as geom")
             )
             ->first();
 
-        if(is_null($obj)) {
+        if (is_null($obj)) {
             return null;
         }
 
@@ -526,8 +532,11 @@ class HikingRoutesRegionControllerV2 extends Controller
                     "from" => $item->from,
                     "to" => $item->to,
                     "ref" => $item->ref,
-                    "public_page"=>$item->getPublicPage(),
+                    "public_page" => $item->getPublicPage(),
                     "sda" => $item->osm2cai_status,
+                    "issues_status" => $item->issues_status ?? "",
+                    "issues_description" => $item->issues_description ?? "",
+                    "issues_last_update" => $item->issues_last_update ?? "",
                     // "name" => $item->name,
                     // "survey_date" => $item->survey_date,
                     // "rwn_name" => $item->rwn_name,
@@ -559,18 +568,15 @@ class HikingRoutesRegionControllerV2 extends Controller
                 ],
                 "geometry" => json_decode($geom, true)
             ];
-            if($item->osm2cai_status==4)
+            if ($item->osm2cai_status == 4)
                 $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
             return $response;
-
         }
     }
 
-    public function getAreaBoundingBox($la0,$lo0,$la1,$lo1){
+    public function getAreaBoundingBox($la0, $lo0, $la1, $lo1)
+    {
         $res = DB::select(DB::raw("SELECT ST_area(ST_makeenvelope($la0,$lo0,$la1,$lo1))"));
         return floatval($res[0]->st_area);
     }
-
-
-
 }
