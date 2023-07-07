@@ -46,6 +46,7 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use App\Nova\Filters\IssueStatusFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -212,9 +213,6 @@ class HikingRoute extends Resource
             ->trueValue('geometry uguale a geometry_osm')
             ->falseValue('geometry div erso a geometry_osm');
 
-        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
-        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
-
         return $fields;
     }
 
@@ -269,6 +267,13 @@ class HikingRoute extends Resource
             }
             return '<img src="' . Storage::url($this->feature_image) . '"/>';
         })->onlyOnDetail()->asHtml();
+
+        //Region Favorite
+        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+
+        //Data pubblicazione LoScarpone
+        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
+
 
         return $fields;
     }
@@ -383,6 +388,7 @@ class HikingRoute extends Resource
                 (new GeometrySyncFilter()),
                 (new DeleteOnOsmFilter()),
                 (new RegionFavoriteHikingRouteFilter()),
+                (new IssueStatusFilter()),
             ];
         }
     }
@@ -532,7 +538,8 @@ class HikingRoute extends Resource
                 ->cancelButtonText("Annulla")
                 ->canSee(function ($request) {
                     $u = auth()->user();
-                    return $u->is_administrator || $u->is_national_referent;
+                    //can only see if the getTerritorialRole is not unknown
+                    return $u->getTerritorialRole() != 'unknown';
                 })
                 ->canRun(
                     function ($request, $user) {
