@@ -16,6 +16,13 @@ class Section extends Model
         'cai_code' => 'string',
     ];
 
+    protected $fillable = [
+        'id',
+        'region_id',
+        'name',
+        'cai_code',
+    ];
+
     public function region()
     {
         return $this->belongsTo(Region::class);
@@ -23,6 +30,6 @@ class Section extends Model
 
     public function hikingRoutes()
     {
-        return $this->belongsToMany(HikingRoute::class);
+        return $this->belongsToMany(HikingRoute::class, 'hiking_route_section');
     }
 }

@@ -2,11 +2,15 @@
 
 namespace App\Nova;
 
+
+use App\Nova\HikingRoute;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectionRegionFilter;
+
 
 class Section extends Resource
 {
@@ -35,10 +39,10 @@ class Section extends Resource
      *
      * @var string
      */
-    public static string $group = 'Sezioni/Sottosezioni';
+    public static string $group = 'Territorio';
 
 
-    public static $priority = 1;
+    public static $priority = 5;
 
     public static function label()
     {
@@ -58,6 +62,15 @@ class Section extends Resource
      */
     public function fields(Request $request): array
     {
+        $hikingRoutes = $this->hikingRoutes()->get();
+
+        //create a string with the list of all the hiking routes and make it linkable to the hiking route resource detail
+        $hikingRoutesString = '';
+        foreach ($hikingRoutes as $hikingRoute) {
+
+            $hikingRoutesString .=  "<a style='color:green; text-decoration:none;' href='/resources/hiking-routes/{$hikingRoute->id}'>{$hikingRoute->ref}</a>" . '<br>';
+        }
+        $hikingRoutesString = rtrim($hikingRoutesString, ', ');
         return [
             ID::make()->sortable()
                 ->hideFromIndex(),
@@ -68,7 +81,12 @@ class Section extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
             BelongsTo::make('Regione', 'region', Region::class)
-                ->searchable()
+                ->searchable(),
+
+            Text::make('Sentieri', function () use ($hikingRoutesString) {
+                return $hikingRoutesString;
+            })->asHtml()
+
 
         ];
     }
