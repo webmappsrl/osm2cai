@@ -125,7 +125,7 @@ class HikingRoute extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(Section::class);
+        return $this->belongsToMany(Section::class, 'hiking_route_section');
     }
 
     public function mainSector()
