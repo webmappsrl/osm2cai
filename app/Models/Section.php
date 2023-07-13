@@ -20,4 +20,9 @@ class Section extends Model
     {
         return $this->belongsTo(Region::class);
     }
+
+    public function hikingRoutes()
+    {
+        return $this->belongsToMany(HikingRoute::class);
+    }
 }
