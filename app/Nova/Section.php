@@ -14,6 +14,7 @@ use App\Nova\Actions\DownloadRoutesCsv;
 use App\Nova\Actions\DownloadRegionRoutesKml;
 use App\Nova\Actions\DownloadRegionRoutesShape;
 use App\Nova\Actions\DownloadRegionRoutesGeojson;
+use Laravel\Nova\Fields\BelongsTo;
 
 class Section extends Resource
 {
@@ -42,7 +43,9 @@ class Section extends Resource
      *
      * @var string
      */
-    public static string $group = 'Resources';
+    public static string $group = 'Sezioni/Sottosezioni';
+
+
     public static $priority = 1;
 
     public static function label()
@@ -64,9 +67,18 @@ class Section extends Resource
     public function fields(Request $request): array
     {
         return [
-            Text::make('id'),
-        ];
+            ID::make()->sortable()
+                ->hideFromIndex(),
+            Text::make('Nome', 'name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+            Text::make('Codice CAI', 'cai_code')
+                ->sortable()
+                ->rules('required', 'max:255'),
+            BelongsTo::make('Regione', 'region', Region::class)
+                ->searchable()
 
+        ];
     }
 
     /**
@@ -114,7 +126,6 @@ class Section extends Resource
      */
     public function actions(Request $request): array
     {
-        return [
-        ];
+        return [];
     }
 }
