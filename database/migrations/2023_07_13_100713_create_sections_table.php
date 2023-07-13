@@ -18,7 +18,8 @@ class CreateSectionsTable extends Migration
             $table->timestamps();
             $table->string('name')->unique();
             $table->string('cai_code')->unique();
-            $table->foreignId('region_id')->constrained('regions')->onDelete('cascade');
+            $table->unsignedBigInteger('region_id')->nullable();
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('cascade');
         });
     }
 

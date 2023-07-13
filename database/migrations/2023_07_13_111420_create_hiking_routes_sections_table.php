@@ -13,11 +13,11 @@ class CreateHikingRoutesSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('hiking_routes_sections', function (Blueprint $table) {
+        Schema::create('hiking_route_section', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('hiking_route_id')->constrained();
-            $table->foreignId('section_id')->constrained();
+            $table->foreignId('hiking_route_id')->constrained()->onDelete('cascade');
+            $table->foreignId('section_id')->constrained()->onDelete('cascade');
         });
     }
 
