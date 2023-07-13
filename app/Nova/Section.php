@@ -5,16 +5,8 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Number;
-use App\Nova\Actions\DownloadKml;
-use App\Nova\Actions\DownloadShape;
-use App\Nova\Actions\DownloadGeojson;
-use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Nova\Actions\DownloadRoutesCsv;
-use App\Nova\Actions\DownloadRegionRoutesKml;
-use App\Nova\Actions\DownloadRegionRoutesShape;
-use App\Nova\Actions\DownloadRegionRoutesGeojson;
 use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Filters\SectionRegionFilter;
 
 class Section extends Resource
 {
@@ -102,7 +94,9 @@ class Section extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            (new SectionRegionFilter)
+        ];
     }
 
     /**
