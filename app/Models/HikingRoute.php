@@ -123,6 +123,11 @@ class HikingRoute extends Model
         return $this->belongsTo(User::class, 'id', 'issues_user_id');
     }
 
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class);
+    }
+
     public function mainSector()
     {
         $q = "SELECT sector_id from hiking_route_sector where hiking_route_id={$this->id} order by percentage desc limit 1;";
