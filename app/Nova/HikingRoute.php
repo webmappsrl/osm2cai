@@ -232,13 +232,17 @@ class HikingRoute extends Resource
 
         foreach (\App\Models\HikingRoute::getInfoFields()[$group] as $field => $field_data) {
             $fields[] = Text::make($field_data['label'], function () use ($field, $field_data, $sectionCaiCode) {
-
                 $field_osm = $field . '_osm';
+                if ($field_data['label'] == 'Codice Sezione CAI') {
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>CODICE SEZIONE: {$sectionCaiCode}</p>";
+                }
+
+
                 if ($field_data['comp']) {
                     $field_comp = $field . '_comp';
-                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>VALORE CALCOLATO: {$this->$field_comp}</p><p>CODICE SEZIONE: {$sectionCaiCode}</p>";
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>VALORE CALCOLATO: {$this->$field_comp}</p>";
                 } else {
-                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>CODICE SEZIONE: {$sectionCaiCode}</p>";
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p>";
                 }
             })->onlyOnDetail()->asHtml();
         }
