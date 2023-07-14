@@ -70,6 +70,8 @@ class User extends Resource
                 ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
+            Text::make(__('Phone'), 'phone')->sortable()
+                ->rules('numeric', 'digits_between:9,12'),
             Password::make('Password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
@@ -121,8 +123,10 @@ class User extends Resource
             BelongsToMany::make('Provinces', 'provinces'),
             BelongsToMany::make('Areas', 'areas'),
             BelongsToMany::make('Sectors', 'sectors'),
-            Belongsto::make('Section')->hideFromIndex()
+            Belongsto::make('Section')
+                ->hideFromIndex()
                 ->searchable()
+                ->nullable()
         ];
     }
 
