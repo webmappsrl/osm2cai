@@ -10,7 +10,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectionRegionFilter;
-
+use Laravel\Nova\Fields\HasMany;
 
 class Section extends Resource
 {
@@ -71,6 +71,8 @@ class Section extends Resource
             $hikingRoutesString .=  "<a style='color:green; text-decoration:none;' href='/resources/hiking-routes/{$hikingRoute->id}'>{$hikingRoute->ref}</a>" . '<br>';
         }
         $hikingRoutesString = rtrim($hikingRoutesString, ', ');
+
+
         return [
             ID::make()->sortable()
                 ->hideFromIndex(),
@@ -85,8 +87,8 @@ class Section extends Resource
 
             Text::make('Sentieri', function () use ($hikingRoutesString) {
                 return $hikingRoutesString;
-            })->asHtml()
-
+            })->asHtml(),
+            HasMany::make('Utenti', 'users', User::class)
 
         ];
     }
