@@ -32,4 +32,9 @@ class Section extends Model
     {
         return $this->belongsToMany(HikingRoute::class, 'hiking_route_section');
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

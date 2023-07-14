@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->belongsToMany(HikingRoutes::class);
     }
 
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
+
     public function getSectors()
     {
         $sectorsIds = [];
