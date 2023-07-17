@@ -92,7 +92,7 @@ class HikingRoute extends Resource
     ];
 
     public static string $group = 'Territorio';
-    public static $priority = 5;
+    public static $priority = 6;
 
     public static function label()
     {
@@ -169,15 +169,6 @@ class HikingRoute extends Resource
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
-
-            MapMultiLinestringNova::make('Mappa')->withMeta([
-                'center' => [$this->getCentroid()[1], $this->getCentroid()[0]],
-                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
-                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-                'defaultZoom' => 10,
-                'geojson' => json_encode($this->getGeojsonForMapView())
-            ])->hideFromIndex(),
-
             Text::make('Legenda', function () {
                 return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>";
             })->asHtml()->onlyOnDetail(),
@@ -190,7 +181,17 @@ class HikingRoute extends Resource
                 'Issues' => $this->getIssuesContent(),
             ])),
         ];
-
+        //handle the case when centroid is null (giving error to nova "[2023-07-13 15:05:05] local.ERROR: Trying to access array offset on value of type null {"userId":1,"exception":"[object] (ErrorException(code: 0): Trying to access array offset on value of type null at /Users/gennaromanzo/Webmapp/osm2cai/app/Nova/HikingRoute.php:174)")
+        $centroids = $this->getCentroid();
+        if (!is_null($centroids) && !empty($centroids)) {
+            $fields[] = MapMultiLinestringNova::make('Mappa')->withMeta([
+                'center' => [$this->getCentroid()[1], $this->getCentroid()[0]],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'defaultZoom' => 10,
+                'geojson' => json_encode($this->getGeojsonForMapView())
+            ])->hideFromIndex();
+        }
         $loggedInUser = auth()->user();
         $role = $loggedInUser->getTerritorialRole();
         if (in_array($role, ['admin', 'national', 'regional'])) {
@@ -222,10 +223,21 @@ class HikingRoute extends Resource
             return [];
         }
         $fields = [];
-        foreach (\App\Models\HikingRoute::getInfoFields()[$group] as $field => $field_data) {
-            $fields[] = Text::make($field_data['label'], function () use ($field, $field_data) {
+        $sections = $this->sections()->get();
+        $sectionCaiCode = '';
+        foreach ($sections as $section) {
+            //create a string with the section cai code and make it linkable to the section detail page
+            $sectionCaiCode .= "<a style='color:green; text-decoration:none;' href='/resources/sections/{$section->id}'>{$section->cai_code}</a>" . '<br>';
+        }
 
+        foreach (\App\Models\HikingRoute::getInfoFields()[$group] as $field => $field_data) {
+            $fields[] = Text::make($field_data['label'], function () use ($field, $field_data, $sectionCaiCode) {
                 $field_osm = $field . '_osm';
+                if ($field_data['label'] == 'Codice Sezione CAI') {
+                    return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>CODICE SEZIONE: {$sectionCaiCode}</p>";
+                }
+
+
                 if ($field_data['comp']) {
                     $field_comp = $field . '_comp';
                     return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>VALORE CALCOLATO: {$this->$field_comp}</p>";
