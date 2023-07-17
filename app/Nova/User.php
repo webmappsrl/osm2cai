@@ -12,7 +12,8 @@ use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class User extends Resource {
+class User extends Resource
+{
     public static string $model = \App\Models\User::class;
     public static string $title = 'name';
     public static array $search = [
@@ -20,7 +21,8 @@ class User extends Resource {
     ];
     public static string $group = '';
 
-    public static function label() {
+    public static function label()
+    {
         return __('Utenti');
     }
 
@@ -28,7 +30,8 @@ class User extends Resource {
         'name' => 'asc'
     ];
 
-    public static function indexQuery(NovaRequest $request, $query): Builder {
+    public static function indexQuery(NovaRequest $request, $query): Builder
+    {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
 
@@ -39,11 +42,9 @@ class User extends Resource {
          * @var \App\Models\User
          */
         $user = auth()->user();
-        if( $user->getTerritorialRole() == 'regional' )
-        {
+        if ($user->getTerritorialRole() == 'regional') {
             $region = $user->region_id;
-            $query->where('region_id',$region);
-
+            $query->where('region_id', $region);
         }
 
         return $query;
@@ -56,7 +57,8 @@ class User extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request): array {
+    public function fields(Request $request): array
+    {
         return [
             //            ID::make()->sortable(),
             //            Gravatar::make()->maxWidth(50),
@@ -68,6 +70,8 @@ class User extends Resource {
                 ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
+            Text::make(__('Phone'), 'phone')->sortable()
+                ->rules('numeric', 'digits_between:9,12'),
             Password::make('Password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
@@ -118,7 +122,11 @@ class User extends Resource {
             })->onlyOnDetail(),
             BelongsToMany::make('Provinces', 'provinces'),
             BelongsToMany::make('Areas', 'areas'),
-            BelongsToMany::make('Sectors', 'sectors')
+            BelongsToMany::make('Sectors', 'sectors'),
+            Belongsto::make('Section')
+                ->hideFromIndex()
+                ->searchable()
+                ->nullable()
         ];
     }
 
@@ -129,7 +137,8 @@ class User extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request): array {
+    public function cards(Request $request): array
+    {
         return [];
     }
 
@@ -140,7 +149,8 @@ class User extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request): array {
+    public function filters(Request $request): array
+    {
         return [];
     }
 
@@ -151,7 +161,8 @@ class User extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request): array {
+    public function lenses(Request $request): array
+    {
         return [];
     }
 
@@ -162,7 +173,8 @@ class User extends Resource {
      *
      * @return array
      */
-    public function actions(Request $request): array {
+    public function actions(Request $request): array
+    {
         return [
             (new EmulateUser())
                 ->canSee(function ($request) {
@@ -171,11 +183,12 @@ class User extends Resource {
                 ->canRun(function ($request, $zone) {
                     return $request->user()->can('emulate', $zone);
                 }),
-                new Actions\DownloadUsersCsv()
+            new Actions\DownloadUsersCsv()
         ];
     }
 
-    public static function relatableProvinces(NovaRequest $request, $query) {
+    public static function relatableProvinces(NovaRequest $request, $query)
+    {
         $emulateUserId = session('emulate_user_id');
         $user = $request->user();
 
@@ -194,7 +207,8 @@ class User extends Resource {
         return $query;
     }
 
-    public static function relatableAreas(NovaRequest $request, $query) {
+    public static function relatableAreas(NovaRequest $request, $query)
+    {
         $emulateUserId = session('emulate_user_id');
         $user = $request->user();
 
@@ -213,7 +227,8 @@ class User extends Resource {
         return $query;
     }
 
-    public static function relatableSectors(NovaRequest $request, $query) {
+    public static function relatableSectors(NovaRequest $request, $query)
+    {
         $emulateUserId = session('emulate_user_id');
         $user = $request->user();
 
@@ -231,5 +246,4 @@ class User extends Resource {
 
         return $query;
     }
-
 }

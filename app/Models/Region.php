@@ -30,13 +30,15 @@ class Region extends TerritorialUnit
     /**
      * Alias
      */
-    public function children(){
+    public function children()
+    {
         return $this->provinces();
     }
     /**
      * Alias
      */
-    public function childrenIds() {
+    public function childrenIds()
+    {
         return $this->provincesIds();
     }
 
@@ -70,15 +72,21 @@ class Region extends TerritorialUnit
         return $this->belongsToMany(HikingRoute::class);
     }
 
-    public function getGeojsonComplete(): string {
+    public function sections()
+    {
+        return $this->hasMany(Section::class);
+    }
+
+    public function getGeojsonComplete(): string
+    {
         $g = [];
-        $g['type']='FeatureCollection';
-        $features=[];
+        $g['type'] = 'FeatureCollection';
+        $features = [];
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
-                $f=[];
+                $f = [];
                 // Properties
-                $p=[];
+                $p = [];
                 $p['id'] = $hr->id;
                 $p['created_at'] = $hr->created_at;
                 $p['updated_at'] = $hr->updated_at;
@@ -101,21 +109,21 @@ class Region extends TerritorialUnit
 
                 // Geometry
                 $geom_s = HikingRoute::where('id', '=', $hr->id)
-                ->select(
-                    DB::raw("ST_AsGeoJSON(geometry) as geom")
-                )
-                ->first()
-                ->geom;
-                $geom=json_decode($geom_s,TRUE);
+                    ->select(
+                        DB::raw("ST_AsGeoJSON(geometry) as geom")
+                    )
+                    ->first()
+                    ->geom;
+                $geom = json_decode($geom_s, TRUE);
 
                 // Build item
-                $f['type']='Feature';
-                $f['properties']=$p;
-                $f['geometry']=$geom;
-                $features[]=$f;
+                $f['type'] = 'Feature';
+                $f['properties'] = $p;
+                $f['geometry'] = $geom;
+                $features[] = $f;
             }
         }
-        $g['features']=$features;
+        $g['features'] = $features;
         return json_encode($g);
     }
 
@@ -132,5 +140,4 @@ class Region extends TerritorialUnit
         $userModelId = $user->region ? $user->region->id : 0;
         return $query->where('id', $userModelId);
     }
-
 }
