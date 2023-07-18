@@ -71,7 +71,7 @@ class User extends Resource
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
             Text::make(__('Phone'), 'phone')->sortable()
-                ->rules('numeric', 'digits_between:9,12'),
+                ->nullable(),
             Password::make('Password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
