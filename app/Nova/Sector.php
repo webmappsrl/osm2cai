@@ -281,8 +281,8 @@ class Sector extends Resource
             (new DownloadKml())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             }),
-            (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
-                return $request->user()->can('bulkAssignUser', $zone);
+            (new BulkSectorsModeratorAssignAction)->canSee(function ($request) {
+                return $request->user()->is_administrator ||  $request->user()->is_national_referent || !is_null($request->user()->region_id);
             }),
             (new UploadSectorGeometryRawDataAction)
                 ->confirmText('Inserire un file con la nuova geometria del settore.')

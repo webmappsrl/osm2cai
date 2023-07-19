@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Enums\IssueStatus;
+use App\Models\HikingRoute as ModelsHikingRoute;
 use App\Nova\HikingRoute;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
@@ -104,11 +105,8 @@ class Section extends Resource
                 ->rules('required', 'max:255'),
             BelongsTo::make('Regione', 'region', Region::class)
                 ->searchable(),
-
-            Text::make('Sentieri', function () use ($hikingRoutesString) {
-                return $hikingRoutesString;
-            })->asHtml(),
             HasMany::make('Utenti', 'users', User::class),
+            BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class),
             Text::make('SDA1', function () use ($hikingRoutesSDA1) {
                 return $hikingRoutesSDA1->count();
             })->onlyOnIndex()
