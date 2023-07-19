@@ -166,6 +166,7 @@ class HikingRoute extends Resource
             Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
+            Text::make('Percorribilità', 'issues_status')->sortable(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             Number::make('OSMID', 'relation_id')->onlyOnIndex(),
@@ -544,7 +545,7 @@ class HikingRoute extends Resource
                         return true;
                     }
                 ),
-            (new CreateIssue())
+            (new CreateIssue($this->model()))
                 ->confirmText('Sei sicuro di voler creare un issue per questo percorso?')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Annulla")
@@ -557,7 +558,8 @@ class HikingRoute extends Resource
                     function ($request, $user) {
                         return true;
                     }
-                ),
+                )
+                ->showOnTableRow(),
 
         ];
     }
