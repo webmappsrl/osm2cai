@@ -11,10 +11,6 @@ class SectionPolicy
     use HandlesAuthorization;
 
 
-    public function before() {
-        return true;
-    }
-
     /**
      * Determine whether the user can view any models.
      *
@@ -23,7 +19,7 @@ class SectionPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -35,7 +31,7 @@ class SectionPolicy
      */
     public function view(User $user, Section $section)
     {
-        //
+        return true;
     }
 
     /**
@@ -46,7 +42,7 @@ class SectionPolicy
      */
     public function create(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -58,7 +54,7 @@ class SectionPolicy
      */
     public function update(User $user, Section $section)
     {
-        //
+        return false;
     }
 
     /**
@@ -70,7 +66,7 @@ class SectionPolicy
      */
     public function delete(User $user, Section $section)
     {
-        //
+        return true;
     }
 
     /**
@@ -82,7 +78,7 @@ class SectionPolicy
      */
     public function restore(User $user, Section $section)
     {
-        //
+        return true;
     }
 
     /**
@@ -94,6 +90,6 @@ class SectionPolicy
      */
     public function forceDelete(User $user, Section $section)
     {
-        //
+        return true;
     }
 }
