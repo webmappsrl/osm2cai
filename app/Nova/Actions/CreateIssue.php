@@ -4,6 +4,7 @@ namespace App\Nova\Actions;
 
 use App\Models\User;
 use App\Enums\IssueStatus;
+use App\Models\HikingRoute;
 use Illuminate\Bus\Queueable;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
@@ -19,7 +20,19 @@ class CreateIssue extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = 'PERCORRIBILITA';
+    public $model;
+
+    function __construct($model = null)
+    {
+
+        $this->model = $model;
+
+        if (!is_null($resourceId = request('resourceId'))) {
+            $this->model = HikingRoute::find($resourceId);
+        }
+    }
+
+    public $name = "PERCORRIBILITA'";
 
     /**
      * Perform the action on the given models.
@@ -53,7 +66,8 @@ class CreateIssue extends Action
             Select::make('Issues Status')
                 ->options(IssueStatus::cases())
                 ->displayUsingLabels()
-                ->rules('required'),
+                ->rules('required')
+                ->default($this->model->issues_status ?? null),
             Textarea::make('Issues Description')
                 ->nullable()
 
