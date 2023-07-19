@@ -110,7 +110,7 @@ class Sector extends Resource
                 ->rules('max:254'),
             Text::make(__('Code'), 'code')->sortable()->required()->rules('max:1'),
             Text::make(__('Responsabili'), 'manager')->hideFromIndex(),
-            Text::make(__('Responsabili'), function(){
+            Text::make(__('Responsabili'), function () {
                 return $this->users->pluck('name')->implode(', ');
             })->onlyOnIndex(),
             Number::make(__('Numero Atteso'), 'num_expected')->required(),
@@ -281,8 +281,8 @@ class Sector extends Resource
             (new DownloadKml())->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             }),
-            (new BulkSectorsModeratorAssignAction)->canRun(function ($request, $zone) {
-                return $request->user()->can('bulkAssignUser', $zone);
+            (new BulkSectorsModeratorAssignAction)->canSee(function ($request) {
+                return $request->user()->is_administrator ||  $request->user()->is_national_referent || !is_null($request->user()->region_id);
             }),
             (new UploadSectorGeometryRawDataAction)
                 ->confirmText('Inserire un file con la nuova geometria del settore.')
@@ -294,10 +294,9 @@ class Sector extends Resource
                 ->canRun(function ($request, $user) {
                     return $request->user()->is_administrator;
                 }),
-                (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
-                    return $request->user()->can('downloadKml', $zone);
-                })
+            (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
+                return $request->user()->can('downloadKml', $zone);
+            })
         ];
     }
-
 }

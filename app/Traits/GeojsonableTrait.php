@@ -144,7 +144,7 @@ trait GeojsonableTrait
     }
 
 
-    public function geojsonToGeometry( $geojson )
+    public function geojsonToGeometry($geojson)
     {
         return GeometryService::getService()->geojsonToGeometry($geojson);
     }
@@ -157,7 +157,7 @@ trait GeojsonableTrait
     {
         $geometry = null;
         $geojson = $this->textToGeojson($fileContent);
-        if ( $geojson )
+        if ($geojson)
             $geometry = $this->geojsonToGeometry($geojson);
 
         return $geometry;
