@@ -43,7 +43,7 @@ class ImportSectionsCommand extends Command
     public function handle()
     {
         $sectionFilePath = storage_path('imports/Sezioni.xlsx');
-        $subsectionFilePath = storage_path('imports/SottoSezioni.xlsx');
+        $subsectionFilePath = storage_path('imports/Sottosezioni.xlsx');
 
         // Import sections
         $this->info('Importing sections...');
