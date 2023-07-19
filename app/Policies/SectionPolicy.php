@@ -11,6 +11,7 @@ class SectionPolicy
     use HandlesAuthorization;
 
 
+
     /**
      * Determine whether the user can view any models.
      *
@@ -66,7 +67,7 @@ class SectionPolicy
      */
     public function delete(User $user, Section $section)
     {
-        return true;
+        return false;
     }
 
     /**
