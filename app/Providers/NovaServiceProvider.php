@@ -208,7 +208,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
 
         $cards = [
-            (new TextCard())
+            (new TextCard)
                 ->width('1/4')
                 ->heading(Auth::user()->name)
                 ->text('Username')
@@ -363,9 +363,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+<a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
 <?php
         }
         $downloadLiks = ob_get_clean();

@@ -70,9 +70,9 @@ class OsmService
       'from', 'to', 'osmc_symbol', 'network', 'roundtrip', 'symbol', 'symbol_it',
       'ascent', 'descent', 'distance', 'duration_forward', 'duration_backward',
       'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons',
-      'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page','cai_scale', 'network','source'
+      'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page', 'cai_scale', 'network', 'source',
+      'ele_from', 'ele_to', 'ele_max', 'ele_min',
     ];
-
   }
 
 
@@ -108,12 +108,10 @@ class OsmService
       foreach ($relation->tag as $tag) {
 
         $key = str_replace(':', '_', (string) $tag['k']);
-        if ( in_array( $key , $allowedKeys ) )
-        {
-          $return[$key.'_osm'] = (string) $tag['v'];
+        if (in_array($key, $allowedKeys)) {
+          $return[$key . '_osm'] = (string) $tag['v'];
           $return[$key] = (string) $tag['v'];
         }
-
       }
       $return['relation_id'] = $relationId;
     }
@@ -124,8 +122,7 @@ class OsmService
   {
     $return = false;
     $response = $this->http::get("https://hiking.waymarkedtrails.org/api/v1/details/relation/" . intval($relationId) . "/geometry/geojson");
-    if ( $response->ok() )
-    {
+    if ($response->ok()) {
       $return = $response->body();
     }
 
@@ -136,8 +133,7 @@ class OsmService
   {
     $return = false;
     $response = $this->http::get("https://hiking.waymarkedtrails.org/api/v1/details/relation/" . intval($relationId) . "/geometry/gpx");
-    if ( $response->ok() )
-    {
+    if ($response->ok()) {
       $return = $response->body();
     }
 
@@ -157,8 +153,7 @@ class OsmService
 
     //todo
     $gpx = $this->getHikingRouteGpx($relationId);
-    if ( $gpx )
-    {
+    if ($gpx) {
       $service = GeometryService::getService();
       $geojson = $service->textToGeojson($gpx);
       $geometry = $service->geojsonToMultilinestringGeometry($geojson);
@@ -167,7 +162,7 @@ class OsmService
     return false;
   }
 
-   /**
+  /**
    * Get route gpx geometry by relation id
    * convert gpx in geojson
    * convert geojson in MULTILINESTRING postgis geometry with OSM SRID (3857)
@@ -180,8 +175,7 @@ class OsmService
 
     //todo
     $gpx = $this->getHikingRouteGpx($relationId);
-    if ( $gpx )
-    {
+    if ($gpx) {
       $service = GeometryService::getService();
       $geojson = $service->textToGeojson($gpx);
       $geometry = $service->geojsonToMultilinestringGeometry3857($geojson);
@@ -191,36 +185,35 @@ class OsmService
   }
 
 
-  public function updateHikingRouteModelWithOsmData( HikingRoute $model,$osmHr = null )
-    {
-        $relationId = $model->relation_id;
-        if(is_null($osmHr))
-            $osmHr = $this->getHikingRoute( $relationId );
-        //non è i tempo reale
-        $osmGeo = $this->getHikingRouteGeometry( $relationId );
-        //AGGIORNO GEOMETRIA
-        $model->geometry = $osmGeo;
-        $model->geometry_osm = $osmGeo;
-        foreach ( $this->getRelationApiFieldsKey() as $attribute )
-        {
-            $key = $attribute;
-            $key_osm = $attribute.'_osm';
-            if(isset($osmHr[$key]))
-                $model->$key = $osmHr[$key];
-            else
-                $model->$key = null;
-            if(isset($osmHr[$key_osm]))
-                $model->$key_osm = $osmHr[$key_osm];
-            else
-                $model->$key_osm = null;
-        }
-        $model->setGeometrySync();
-        $model->setRefREIComp();
-        $model->setOsm2CaiStatus();
-        $model->save();
-        $model->computeAndSetTechInfo();
-        //rifattorizzazione dei settori
-        $model->computeAndSetSectors();
-        return $model->save();
+  public function updateHikingRouteModelWithOsmData(HikingRoute $model, $osmHr = null)
+  {
+    $relationId = $model->relation_id;
+    if (is_null($osmHr))
+      $osmHr = $this->getHikingRoute($relationId);
+    //non è i tempo reale
+    $osmGeo = $this->getHikingRouteGeometry($relationId);
+    //AGGIORNO GEOMETRIA
+    $model->geometry = $osmGeo;
+    $model->geometry_osm = $osmGeo;
+    foreach ($this->getRelationApiFieldsKey() as $attribute) {
+      $key = $attribute;
+      $key_osm = $attribute . '_osm';
+      if (isset($osmHr[$key]))
+        $model->$key = $osmHr[$key];
+      else
+        $model->$key = null;
+      if (isset($osmHr[$key_osm]))
+        $model->$key_osm = $osmHr[$key_osm];
+      else
+        $model->$key_osm = null;
     }
+    $model->setGeometrySync();
+    $model->setRefREIComp();
+    $model->setOsm2CaiStatus();
+    $model->save();
+    $model->computeAndSetTechInfo();
+    //rifattorizzazione dei settori
+    $model->computeAndSetSectors();
+    return $model->save();
+  }
 }
