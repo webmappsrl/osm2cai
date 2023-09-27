@@ -238,7 +238,6 @@ class HikingRoute extends Resource
                     return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>CODICE SEZIONE: {$sectionCaiCode}</p>";
                 }
 
-
                 if ($field_data['comp']) {
                     $field_comp = $field . '_comp';
                     return "<p>INFOMONT: {$this->$field}</p><p>OSM: {$this->$field_osm}</p><p>VALORE CALCOLATO: {$this->$field_comp}</p>";
