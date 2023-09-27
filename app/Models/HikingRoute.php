@@ -1222,4 +1222,18 @@ EOF;
 
         return $tdh;
     }
+
+    /**
+     * Ritorna il link alla edit della risorsa nova corrispondente
+     * 
+     * @return string
+     */
+    public function getNovaEditLink(): string
+    {
+        $link = '';
+        if ($this->id > 0) {
+            $link = url('/nova/resources/hiking-routes/' . $this->id . '/edit');
+        }
+        return $link;
+    }
 }
