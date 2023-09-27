@@ -72,6 +72,10 @@ class HikingRoute extends Model
             'descent' => ['type' => 'float', 'comp' => true, 'label' => 'Dislivello negativo in metri'],
             'duration_forward' => ['type' => 'string', 'comp' => true, 'label' => 'Durata (P->A)'],
             'duration_backward' => ['type' => 'string', 'comp' => true, 'label' => 'Durata (A->P)'],
+            'ele_max' => ['type' => 'float', 'comp' => true, 'label' => 'Quota massima'],
+            'ele_min' => ['type' => 'float', 'comp' => true, 'label' => 'Quota minima'],
+            'ele_from' => ['type' => 'float', 'comp' => true, 'label' => 'Quota punto di partenza'],
+            'ele_to' => ['type' => 'float', 'comp' => true, 'label' => 'Quota punto di arrivo'],
         ],
         'other' => [
             'description' => ['type' => 'string', 'comp' => false, 'label' => 'Descrizione (EN)'],
