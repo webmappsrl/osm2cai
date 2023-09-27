@@ -84,18 +84,24 @@ class Region extends TerritorialUnit
         $features = [];
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
+                $sectors = $hr->sectors;
                 $f = [];
                 // Properties
                 $p = [];
                 $p['id'] = $hr->id;
                 $p['created_at'] = $hr->created_at;
                 $p['updated_at'] = $hr->updated_at;
-                $p['relation_id'] = $hr->relation_id;
                 $p['osm2cai_status'] = $hr->osm2cai_status;
                 $p['ref'] = $hr->ref;
+                $p['sectors'] = $sectors->pluck('name')->toArray();
+                $p['source_ref'] = $hr->source_ref;
                 $p['cai_scale'] = $hr->cai_scale;
                 $p['distance'] = $hr->distance_comp;
                 $p['ref_REI'] = $hr->ref_REI;
+                $p['ref_REI_computed'] = $hr->ref_REI_comp;
+                $p['accessibility'] = $hr->issues_status;
+                $p['osm_id'] = $hr->relation_id;
+                $p['osm2cai'] = $hr->getNovaEditLink();
                 $p['survey_date'] = $hr->survey_date;
                 $p['old_ref'] = $hr->old_ref;
                 $p['from'] = $hr->from;
@@ -106,6 +112,7 @@ class Region extends TerritorialUnit
                 $p['duration_backword'] = $hr->duration_backword;
                 $p['ascent'] = $hr->ascent;
                 $p['descent'] = $hr->descent;
+
 
                 // Geometry
                 $geom_s = HikingRoute::where('id', '=', $hr->id)
