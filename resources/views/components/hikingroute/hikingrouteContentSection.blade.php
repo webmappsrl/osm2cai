@@ -48,11 +48,6 @@
                 <p><strong>{{ __('Open Street Map') }}</strong></p>
             </a>
         </div>
-        <div id="tracksda" class="">
-            <a target="_blank" href=" https://hiking.waymarkedtrails.org/#route?id={!! $hikingroute->relation_id !!}">
-                <p><strong>{{ __('Waymarked Trails') }}</strong></p>
-            </a>
-        </div>
     @endif
     @if ($hikingroute->issues_last_update)
         <div id="tracksda" class="">
