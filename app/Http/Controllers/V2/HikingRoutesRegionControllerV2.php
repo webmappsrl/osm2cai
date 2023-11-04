@@ -379,6 +379,7 @@ class HikingRoutesRegionControllerV2 extends Controller
     {
         $coordinates = explode(',', $bb);
         $list = DB::table('hiking_routes')
+            ->whereRaw('ST_srid(geometry)=4326')
             ->whereRaw("ST_within(geometry,ST_MakeEnvelope(" . $bb . ", 4326))")
             ->whereIn('osm2cai_status', explode(',', $sda))
             ->get();
@@ -442,6 +443,7 @@ class HikingRoutesRegionControllerV2 extends Controller
     {
         $coordinates = explode(',', $bb);
         $list = DB::table('hiking_routes')
+            ->whereRaw('ST_srid(geometry)=4326')
             ->whereRaw("ST_within(geometry,ST_MakeEnvelope(" . $bb . ", 4326))")
             ->whereIn('osm2cai_status', explode(',', $sda))
             ->get();
