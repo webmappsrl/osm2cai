@@ -293,6 +293,66 @@ class HikingRoutesRegionControllerV2 extends Controller
 
     /**
      * @OA\Get(
+     *      path="/api/v2/hiking-route/euma/{id}",
+     *      tags={"Api V2"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns the geojson of a Hiking Route based on the given OSM2CAI ID compliant to EUMA guidelines.",
+     *      @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="type",
+     *                     description="Geojson type",
+     *                     type="string"
+     *                 ),
+     *                  @OA\Property(
+     *                     property="properties",
+     *                     type="object",
+     *                     @OA\Property( property="id", type="integer",  description="OSM2CAI ID"),
+     *                     @OA\Property( property="original_name", type="string",  description="the original name of the hiking route. If the name is not set, the REF is used"),
+     *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
+     *                     @OA\Property( property="url", type="string",  description="public url for the hiking route"),
+     *                 ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
+     *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
+     *                 ),
+     *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29","updated_at":"2022-07-29 10:11:23"},"geometry":
+     * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *             )
+     *         )
+     *      ),
+     *      @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="The OSM2CAI ID of a specific Hiking Route (e.g. 2421)",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     * )
+     *
+     */
+    public function hikingroutebyideuma(int $id)
+    {
+
+        try {
+            $item = HikingRoute::find($id);
+            $HR = $this->createGeoJSONFromModel($item, true);
+        } catch (Exception $e) {
+            return response('No Hiking Route found with this id', 404, ['Content-type' => 'application/json']);
+        }
+
+        // Return
+        return response($HR, 200, ['Content-type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Get(
      *      path="/api/v2/hiking-route-osm/{id}",
      *      tags={"Api V2"},
      *      @OA\Response(
@@ -542,7 +602,7 @@ class HikingRoutesRegionControllerV2 extends Controller
         }
     }
 
-    public function createGeoJSONFromModel($item)
+    public function createGeoJSONFromModel($item, $euma = false)
     {
         $obj = HikingRoute::where('id', '=', $item->id)
             ->select(
@@ -557,55 +617,71 @@ class HikingRoutesRegionControllerV2 extends Controller
         $geom = $obj->geom;
 
         if (isset($geom)) {
-            $response = [
-                "type" => "Feature",
-                "properties" => [
-                    "id" => $item->id,
-                    "relation_id" => $item->relation_id,
-                    "source" => $item->source,
-                    "cai_scale" => $item->cai_scale,
-                    "from" => $item->from,
-                    "to" => $item->to,
-                    "ref" => $item->ref,
-                    "public_page" => $item->getPublicPage(),
-                    "sda" => $item->osm2cai_status,
-                    "issues_status" => $item->issues_status ?? "",
-                    "issues_description" => $item->issues_description ?? "",
-                    "issues_last_update" => $item->issues_last_update ?? "",
-                    // "name" => $item->name,
-                    // "survey_date" => $item->survey_date,
-                    // "rwn_name" => $item->rwn_name,
-                    // "created_at" => $item->created_at,
-                    "updated_at" => $item->updated_at->format('Y-m-d H:i:s'),
-                    // "validation_date" => $item->validation_date,
-                    // "user_id" => $item->user_id,
-                    // "old_ref" => $item->old_ref,
-                    // "source_ref" => $item->source_ref,
-                    // "tags" => $item->tags,
-                    // "osmc_symbol" => $item->osmc_symbol,
-                    // "network" => $item->network,
-                    // "roundtrip" => $item->roundtrip,
-                    // "symbol" => $item->symbol,
-                    // "symbol_it" => $item->symbol_it,
-                    // "ascent" => $item->ascent,
-                    // "descent" => $item->descent,
-                    // "distance" => $item->distance,
-                    // "duration_forward" => $item->duration_forward,
-                    // "duration_backward" => $item->duration_backward,
-                    // "operator" => $item->operator,
-                    // "state" => $item->state,
-                    // "description" => $item->description,
-                    // "website" => $item->website,
-                    // "wikimedia_commons" => $item->wikimedia_commons,
-                    // "maintenance" => $item->maintenance,
-                    // "note" => $item->note,
-                    // "note_project_page" => $item->note_project_page,
-                ],
-                "geometry" => json_decode($geom, true)
-            ];
-            if ($item->osm2cai_status == 4)
-                $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
-            return $response;
+            if ($euma) {
+                $response = [
+                    "type" => "Feature",
+                    "properties" => [
+                        "id" => $item->id,
+                        "original_name" => $item->name ?? $item->ref ?? "",
+                        "ref" => $item->ref ?? "",
+                        "url" => $item->getPublicPage(),
+                    ],
+                    "geometry" => json_decode($geom, true)
+                ];
+
+                return $response;
+            } else {
+                $response = [
+                    "type" => "Feature",
+                    "properties" => [
+                        "id" => $item->id,
+                        "relation_id" => $item->relation_id,
+                        "source" => $item->source,
+                        "cai_scale" => $item->cai_scale,
+                        "from" => $item->from,
+                        "to" => $item->to,
+                        "ref" => $item->ref,
+                        "public_page" => $item->getPublicPage(),
+                        "sda" => $item->osm2cai_status,
+                        "issues_status" => $item->issues_status ?? "",
+                        "issues_description" => $item->issues_description ?? "",
+                        "issues_last_update" => $item->issues_last_update ?? "",
+                        // "name" => $item->name,
+                        // "survey_date" => $item->survey_date,
+                        // "rwn_name" => $item->rwn_name,
+                        // "created_at" => $item->created_at,
+                        "updated_at" => $item->updated_at->format('Y-m-d H:i:s'),
+                        // "validation_date" => $item->validation_date,
+                        // "user_id" => $item->user_id,
+                        // "old_ref" => $item->old_ref,
+                        // "source_ref" => $item->source_ref,
+                        // "tags" => $item->tags,
+                        // "osmc_symbol" => $item->osmc_symbol,
+                        // "network" => $item->network,
+                        // "roundtrip" => $item->roundtrip,
+                        // "symbol" => $item->symbol,
+                        // "symbol_it" => $item->symbol_it,
+                        // "ascent" => $item->ascent,
+                        // "descent" => $item->descent,
+                        // "distance" => $item->distance,
+                        // "duration_forward" => $item->duration_forward,
+                        // "duration_backward" => $item->duration_backward,
+                        // "operator" => $item->operator,
+                        // "state" => $item->state,
+                        // "description" => $item->description,
+                        // "website" => $item->website,
+                        // "wikimedia_commons" => $item->wikimedia_commons,
+                        // "maintenance" => $item->maintenance,
+                        // "note" => $item->note,
+                        // "note_project_page" => $item->note_project_page,
+                    ],
+                    "geometry" => json_decode($geom, true)
+                ];
+                if ($item->osm2cai_status == 4) {
+                    $response['properties']['validation_date'] = Carbon::create($item->validation_date)->format('Y-m-d');
+                }
+                return $response;
+            }
         }
     }
 

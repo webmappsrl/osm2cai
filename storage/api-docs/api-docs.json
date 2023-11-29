@@ -841,6 +841,109 @@
                 }
             }
         },
+        "/api/v2/hiking-route/euma/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "cf9fe713e1c05f413b7589a1f5fae279",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "The OSM2CAI ID of a specific Hiking Route (e.g. 2421)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID compliant to EUMA guidelines.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Geojson type",
+                                            "type": "string"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "description": "OSM2CAI ID",
+                                                    "type": "integer"
+                                                },
+                                                "original_name": {
+                                                    "description": "the original name of the hiking route. If the name is not set, the REF is used",
+                                                    "type": "string"
+                                                },
+                                                "ref": {
+                                                    "description": "local ref hiking route number must be three number and a letter only in last position for variants",
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "description": "public url for the hiking route",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry types: LineString, MultiLineString",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "hiking routes coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "type": "Feature",
+                                        "properties": {
+                                            "id": 2421,
+                                            "relation_id": 4179533,
+                                            "source": "survey:CAI",
+                                            "cai_scale": "E",
+                                            "from": "Castellare",
+                                            "to": "Campo di Croce",
+                                            "ref": "117",
+                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                            "sda": 4,
+                                            "validation_date": "2022-07-29",
+                                            "updated_at": "2022-07-29 10:11:23"
+                                        },
+                                        "geometry": {
+                                            "type": "MultiLineString",
+                                            "coordinates": [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ]
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v2/hiking-route-osm/{id}": {
             "get": {
                 "tags": [
