@@ -45,8 +45,10 @@ class HikingRoutesRegionControllerV2 extends Controller
      */
     public function hikingRoutesAllList()
     {
-        $hikingRoutes = HikingRoute::all();
-        return HikingRouteResource::collection($hikingRoutes);
+        $hikingRoutes = collect(DB::select('SELECT id, updated_at FROM hiking_routes'));
+        $data = $hikingRoutes->pluck('updated_at', 'id')->toArray();
+
+        return response($data, 200, ['Content-type' => 'application/json']);
     }
     /**
      * @OA\Get(
