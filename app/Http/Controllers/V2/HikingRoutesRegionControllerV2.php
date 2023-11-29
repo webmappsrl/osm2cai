@@ -2,21 +2,52 @@
 
 namespace App\Http\Controllers\V2;
 
-use App\Http\Controllers\Controller;
-use App\Models\HikingRoute;
-use App\Models\Region;
 use Exception;
-use GeoJson\Geometry\LineString;
-use GeoJson\Geometry\Polygon;
+use App\Models\Region;
+use App\Models\HikingRoute;
 use Illuminate\Http\Request;
+use GeoJson\Geometry\Polygon;
 use Illuminate\Support\Carbon;
+use GeoJson\Geometry\LineString;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\HikingRouteResource;
 
 
 class HikingRoutesRegionControllerV2 extends Controller
 {
-
-
+    /**
+     * @OA\Get(
+     *      path="/api/v2/hiking-routes/list",
+     *      tags={"Api V2"},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Returns all the hiking routes OSM2CAI IDs and updated_at date. These ids can be used in the geojson API hiking-route",
+     *       @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="id",
+     *                     description="Internal osm2cai Identifier",
+     *                     type="integer"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="updated_at",
+     *                     description="last update od hiking route",
+     *                     type="date"
+     *                 ),
+     *                 example={1269:"2022-12-03 12:34:25",652:"2022-07-31 18:23:34",273:"2022-09-12 23:12:11"},
+     *             )
+     *         )
+     *      ),
+     *     )
+     *
+     */
+    public function hikingRoutesAllList()
+    {
+        $hikingRoutes = HikingRoute::all();
+        return HikingRouteResource::collection($hikingRoutes);
+    }
     /**
      * @OA\Get(
      *      path="/api/v2/hiking-routes/region/{region_code}/{sda}",

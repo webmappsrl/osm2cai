@@ -556,6 +556,42 @@
                 }
             }
         },
+        "/api/v2/hiking-routes/list": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "198da0094b84931c3fa42052fc9fa6e5",
+                "responses": {
+                    "200": {
+                        "description": "Returns all the hiking routes OSM2CAI IDs and updated_at date. These ids can be used in the geojson API hiking-route",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update od hiking route",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "1269": "2022-12-03 12:34:25",
+                                        "652": "2022-07-31 18:23:34",
+                                        "273": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v2/hiking-routes/region/{region_code}/{sda}": {
             "get": {
                 "tags": [
