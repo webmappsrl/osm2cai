@@ -12,6 +12,108 @@
         }
     },
     "paths": {
+        "/api/v2/itinerary/list": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "fbd56b1b955fa7ad89b7db053a0a6342",
+                "responses": {
+                    "200": {
+                        "description": "Returns all the itinerary IDs and updated_at date. These ids can be used in the json API to retrieve the itinerary data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update of itinerary",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "1269": "2022-12-03 12:34:25",
+                                        "652": "2022-07-31 18:23:34",
+                                        "273": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/itinerary/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "50a32bbfe8871ffc3ffed02729a57f1e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Itinerary ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the itinerary data in JSON format.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Type of the feature",
+                                            "type": "string"
+                                        },
+                                        "properties": {
+                                            "description": "Properties of the feature",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "Internal osm2cai Identifier",
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "description": "Name of the itinerary",
+                                                    "type": "string"
+                                                },
+                                                "stages": {
+                                                    "description": "Number of stages",
+                                                    "type": "integer"
+                                                },
+                                                "total_km": {
+                                                    "description": "Total kilometers",
+                                                    "type": "number"
+                                                },
+                                                "items": {
+                                                    "description": "Array of items",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/hiking-routes/region/{region_code}/{sda}": {
             "get": {
                 "tags": [
