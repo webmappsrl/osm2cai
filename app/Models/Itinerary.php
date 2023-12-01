@@ -47,12 +47,12 @@ class Itinerary extends Model
 
             $nextHikingRoute = HikingRoute::whereIn('id', $hikingRoutesIds)
                 ->where('id', '<>', $hikingRoute->id)
-                ->whereRaw("ST_DWithin(ST_SetSRID(geometry, 4326), ST_GeomFromText('{$end_point}', 4326), 0.001)")
+                ->whereRaw("ST_DWithin(ST_SetSRID(geometry, 4326), ST_GeomFromText('{$end_point}', 4326), 0.005)")
                 ->get();
 
             $previousHikingRoute = HikingRoute::whereIn('id', $hikingRoutesIds)
                 ->where('id', '<>', $hikingRoute->id)
-                ->whereRaw("ST_DWithin(ST_SetSRID(geometry, 4326), ST_GeomFromText('{$start_point}', 4326), 0.001)")
+                ->whereRaw("ST_DWithin(ST_SetSRID(geometry, 4326), ST_GeomFromText('{$start_point}', 4326), 0.005)")
                 ->get();
 
             $edges[$hikingRoute->id]['prev'] = $previousHikingRoute->pluck('id')->toArray();
