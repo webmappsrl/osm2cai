@@ -60,4 +60,35 @@ class Itinerary extends Model
         }
         return $edges;
     }
+
+    /**
+     * create the json for the itinerary
+     *
+     * @return array
+     */
+    public function generateItineraryJson(): ?array
+    {
+        $hikingRoutes = $this->hikingRoutes;
+        $stages = count($hikingRoutes);
+        $totalKm = 0;
+        $hikingRoutesIds = $hikingRoutes->pluck('id')->toArray();
+
+        if (empty($hikingRoutes)) {
+            return null;
+        }
+        foreach ($hikingRoutes as $hikingRoute) {
+            $totalKm += $hikingRoute->distance_comp;
+        }
+
+        $data = [];
+        $data['type'] = 'Feature';
+        $properties['id'] = $this->id;
+        $properties['name'] = $this->name;
+        $properties['stages'] = $stages;
+        $properties['total_km'] = $totalKm;
+        $properties['items'] = $hikingRoutesIds;
+        $data['properties'] = $properties;
+
+        return $data;
+    }
 }
