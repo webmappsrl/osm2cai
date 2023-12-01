@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -56,6 +57,17 @@ class Itinerary extends Resource
         return [
             ID::make(__('ID'), 'id')->sortable(),
             Text::make(__('Nome'), 'name')->sortable()->rules('required', 'max:255'),
+            Text::make('Numero Tappe', function () {
+                return $this->hikingRoutes()->count();
+            })->hideWhenCreating()->hideWhenUpdating(),
+            Text::make('KM Totali', function () {
+                return $this->hikingRoutes()->sum('distance');
+            })->hideWhenCreating()->hideWhenUpdating(),
+            BelongsToMany::make(__('Itinerari'), 'hikingRoutes', HikingRoute::class)->fields(function () {
+                return [
+                    Text::make(__('Nome'), 'name')->sortable()->rules('required', 'max:255'),
+                ];
+            })->searchable(),
         ];
     }
 
