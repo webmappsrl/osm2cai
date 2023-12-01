@@ -112,6 +112,9 @@ class Itinerary extends Resource
             (new Actions\AddHikingRoutesToItinerary)->canSee(function ($request) {
                 return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
             }),
+            (new Actions\GenerateItineraryEdgesAction)->canSee(function ($request) {
+                return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
+            }),
         ];
     }
 }
