@@ -2,7 +2,7 @@
 
 namespace App\Nova\Actions;
 
-use App\Models\HikingRoute;
+use App\Nova\HikingRoute;
 use Illuminate\Bus\Queueable;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Actions\Action;
@@ -26,11 +26,7 @@ class AddHikingRoutesToItinerary extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         foreach ($models as $model) {
-            // Get the hiking routes by their names
-            $hikingRoutes = HikingRoute::whereIn('ref', explode(',', $fields->hiking_routes))->get();
-
-            // Attach the hiking routes to the itinerary
-            $model->hikingRoutes()->attach($hikingRoutes);
+            $model->hikingRoutes()->syncWithoutDetaching($fields->hikingRoutes);
         }
 
         return Action::message('Hiking routes added successfully!');
@@ -43,10 +39,8 @@ class AddHikingRoutesToItinerary extends Action
      */
     public function fields()
     {
-        return [
-            Text::make('Hiking Routes', 'hiking_routes')
-                ->help('Enter the ref of the hiking routes, separated by commas eg.(446A,G8,3,14')
-                ->rules('required'),
-        ];
+        // return [
+        //     BelongsToMany::make('Hiking Routes', 'hikingRoutes', HikingRoute::class)->searchable(),
+        // ];
     }
 }

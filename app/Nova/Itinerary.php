@@ -63,11 +63,7 @@ class Itinerary extends Resource
             Text::make('KM Totali', function () {
                 return round($this->hikingRoutes()->sum('distance'), 2);
             })->hideWhenCreating()->hideWhenUpdating(),
-            BelongsToMany::make(__('Itinerari'), 'hikingRoutes', HikingRoute::class)->fields(function () {
-                return [
-                    Text::make(__('Nome'), 'name')->sortable()->rules('required', 'max:255'),
-                ];
-            })->searchable(),
+            BelongsToMany::make(__('Itinerari'), 'hikingRoutes', HikingRoute::class)->searchable(),
         ];
     }
 

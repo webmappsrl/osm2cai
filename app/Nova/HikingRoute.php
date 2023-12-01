@@ -117,6 +117,22 @@ class HikingRoute extends Resource
     }
 
     /**
+     * Apply any applicable query filters.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public static function relatableQuery(NovaRequest $request, $query)
+    {
+        if ($request->resource === 'itineraries') {
+            return $query->take(100); // Limit the number of hiking routes
+        }
+
+        return $query;
+    }
+
+    /**
      * Get the fields displayed by the resource.
      * SUGGESTION: use tabs https://novapackages.com/packages/dkulyk/nova-tabs
      *
