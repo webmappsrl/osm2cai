@@ -10,6 +10,11 @@ class ItineraryPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user)
+    {
+        return $user->is_itinerary_manager || $user->is_administrator;
+    }
+
     /**
      * Determine whether the user can view any models.
      *
@@ -18,10 +23,6 @@ class ItineraryPolicy
      */
     public function viewAny(User $user)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -33,10 +34,6 @@ class ItineraryPolicy
      */
     public function view(User $user, Itinerary $itinerary)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -47,10 +44,6 @@ class ItineraryPolicy
      */
     public function create(User $user)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -62,10 +55,6 @@ class ItineraryPolicy
      */
     public function update(User $user, Itinerary $itinerary)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -77,10 +66,6 @@ class ItineraryPolicy
      */
     public function delete(User $user, Itinerary $itinerary)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -92,10 +77,6 @@ class ItineraryPolicy
      */
     public function restore(User $user, Itinerary $itinerary)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -107,9 +88,5 @@ class ItineraryPolicy
      */
     public function forceDelete(User $user, Itinerary $itinerary)
     {
-        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
-            return true;
-        }
-        return false;
     }
 }
