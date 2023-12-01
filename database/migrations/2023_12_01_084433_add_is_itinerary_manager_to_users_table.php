@@ -16,6 +16,8 @@ class AddIsItineraryManagerToUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->boolean("is_itinerary_manager")->default(false);
         });
+
+        DB::table('users')->where('email', 'team@webmapp.it')->update(['is_itinerary_manager' => true]);
     }
 
     /**

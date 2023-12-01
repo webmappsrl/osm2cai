@@ -18,7 +18,10 @@ class ItineraryPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -30,7 +33,10 @@ class ItineraryPolicy
      */
     public function view(User $user, Itinerary $itinerary)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -41,7 +47,10 @@ class ItineraryPolicy
      */
     public function create(User $user)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -53,7 +62,10 @@ class ItineraryPolicy
      */
     public function update(User $user, Itinerary $itinerary)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -65,7 +77,10 @@ class ItineraryPolicy
      */
     public function delete(User $user, Itinerary $itinerary)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -77,7 +92,10 @@ class ItineraryPolicy
      */
     public function restore(User $user, Itinerary $itinerary)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -89,6 +107,9 @@ class ItineraryPolicy
      */
     public function forceDelete(User $user, Itinerary $itinerary)
     {
-        //
+        if (auth()->user()->is_itinerary_manager || auth()->user()->is_administrator) {
+            return true;
+        }
+        return false;
     }
 }
