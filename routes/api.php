@@ -6,6 +6,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 use App\Http\Resources\HikingRouteTDHResource;
@@ -85,5 +86,7 @@ Route::name('api.')->group(function () {
         Route::get('/hiking-routes/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV2::class, 'hikingroutelist_bb'])->name('v2-hr-ids-by-bb');
         Route::get('/hiking-routes-osm/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV2::class, 'hikingrouteosmlist_bb'])->name('v2-hr-osmids-by-bb');
         Route::get('/hiking-routes-collection/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV2::class, 'hikingroutelist_collection'])->name('v2-hr-collection-by-bb');
+        Route::get('/itinerary/list', [ItineraryController::class, 'itineraryList'])->name('v2-itinerary-list');
+        Route::get('/itinerary/{id}', [ItineraryController::class, 'itineraryById'])->name('v2-itinerary-id');
     });
 });
