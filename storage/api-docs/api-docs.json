@@ -12,6 +12,108 @@
         }
     },
     "paths": {
+        "/api/v2/itinerary/list": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "fbd56b1b955fa7ad89b7db053a0a6342",
+                "responses": {
+                    "200": {
+                        "description": "Returns all the itinerary IDs and updated_at date. These ids can be used in the json API to retrieve the itinerary data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Internal osm2cai Identifier",
+                                            "type": "integer"
+                                        },
+                                        "updated_at": {
+                                            "description": "last update of itinerary",
+                                            "type": "string",
+                                            "format": "date"
+                                        }
+                                    },
+                                    "type": "object",
+                                    "example": {
+                                        "1269": "2022-12-03 12:34:25",
+                                        "652": "2022-07-31 18:23:34",
+                                        "273": "2022-09-12 23:12:11"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/itinerary/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2"
+                ],
+                "operationId": "50a32bbfe8871ffc3ffed02729a57f1e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Itinerary ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns the itinerary data in JSON format.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "description": "Type of the feature",
+                                            "type": "string"
+                                        },
+                                        "properties": {
+                                            "description": "Properties of the feature",
+                                            "properties": {
+                                                "id": {
+                                                    "description": "Internal osm2cai Identifier",
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "description": "Name of the itinerary",
+                                                    "type": "string"
+                                                },
+                                                "stages": {
+                                                    "description": "Number of stages",
+                                                    "type": "integer"
+                                                },
+                                                "total_km": {
+                                                    "description": "Total kilometers",
+                                                    "type": "number"
+                                                },
+                                                "items": {
+                                                    "description": "Array of items",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/hiking-routes/region/{region_code}/{sda}": {
             "get": {
                 "tags": [
@@ -714,18 +816,6 @@
                     "Api V2"
                 ],
                 "operationId": "832bfde9eb1997bc9c0efe63ee283a35",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "The OSM2CAI ID of a specific Hiking Route (e.g. 2421)",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Returns the geojson of a Hiking Route based on the given OSM2CAI ID.",
@@ -743,7 +833,7 @@
                                                     "description": "OSM2CAI ID",
                                                     "type": "integer"
                                                 },
-                                                "relation_ID": {
+                                                "relation_id": {
                                                     "description": "OSMID",
                                                     "type": "integer"
                                                 },
@@ -775,8 +865,16 @@
                                                     "description": "stato di accatastamento",
                                                     "type": "integer"
                                                 },
-                                                "validation_date": {
-                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
+                                                "issues_status": {
+                                                    "description": "issues status",
+                                                    "type": "string"
+                                                },
+                                                "issues_description": {
+                                                    "description": "issues description",
+                                                    "type": "string"
+                                                },
+                                                "issues_last_update": {
+                                                    "description": "date of last update of the issues format YYYY-mm-dd",
                                                     "type": "string",
                                                     "format": "date"
                                                 },
@@ -784,55 +882,85 @@
                                                     "description": "date of last update of the hiking route format YYYY-mm-dd H:i:s",
                                                     "type": "string",
                                                     "format": "date"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "geometry": {
-                                            "properties": {
-                                                "type": {
-                                                    "description": "Postgis geometry types: LineString, MultiLineString",
-                                                    "type": "string"
                                                 },
-                                                "coordinates": {
-                                                    "description": "hiking routes coordinates (WGS84)",
-                                                    "type": "object"
+                                                "validation_date": {
+                                                    "description": "date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "itinerary": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "description": "the itinerary id",
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "description": "the itinerary name",
+                                                                "type": "string"
+                                                            },
+                                                            "previous": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "description": "the previous hiking route id",
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "next": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "description": "the next hiking route id",
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
                                         }
                                     },
-                                    "type": "object",
-                                    "example": {
-                                        "type": "Feature",
-                                        "properties": {
-                                            "id": 2421,
-                                            "relation_id": 4179533,
-                                            "source": "survey:CAI",
-                                            "cai_scale": "E",
-                                            "from": "Castellare",
-                                            "to": "Campo di Croce",
-                                            "ref": "117",
-                                            "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
-                                            "sda": 4,
-                                            "validation_date": "2022-07-29",
-                                            "updated_at": "2022-07-29 10:11:23"
-                                        },
-                                        "geometry": {
-                                            "type": "MultiLineString",
-                                            "coordinates": [
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 2421,
+                                        "relation_id": 4179533,
+                                        "source": "survey:CAI",
+                                        "cai_scale": "E",
+                                        "from": "Castellare",
+                                        "to": "Campo di Croce",
+                                        "ref": "117",
+                                        "public_page": "https://osm2cai.cai.it/hiking-route/id/2421",
+                                        "sda": 4,
+                                        "validation_date": "2022-07-29",
+                                        "updated_at": "2022-07-29 10:11:23",
+                                        "itinerary": [
+                                            {
+                                                "id": 1,
+                                                "name": "test",
+                                                "previous": 20113,
+                                                "next": ""
+                                            }
+                                        ]
+                                    },
+                                    "geometry": {
+                                        "type": "MultiLineString",
+                                        "coordinates": [
+                                            [
                                                 [
-                                                    [
-                                                        10.4495294,
-                                                        43.7615252
-                                                    ],
-                                                    [
-                                                        10.4495998,
-                                                        43.7615566
-                                                    ]
+                                                    10.4495294,
+                                                    43.7615252
+                                                ],
+                                                [
+                                                    10.4495998,
+                                                    43.7615566
                                                 ]
                                             ]
-                                        }
+                                        ]
                                     }
                                 }
                             }
@@ -1269,6 +1397,20 @@
                             }
                         }
                     }
+                }
+            }
+        }
+    },
+    "components": {
+        "parameters": {
+            "id": {
+                "name": "id",
+                "in": "path",
+                "description": "The OSM2CAI ID of a specific Hiking Route (e.g. 2421)",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         }
