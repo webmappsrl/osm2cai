@@ -239,27 +239,51 @@ class HikingRoutesRegionControllerV2 extends Controller
      *                     description="Geojson type",
      *                     type="string"
      *                 ),
-     *                  @OA\Property(
-     *                     property="properties",
-     *                     type="object",
-     *                     @OA\Property( property="id", type="integer",  description="OSM2CAI ID"),
-     *                     @OA\Property( property="relation_ID", type="integer",  description="OSMID"),
-     *                     @OA\Property( property="source", type="string",  description="from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source"),
-     *                     @OA\Property( property="cai_scale", type="string",  description="CAI scale difficulty: T E EE"),
-     *                     @OA\Property( property="from", type="string",  description="start point"),
-     *                     @OA\Property( property="to", type="string",  description="end point"),
-     *                     @OA\Property( property="ref", type="string",  description="local ref hiking route number must be three number and a letter only in last position for variants"),
-     *                     @OA\Property( property="public_page", type="string",  description="public url for the hiking route"),
-     *                     @OA\Property( property="sda", type="integer",  description="stato di accatastamento"),
-     *                     @OA\Property( property="validation_date", type="date", description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd"),
-     *                     @OA\Property( property="updated_at", type="date", description="date of last update of the hiking route format YYYY-mm-dd H:i:s"),
+     *                 @OA\Property(
+     * property="properties",
+     * type="object",
+     * @OA\Property(property="id", type="integer", description="OSM2CAI ID"),
+     * @OA\Property(property="relation_id", type="integer", description="OSMID"),
+     * @OA\Property(property="source", type="string", description="from SDA=3 and over must be survey:CAI or other values accepted by CAI as valid source"),
+     * @OA\Property(property="cai_scale", type="string", description="CAI scale difficulty: T E EE"),
+     * @OA\Property(property="from", type="string", description="start point"),
+     * @OA\Property(property="to", type="string", description="end point"),
+     * @OA\Property(property="ref", type="string", description="local ref hiking route number must be three number and a letter only in last position for variants"),
+     * @OA\Property(property="public_page", type="string", description="public url for the hiking route"),
+     * @OA\Property(property="sda", type="integer", description="stato di accatastamento"),
+     * @OA\Property(property="issues_status", type="string", description="issues status"),
+     * @OA\Property(property="issues_description", type="string", description="issues description"),
+     * @OA\Property(property="issues_last_update", type="date", description="date of last update of the issues format YYYY-mm-dd"),
+     * @OA\Property(property="updated_at", type="date", description="date of last update of the hiking route format YYYY-mm-dd H:i:s"),
+     * @OA\Property(property="validation_date", type="date", description="date of validation of the hiking route, visible only for sda = 4 format YYYY-mm-dd"),
+     * @OA\Property(
+     *property="itinerary",
+     *type="array",
+     *@OA\Items(
+     *type="object",
+     * @OA\Property(property="id", type="integer", description="the itinerary id"),
+     *@OA\Property(property="name", type="string", description="the itinerary name"),
+     *@OA\Property(
+     *property="previous",
+     *type="array",
+     *@OA\Items(type="integer", description="the previous hiking route id")
+     * ),
+     *@OA\Property(
+     *property="next",
+     *type="array",
+     *@OA\Items(type="integer", description="the next hiking route id")
+     *      )
+     *  )
+     *)
+     *)
+
      *                 ),
      *                 @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry types: LineString, MultiLineString"),
      *                      @OA\Property( property="coordinates", type="object",  description="hiking routes coordinates (WGS84)")
      *                 ),
      *                 example={"type":"Feature","properties":{"id":2421,"relation_id":4179533,"source":
-     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29","updated_at":"2022-07-29 10:11:23"},"geometry":
+     * "survey:CAI","cai_scale":"E","from":"Castellare","to":"Campo di Croce","ref":"117","public_page":"https://osm2cai.cai.it/hiking-route/id/2421","sda":4,"validation_date":"2022-07-29","updated_at":"2022-07-29 10:11:23","itinerary":{{"id":1,"name":"test","previous":20113,"next":"",}} },"geometry":
      * {"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *             )
      *         )
@@ -631,6 +655,22 @@ class HikingRoutesRegionControllerV2 extends Controller
 
                 return $response;
             } else {
+                //get the itinerary of the hiking route and create an array of objects with id, name of itinerary, edges['next] and edges['prev']
+                $itinerary = $item->itineraries()->get();
+                $itinerary_array = [];
+                foreach ($itinerary as $it) {
+                    $edges = $it->generateItineraryEdges();
+                    $prevRoute = $edges[$item->id]['prev'] ?? null;
+                    $nextRoute = $edges[$item->id]['next'] ?? null;
+                    $itinerary_array[] = [
+                        'id' => $it->id,
+                        'name' => $it->name,
+                        'previous' => $prevRoute[0] ?? '',
+                        'next' => $nextRoute[0] ?? '',
+
+                    ];
+                }
+
                 $response = [
                     "type" => "Feature",
                     "properties" => [
@@ -674,6 +714,7 @@ class HikingRoutesRegionControllerV2 extends Controller
                         // "maintenance" => $item->maintenance,
                         // "note" => $item->note,
                         // "note_project_page" => $item->note_project_page,
+                        'itinerary' => $itinerary_array,
                     ],
                     "geometry" => json_decode($geom, true)
                 ];
