@@ -69,6 +69,7 @@ class CreateIssue extends Action
                 ->rules('required')
                 ->default($this->model->issues_status ?? null),
             Textarea::make('Issues Description')
+                ->default($this->model->issues_description ?? null)
                 ->nullable()
 
         ];
