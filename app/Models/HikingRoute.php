@@ -435,10 +435,11 @@ EOF;
         $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\') as geom'));
         $geom = $res[0]->geom;
 
-        $query = 'SELECT id
-            FROM hiking_routes
-            WHERE ST_intersects(' . $geometry_field . ',ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\')) AND
-            osm2cai_status=' . $osm2cai_status;
+        $query = "
+                SELECT id
+                FROM hiking_routes
+                WHERE ST_intersects(ST_SetSRID(" . $geometry_field . ", 4326), ST_GeomFromGeoJSON('" . json_encode($poly->jsonSerialize()) . "')) AND
+                osm2cai_status=" . $osm2cai_status;
         $res = DB::select(DB::raw($query));
         if (count($res) > 0) {
             foreach ($res as $obj) {
