@@ -159,18 +159,24 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-                $cardsService->getNationalSalCard(),
+            $cardsService->getNationalSalCard(),
             (new TextCard())->width('1/4')
                 ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
                 ->textAsHtml()
                 ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(1) . '; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
                 ->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 2')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+                ->text('<div>#sda 2 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-2-lens') . '">[Esplora]</a></div>')
+                ->textAsHtml()
+                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 3')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+                ->text('<div>#sda 3 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-3-lens') . '">[Esplora]</a></div>')
+                ->textAsHtml()
+                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('#sda 4')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+                ->text('<div>#sda 4 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-4-lens') . '">[Esplora]</a></div>')
+                ->textAsHtml()
+                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
 
 
         ];
@@ -236,7 +242,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->text('<h4 class="font-light">
                 <p>&nbsp;</p>
                 <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
-                <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  <p>&nbsp;</p>
                  <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
@@ -363,9 +368,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-<a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -656,7 +661,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell('<a href="/resources/' . ( $childrenTable == 'regions' ? 'region' : $childrenTable )  . '/' . $item->id . '">[VIEW]</a>'),
+                new Cell('<a href="/resources/' . ($childrenTable == 'regions' ? 'region' : $childrenTable)  . '/' . $item->id . '">[VIEW]</a>'),
             );
             $data[] = $row;
         }
@@ -745,7 +750,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
                     ['LoScarpone-Export', route('loscarpone-export')],
                     ['API', '/api/documentation'],
-                    ['Guida Utente','https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
+                    ['Guida Utente', 'https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
                 ],
             ])
         ];
