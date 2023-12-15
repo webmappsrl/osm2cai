@@ -63,7 +63,7 @@ class HikingRoute extends Resource
      *
      * @var string
      */
-    //public static string $title = 'id';
+
     public function title()
     {
         $supplementaryString = ' - ';
@@ -106,14 +106,12 @@ class HikingRoute extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        $loggedInUser = Auth::user();
-        $role = $loggedInUser->getTerritorialRole();
-        // if ( $role != "admin")
-        // {
-        //     $query->ownedBy($loggedInUser);
-        // }
 
-        return $query;
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            return $query->whereHas('regions', function ($q) {
+                $q->where('regions.id', Auth::user()->region->id);
+            });
+        }
     }
 
     /**
