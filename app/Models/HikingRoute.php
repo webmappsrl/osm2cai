@@ -48,7 +48,6 @@ class HikingRoute extends Model
 
     public static array $info_fields = [
         'main' => [
-            'cai_scale' => ['type' => 'string', 'comp' => false, 'label' => 'Diff. CAI'],
             'source' => ['type' => 'string', 'comp' => false, 'label' => 'Source'],
             'survey_date' => ['type' => 'string', 'comp' => false, 'label' => 'Data ricognizione'],
             'source_ref' => ['type' => 'string', 'comp' => false, 'label' => 'Codice Sezione CAI'],
@@ -68,6 +67,7 @@ class HikingRoute extends Model
         ],
         'tech' => [
             'distance' => ['type' => 'float', 'comp' => true, 'label' => 'Lunghezza in Km'],
+            'cai_scale' => ['type' => 'string', 'comp' => false, 'label' => 'Diff. CAI'],
             'ascent' => ['type' => 'float', 'comp' => true, 'label' => 'Dislivello positivo in metri'],
             'descent' => ['type' => 'float', 'comp' => true, 'label' => 'Dislivello negativo in metri'],
             'duration_forward' => ['type' => 'string', 'comp' => true, 'label' => 'Durata (P->A)'],

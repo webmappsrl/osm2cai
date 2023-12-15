@@ -243,7 +243,6 @@ class HikingRoute extends Resource
         $sections = $this->sections()->get();
         $sectionCaiCode = '';
         foreach ($sections as $section) {
-            //create a string with the section cai code and make it linkable to the section detail page
             $sectionCaiCode .= "<a style='color:green; text-decoration:none;' href='/resources/sections/{$section->id}'>{$section->cai_code}</a>" . '<br>';
         }
 
