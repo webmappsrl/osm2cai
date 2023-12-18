@@ -34,7 +34,7 @@ class HikingRoute extends Model
         'tags_osm', 'geometry_osm',
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
         'ascent_osm', 'descent_osm', 'distance_osm', 'duration_forward_osm', 'duration_backward_comp',
-        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status'
+        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status', 'reg_ref_osm', 'reg_ref',
     ];
 
     protected $casts = [
@@ -52,7 +52,9 @@ class HikingRoute extends Model
             'survey_date' => ['type' => 'string', 'comp' => false, 'label' => 'Data ricognizione'],
             'source_ref' => ['type' => 'string', 'comp' => false, 'label' => 'Codice Sezione CAI'],
             'old_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF precedente'],
-            'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei']
+            'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei'],
+            'reg_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF regionale'],
+            'reg_ref_osm' => ['type' => 'string', 'comp' => false, 'label' => 'REF regionale OSM'],
         ],
         'general' => [
             'from' => ['type' => 'string', 'comp' => false, 'label' => 'Località di partenza'],
