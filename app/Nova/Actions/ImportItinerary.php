@@ -137,7 +137,7 @@ class ImportItinerary extends Action
 
                     $itinerary = Itinerary::updateOrCreate(
                         [
-                            'osm_id' => intval($id),
+                            'osm_id' => intval($osmid),
                         ],
                         [
                             'name' => $itineraryName,
@@ -145,7 +145,6 @@ class ImportItinerary extends Action
                         ]
                     );
 
-                    $itinerary->osm_id = intval($id);
                     $itinerary->ref = $geojson_content['properties']['ref'];
 
                     // //check if ascent, descent, distance duration_forward and duration_backward are not null in the geojson data and if so, update the $itinerary
