@@ -121,6 +121,9 @@ class Itinerary extends Resource
             (new Actions\GenerateItineraryEdgesAction)->canSee(function ($request) {
                 return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
             }),
+            (new Actions\ImportItinerary)->standalone()->canSee(function ($request) {
+                return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
+            }),
         ];
     }
 }

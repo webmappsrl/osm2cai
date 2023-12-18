@@ -11,6 +11,13 @@ class Itinerary extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'osm_id',
+        'ref',
+        'geometry',
+    ];
+
     public function hikingRoutes()
     {
         return $this->belongsToMany(HikingRoute::class);
