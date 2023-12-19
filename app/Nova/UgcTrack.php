@@ -3,19 +3,17 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class EcPoi extends Resource
+class UgcTrack extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\EcPoi::class;
+    public static $model = \App\Models\UgcTrack::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -24,7 +22,10 @@ class EcPoi extends Resource
      */
     public function title()
     {
-        return $this->name;
+        if ($this->name)
+            return "{$this->name} ({$this->id})";
+        else
+            return "{$this->id}";
     }
 
     /**
@@ -33,15 +34,15 @@ class EcPoi extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name'
+        'id', 'name', 'user.name'
     ];
 
-    public static string $group = 'Territorio';
-    public static $priority = 8;
+    public static string $group = 'Rilievi';
+    public static $priority = 2;
 
     public static function label()
     {
-        $label = 'Punti di Interesse';
+        $label = 'Track';
 
         return __($label);
     }
@@ -56,9 +57,6 @@ class EcPoi extends Resource
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
-            Text::make('Nome', 'name')->sortable(),
-            Text::make('Descrizione', 'description')->sortable(),
-            BelongsTo::make('Utente', 'user', User::class)->sortable(),
         ];
     }
 
