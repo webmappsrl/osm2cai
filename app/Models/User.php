@@ -78,6 +78,26 @@ class User extends Authenticatable
         return $this->belongsTo(Section::class);
     }
 
+    public function ecPois()
+    {
+        return $this->hasMany(EcPoi::class);
+    }
+
+    public function ugcPois()
+    {
+        return $this->hasMany(UgcPoi::class);
+    }
+
+    public function ugcTracks()
+    {
+        return $this->hasMany(UgcTrack::class);
+    }
+
+    public function ugcMedia()
+    {
+        return $this->hasMany(UgcMedia::class);
+    }
+
     public function getSectors()
     {
         $sectorsIds = [];
