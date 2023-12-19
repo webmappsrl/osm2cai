@@ -169,17 +169,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(1) . '; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
                 ->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('<div>#sda 2 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-2-lens') . '">[Esplora]</a></div>')
-                ->textAsHtml()
-                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
+                ->text('#sda 2')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('<div>#sda 3 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-3-lens') . '">[Esplora]</a></div>')
-                ->textAsHtml()
-                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
+                ->text('#sda 3')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')->headingAsHtml(),
             (new TextCard())->width('1/4')
-                ->text('<div>#sda 4 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-4-lens') . '">[Esplora]</a></div>')
-                ->textAsHtml()
-                ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
+                ->text('#sda 4')->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')->headingAsHtml(),
 
 
         ];
@@ -245,6 +239,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->text('<h4 class="font-light">
                 <p>&nbsp;</p>
                 <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
+                <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
                  <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
                  <p>&nbsp;</p>
                  <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
