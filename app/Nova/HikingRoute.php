@@ -47,6 +47,7 @@ use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Filters\IssueStatusFilter;
+use Laravel\Nova\Fields\Code;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -327,6 +328,10 @@ class HikingRoute extends Resource
                 }
                 return $user->name;
             })->hideFromIndex(),
+            Text::make('Cronologia Percorribilitá', function () {
+                return "<a style='text-decoration: none; color: #2697bc; font-weight: bold; ' href='/hiking-route/{$this->id}/issues'>Visualizza</a>";
+            })->asHtml()->onlyOnDetail()
+
         ];
 
         return $fields;
