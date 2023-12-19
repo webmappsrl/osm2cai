@@ -2,16 +2,21 @@
 
 namespace App\Nova;
 
-use App\Enums\IssueStatus;
-use App\Models\HikingRoute as ModelsHikingRoute;
 use App\Nova\HikingRoute;
+use App\Enums\IssueStatus;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use App\Helpers\Osm2CaiHelper;
+use App\Services\CacheService;
+use Laravel\Nova\Fields\HasMany;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
+use Illuminate\Support\Facades\Auth;
+use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectionRegionFilter;
-use Laravel\Nova\Fields\HasMany;
+use App\Models\HikingRoute as ModelsHikingRoute;
 
 class Section extends Resource
 {
@@ -159,7 +164,99 @@ class Section extends Resource
      */
     public function cards(Request $request)
     {
-        return [];
+        if (!Auth::user()->is_administrator) {
+            $data = DB::table('regions_view') //TODO no section_view yet in the database
+                ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
+                ->where('id', Auth::user()->region->id)
+                ->get();
+            $numbers[1] = $data[0]->tot1;
+            $numbers[2] = $data[0]->tot2;
+            $numbers[3] = $data[0]->tot3;
+            $numbers[4] = $data[0]->tot4;
+            $cards = [
+                (new TextCard())
+                    ->onlyOnDetail()
+                    ->forceFullWidth()
+                    ->heading(\auth()->user()->region->name),
+                //TODO add the link to the geojson and csv for the section when ready
+                // ->text('<h4 class="font-light">
+                //     <p>&nbsp;</p>
+                //     <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
+                //      <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
+                //      <p>&nbsp;</p>
+
+                //      ')
+                $this->_getSdaCard(1, $numbers[1]),
+                $this->_getSdaCard(2, $numbers[2]),
+                $this->_getSdaCard(3, $numbers[3]),
+                $this->_getSdaCard(4, $numbers[4]),
+            ];
+            return $cards;
+        } else {
+            $sectionId = $request->route('resourceId');
+
+            $values = DB::table('hiking_routes')
+                ->join('hiking_route_section', 'hiking_routes.id', '=', 'hiking_route_section.hiking_route_id')
+                ->where('hiking_route_section.section_id', $sectionId)
+                ->select('hiking_routes.osm2cai_status', DB::raw('count(*) as num'))
+                ->groupBy('hiking_routes.osm2cai_status')
+                ->get();
+
+
+            $numbers = [];
+            $numbers[1] = 0;
+            $numbers[2] = 0;
+            $numbers[3] = 0;
+            $numbers[4] = 0;
+
+            if (count($values) > 0) {
+                foreach ($values as $value) {
+                    $numbers[$value->osm2cai_status] = $value->num;
+                }
+            }
+
+            $tot = array_sum($numbers);
+
+            $cards = [
+                (new TextCard())->width('1/4')
+                    ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
+                    ->textAsHtml()
+                    ->onlyOnDetail()
+                    ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(1) . '; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
+                    ->headingAsHtml(),
+                (new TextCard())->width('1/4')
+                    ->text('<div>#sda 2 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-2-lens') . '">[Esplora]</a></div>')
+                    ->textAsHtml()
+                    ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')
+                    ->headingAsHtml()
+                    ->onlyOnDetail(),
+                (new TextCard())->width('1/4')
+                    ->text('<div>#sda 3 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-3-lens') . '">[Esplora]</a></div>')
+                    ->textAsHtml()
+                    ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')
+                    ->headingAsHtml()
+                    ->onlyOnDetail(),
+                (new TextCard())->width('1/4')
+                    ->text('<div>#sda 4 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-4-lens') . '">[Esplora]</a></div>')
+                    ->textAsHtml()
+                    ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')
+                    ->headingAsHtml()
+                    ->onlyOnDetail(),
+            ];
+            return $cards;
+        }
+    }
+
+    private function _getSdaCard(int $sda, int $num): TextCard
+    {
+
+        $path = '/resources/hiking-routes/lens/hiking-routes-status-' . $sda . '-lens';
+        return (new TextCard())->width('1/4')
+            ->text('<div>#sda ' . $sda . ' <a href="' . url($path) . '">[Esplora]</a></div>')
+            ->textAsHtml()
+            ->onlyOnDetail()
+            ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor($sda) . '; color: white; font-size: xx-large">' . $num . '</div>')
+            ->headingAsHtml();
     }
 
     /**
