@@ -2,8 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Section;
 use App\Models\User;
+use App\Models\Section;
+use App\Models\HikingRoute;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class SectionPolicy
@@ -92,5 +94,30 @@ class SectionPolicy
     public function forceDelete(User $user, Section $section)
     {
         return true;
+    }
+
+    /**
+     * Determine whether the user can attach any hikingRoute to the Section.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Section  $section
+     * @return mixed
+     */
+    public function attachAnyHikingRoute(User $user, Section $section)
+    {
+        return false;
+    }
+
+    /**
+     * Determine whether the user can attach a hr to a section.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Section  $section
+     * @param  \App\Models\HikingRoute  $hikingRoute
+     * @return mixed
+     */
+    public function attachHikingRoute(User $user, Section $podcast, HikingRoute $hikingRoute)
+    {
+        return false;
     }
 }
