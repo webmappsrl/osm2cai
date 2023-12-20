@@ -9,6 +9,8 @@ class UgcPoi extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
