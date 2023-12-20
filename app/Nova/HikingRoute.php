@@ -124,11 +124,8 @@ class HikingRoute extends Resource
      */
     public static function relatableQuery(NovaRequest $request, $query)
     {
-        if ($request->resource === 'itineraries') {
-            return $query->take(100); // Limit the number of hiking routes
-        }
+        return $query->take(100); // Limit the number of hiking routes
 
-        return $query;
     }
 
     /**
@@ -458,10 +455,8 @@ class HikingRoute extends Resource
      */
     public function actions(Request $request)
     {
-        $confirmText = 'ATTENZIONE: il file che verrà caricato servirà esclusivamente per essere confrontato con la traccia presente nel Catasto/OpenStreetMap; in caso di validazione sarà la traccia del Catasto/OpenStreetMap (in mappa di colore blu) ad essere validata.' . "\n\n" . 'Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')';
         return [
-            (new UploadValidationRawDataAction)
-                ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
+            (new UploadValidationRawDataAction($this->id))
                 ->confirmButtonText('Carica')
                 ->cancelButtonText("Non caricare")
                 ->canSee(function ($request) {
@@ -471,7 +466,7 @@ class HikingRoute extends Resource
                     return true;
                 }),
             (new ValidateHikingRouteAction)
-                ->confirmText($confirmText)
+                ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Non validare")
                 ->canSee(function ($request) {
