@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class UgcTrack extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'metadata'];
 }

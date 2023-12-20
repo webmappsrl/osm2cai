@@ -303,4 +303,9 @@ class Section extends Resource
     {
         return Auth::user()->is_administrator || Auth::user()->is_national_referent;
     }
+
+    public function authorizedToAttach(NovaRequest $request, $model)
+    {
+        return Auth::user()->is_administrator || Auth::user()->is_national_referent;
+    }
 }
