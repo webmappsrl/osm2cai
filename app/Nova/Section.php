@@ -17,6 +17,7 @@ use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\SectionRegionFilter;
 use App\Models\HikingRoute as ModelsHikingRoute;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Section extends Resource
 {
@@ -295,5 +296,10 @@ class Section extends Resource
     public function actions(Request $request): array
     {
         return [];
+    }
+
+    public function authorizedToDetach(NovaRequest $request, $model, $relationship)
+    {
+        return Auth::user()->is_administrator || Auth::user()->is_national_referent;
     }
 }
