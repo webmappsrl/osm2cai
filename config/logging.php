@@ -54,6 +54,12 @@ return [
             'days' => 14,
         ],
 
+        'missingUsers' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/missing-users.log'),
+            'level' => 'info',
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
