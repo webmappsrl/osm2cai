@@ -21,15 +21,14 @@ class UploadValidationRawDataAction extends Action
 
     public $showOnDetail = true;
     public $showOnIndex = false;
-    public $name='UPLOAD GPX/KML/GEOJSON';
+    public $name = 'UPLOAD GPX/KML/GEOJSON';
     public $HR;
 
 
     public function __construct($HR = null)
     {
 
-        $this->HR = HikingRoute::find($HR); ;
-
+        $this->HR = HikingRoute::find($HR);;
     }
 
     /**
@@ -44,7 +43,7 @@ class UploadValidationRawDataAction extends Action
         $model = $models->first();
 
         if ($fields->geometry) {
-            $path = $fields->geometry->storeAs('local',explode('.',$fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
+            $path = $fields->geometry->storeAs('local', explode('.', $fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
             $content = Storage::get($path);
             $geom = $model->fileToGeometry($content);
 
@@ -54,8 +53,6 @@ class UploadValidationRawDataAction extends Action
         }
 
         return Action::danger("Impossibile aggiornare la geometry. Inserisci un file valido.");
-
-
     }
 
     /**
@@ -65,8 +62,22 @@ class UploadValidationRawDataAction extends Action
      */
     public function fields()
     {
+
+        $confirmText = 'ATTENZIONE: il file che verrà caricato servirà esclusivamente per essere confrontato con la traccia presente nel Catasto/OpenStreetMap; in caso di validazione sarà la traccia del Catasto/OpenStreetMap (in mappa di colore blu) ad essere validata.' . "\n\n" . 'Sei sicuro di voler validare questo percorso?';
+
+        if (isset($this->HR->ref)) {
+            $confirmText .= 'REF:' . $this->HR->ref;
+        }
+        if (isset($this->HR->ref_REI)) {
+            $confirmText .= ' (CODICE REI: ' . $this->HR->ref_REI;
+        }
+        if (isset($this->HR->ref_comp)) {
+            $confirmText .= ' / ' . $this->HR->ref_comp;
+        }
+
         return [
             File::make('Geometry')
+                ->help($confirmText)
         ];
     }
 }
