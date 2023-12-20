@@ -52,6 +52,15 @@ class CreateIssue extends Action
             $hikingRoute->issues_last_update = now();
             $hikingRoute->issues_user_id = $user->id ?? $hikingRoute->issues_user_id;
             $hikingRoute->save();
+            $chronology = json_decode($hikingRoute->issues_chronology, true) ?? [];
+            $chronology[] = [
+                'issues_status' => $hikingRoute->issues_status,
+                'issues_description' => $hikingRoute->issues_description,
+                'issues_last_update' => $hikingRoute->issues_last_update,
+                'issues_user' => $user->name ?? $hikingRoute->issues_user->name
+            ];
+            $hikingRoute->issues_chronology = json_encode($chronology);
+            $hikingRoute->save();
         }
     }
 
@@ -69,6 +78,7 @@ class CreateIssue extends Action
                 ->rules('required')
                 ->default($this->model->issues_status ?? null),
             Textarea::make('Issues Description')
+                ->default($this->model->issues_description ?? null)
                 ->nullable()
 
         ];
