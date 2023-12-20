@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\HikingRoute;
 use App\Models\User;
 use AWS\CRT\HTTP\Request;
+use App\Models\HikingRoute;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class HikingRoutePolicy
@@ -46,6 +47,15 @@ class HikingRoutePolicy
         return true;
     }
 
-
-
+    /**
+     * Determine whether the user can attach any hikingRoute to the Section.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\HikingRoute  $hikingRoute
+     * @return mixed
+     */
+    public function attachAnySection(User $user, HikingRoute $hikingRoute)
+    {
+        return false;
+    }
 }

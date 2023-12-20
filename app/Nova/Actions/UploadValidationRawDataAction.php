@@ -63,17 +63,8 @@ class UploadValidationRawDataAction extends Action
     public function fields()
     {
 
-        $confirmText = 'ATTENZIONE: il file che verrà caricato servirà esclusivamente per essere confrontato con la traccia presente nel Catasto/OpenStreetMap; in caso di validazione sarà la traccia del Catasto/OpenStreetMap (in mappa di colore blu) ad essere validata.' . "\n\n" . 'Sei sicuro di voler validare questo percorso?';
+        $confirmText = 'ATTENZIONE: il file che verrà caricato servirà esclusivamente per essere confrontato con la traccia presente nel Catasto/OpenStreetMap; in caso di validazione sarà la traccia del Catasto/OpenStreetMap (in mappa di colore blu) ad essere validata.';
 
-        if (isset($this->HR->ref)) {
-            $confirmText .= 'REF:' . $this->HR->ref;
-        }
-        if (isset($this->HR->ref_REI)) {
-            $confirmText .= ' (CODICE REI: ' . $this->HR->ref_REI;
-        }
-        if (isset($this->HR->ref_comp)) {
-            $confirmText .= ' / ' . $this->HR->ref_comp;
-        }
 
         return [
             File::make('Geometry')

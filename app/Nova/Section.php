@@ -112,7 +112,8 @@ class Section extends Resource
             BelongsTo::make('Regione', 'region', Region::class)
                 ->searchable(),
             HasMany::make('Utenti', 'users', User::class),
-            BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class),
+            BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
+                ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),
             Text::make('SDA1', function () use ($hikingRoutesSDA1) {
                 return $hikingRoutesSDA1->count();
             })->onlyOnIndex()
