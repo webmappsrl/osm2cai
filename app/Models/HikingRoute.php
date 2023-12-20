@@ -54,7 +54,6 @@ class HikingRoute extends Model
             'old_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF precedente'],
             'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei'],
             'reg_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF regionale'],
-            'reg_ref_osm' => ['type' => 'string', 'comp' => false, 'label' => 'REF regionale OSM'],
         ],
         'general' => [
             'from' => ['type' => 'string', 'comp' => false, 'label' => 'Località di partenza'],
