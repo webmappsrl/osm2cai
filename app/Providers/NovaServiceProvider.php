@@ -11,6 +11,9 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\SectorsDashboard;
+use App\Nova\UgcMedia;
+use App\Nova\UgcPoi;
+use App\Nova\UgcTrack;
 use App\Observers\SectorObserver;
 use App\Services\CacheService;
 use App\Services\CardsService;
@@ -159,7 +162,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->heading('TBI')
                 ->text('LastLogin')
                 ->center(false),
-                $cardsService->getNationalSalCard(),
+            $cardsService->getNationalSalCard(),
             (new TextCard())->width('1/4')
                 ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
                 ->textAsHtml()
@@ -656,7 +659,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell('<a href="/resources/' . ( $childrenTable == 'regions' ? 'region' : $childrenTable )  . '/' . $item->id . '">[VIEW]</a>'),
+                new Cell('<a href="/resources/' . ($childrenTable == 'regions' ? 'region' : $childrenTable)  . '/' . $item->id . '">[VIEW]</a>'),
             );
             $data[] = $row;
         }
@@ -745,7 +748,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                     ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
                     ['LoScarpone-Export', route('loscarpone-export')],
                     ['API', '/api/documentation'],
-                    ['Guida Utente','https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
+                    ['Guida Utente', 'https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
                 ],
             ])
         ];

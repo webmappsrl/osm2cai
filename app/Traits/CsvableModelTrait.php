@@ -1,36 +1,19 @@
 <?php
 
-
 namespace App\Traits;
 
+use App\Models\Section;
 use App\Models\User;
 
 trait CsvableModelTrait
 {
-
-    /**
-     * osm2cai.0.1.01.13 - Come Lorenzo Monelli, voglio che nella dashboard ci sia la possibilità di scaricare uno file .csv contenente le lista dei percorsi della mia regione con i seguenti
-     * ref:REI
-     * osm id
-     * timestamp (?)
-     * user (?)
-     * survey:date
-     * from
-     * to
-     * cai_scale
-     * osmc:symbol
-     * ref
-     * name
-     * network
-     * source
-     * @return string
-     */
     public function getCsv(): string
     {
-        $line = 'sda,settore,ref,source ref,from,to,difficoltà,codice rei,codice rei osm,osm,osm2cai,percorribilitá,ultimo aggiornamento percorribilitá,ultimo aggiornamento effettuato da:, ' . PHP_EOL;
+        $line = 'sda,settore,ref,source ref,from,to,difficoltà,codice rei,codice rei osm,osm,osm2cai,percorribilitá,ultimo aggiornamento percorribilitá,ultimo aggiornamento effettuato da:, codice sezione, nome sezione ' . PHP_EOL;
         if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
             foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
                 $user = User::find($hr->issues_user_id);
+                $sectionName = Section::wherecaiCode($hr->source_ref)->first()->name ?? '';
 
                 $line .= $hr->osm2cai_status . ',';
                 $line .= ($hr->mainSector()->full_code ?? '')  . ',';
@@ -45,7 +28,10 @@ trait CsvableModelTrait
                 $line .= url('/resources/hiking-routes/' . $hr->id) . ',';
                 $line .= $hr->issues_status . ',';
                 $line .= $hr->issues_last_update . ',';
-                $line .= $user->name ?? '';
+                $line .= $user->name ?? '' . ',';
+                $line .= $hr->source_ref  ?? '' . ',';
+                $line .= ',';
+                $line .= $sectionName ?? '';
                 $line .= PHP_EOL;
             }
         }

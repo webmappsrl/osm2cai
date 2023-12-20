@@ -34,7 +34,7 @@ class HikingRoute extends Model
         'tags_osm', 'geometry_osm',
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
         'ascent_osm', 'descent_osm', 'distance_osm', 'duration_forward_osm', 'duration_backward_comp',
-        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status'
+        'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status', 'reg_ref_osm', 'reg_ref',
     ];
 
     protected $casts = [
@@ -48,12 +48,12 @@ class HikingRoute extends Model
 
     public static array $info_fields = [
         'main' => [
-            'cai_scale' => ['type' => 'string', 'comp' => false, 'label' => 'Diff. CAI'],
             'source' => ['type' => 'string', 'comp' => false, 'label' => 'Source'],
             'survey_date' => ['type' => 'string', 'comp' => false, 'label' => 'Data ricognizione'],
             'source_ref' => ['type' => 'string', 'comp' => false, 'label' => 'Codice Sezione CAI'],
             'old_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF precedente'],
-            'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei']
+            'ref_REI' => ['type' => 'string', 'comp' => false, 'label' => 'REF rei'],
+            'reg_ref' => ['type' => 'string', 'comp' => false, 'label' => 'REF regionale'],
         ],
         'general' => [
             'from' => ['type' => 'string', 'comp' => false, 'label' => 'Località di partenza'],
@@ -68,6 +68,7 @@ class HikingRoute extends Model
         ],
         'tech' => [
             'distance' => ['type' => 'float', 'comp' => true, 'label' => 'Lunghezza in Km'],
+            'cai_scale' => ['type' => 'string', 'comp' => false, 'label' => 'Diff. CAI'],
             'ascent' => ['type' => 'float', 'comp' => true, 'label' => 'Dislivello positivo in metri'],
             'descent' => ['type' => 'float', 'comp' => true, 'label' => 'Dislivello negativo in metri'],
             'duration_forward' => ['type' => 'string', 'comp' => true, 'label' => 'Durata (P->A)'],
@@ -435,10 +436,11 @@ EOF;
         $res = DB::select(DB::raw('SELECT ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\') as geom'));
         $geom = $res[0]->geom;
 
-        $query = 'SELECT id
-            FROM hiking_routes
-            WHERE ST_intersects(' . $geometry_field . ',ST_GeomFromGeoJSON(\'' . json_encode($poly->jsonSerialize()) . '\')) AND
-            osm2cai_status=' . $osm2cai_status;
+        $query = "
+                SELECT id
+                FROM hiking_routes
+                WHERE ST_intersects(ST_SetSRID(" . $geometry_field . ", 4326), ST_GeomFromGeoJSON('" . json_encode($poly->jsonSerialize()) . "')) AND
+                osm2cai_status=" . $osm2cai_status;
         $res = DB::select(DB::raw($query));
         if (count($res) > 0) {
             foreach ($res as $obj) {

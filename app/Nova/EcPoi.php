@@ -3,30 +3,28 @@
 namespace App\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Itinerary extends Resource
+class EcPoi extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \App\Models\Itinerary::class;
+    public static $model = \App\Models\EcPoi::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static string $title = 'name';
-
-    public static function label()
+    public function title()
     {
-        return __('Itinerari');
+        return $this->name;
     }
 
     /**
@@ -35,16 +33,18 @@ class Itinerary extends Resource
      * @var array
      */
     public static array $search = [
-        'id',
+        'id', 'name'
     ];
 
-    /**
-     * The logical group associated with the resource.
-     *
-     * @var string
-     */
     public static string $group = 'Territorio';
-    public static int $priority = 7;
+    public static $priority = 8;
+
+    public static function label()
+    {
+        $label = 'Punti di Interesse';
+
+        return __($label);
+    }
 
     /**
      * Get the fields displayed by the resource.
@@ -56,23 +56,9 @@ class Itinerary extends Resource
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
-            Text::make(__('Nome'), 'name')->sortable()->rules('required', 'max:255'),
-            Text::make('Numero Tappe', function () {
-                return $this->hikingRoutes()->count();
-            })->hideWhenCreating()->hideWhenUpdating(),
-            Text::make('KM Totali', function () {
-                $hikingRoutes = $this->hikingRoutes()->get();
-                $totalKm = 0;
-                foreach ($hikingRoutes as $route) {
-                    if ($route->distance) {
-                        $totalKm += $route->distance;
-                    } else {
-                        $totalKm += $route->distance_comp;
-                    }
-                }
-                return round($totalKm, 2);
-            })->hideWhenCreating()->hideWhenUpdating(),
-            BelongsToMany::make(__('Itinerari'), 'hikingRoutes', HikingRoute::class)->searchable(),
+            Text::make('Nome', 'name')->sortable(),
+            Text::make('Descrizione', 'description')->sortable(),
+            BelongsTo::make('Utente', 'user', User::class)->sortable(),
         ];
     }
 
@@ -117,13 +103,6 @@ class Itinerary extends Resource
      */
     public function actions(Request $request)
     {
-        return [
-            (new Actions\GenerateItineraryEdgesAction)->canSee(function ($request) {
-                return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
-            }),
-            (new Actions\ImportItinerary)->standalone()->canSee(function ($request) {
-                return $request->user()->is_administrator || $request->user()->is_itinerary_manager;
-            }),
-        ];
+        return [];
     }
 }

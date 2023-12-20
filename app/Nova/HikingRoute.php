@@ -47,6 +47,7 @@ use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Filters\IssueStatusFilter;
+use Laravel\Nova\Fields\Code;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -63,7 +64,7 @@ class HikingRoute extends Resource
      *
      * @var string
      */
-    //public static string $title = 'id';
+
     public function title()
     {
         $supplementaryString = ' - ';
@@ -106,14 +107,12 @@ class HikingRoute extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        $loggedInUser = Auth::user();
-        $role = $loggedInUser->getTerritorialRole();
-        // if ( $role != "admin")
-        // {
-        //     $query->ownedBy($loggedInUser);
-        // }
 
-        return $query;
+        if (Auth::user()->getTerritorialRole() == 'regional') {
+            return $query->whereHas('regions', function ($q) {
+                $q->where('regions.id', Auth::user()->region->id);
+            });
+        }
     }
 
     /**
@@ -125,11 +124,8 @@ class HikingRoute extends Resource
      */
     public static function relatableQuery(NovaRequest $request, $query)
     {
-        if ($request->resource === 'itineraries') {
-            return $query->take(100); // Limit the number of hiking routes
-        }
+        return $query->take(100); // Limit the number of hiking routes
 
-        return $query;
     }
 
     /**
@@ -243,7 +239,6 @@ class HikingRoute extends Resource
         $sections = $this->sections()->get();
         $sectionCaiCode = '';
         foreach ($sections as $section) {
-            //create a string with the section cai code and make it linkable to the section detail page
             $sectionCaiCode .= "<a style='color:green; text-decoration:none;' href='/resources/sections/{$section->id}'>{$section->cai_code}</a>" . '<br>';
         }
 
@@ -330,6 +325,10 @@ class HikingRoute extends Resource
                 }
                 return $user->name;
             })->hideFromIndex(),
+            Text::make('Cronologia Percorribilitá', function () {
+                return "<a style='text-decoration: none; color: #2697bc; font-weight: bold; ' href='/hiking-route/{$this->id}/issues'>Visualizza</a>";
+            })->asHtml()->onlyOnDetail()
+
         ];
 
         return $fields;
@@ -457,8 +456,7 @@ class HikingRoute extends Resource
     public function actions(Request $request)
     {
         return [
-            (new UploadValidationRawDataAction)
-                ->confirmText('Inserire il GPX del percorso per confrontarlo con quello esistente.')
+            (new UploadValidationRawDataAction($this->id))
                 ->confirmButtonText('Carica')
                 ->cancelButtonText("Non caricare")
                 ->canSee(function ($request) {
@@ -472,6 +470,9 @@ class HikingRoute extends Resource
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Non validare")
                 ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request, $user) {
                     return true;
                 })
                 ->canRun(function ($request, $user) {
