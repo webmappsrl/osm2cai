@@ -34,7 +34,7 @@ class UgcMedia extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name', 'user.name'
+        'id', 'name',
     ];
 
     public static string $group = 'Rilievi';
