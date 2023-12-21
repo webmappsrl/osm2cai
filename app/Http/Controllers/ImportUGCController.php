@@ -84,7 +84,6 @@ class ImportUGCController extends Controller
         $user = User::where('email', $geoJson['properties']['user_email'])->first();
         if ($user === null) {
             Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
-            throw new \Exception('User not found');
         }
 
         if ($geoJson['geometry']) {
@@ -100,6 +99,7 @@ class ImportUGCController extends Controller
             'raw_data' => $geoJson['properties']['raw_data'] ?? null,
             'updated_at' => $geoJson['properties']['updated_at'] ?? null,
             'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'] ?? null,
+            'user_id' => $user ? $user->id : null,
         ];
 
         if ($model instanceof UgcMedia) {
