@@ -163,6 +163,9 @@ class HikingRoute extends Resource
                     if (count($this->areas) > 0) {
                         $val = implode(', ', $this->areas->pluck('name')->toArray());
                     }
+                    if (count($this->areas) > 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(2)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
@@ -171,6 +174,9 @@ class HikingRoute extends Resource
                 if (Arr::accessible($this->sectors)) {
                     if (count($this->sectors) > 0) {
                         $val = implode(', ', $this->sectors->pluck('name')->toArray());
+                    }
+                    if (count($this->sectors) > 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(2)->toArray()) . ' [...]';
                     }
                 }
                 return $val;
