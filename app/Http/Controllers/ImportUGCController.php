@@ -29,6 +29,7 @@ class ImportUGCController extends Controller
 
             $updatedElements = [];
 
+
             foreach ($endPoints as $type => $endPoint) {
                 Log::info("Starting sync for $type from $endPoint");
                 $list = json_decode($this->get_content($endPoint), true);
@@ -108,11 +109,11 @@ class ImportUGCController extends Controller
 
             if (count($poisIds) > 0) {
                 UgcPoi::whereIn('geohub_id', $poisIds)->pluck('id')->toArray();
-                $model->ugcPois()->sync($poisIds);
+                $model->ugc_pois()->sync($poisIds);
             }
             if (count($tracksIds) > 0) {
                 UgcTrack::whereIn('geohub_id', $tracksIds)->pluck('id')->toArray();
-                $model->ugcTracks()->sync($tracksIds);
+                $model->ugc_tracks()->sync($tracksIds);
             }
         }
 
