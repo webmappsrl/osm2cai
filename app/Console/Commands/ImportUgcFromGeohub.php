@@ -1,19 +1,49 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands;
 
+use App\Models\User;
 use App\Models\UgcPoi;
 use App\Models\UgcMedia;
 use App\Models\UgcTrack;
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ImportUGCController extends Controller
+class ImportUgcFromGeohub extends Command
 {
-    public function importUGCFromGeohub()
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'osm2cai:sync-ugc';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'this command syncs ugc from geohub to osm2cai db using geohub api';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+
         $endPoints = [
             'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
             'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
@@ -29,37 +59,40 @@ class ImportUGCController extends Controller
         $updatedElements = [];
 
         foreach ($endPoints as $type => $endPoint) {
+            $this->info("Starting sync for $type from $endPoint");
             $list = json_decode($this->get_content($endPoint), true);
 
             foreach ($list as $id => $updated_at) {
+                $this->info('Checking ' . $type . ' with id ' . $id);
                 $model = $this->getModel($type, $id);
                 $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
                 if ($model->wasRecentlyCreated) {
                     $createdElements[$type]++;
+                    $this->info("Created new $type with id $id");
                 }
 
                 if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
                     $this->syncRecord($model, $geoJson, $id);
                     if ($model->updated_at < $updated_at) {
                         $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
+                        $this->info("Updated $type with id $id");
                     }
                 }
             }
         }
-
-        return view('importedUgc', array_merge($createdElements, ['updatedElements' => $updatedElements]));
+        $this->info("Finished sync for $type. Created: {$createdElements[$type]}, Updated: " . count($updatedElements));
     }
 
     private function getModel($type, $id)
     {
-        $model = 'App/Models/Ugc' . ucfirst($type);
+        $model = 'App\Models\Ugc' . ucfirst($type);
         return $model::firstOrCreate(['geohub_id' => $id]);
     }
 
     private function getGeojson($url)
     {
-        return json_decode($this->get_content($url), true);
+        return json_decode(file_get_contents($url), true);
     }
 
     private function syncRecord($model, $geoJson, $id)
@@ -83,12 +116,6 @@ class ImportUGCController extends Controller
         }
         if ($model instanceof UgcMedia) {
             $data['relative_url'] = $geoJson['url'];
-            $poisIds = $geoJson['properties']['ugc_pois'];
-            $tracksIds = $geoJson['properties']['ugc_tracks'];
-            UgcPoi::whereIn('geohub_id', $poisIds)->pluck('id')->toArray();
-            UgcTrack::whereIn('geohub_id', $tracksIds)->pluck('id')->toArray();
-            $model->ugcPois()->sync($poisIds);
-            $model->ugcTracks()->sync($tracksIds);
         }
 
         $model->updateOrCreate(['geohub_id' => $id], $data);
