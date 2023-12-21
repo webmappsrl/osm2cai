@@ -460,7 +460,17 @@ class HikingRoute extends Resource
                 ->confirmButtonText('Carica')
                 ->cancelButtonText("Non caricare")
                 ->canSee(function ($request) {
-                    return true;
+                    $permission = auth()->user()->getPermissionString();
+                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+                        return true;
+                    }
+                    if ($permission == 'Referente regionale') {
+                        return $this->regions->contains(auth()->user()->region);
+                    }
+                    if ($permission == 'Referente di zona') {
+                        return $this->areas->contains(auth()->user()->area);
+                    }
+                    return false;
                 })
                 ->canRun(function ($request, $user) {
                     return true;
