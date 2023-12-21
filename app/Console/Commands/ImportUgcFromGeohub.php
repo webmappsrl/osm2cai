@@ -43,45 +43,48 @@ class ImportUgcFromGeohub extends Command
      */
     public function handle()
     {
+        try {
+            $endPoints = [
+                'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
+                'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
+                'media' => 'https://geohub.webmapp.it/api/ugc/media/geojson/it.webmapp.osm2cai/list'
+            ];
 
-        $endPoints = [
-            'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
-            'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
-            'media' => 'https://geohub.webmapp.it/api/ugc/media/geojson/it.webmapp.osm2cai/list'
-        ];
+            $createdElements = [
+                'poi' => 0,
+                'track' => 0,
+                'media' => 0
+            ];
 
-        $createdElements = [
-            'poi' => 0,
-            'track' => 0,
-            'media' => 0
-        ];
+            $updatedElements = [];
 
-        $updatedElements = [];
+            foreach ($endPoints as $type => $endPoint) {
+                $this->info("Starting sync for $type from $endPoint");
+                $list = json_decode($this->get_content($endPoint), true);
 
-        foreach ($endPoints as $type => $endPoint) {
-            $this->info("Starting sync for $type from $endPoint");
-            $list = json_decode($this->get_content($endPoint), true);
+                foreach ($list as $id => $updated_at) {
+                    $this->info('Checking ' . $type . ' with id ' . $id);
+                    $model = $this->getModel($type, $id);
+                    $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
-            foreach ($list as $id => $updated_at) {
-                $this->info('Checking ' . $type . ' with id ' . $id);
-                $model = $this->getModel($type, $id);
-                $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
+                    if ($model->wasRecentlyCreated) {
+                        $createdElements[$type]++;
+                        $this->info("Created new $type with id $id");
+                    }
 
-                if ($model->wasRecentlyCreated) {
-                    $createdElements[$type]++;
-                    $this->info("Created new $type with id $id");
-                }
-
-                if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
-                    $this->syncRecord($model, $geoJson, $id);
-                    if ($model->updated_at < $updated_at) {
-                        $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
-                        $this->info("Updated $type with id $id");
+                    if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
+                        $this->syncRecord($model, $geoJson, $id);
+                        if ($model->updated_at < $updated_at) {
+                            $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
+                            $this->info("Updated $type with id $id");
+                        }
                     }
                 }
             }
+            $this->info("Finished sync. Created: " . implode(', ', $createdElements) . ", Updated: " . count($updatedElements));
+        } catch (\Exception $e) {
+            $this->error("An error occurred: " . $e->getMessage());
         }
-        $this->info("Finished sync for $type. Created: {$createdElements[$type]}, Updated: " . count($updatedElements));
     }
 
     private function getModel($type, $id)
@@ -92,12 +95,16 @@ class ImportUgcFromGeohub extends Command
 
     private function getGeojson($url)
     {
-        return json_decode(file_get_contents($url), true);
+        $geoJson = json_decode($this->get_content($url), true);
+        if ($geoJson === null) {
+            throw new \Exception("Failed to fetch GeoJSON from URL: $url");
+        }
+        return $geoJson;
     }
 
     private function syncRecord($model, $geoJson, $id)
     {
-        $user = User::whereEmail($geoJson['properties']['user_email'])->first();
+        $user = DB::raw('(SELECT id FROM users WHERE email = \'' . $geoJson['properties']['user_email'] . '\')');
         $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
         $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
 
@@ -128,6 +135,9 @@ class ImportUgcFromGeohub extends Command
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
         $data = curl_exec($ch);
+        if ($data === false) {
+            throw new \Exception("Failed to fetch content from URL: $url");
+        }
         curl_close($ch);
         return $data;
     }

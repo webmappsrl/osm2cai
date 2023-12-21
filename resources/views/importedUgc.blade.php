@@ -70,12 +70,12 @@
 <body>
     <div class="container">
         <h1>Import Finished</h1>
-        @if ($poiCreatedElements < 1 && $trackCreatedElements < 1 && $mediaCreatedElements < 1 && count($updatedElements) < 1)
+        @if ($poi < 1 && $track < 1 && $media < 1 && count($updatedElements) < 1)
             <p>No elements were created or updated.</p>
         @else
-            <p>Poi created: {{ $poiCreatedElements }}</p>
-            <p>Track created: {{ $trackCreatedElements }}</p>
-            <p>Media created: {{ $mediaCreatedElements }}</p>
+            <p>Poi created: {{ $poi }}</p>
+            <p>Track created: {{ $track }}</p>
+            <p>Media created: {{ $media }}</p>
             <p>The following elements were updated:</p>
             <ul>
                 @foreach ($updatedElements as $element)
