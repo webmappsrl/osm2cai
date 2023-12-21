@@ -58,7 +58,7 @@ class ImportUGCController extends Controller
 
             return view('importedUgc', array_merge($createdElements, ['updatedElements' => $updatedElements]));
         } catch (\Exception $e) {
-            Log::error('Error occurred during import process: ' . $e->getMessage());
+            Log::error('Error occurred during import process: ' . $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile());
             return response()->json(['error' => 'An error occurred during the import process. Please try again later.'], 500);
         }
     }
@@ -86,25 +86,34 @@ class ImportUGCController extends Controller
             throw new \Exception('User not found');
         }
 
-        $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
-        $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
+        if ($geoJson['geometry']) {
+            $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
+            $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
+        } else {
+            $geometry = null;
+        }
 
         $data = [
-            'name' => $geoJson['properties']['name'],
+            'name' => $geoJson['properties']['name'] ?? null,
             'geometry' => $geometry,
-            'raw_data' => $geoJson['properties']['raw_data'],
-            'updated_at' => $geoJson['properties']['updated_at'],
-            'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'],
+            'raw_data' => $geoJson['properties']['raw_data'] ?? null,
+            'updated_at' => $geoJson['properties']['updated_at'] ?? null,
+            'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'] ?? null,
         ];
 
         if ($model instanceof UgcMedia) {
-            $data['relative_url'] = $geoJson['url'];
-            $poisIds = $geoJson['properties']['ugc_pois'];
-            $tracksIds = $geoJson['properties']['ugc_tracks'];
-            UgcPoi::whereIn('geohub_id', $poisIds)->pluck('id')->toArray();
-            UgcTrack::whereIn('geohub_id', $tracksIds)->pluck('id')->toArray();
-            $model->ugcPois()->sync($poisIds);
-            $model->ugcTracks()->sync($tracksIds);
+            $data['relative_url'] = $geoJson['url'] ?? null;
+            $poisIds = $geoJson['properties']['ugc_pois'] ?? [];
+            $tracksIds = $geoJson['properties']['ugc_tracks'] ?? [];
+
+            if (count($poisIds) > 0) {
+                UgcPoi::whereIn('geohub_id', $poisIds)->pluck('id')->toArray();
+                $model->ugcPois()->sync($poisIds);
+            }
+            if (count($tracksIds) > 0) {
+                UgcTrack::whereIn('geohub_id', $tracksIds)->pluck('id')->toArray();
+                $model->ugcTracks()->sync($tracksIds);
+            }
         }
 
         $model->updateOrCreate(['geohub_id' => $id], $data);
