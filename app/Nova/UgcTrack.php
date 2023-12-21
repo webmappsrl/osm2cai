@@ -2,8 +2,13 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class UgcTrack extends Resource
@@ -34,7 +39,7 @@ class UgcTrack extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name', 'user.name'
+        'id', 'name'
     ];
 
     public static string $group = 'Rilievi';
@@ -57,6 +62,22 @@ class UgcTrack extends Resource
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
+            DateTime::make('Updated At')
+                ->format('DD MMM YYYY HH:mm:ss')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
+            Text::make('Geohub ID', 'geohub_id')
+                ->onlyOnDetail(),
+            Text::make('Nome', 'name')
+                ->sortable(),
+            Textarea::make('Descrizione', 'description'),
+            BelongsTo::make('User', 'user')
+                ->searchable()
+                ->sortable(),
+            BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
+            Text::make('Tassonomie Where', 'taxonomy_wheres'),
+            Text::make('Metadata')
+                ->hideFromIndex()
         ];
     }
 

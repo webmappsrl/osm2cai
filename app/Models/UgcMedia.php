@@ -12,13 +12,18 @@ class UgcMedia extends Model
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'relative_url'];
 
-    public function ugcPois(): BelongsToMany
+    public function ugc_pois(): BelongsToMany
     {
         return $this->belongsToMany(UgcPoi::class);
     }
 
-    public function ugcTracks(): BelongsToMany
+    public function ugc_tracks(): BelongsToMany
     {
         return $this->belongsToMany(UgcTrack::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
