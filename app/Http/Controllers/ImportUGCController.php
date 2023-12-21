@@ -36,20 +36,19 @@ class ImportUGCController extends Controller
                 foreach ($list as $id => $updated_at) {
                     $model = $this->getModel($type, $id);
                     Log::info("Syncing {$type} with id {$id}");
-                    if ($model instanceof UgcMedia) {
-                        $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
-                        if ($model->wasRecentlyCreated) {
-                            $createdElements[$type]++;
-                            Log::info("{$type} with id {$id} created");
-                        }
+                    $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
-                        if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
-                            $this->syncRecord($model, $geoJson, $id);
-                            if ($model->updated_at < $updated_at) {
-                                $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
-                                Log::info("{$type} with id {$id} updated");
-                            }
+                    if ($model->wasRecentlyCreated) {
+                        $createdElements[$type]++;
+                        Log::info("{$type} with id {$id} created");
+                    }
+
+                    if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
+                        $this->syncRecord($model, $geoJson, $id);
+                        if ($model->updated_at < $updated_at) {
+                            $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
+                            Log::info("{$type} with id {$id} updated");
                         }
                     }
                 }
