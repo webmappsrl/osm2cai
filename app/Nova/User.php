@@ -2,14 +2,15 @@
 
 namespace App\Nova;
 
-use App\Models\User as UserModel;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Boolean;
+use App\Models\User as UserModel;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\DownloadUsersCsv;
 use Laravel\Nova\Fields\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -210,7 +211,13 @@ class User extends Resource
                 ->canRun(function ($request, $zone) {
                     return $request->user()->can('emulate', $zone);
                 }),
-            new Actions\DownloadUsersCsv()
+            (new DownloadUsersCsv())
+                ->canSee(function ($request) {
+                    return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+                })
+                ->canRun(function ($request, $zone) {
+                    return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+                }),
         ];
     }
 
@@ -272,5 +279,10 @@ class User extends Resource
         }
 
         return $query;
+    }
+
+    public static function actionOnIndex()
+    {
+        return null;
     }
 }
