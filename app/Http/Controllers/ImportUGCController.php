@@ -104,15 +104,15 @@ class ImportUGCController extends Controller
 
         if ($model instanceof UgcMedia) {
             $data['relative_url'] = $geoJson['url'] ?? null;
-            $poisIds = $geoJson['properties']['ugc_pois'] ?? [];
-            $tracksIds = $geoJson['properties']['ugc_tracks'] ?? [];
+            $poisGeohubIds = $geoJson['properties']['ugc_pois'] ?? [];
+            $tracksGeohubIds = $geoJson['properties']['ugc_tracks'] ?? [];
 
-            if (count($poisIds) > 0) {
-                UgcPoi::whereIn('geohub_id', $poisIds)->pluck('id')->toArray();
+            if (count($poisGeohubIds) > 0) {
+                $poisIds = UgcPoi::whereIn('geohub_id', $poisGeohubIds)->pluck('id')->toArray();
                 $model->ugc_pois()->sync($poisIds);
             }
-            if (count($tracksIds) > 0) {
-                UgcTrack::whereIn('geohub_id', $tracksIds)->pluck('id')->toArray();
+            if (count($tracksGeohubIds) > 0) {
+                $tracksIds = UgcTrack::whereIn('geohub_id', $tracksGeohubIds)->pluck('id')->toArray();
                 $model->ugc_tracks()->sync($tracksIds);
             }
         }
