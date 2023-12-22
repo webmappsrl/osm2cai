@@ -366,9 +366,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-<a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -746,7 +746,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
             ['LoScarpone-Export', route('loscarpone-export')],
             ['API', '/api/documentation'],
-            ['Guida Utente', 'https://docs.google.com/document/u/5/d/1th-Gt8yG-smXegSX_EI6kkEkfJd3GZQMOyX8T2l8ntk/edit?pli=1']
+            ['Documentazione OSM2CAI', 'https://catastorei.gitbook.io/documentazione-osm2cai/']
         ];
         $user = Auth::user();
         if ($user->is_administrator) {
