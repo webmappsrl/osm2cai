@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\KeyValue;
@@ -78,6 +79,34 @@ class UgcPoi extends Resource
                 ->sortable(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Tassonomie Where', 'taxonomy_wheres'),
+            Code::make(__('Form data'), function ($model) {
+                $jsonRawData = json_decode($model->raw_data, true);
+                unset($jsonRawData['position']);
+                unset($jsonRawData['displayPosition']);
+                unset($jsonRawData['city']);
+                unset($jsonRawData['date']);
+                unset($jsonRawData['nominatim']);
+                $rawData = json_encode($jsonRawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return  $rawData;
+            })->onlyOnDetail()->language('json')->rules('json'),
+            Code::make(__('Device data'), function ($model) {
+                $jsonRawData = json_decode($model->raw_data, true);
+                $jsonData['position'] = $jsonRawData['position'];
+                $jsonData['displayPosition'] = $jsonRawData['displayPosition'];
+                $jsonData['city'] = $jsonRawData['city'];
+                $jsonData['date'] = $jsonRawData['date'];
+                $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return  $rawData;
+            })->onlyOnDetail()->language('json')->rules('json'),
+            Code::make(__('Nominatim'), function ($model) {
+                $jsonData = json_decode($model->raw_data, true)['nominatim'];
+                $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return  $rawData;
+            })->onlyOnDetail()->language('json')->rules('json'),
+            Code::make(__('Raw data'), function ($model) {
+                $rawData = json_encode(json_decode($model->raw_data, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return  $rawData;
+            })->onlyOnDetail()->language('json')->rules('json'),
         ];
     }
 
