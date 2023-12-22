@@ -16,8 +16,8 @@ class ImportUGCController extends Controller
     {
         try {
             $endPoints = [
-                // 'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
-                // 'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
+                'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
+                'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
                 'media' => 'https://geohub.webmapp.it/api/ugc/media/geojson/it.webmapp.osm2cai/list'
             ];
 
