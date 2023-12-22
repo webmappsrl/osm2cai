@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
@@ -76,8 +77,19 @@ class UgcTrack extends Resource
                 ->sortable(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Tassonomie Where', 'taxonomy_wheres'),
-            Text::make('Metadata')
-                ->hideFromIndex()
+            Code::Make(__('metadata'), 'metadata')->language('json')->rules('nullable', 'json')->help(
+                'metadata of track'
+            )->onlyOnDetail(),
+            Text::make(__('Raw data'), function ($model) {
+                $rawData = json_decode($model->raw_data, true);
+                $result = [];
+
+                foreach ($rawData as $key => $value) {
+                    $result[] = $key . ' = ' . json_encode($value);
+                }
+
+                return join('<br>', $result);
+            })->onlyOnDetail()->asHtml(),
         ];
     }
 
