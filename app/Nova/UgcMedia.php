@@ -80,7 +80,10 @@ class UgcMedia extends Resource
                 ->sortable(),
             Text::make('Relative URL', 'relative_url')
                 ->hideFromIndex()
-		->asHtml(),
+                ->displayUsing(function ($value) {
+                    return "<a href='{$value}' target='_blank'>{$value}</a>";
+                })
+                ->asHtml(),
         ];
     }
 
