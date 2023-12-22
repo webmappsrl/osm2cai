@@ -11,6 +11,7 @@ use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\BelongsTo;
 use App\Nova\Actions\DownloadUsersCsv;
+use App\Nova\Filters\UserTypeFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -179,7 +180,11 @@ class User extends Resource
      */
     public function filters(Request $request): array
     {
-        return [];
+        return [
+            (new UserTypeFilter)->canSee(function ($request) {
+                return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+            }),
+        ];
     }
 
     /**
