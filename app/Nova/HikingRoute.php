@@ -8,6 +8,7 @@ use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
@@ -20,6 +21,7 @@ use Ericlagarda\NovaTextCard\TextCard;
 use App\Nova\Actions\SectorRefactoring;
 use App\Nova\Filters\DeleteOnOsmFilter;
 use App\Nova\Filters\HikingRouteStatus;
+use App\Nova\Filters\IssueStatusFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Nova\Filters\GeometrySyncFilter;
 use AddRegionFavoriteToHikingRoutesTable;
@@ -32,6 +34,7 @@ use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Actions\DeleteHikingRouteAction;
+use App\Nova\Filters\HrCorrectGeometryFilter;
 use Laravel\Nova\Http\Requests\ActionRequest;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
 use App\Nova\Filters\HikingRoutesRegionFilter;
@@ -46,8 +49,6 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
-use App\Nova\Filters\IssueStatusFilter;
-use Laravel\Nova\Fields\Code;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -185,9 +186,9 @@ class HikingRoute extends Resource
             Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
             Text::make('Percorribilità', 'issues_status')->sortable(),
-            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
+            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex()->sortable(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
-            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+            // Number::make('OSMID', 'relation_id')->onlyOnIndex(),
             Text::make('Legenda', function () {
                 return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>";
             })->asHtml()->onlyOnDetail(),
@@ -213,13 +214,9 @@ class HikingRoute extends Resource
         }
         $loggedInUser = auth()->user();
         $role = $loggedInUser->getTerritorialRole();
-        if (in_array($role, ['admin', 'national', 'regional'])) {
-            $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
-        }
-        $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')
-            ->hideWhenCreating()
-            ->hideWhenUpdating()
-            ->sortable();
+        // if (in_array($role, ['admin', 'national', 'regional'])) {
+        //     $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
+        // }
 
         $fields[] = Boolean::make('Coerenza ref REI', function () {
             return $this->ref_REI == $this->ref_REI_comp;
@@ -298,10 +295,10 @@ class HikingRoute extends Resource
         })->onlyOnDetail()->asHtml();
 
         //Region Favorite
-        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+        // $fields[] = Boolean::make('Region Favorite', 'region_favorite');
 
         //Data pubblicazione LoScarpone
-        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
+        // $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
 
 
         return $fields;
@@ -425,6 +422,7 @@ class HikingRoute extends Resource
                 (new DeleteOnOsmFilter()),
                 (new RegionFavoriteHikingRouteFilter()),
                 (new IssueStatusFilter()),
+                (new HrCorrectGeometryFilter()),
             ];
         }
     }
