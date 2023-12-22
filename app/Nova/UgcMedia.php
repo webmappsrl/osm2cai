@@ -79,7 +79,8 @@ class UgcMedia extends Resource
             Text::make('Tassonomie Where', 'taxonomy_wheres')
                 ->sortable(),
             Text::make('Relative URL', 'relative_url')
-                ->hideFromIndex()
+                ->hideFromIndex(),
+		->asHtml()
         ];
     }
 
