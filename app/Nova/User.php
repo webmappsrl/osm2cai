@@ -11,6 +11,11 @@ use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\BelongsTo;
 use App\Nova\Actions\DownloadUsersCsv;
+use App\Nova\Filters\UserAreaFilter;
+use App\Nova\Filters\UserAssociationFilter;
+use App\Nova\Filters\UserProvinceFilter;
+use App\Nova\Filters\UserRegionFilter;
+use App\Nova\Filters\UserSectorFilter;
 use App\Nova\Filters\UserTypeFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use Illuminate\Database\Eloquent\Builder;
@@ -184,6 +189,10 @@ class User extends Resource
             (new UserTypeFilter)->canSee(function ($request) {
                 return auth()->user()->is_administrator || auth()->user()->is_national_referent;
             }),
+            (new UserRegionFilter),
+            (new UserAreaFilter),
+            (new UserProvinceFilter),
+            (new UserSectorFilter)
         ];
     }
 
