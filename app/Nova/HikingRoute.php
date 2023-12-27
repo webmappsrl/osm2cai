@@ -155,6 +155,9 @@ class HikingRoute extends Resource
                     if (count($this->provinces) > 0) {
                         $val = implode(', ', $this->provinces->pluck('name')->toArray());
                     }
+                    if (count($this->provinces) >= 2) {
+                        $val = implode(', ', $this->provinces->pluck('name')->take(1)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
@@ -164,8 +167,8 @@ class HikingRoute extends Resource
                     if (count($this->areas) > 0) {
                         $val = implode(', ', $this->areas->pluck('name')->toArray());
                     }
-                    if (count($this->areas) > 2) {
-                        $val = implode(', ', $this->areas->pluck('name')->take(2)->toArray()) . ' [...]';
+                    if (count($this->areas) >= 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(1)->toArray()) . ' [...]';
                     }
                 }
                 return $val;
@@ -176,8 +179,8 @@ class HikingRoute extends Resource
                     if (count($this->sectors) > 0) {
                         $val = implode(', ', $this->sectors->pluck('name')->toArray());
                     }
-                    if (count($this->sectors) > 2) {
-                        $val = implode(', ', $this->areas->pluck('name')->take(2)->toArray()) . ' [...]';
+                    if (count($this->sectors) >= 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(1)->toArray()) . ' [...]';
                     }
                 }
                 return $val;
