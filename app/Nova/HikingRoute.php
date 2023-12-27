@@ -380,8 +380,8 @@ class HikingRoute extends Resource
                         '<p>OpenStreetMap: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
                             '<p>Waymarkedtrails: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
                             '<p>OSM Relation Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>' .
-                            '<p>OSM2CAI: <a target="_blank" href="https://26.app.geohub.webmapp.it/#/map">' . $hr->relation_id . '</a></p>' .
-                            '<p>INFOMONT: <a target="_blank" href="https://15.app.geohub.webmapp.it/#/map">' . $hr->relation_id . '</a></p>'
+                            '<p>OSM2CAI: <a target="_blank" href="https://26.app.geohub.webmapp.it/#/map">' . $hr->id . '</a></p>' .
+                            '<p>INFOMONT: <a target="_blank" href="https://15.app.geohub.webmapp.it/#/map">' . $hr->id . '</a></p>'
                     )
 
                     ->textAsHtml(),
