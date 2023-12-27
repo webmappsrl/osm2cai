@@ -128,6 +128,9 @@ class ImportUGCController extends Controller
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
         $data = curl_exec($ch);
         if ($data === false) {
+            if (curl_errno($ch) == CURLE_OPERATION_TIMEDOUT) {
+                throw new \Exception('Timeout occurred when retrieving content from URL: ' . $url);
+            }
             throw new \Exception('Failed to retrieve content from URL');
         }
         curl_close($ch);
