@@ -10,6 +10,7 @@ use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
+use Wm\MapPointNova3\MapPointNova3;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -79,6 +80,14 @@ class UgcPoi extends Resource
                 ->sortable(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Tassonomie Where', 'taxonomy_wheres'),
+            MapPointNova3::make('geometry')->withMeta([
+                'center' => [42, 10],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'minZoom' => 8,
+                'maxZoom' => 17,
+                'defaultZoom' => 13
+            ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
                 $jsonRawData = json_decode($model->raw_data, true);
                 unset($jsonRawData['position']);
@@ -91,10 +100,10 @@ class UgcPoi extends Resource
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Device data'), function ($model) {
                 $jsonRawData = json_decode($model->raw_data, true);
-                $jsonData['position'] = $jsonRawData['position'];
-                $jsonData['displayPosition'] = $jsonRawData['displayPosition'];
-                $jsonData['city'] = $jsonRawData['city'];
-                $jsonData['date'] = $jsonRawData['date'];
+                $jsonData['position'] = $jsonRawData['position'] ?? null;
+                $jsonData['displayPosition'] = $jsonRawData['displayPosition'] ?? null;
+                $jsonData['city'] = $jsonRawData['city'] ?? null;
+                $jsonData['date'] = $jsonRawData['date'] ?? null;
                 $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 return  $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),

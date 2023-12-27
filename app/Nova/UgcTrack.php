@@ -11,6 +11,8 @@ use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
+use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
 class UgcTrack extends Resource
 {
@@ -90,6 +92,12 @@ class UgcTrack extends Resource
 
                 return join('<br>', $result);
             })->onlyOnDetail()->asHtml(),
+            WmEmbedmapsField::make(__('Map'), function ($model) {
+                return [
+                    'feature' => $model->getGeojson(),
+                    'related' => $model->getRelatedUgcGeojson()
+                ];
+            })->onlyOnDetail(),
         ];
     }
 
