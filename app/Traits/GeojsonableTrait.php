@@ -108,7 +108,6 @@ trait GeojsonableTrait
         $model = get_class($this);
         if ($this->id == null) {
             \Log::error('Id is null');
-            throw new Exception('Id is null. Object ' . var_export($this, true));
         }
         $obj = $model::where('id', '=', $this->id)
             ->select(
