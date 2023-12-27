@@ -2,8 +2,10 @@
 
 namespace App\Traits;
 
+use Exception;
 use App\Services\GeometryService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symm\Gisconverter\Gisconverter;
 use Symm\Gisconverter\Exceptions\InvalidText;
 
@@ -101,7 +103,13 @@ trait GeojsonableTrait
      */
     public function getCentroidGeojson(): ?array
     {
+        \Log::info('Getting centroid geojson for id: ' . $this->id);
+
         $model = get_class($this);
+        if ($this->id == null) {
+            \Log::error('Id is null');
+            throw new Exception('Id is null. Object ' . var_export($this, true));
+        }
         $obj = $model::where('id', '=', $this->id)
             ->select(
                 DB::raw("ST_Asgeojson(ST_Centroid(geometry)) as geom")
@@ -109,6 +117,7 @@ trait GeojsonableTrait
             ->first();
 
         if (is_null($obj)) {
+            \Log::warning('No record found for id: ' . $this->id);
             return null;
         }
 
@@ -120,8 +129,10 @@ trait GeojsonableTrait
                 "properties" => [],
                 "geometry" => json_decode($geom, true)
             ];
-        } else
+        } else {
+            \Log::warning('No geometry found for id: ' . $this->id);
             return null;
+        }
     }
 
     /**

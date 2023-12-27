@@ -8,8 +8,10 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
+use Wm\MapPointNova3\MapPointNova3;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
 
 class UgcMedia extends Resource
 {
@@ -84,6 +86,12 @@ class UgcMedia extends Resource
                     return "<a href='{$value}' target='_blank'>{$value}</a>";
                 })
                 ->asHtml(),
+            WmEmbedmapsField::make(__('Map'), function ($model) {
+                return [
+                    'feature' => $model->getGeojson(),
+                    'related' => $model->getRelatedUgcGeojson()
+                ];
+            })->onlyOnDetail(),
         ];
     }
 
