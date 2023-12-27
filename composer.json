@@ -35,7 +35,8 @@
     "symm/gisconverter": "^1.0",
     "wm/map-multi-linestring-nova": "*",
     "wm/map-multi-polygon-nova3": "dev-main",
-    "wm/map-point": "^0.0.9"
+    "wm/map-point-nova3": "^0.0.9",
+    "webmapp/wm-embedmaps-field": "*"
   },
   "require-dev": {
     "facade/ignition": "^2.5",
@@ -79,6 +80,10 @@
     {
       "type": "path",
       "url": "./nova-components/MapMultiLinestringNova"
+    },
+    {
+      "type": "path",
+      "url": "./nova-components/WmEmbedmapsField"
     }
   ],
   "minimum-stability": "dev",
