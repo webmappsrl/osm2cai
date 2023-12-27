@@ -58,7 +58,7 @@ class EcPoi extends Resource
             ID::make(__('ID'), 'id')->sortable(),
             Text::make('Nome', 'name')->sortable(),
             Text::make('Descrizione', 'description')->sortable(),
-            BelongsTo::make('Utente', 'user', User::class)->sortable(),
+            BelongsTo::make('Utente', 'user', User::class)->sortable()->searchable(),
         ];
     }
 
