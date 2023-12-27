@@ -166,10 +166,10 @@ class Section extends Resource
      */
     public function cards(Request $request)
     {
-        if (!Auth::user()->is_administrator) {
-            $data = DB::table('regions_view') //TODO no section_view yet in the database
+        if (!Auth::user()->is_administrator && Auth::user()->section_id != null) {
+            $data = DB::table('sections_view') //TODO no section_view yet in the database
                 ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
-                ->where('id', Auth::user()->region->id)
+                ->where('id', Auth::user()->section->id)
                 ->get();
             $numbers[1] = $data[0]->tot1;
             $numbers[2] = $data[0]->tot2;
@@ -195,7 +195,7 @@ class Section extends Resource
             ];
             return $cards;
         } else {
-            $sectionId = $request->route('resourceId');
+            $sectionId = $request->resourceId;
 
             $values = DB::table('hiking_routes')
                 ->join('hiking_route_section', 'hiking_routes.id', '=', 'hiking_route_section.hiking_route_id')
