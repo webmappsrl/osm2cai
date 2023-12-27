@@ -8,7 +8,8 @@ use App\Models\Sector;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy {
+class UserPolicy
+{
     use HandlesAuthorization;
 
     /**
@@ -16,7 +17,8 @@ class UserPolicy {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
     }
 
     /**
@@ -28,7 +30,8 @@ class UserPolicy {
      *
      * @return bool
      */
-    private function _isManager(User $user, User $model, bool $self = true): bool {
+    private function _isManager(User $user, User $model, bool $self = true): bool
+    {
         if ($user->id === $model->id)
             return $self;
 
@@ -41,44 +44,63 @@ class UserPolicy {
         return false;
     }
 
-    public function viewAny(User $user): bool {
+    public function viewAny(User $user): bool
+    {
 
         $territorialRole = $user->getTerritorialRole();
-        if ( $territorialRole == 'local' || $territorialRole == 'unknown' )
+        if ($territorialRole == 'local' || $territorialRole == 'unknown')
             return false;
         else
             return true;
     }
 
-    public function view(User $user, User $model): bool {
+    public function view(User $user, User $model): bool
+    {
+        $territorialRole = $user->getTerritorialRole();
+
+        if ($territorialRole === 'admin' || $territorialRole === 'regional' || $territorialRole === 'national')
+            return true;
+        else
+            return false;
+    }
+
+    public function create(User $user): bool
+    {
         return $user->is_administrator;
     }
 
-    public function create(User $user): bool {
+    public function update(User $user, User $model): bool
+    {
+        $territorialRole = $user->getTerritorialRole();
+
+        if ($territorialRole === 'admin' || $territorialRole === 'regional' || $territorialRole === 'national')
+            return true;
+        else
+            return false;
+    }
+
+    public function delete(User $user, User $model): bool
+    {
         return $user->is_administrator;
     }
 
-    public function update(User $user, User $model): bool {
+    public function restore(User $user, User $model): bool
+    {
         return $user->is_administrator;
     }
 
-    public function delete(User $user, User $model): bool {
+    public function forceDelete(User $user, User $model): bool
+    {
         return $user->is_administrator;
     }
 
-    public function restore(User $user, User $model): bool {
+    public function emulate(User $user, User $model): bool
+    {
         return $user->is_administrator;
     }
 
-    public function forceDelete(User $user, User $model): bool {
-        return $user->is_administrator;
-    }
-
-    public function emulate(User $user, User $model): bool {
-        return $user->is_administrator;
-    }
-
-    private function _canProvince(User $user, Province $province) {
+    private function _canProvince(User $user, Province $province)
+    {
         $user = User::getEmulatedUser($user);
         $result = false;
 
@@ -94,7 +116,8 @@ class UserPolicy {
         return $result;
     }
 
-    private function _canArea(User $user, Area $area) {
+    private function _canArea(User $user, Area $area)
+    {
         $user = User::getEmulatedUser($user);
         $result = false;
 
@@ -110,7 +133,8 @@ class UserPolicy {
         return $result;
     }
 
-    private function _canSector(User $user, Sector $sector) {
+    private function _canSector(User $user, Sector $sector)
+    {
         $user = User::getEmulatedUser($user);
         $result = false;
 
@@ -126,27 +150,33 @@ class UserPolicy {
         return $result;
     }
 
-    public function attachProvince(User $user, User $model, Province $province) {
+    public function attachProvince(User $user, User $model, Province $province)
+    {
         return $user->is_administrator;
     }
 
-    public function detachProvince(User $user, User $model, Province $province) {
+    public function detachProvince(User $user, User $model, Province $province)
+    {
         return $user->is_administrator;
     }
 
-    public function attachArea(User $user, User $model, Area $area) {
+    public function attachArea(User $user, User $model, Area $area)
+    {
         return $user->is_administrator;
     }
 
-    public function detachArea(User $user, User $model, Area $area) {
+    public function detachArea(User $user, User $model, Area $area)
+    {
         return $user->is_administrator;
     }
 
-    public function attachSector(User $user, User $model, Sector $sector) {
+    public function attachSector(User $user, User $model, Sector $sector)
+    {
         return $this->_canSector($user, $sector);
     }
 
-    public function detachSector(User $user, User $model, Sector $sector) {
+    public function detachSector(User $user, User $model, Sector $sector)
+    {
         return $this->_canSector($user, $sector);
     }
 }
