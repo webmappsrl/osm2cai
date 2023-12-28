@@ -1,90 +1,41 @@
 # Changelog
 
-## [233.7.0](https://github.com/webmappsrl/osm2cai/compare/v233.4.1...v233.7.0) (2023-12-28)
+## [233.5.0](https://github.com/webmappsrl/osm2cai/compare/v233.4.1...v233.5.0) (2023-12-28)
 
 
 ### Features
 
-- **ec_pois:**
-  - Added fields to ec_pois.
-
-- **UGC:**
-  - Added create policy for ugc.
-  - Added new log driver for logging missing user during imports.
-  - Imported ugc from geohub v1.
-  - Added ugc relationships.
-  - Imported ugc v2.
-  - UGC sync.
-  - Enhanced Nova interface for ugc resources.
-  - Hiking route details action upload gpx policy.
-  - Hiking route details sync with OSM policy.
-  - HR areas and sectors columns resized.
-  - User Nova index query for regional referent.
-  - Added user filters.
-  - Added osm2cai and infomont map links to HR.
-  - Cleaned HR index columns.
-  - Added 'documentazione OSM2CAI' link in Nova tools sidebar menu.
-  - Map multi linestring component updated.
-  - HR feature image added helper.
-  - Update pagina sezione.
-  - Improved province, aree, settori list in HR Nova index.
-  - Added wm embed maps field to Nova ugc resources.
-  - Added URL oms2cai and infomont map to HR.
-
-### Fixes
-
-- Fixed import ugc.
-- Added more error handling to import ugc.
-- Fixed typo.
-- Fixed relationships ugc.
-- User relationship with ugc.
-- Fixed DBAL database error not recognizing geometry type in the database.
-- Fixed download users CSV action.
-- Fixed import ugc media relative URL.
-- Better error handling in ugc import.
-- Fixed error in geojsonable trait.
-- Fixed typo.
-- Fixed HR cards links, changed relation id to osm2cai id.
-- Better error handling in ugc import.
-- Fixed error in geojsonable trait.
-
-### Updates
-
-- De-commented APIs.
-- Updated release date in app.php.
-
-## [233.4.0](https://github.com/webmappsrl/osm2cai/compare/v233.3.2...v233.4.0) (2023-12-20)
-
-
-### Features
-
-* added automatic versioning workflow ([a84f265](https://github.com/webmappsrl/osm2cai/commit/a84f26543d39c84ae47b97287ad78380346f4f41))
-* added codice sezione and nome sezione to regional csv export ([1bd6ec7](https://github.com/webmappsrl/osm2cai/commit/1bd6ec752e09c151862d0bfee05aad80af8a36ee))
-* added dashboard to section detail nova ([903ed44](https://github.com/webmappsrl/osm2cai/commit/903ed44e416bcd4667e5f907fd7d385fce8382f1))
-* added default value for issue_description in percorribilitá popup for hiking routes nova resource ([29142b6](https://github.com/webmappsrl/osm2cai/commit/29142b62306b4e6b9045a0965189effab27b5f55))
-* added index query for regional users on hr. Now they can only see hiking routes for their region ([4a71aed](https://github.com/webmappsrl/osm2cai/commit/4a71aed488d21e8ad277514af4e7ba5af6ab40fa))
-* added issues chronology to hiking routes ([d14e211](https://github.com/webmappsrl/osm2cai/commit/d14e211b984c86aef9497e8c42ecb71d4a6a631b))
-* added osm2cai OSM import itinerary action ([d73a4d3](https://github.com/webmappsrl/osm2cai/commit/d73a4d35bfc35ce2256fa74e5857bd551a7680fa))
-* added punti di interesse ([99541e9](https://github.com/webmappsrl/osm2cai/commit/99541e935f1d06c4dc203a16ad2fde2ec60ae837))
-* added ref_reg and ref_reg_osm to hr nova ([a5caff9](https://github.com/webmappsrl/osm2cai/commit/a5caff99607f36fa330d9c1f48419a3c36d52c28))
-* added rilievi section to side menu ([30fff20](https://github.com/webmappsrl/osm2cai/commit/30fff20aebc742cac2f895a8be203c7d8c7a4140))
-* added ugc models ([d39bf2f](https://github.com/webmappsrl/osm2cai/commit/d39bf2f9e3bc15c3a6992edef47491fe21d6f73a))
-* associate hr to itinerary reworked ([8797b28](https://github.com/webmappsrl/osm2cai/commit/8797b28ed22af120de2574efeb87624d4a515aae))
-* improved nova dashboard ([f73d865](https://github.com/webmappsrl/osm2cai/commit/f73d8653f1c0385cc6b3ea7a32f22405cad41e0a))
-* prevent detach hr from sections ([d61f824](https://github.com/webmappsrl/osm2cai/commit/d61f824cd31fcc52b4d7a98ef908dd3a3a9f3502))
+* add filter user page ([7ed2c7f](https://github.com/webmappsrl/osm2cai/commit/7ed2c7febac54b5d51de05e75af553dd479709e5))
+* add view user ([58c68db](https://github.com/webmappsrl/osm2cai/commit/58c68db73dc6f27fd1aece8986b775c263902ef9))
+* added 'documentazione OSM2CAI' link in nova tools sidebar menu ([a6fcebc](https://github.com/webmappsrl/osm2cai/commit/a6fcebccc8e157082024f84fe231f04e70104768))
+* added asHtml() to ugc media url ([b830809](https://github.com/webmappsrl/osm2cai/commit/b830809a574b5dc852c45e3b2956410a84503ed3))
+* added osm2cai and infomont map links to hr ([56a1840](https://github.com/webmappsrl/osm2cai/commit/56a1840c9ac86683cb8d73240b589c1b957d6bb9))
+* added url oms2cai and infomont map to hr ([6006658](https://github.com/webmappsrl/osm2cai/commit/6006658ce15f6eccda0111c2b5d707283e17a424))
+* added user filters ([137dbbd](https://github.com/webmappsrl/osm2cai/commit/137dbbd9a30f0f5fa4d3ff079e0a4c5d2708c193))
+* added wm embed maps field to nova ugc resources ([a19c1c4](https://github.com/webmappsrl/osm2cai/commit/a19c1c4cf40fb7816de3ad64695fa9b5c4e4c008))
+* clean hr index colums ([2d1f795](https://github.com/webmappsrl/osm2cai/commit/2d1f79530463e6a8d14212ee58008a7cecf0f851))
+* enhanced nova interface for ugc resources ([7574836](https://github.com/webmappsrl/osm2cai/commit/75748364852ae57e08642b404bcc32017b7367fa))
+* hiking_route_details_action_upload_gpx_policy ([6fd5caa](https://github.com/webmappsrl/osm2cai/commit/6fd5caa428868f590a7fb1b3e3131df05b643b2f))
+* hiking_route_details_sync_withOSM_policy ([4fb4a7d](https://github.com/webmappsrl/osm2cai/commit/4fb4a7dab2f623c8f35aa9afd3abbd4a4837bb37))
+* hr areas and sectors columns resized ([8f591d6](https://github.com/webmappsrl/osm2cai/commit/8f591d6c1ade17b79a328be1e831d54e5273318b))
+* hr feature image added helper ([0739e74](https://github.com/webmappsrl/osm2cai/commit/0739e749ed5f7da2cd8fac28efebb07ae74411c4))
+* improved province, aree,settori list in hr nova index ([2c1057b](https://github.com/webmappsrl/osm2cai/commit/2c1057b574ef6110a5bd6abce683a1803731c6b3))
+* map multi linestring component updated ([f8aa5a4](https://github.com/webmappsrl/osm2cai/commit/f8aa5a4408cecb05f2e8268f116bfe42633f522b))
+* ucg sync ([5153015](https://github.com/webmappsrl/osm2cai/commit/515301527332b7a1a8ab9b12e95ca106a1a86f1e))
+* update pagina sezione ([e003504](https://github.com/webmappsrl/osm2cai/commit/e0035042784c44d7961d93c0c134b00fa1f9911b))
+* user nova indexquery for regional referent ([3f094a0](https://github.com/webmappsrl/osm2cai/commit/3f094a0d7b62816762c3128a9159855416167b40))
 
 
 ### Bug Fixes
 
-* Add ST_srid check for geometry in HikingRoutesRegionControllerV2 ([0181446](https://github.com/webmappsrl/osm2cai/commit/0181446a0347f5ee7435d62a39275a8603ffd512))
-* fixed api v2 hiking-routes-collection bounding box ([77fd000](https://github.com/webmappsrl/osm2cai/commit/77fd000cf55c5fd121d81a3d5515cdc449fb52c9))
-* fixed hr upload file text ([7524aa2](https://github.com/webmappsrl/osm2cai/commit/7524aa223fa36161d2c8199db2e5f09fc28014f3))
-* fixed reg_ref ([bc561ac](https://github.com/webmappsrl/osm2cai/commit/bc561ac7503f75eba22b13305e767486a96de7d9))
-* fixed restore user when emulate ([a73cca1](https://github.com/webmappsrl/osm2cai/commit/a73cca13435b89e60cc9bd986aaba444bb86d88b))
-* moved cai_scale to tech tab in nova hikingroute resource ([f986213](https://github.com/webmappsrl/osm2cai/commit/f986213aa697e8d5297e1730892b5d3cd80c2577))
-* policies for attach hr to sections ([2378614](https://github.com/webmappsrl/osm2cai/commit/23786147be2bdec846994ab9d7217c736e80ac65))
-* restored dashboard ([036e9b0](https://github.com/webmappsrl/osm2cai/commit/036e9b0949acc83b17102cbfaef99d59d8a593ce))
-* sections can now be created only from admin ([517220e](https://github.com/webmappsrl/osm2cai/commit/517220ee508ab1ec047640247dba5e79181ea266))
-* typo on update release date script ([c0e24b4](https://github.com/webmappsrl/osm2cai/commit/c0e24b471e1c6d051e68c886a87a823b1acb7f0f))
-* Update HikingRoutesRegionControllerV2 and app version ([1e2d7e2](https://github.com/webmappsrl/osm2cai/commit/1e2d7e26e38fde54de8627c926f60eb17770858e))
-* updated confirm text in validate hr action ([c449e54](https://github.com/webmappsrl/osm2cai/commit/c449e54d6547151e5e8c762c9bee50eeb10cb8ef))
+* added more error handling to import ugc ([e061775](https://github.com/webmappsrl/osm2cai/commit/e0617755e87b1259d680ae8d05955594e304da47))
+* better error handling in ugc import ([f58055a](https://github.com/webmappsrl/osm2cai/commit/f58055a143306444a3f9ab1676f24406dd488b65))
+* changed relation id to osm2cai id in hr cards links ([7c63270](https://github.com/webmappsrl/osm2cai/commit/7c6327093e907532777c6e8f2745d0a5121c346a))
+* fix import ugc ([727d851](https://github.com/webmappsrl/osm2cai/commit/727d85121b8dbc27642d48180491dc3fc8050dab))
+* fixed DBAL database error not recognize geometry type in database ([8a305aa](https://github.com/webmappsrl/osm2cai/commit/8a305aa8ded1132d9fe413e29bbee6bd013cb989))
+* fixed download users csv action ([82fb1bd](https://github.com/webmappsrl/osm2cai/commit/82fb1bd5ab6a3ea4ed9d9305e3181a5b4b8c92b3))
+* fixed error in geojsonable trait ([ae8f893](https://github.com/webmappsrl/osm2cai/commit/ae8f8934b1c7ba6ae717e5793c125fd6cb84fe17))
+* fixed relationships ugc ([ea411d7](https://github.com/webmappsrl/osm2cai/commit/ea411d776170215b62ba075439c71d7dc96dac44))
+* typo ([90fb17f](https://github.com/webmappsrl/osm2cai/commit/90fb17f5b2141a1f1e359ea6ff2a8c5759c06f6e))
+* ugc media relative url import ([d7c5443](https://github.com/webmappsrl/osm2cai/commit/d7c54430a40195ccf379df40890e1e4a411769a8))
+* user relationship with ugc ([2c1f46f](https://github.com/webmappsrl/osm2cai/commit/2c1f46f8d089bc90ebaf481ea235cdb0f9a07bbf))
