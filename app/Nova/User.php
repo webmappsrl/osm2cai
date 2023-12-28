@@ -9,16 +9,18 @@ use Laravel\Nova\Fields\Boolean;
 use App\Models\User as UserModel;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
-use App\Nova\Actions\DownloadUsersCsv;
 use App\Nova\Filters\UserAreaFilter;
-use App\Nova\Filters\UserAssociationFilter;
-use App\Nova\Filters\UserProvinceFilter;
+use App\Nova\Filters\UserTypeFilter;
+use App\Nova\Actions\DownloadUsersCsv;
 use App\Nova\Filters\UserRegionFilter;
 use App\Nova\Filters\UserSectorFilter;
-use App\Nova\Filters\UserTypeFilter;
+use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\UserProvinceFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Nova\Filters\UserAssociationFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -173,7 +175,35 @@ class User extends Resource
      */
     public function cards(Request $request): array
     {
-        return [];
+        $users = \App\Models\User::all();
+
+        $mostActiveUsers = DB::select(DB::raw("
+        SELECT u.id AS user_id, u.name AS user_name, COUNT(DISTINCT hr.id) AS numero_validazioni
+        FROM users u
+        JOIN hiking_routes hr ON u.id = hr.user_id
+        WHERE hr.osm2cai_status = '4'
+        GROUP BY u.id, u.name
+        ORDER BY numero_validazioni DESC
+        LIMIT 5
+    "));
+
+        $html = '<ol style="margin-top:10px;">';
+        foreach ($mostActiveUsers as $user) {
+            $url = url('/resources/users/' . $user->user_id);
+            $html .= "<li><a style='text-decoration:none; color: darkgreen;' href=\"$url\">$user->user_name</a> | N. Validazioni: <strong>$user->numero_validazioni</strong></li>";
+        }
+        $html .= '</ol>';
+        return [
+            new \App\Nova\Metrics\TotalUsers,
+            new \App\Nova\Metrics\UserDistributionByRole($users),
+            new \App\Nova\Metrics\UserDistributionByRegion($users),
+            (new TextCard())
+                ->center(false)
+                ->heading('Most Active Users')
+                ->text($html)
+                ->textAsHtml()
+                ->height(),
+        ];
     }
 
     /**
