@@ -10,10 +10,7 @@ class UgcMediaPolicy
 {
     use HandlesAuthorization;
 
-    public function before()
-    {
-        return true;
-    }
+
 
     /**
      * Determine whether the user can view any models.
@@ -23,7 +20,7 @@ class UgcMediaPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -35,7 +32,7 @@ class UgcMediaPolicy
      */
     public function view(User $user, UgcMedia $ugcMedia)
     {
-        //
+        return true;
     }
 
     /**
@@ -46,7 +43,7 @@ class UgcMediaPolicy
      */
     public function create(User $user)
     {
-        //
+        return false;
     }
 
     /**
@@ -58,7 +55,7 @@ class UgcMediaPolicy
      */
     public function update(User $user, UgcMedia $ugcMedia)
     {
-        //
+        return true;
     }
 
     /**
@@ -70,7 +67,7 @@ class UgcMediaPolicy
      */
     public function delete(User $user, UgcMedia $ugcMedia)
     {
-        //
+        return true;
     }
 
     /**

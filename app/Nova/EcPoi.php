@@ -2,11 +2,14 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
+use App\Enums\EcPoiTypes;
 use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Wm\MapPointNova3\MapPointNova3;
 
 class EcPoi extends Resource
 {
@@ -58,7 +61,17 @@ class EcPoi extends Resource
             ID::make(__('ID'), 'id')->sortable(),
             Text::make('Nome', 'name')->sortable(),
             Text::make('Descrizione', 'description')->sortable(),
-            BelongsTo::make('Utente', 'user', User::class)->sortable(),
+            BelongsTo::make('Utente', 'user', User::class)->sortable()->searchable(),
+            Select::make('Type', 'type')
+                ->options(EcPoiTypes::cases()),
+            MapPointNova3::make('geometry')->withMeta([
+                'center' => [42, 10],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'minZoom' => 8,
+                'maxZoom' => 17,
+                'defaultZoom' => 13
+            ])->hideFromIndex(),
         ];
     }
 

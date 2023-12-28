@@ -13,6 +13,14 @@ use Laravel\Nova\Fields\ActionFields;
 
 class DownloadUsersCsv extends Action
 {
+
+    /**
+     * The number of models that should be included in each chunk.
+     *
+     * @var int
+     */
+    public static $chunkCount = 2000;
+
     use InteractsWithQueue, Queueable;
 
     public $name = "Download utenti CSV";
@@ -32,18 +40,16 @@ class DownloadUsersCsv extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-
         $FH = fopen('php://memory', 'w');
         $columns = array('Name', 'Email');
         fputcsv($FH, $columns);
         foreach ($models as $m) {
-            fputcsv($FH, [$m->name,$m->email]);
+            fputcsv($FH, [$m->name, $m->email]);
         }
-        Storage::put('users.csv',$FH );
-        return Action::download(route('api.csv.users'),'users');
-        //return response()->download(storage_path().'/app/public/users.csv','users.csv')->deleteFileAfterSend(true);
-
-        //return route('api.csv.users', ['users' =>implode(',',$ids)]);
+        rewind($FH);
+        $csv = stream_get_contents($FH);
+        Storage::put('users.csv', $csv);
+        return Action::download(route('api.csv.users'), 'users.csv');
     }
 
     /**

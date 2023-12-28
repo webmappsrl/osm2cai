@@ -26,11 +26,10 @@ class AddFeatureImageToHikingRoute extends Action
     {
         $model = $models->first();
 
-        $path = $fields->feature_image->storeAs('public/feature_images','OSM2CAI_featureImage_'.$model->id.'.'.$fields->feature_image->getClientOriginalExtension());
+        $path = $fields->feature_image->storeAs('public/feature_images', 'OSM2CAI_featureImage_' . $model->id . '.' . $fields->feature_image->getClientOriginalExtension());
         $model->feature_image = $path;
         $model->save();
         return Action::message('Immagine caricata con con successo!');
-
     }
 
     /**
@@ -42,6 +41,7 @@ class AddFeatureImageToHikingRoute extends Action
     {
         return [
             File::make('Feature Image')
+                ->help('Per il corretto caricamento usare file con dimensione minore di 2MB')
         ];
     }
 }

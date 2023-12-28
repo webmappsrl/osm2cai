@@ -2,14 +2,23 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\EmulateUser;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Region;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Boolean;
+use App\Models\User as UserModel;
+use App\Nova\Actions\EmulateUser;
+use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\DownloadUsersCsv;
+use App\Nova\Filters\UserAreaFilter;
+use App\Nova\Filters\UserAssociationFilter;
+use App\Nova\Filters\UserProvinceFilter;
+use App\Nova\Filters\UserRegionFilter;
+use App\Nova\Filters\UserSectorFilter;
+use App\Nova\Filters\UserTypeFilter;
+use Laravel\Nova\Fields\BelongsToMany;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -43,8 +52,24 @@ class User extends Resource
          */
         $user = auth()->user();
         if ($user->getTerritorialRole() == 'regional') {
-            $region = $user->region_id;
-            $query->where('region_id', $region);
+            $regionId = $user->region_id;
+            $provinces = Region::find($regionId)->provinces()->get();
+            $regionUsers = UserModel::where('region_id', $regionId)->get()->pluck('id')->toArray();
+            $provinceUsers = [];
+            $areaUsers = [];
+            $sectorUsers = [];
+            foreach ($provinces as $province) {
+                $provinceUsers = array_merge($provinceUsers, $province->users()->get()->pluck('id')->toArray());
+                $areas = $province->areas()->get();
+                foreach ($areas as $area) {
+                    $areaUsers = array_merge($areaUsers, $area->users()->get()->pluck('id')->toArray());
+                    $sectors = $area->sectors()->get();
+                    foreach ($sectors as $sector) {
+                        $sectorUsers = array_merge($sectorUsers, $sector->users()->get()->pluck('id')->toArray());
+                    }
+                }
+            }
+            $query->whereIn('id', array_unique(array_merge($provinceUsers, $areaUsers, $sectorUsers, $regionUsers)));
         }
 
         return $query;
@@ -160,7 +185,15 @@ class User extends Resource
      */
     public function filters(Request $request): array
     {
-        return [];
+        return [
+            (new UserTypeFilter)->canSee(function ($request) {
+                return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+            }),
+            (new UserRegionFilter),
+            (new UserAreaFilter),
+            (new UserProvinceFilter),
+            (new UserSectorFilter)
+        ];
     }
 
     /**
@@ -192,7 +225,13 @@ class User extends Resource
                 ->canRun(function ($request, $zone) {
                     return $request->user()->can('emulate', $zone);
                 }),
-            new Actions\DownloadUsersCsv()
+            (new DownloadUsersCsv())
+                ->canSee(function ($request) {
+                    return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+                })
+                ->canRun(function ($request, $zone) {
+                    return auth()->user()->is_administrator || auth()->user()->is_national_referent;
+                }),
         ];
     }
 
@@ -254,5 +293,10 @@ class User extends Resource
         }
 
         return $query;
+    }
+
+    public static function actionOnIndex()
+    {
+        return null;
     }
 }
