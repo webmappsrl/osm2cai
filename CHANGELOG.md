@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.4.1](https://github.com/webmappsrl/osm2cai/compare/v233.4.0...v233.4.1) (2023-12-21)
+
+
+### Bug Fixes
+
+* fixed nova global search ([7a0e24c](https://github.com/webmappsrl/osm2cai/commit/7a0e24c96b6543fc3ba7513fd66923a80adb26d4))
+
 ## [233.4.0](https://github.com/webmappsrl/osm2cai/compare/v233.3.2...v233.4.0) (2023-12-20)
 
 
