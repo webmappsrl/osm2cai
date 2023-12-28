@@ -348,6 +348,26 @@ class HikingRoute extends Resource
      */
     public function cards(Request $request)
     {
+        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
+        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
+        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
+        $api = $endpoint . $request->resourceId;
+
+        $headers = get_headers($api);
+        $statusLine = $headers[0];
+
+        if (strpos($statusLine, '200 OK') !== false) {
+            // The API returned a success response
+            $data = json_decode(file_get_contents($api), true);
+            if (!empty($data)) {
+                if ($data['properties']['id'] !== null) {
+                    $infomontLink .= '?track=' . $data['properties']['id'];
+                    $osm2caiLink .= '?track=' . $data['properties']['id'];
+                }
+            }
+        }
+
+
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
         if (!is_null($hr)) {
@@ -380,8 +400,8 @@ class HikingRoute extends Resource
                         '<p>OpenStreetMap: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
                             '<p>Waymarkedtrails: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
                             '<p>OSM Relation Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>' .
-                            '<p>OSM2CAI: <a target="_blank" href="https://26.app.geohub.webmapp.it/#/map">' . $hr->id . '</a></p>' .
-                            '<p>INFOMONT: <a target="_blank" href="https://15.app.geohub.webmapp.it/#/map">' . $hr->id . '</a></p>'
+                            '<p>OSM2CAI: <a target="_blank" href="' . $osm2caiLink . '">' . $hr->id . '</a></p>' .
+                            '<p>INFOMONT: <a target="_blank" href="' . $infomontLink . '">' . $hr->id . '</a></p>'
                     )
 
                     ->textAsHtml(),
