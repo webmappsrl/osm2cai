@@ -8,6 +8,7 @@ use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
@@ -20,6 +21,7 @@ use Ericlagarda\NovaTextCard\TextCard;
 use App\Nova\Actions\SectorRefactoring;
 use App\Nova\Filters\DeleteOnOsmFilter;
 use App\Nova\Filters\HikingRouteStatus;
+use App\Nova\Filters\IssueStatusFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Nova\Filters\GeometrySyncFilter;
 use AddRegionFavoriteToHikingRoutesTable;
@@ -32,6 +34,7 @@ use App\Nova\Lenses\HikingRoutesStatus2Lens;
 use App\Nova\Lenses\HikingRoutesStatus3Lens;
 use App\Nova\Lenses\HikingRoutesStatus4Lens;
 use App\Nova\Actions\DeleteHikingRouteAction;
+use App\Nova\Filters\HrCorrectGeometryFilter;
 use Laravel\Nova\Http\Requests\ActionRequest;
 use App\Nova\Actions\OsmSyncHikingRouteAction;
 use App\Nova\Filters\HikingRoutesRegionFilter;
@@ -46,8 +49,6 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
-use App\Nova\Filters\IssueStatusFilter;
-use Laravel\Nova\Fields\Code;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -154,6 +155,9 @@ class HikingRoute extends Resource
                     if (count($this->provinces) > 0) {
                         $val = implode(', ', $this->provinces->pluck('name')->toArray());
                     }
+                    if (count($this->provinces) >= 2) {
+                        $val = implode(', ', $this->provinces->pluck('name')->take(1)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
@@ -162,6 +166,9 @@ class HikingRoute extends Resource
                 if (Arr::accessible($this->areas)) {
                     if (count($this->areas) > 0) {
                         $val = implode(', ', $this->areas->pluck('name')->toArray());
+                    }
+                    if (count($this->areas) >= 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(1)->toArray()) . ' [...]';
                     }
                 }
                 return $val;
@@ -172,6 +179,9 @@ class HikingRoute extends Resource
                     if (count($this->sectors) > 0) {
                         $val = implode(', ', $this->sectors->pluck('name')->toArray());
                     }
+                    if (count($this->sectors) >= 2) {
+                        $val = implode(', ', $this->areas->pluck('name')->take(1)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
@@ -179,9 +189,9 @@ class HikingRoute extends Resource
             Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
             Text::make('Percorribilità', 'issues_status')->sortable(),
-            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex(),
+            Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex()->sortable(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
-            Number::make('OSMID', 'relation_id')->onlyOnIndex(),
+            // Number::make('OSMID', 'relation_id')->onlyOnIndex(),
             Text::make('Legenda', function () {
                 return "<ul><li>Linea blu: percorso OSM2CAI/OSM</li><li>Linea rossa: percorso caricato dall'utente</li></ul>";
             })->asHtml()->onlyOnDetail(),
@@ -207,13 +217,9 @@ class HikingRoute extends Resource
         }
         $loggedInUser = auth()->user();
         $role = $loggedInUser->getTerritorialRole();
-        if (in_array($role, ['admin', 'national', 'regional'])) {
-            $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
-        }
-        $fields[] = Boolean::make('Correttezza geometria', 'geometry_check')
-            ->hideWhenCreating()
-            ->hideWhenUpdating()
-            ->sortable();
+        // if (in_array($role, ['admin', 'national', 'regional'])) {
+        //     $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
+        // }
 
         $fields[] = Boolean::make('Coerenza ref REI', function () {
             return $this->ref_REI == $this->ref_REI_comp;
@@ -292,10 +298,10 @@ class HikingRoute extends Resource
         })->onlyOnDetail()->asHtml();
 
         //Region Favorite
-        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+        // $fields[] = Boolean::make('Region Favorite', 'region_favorite');
 
         //Data pubblicazione LoScarpone
-        $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
+        // $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
 
 
         return $fields;
@@ -342,6 +348,26 @@ class HikingRoute extends Resource
      */
     public function cards(Request $request)
     {
+        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
+        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
+        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
+        $api = $endpoint . $request->resourceId;
+
+        $headers = get_headers($api);
+        $statusLine = $headers[0];
+
+        if (strpos($statusLine, '200 OK') !== false) {
+            // The API returned a success response
+            $data = json_decode(file_get_contents($api), true);
+            if (!empty($data)) {
+                if ($data['properties']['id'] !== null) {
+                    $infomontLink .= '?track=' . $data['properties']['id'];
+                    $osm2caiLink .= '?track=' . $data['properties']['id'];
+                }
+            }
+        }
+
+
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
         if (!is_null($hr)) {
@@ -371,10 +397,13 @@ class HikingRoute extends Resource
                     ->onlyOnDetail()
                     ->width('1/4')
                     ->text(
-                        '<p>Osmid: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
-                            '<p>WMT: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
-                            '<p>Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>'
+                        '<p>OpenStreetMap: <a target="_blank" href="' . $osm . '">' . $hr->relation_id . '</a></p>' .
+                            '<p>Waymarkedtrails: <a target="_blank" href="' . $wmt . '">' . $hr->relation_id . '</a></p>' .
+                            '<p>OSM Relation Analyzer: <a target="_blank" href="' . $analyzer . '">' . $hr->relation_id . '</a></p>' .
+                            '<p>OSM2CAI: <a target="_blank" href="' . $osm2caiLink . '">' . $hr->id . '</a></p>' .
+                            '<p>INFOMONT: <a target="_blank" href="' . $infomontLink . '">' . $hr->id . '</a></p>'
                     )
+
                     ->textAsHtml(),
 
                 (new TextCard())
@@ -416,6 +445,7 @@ class HikingRoute extends Resource
                 (new DeleteOnOsmFilter()),
                 (new RegionFavoriteHikingRouteFilter()),
                 (new IssueStatusFilter()),
+                (new HrCorrectGeometryFilter()),
             ];
         }
     }
@@ -460,10 +490,40 @@ class HikingRoute extends Resource
                 ->confirmButtonText('Carica')
                 ->cancelButtonText("Non caricare")
                 ->canSee(function ($request) {
-                    return true;
+                    if ($this->osm2cai_status == 4) {
+                        return false;
+                    }
+                    $permission = auth()->user()->getPermissionString();
+                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+                        return true;
+                    }
+                    if ($permission == 'Referente regionale') {
+                        return $this->regions->contains(auth()->user()->region);
+                    }
+                    if ($permission == 'Referente di zona') {
+                        return $this->areas->contains(auth()->user()->area) ||
+                            $this->sectors->contains(auth()->user()->sector) ||
+                            $this->provinces->contains(auth()->user()->province);
+                    }
+                    return false;
                 })
                 ->canRun(function ($request, $user) {
-                    return true;
+                    if ($this->osm2cai_status == 4) {
+                        return false;
+                    }
+                    $permission = auth()->user()->getPermissionString();
+                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+                        return true;
+                    }
+                    if ($permission == 'Referente regionale') {
+                        return $this->regions->contains(auth()->user()->region);
+                    }
+                    if ($permission == 'Referente di zona') {
+                        return $this->areas->contains(auth()->user()->area) ||
+                            $this->sectors->contains(auth()->user()->sector) ||
+                            $this->provinces->contains(auth()->user()->province);
+                    }
+                    return false;
                 }),
             (new ValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
@@ -483,10 +543,40 @@ class HikingRoute extends Resource
                 ->confirmButtonText('Aggiorna con dati osm')
                 ->cancelButtonText("Annulla")
                 ->canSee(function ($request) {
-                    return true;
+                    if ($this->osm2cai_status == 4) {
+                        return false;
+                    }
+                    $permission = auth()->user()->getPermissionString();
+                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+                        return true;
+                    }
+                    if ($permission == 'Referente regionale') {
+                        return $this->regions->contains(auth()->user()->region);
+                    }
+                    if ($permission == 'Referente di zona') {
+                        return $this->areas->contains(auth()->user()->area) ||
+                            $this->sectors->contains(auth()->user()->sector) ||
+                            $this->provinces->contains(auth()->user()->province);
+                    }
+                    return false;
                 })
                 ->canRun(function ($request, $user) {
-                    return true;
+                    if ($this->osm2cai_status == 4) {
+                        return false;
+                    }
+                    $permission = auth()->user()->getPermissionString();
+                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+                        return true;
+                    }
+                    if ($permission == 'Referente regionale') {
+                        return $this->regions->contains(auth()->user()->region);
+                    }
+                    if ($permission == 'Referente di zona') {
+                        return $this->areas->contains(auth()->user()->area) ||
+                            $this->sectors->contains(auth()->user()->sector) ||
+                            $this->provinces->contains(auth()->user()->province);
+                    }
+                    return false;
                 }),
             (new RevertValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')

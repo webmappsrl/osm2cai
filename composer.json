@@ -1,97 +1,103 @@
 {
-    "name": "laravel/laravel",
-    "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": [
-        "framework",
-        "laravel"
-    ],
-    "license": "MIT",
-    "require": {
-        "php": "^7.4|^8.0",
-        "ext-json": "*",
-        "chriskonnertz/open-graph": "^2.0",
-        "darkaonline/l5-swagger": "^8.3",
-        "digital-creative/conditional-container": "^1.4",
-        "dkulyk/nova-tabs": "^1.1",
-        "doctrine/dbal": "^2.9",
-        "ericlagarda/nova-text-card": "^1.2",
-        "fideloper/proxy": "^4.4",
-        "fruitcake/laravel-cors": "^2.0",
-        "gabrieliuga/laravel-nova-sidebar-links": "^1.0",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "imumz/leaflet-map": "^1.1",
-        "laravel/framework": "^8.12",
-        "laravel/nova": "*",
-        "laravel/tinker": "^2.5",
-        "league/flysystem-aws-s3-v3": "~1.0",
-        "m-a-k-o/nova-custom-table-card": "^3.2",
-        "maatwebsite/excel": "^3.1",
-        "mstaack/laravel-postgis": "^5.2",
-        "spatie/db-dumper": "^2.21",
-        "spatie/schema-org": "^3.9",
-        "subfission/cas": "^4",
-        "suenerds/nova-searchable-belongs-to-filter": "^1.0",
-        "symm/gisconverter": "^1.0",
-        "wm/map-multi-linestring-nova": "*",
-        "wm/map-multi-polygon-nova3": "dev-main"
-    },
-    "require-dev": {
-        "facade/ignition": "^2.5",
-        "fakerphp/faker": "^1.9.1",
-        "laravel/sail": "^1.0.1",
-        "mockery/mockery": "^1.4.2",
-        "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.3.3",
-        "theanik/laravel-more-command": "^1.2"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
-    },
-    "autoload": {
-        "files": [
-            "app/Helpers/Osm2CaiHelper.php"
-        ],
-        "psr-4": {
-            "App\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./nova"
-        },
-        {
-            "type": "path",
-            "url": "./nova-components/MapMultiLinestringNova"
-        }
-    ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
-        ],
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi"
-        ]
+  "name": "laravel/laravel",
+  "type": "project",
+  "description": "The Laravel Framework.",
+  "keywords": [
+    "framework",
+    "laravel"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^7.4|^8.0",
+    "ext-json": "*",
+    "chriskonnertz/open-graph": "^2.0",
+    "darkaonline/l5-swagger": "^8.3",
+    "digital-creative/conditional-container": "^1.4",
+    "dkulyk/nova-tabs": "^1.1",
+    "doctrine/dbal": "^2.9",
+    "ericlagarda/nova-text-card": "^1.2",
+    "fideloper/proxy": "^4.4",
+    "fruitcake/laravel-cors": "^2.0",
+    "gabrieliuga/laravel-nova-sidebar-links": "^1.0",
+    "guzzlehttp/guzzle": "^7.0.1",
+    "imumz/leaflet-map": "^1.1",
+    "laravel/framework": "^8.12",
+    "laravel/nova": "*",
+    "laravel/tinker": "^2.5",
+    "league/flysystem-aws-s3-v3": "~1.0",
+    "m-a-k-o/nova-custom-table-card": "^3.2",
+    "maatwebsite/excel": "^3.1",
+    "mstaack/laravel-postgis": "^5.2",
+    "spatie/db-dumper": "^2.21",
+    "spatie/schema-org": "^3.9",
+    "subfission/cas": "^4",
+    "suenerds/nova-searchable-belongs-to-filter": "^1.0",
+    "symm/gisconverter": "^1.0",
+    "wm/map-multi-linestring-nova": "*",
+    "wm/map-multi-polygon-nova3": "dev-main",
+    "wm/map-point-nova3": "^0.0.9",
+    "webmapp/wm-embedmaps-field": "*"
+  },
+  "require-dev": {
+    "facade/ignition": "^2.5",
+    "fakerphp/faker": "^1.9.1",
+    "laravel/sail": "^1.0.1",
+    "mockery/mockery": "^1.4.2",
+    "nunomaduro/collision": "^5.0",
+    "phpunit/phpunit": "^9.3.3",
+    "theanik/laravel-more-command": "^1.2"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "dont-discover": []
     }
+  },
+  "autoload": {
+    "files": [
+      "app/Helpers/Osm2CaiHelper.php"
+    ],
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "./nova"
+    },
+    {
+      "type": "path",
+      "url": "./nova-components/MapMultiLinestringNova"
+    },
+    {
+      "type": "path",
+      "url": "./nova-components/WmEmbedmapsField"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "post-autoload-dump": [
+      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+      "@php artisan package:discover --ansi"
+    ],
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+    ],
+    "post-create-project-cmd": [
+      "@php artisan key:generate --ansi"
+    ]
+  }
 }

@@ -10,11 +10,6 @@ class UgcTrackPolicy
 {
     use HandlesAuthorization;
 
-    public function before()
-    {
-        return true;
-    }
-
     /**
      * Determine whether the user can view any models.
      *
@@ -23,7 +18,7 @@ class UgcTrackPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -35,7 +30,7 @@ class UgcTrackPolicy
      */
     public function view(User $user, UgcTrack $ugcTrack)
     {
-        //
+        return true;
     }
 
     /**
@@ -46,7 +41,7 @@ class UgcTrackPolicy
      */
     public function create(User $user)
     {
-        //
+        return false;
     }
 
     /**
@@ -58,7 +53,7 @@ class UgcTrackPolicy
      */
     public function update(User $user, UgcTrack $ugcTrack)
     {
-        //
+        return true;
     }
 
     /**
@@ -70,7 +65,7 @@ class UgcTrackPolicy
      */
     public function delete(User $user, UgcTrack $ugcTrack)
     {
-        //
+        return true;
     }
 
     /**
@@ -82,7 +77,7 @@ class UgcTrackPolicy
      */
     public function restore(User $user, UgcTrack $ugcTrack)
     {
-        //
+        return true;
     }
 
     /**
@@ -94,6 +89,6 @@ class UgcTrackPolicy
      */
     public function forceDelete(User $user, UgcTrack $ugcTrack)
     {
-        //
+        return true;
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\CasLoginController;
-use App\Http\Controllers\HikingRouteController;
-use App\Http\Controllers\HikingRouteLoscarponeExportController;
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CasLoginController;
+use App\Http\Controllers\ImportUGCController;
+use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\HikingRouteLoscarponeExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,3 +56,4 @@ Route::get('hiking-route-map/{id}', function ($id) {
 })->name('hiking-route-public-map');
 
 Route::get('/hiking-route/{id}/issues', [HikingRouteController::class, 'showIssuesChronology'])->name('hiking-route-public-issues')->name('hiking-route-issues');
+Route::get('/import-ugc', [ImportUGCController::class, 'importUGCFromGeohub'])->name('import-ugc');

@@ -10,10 +10,6 @@ class UgcPoiPolicy
 {
     use HandlesAuthorization;
 
-    public function before()
-    {
-        return true;
-    }
 
     /**
      * Determine whether the user can view any models.
@@ -23,7 +19,7 @@ class UgcPoiPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -35,7 +31,7 @@ class UgcPoiPolicy
      */
     public function view(User $user, UgcPoi $ugcPoi)
     {
-        //
+        return true;
     }
 
     /**
@@ -46,7 +42,7 @@ class UgcPoiPolicy
      */
     public function create(User $user)
     {
-        //
+        return false;
     }
 
     /**
@@ -58,7 +54,7 @@ class UgcPoiPolicy
      */
     public function update(User $user, UgcPoi $ugcPoi)
     {
-        //
+        return true;
     }
 
     /**
@@ -70,7 +66,7 @@ class UgcPoiPolicy
      */
     public function delete(User $user, UgcPoi $ugcPoi)
     {
-        //
+        return true;
     }
 
     /**
@@ -82,7 +78,7 @@ class UgcPoiPolicy
      */
     public function restore(User $user, UgcPoi $ugcPoi)
     {
-        //
+        return true;
     }
 
     /**
@@ -94,6 +90,6 @@ class UgcPoiPolicy
      */
     public function forceDelete(User $user, UgcPoi $ugcPoi)
     {
-        //
+        return true;
     }
 }
