@@ -1,5 +1,58 @@
 # Changelog
 
+## [233.7.0](https://github.com/webmappsrl/osm2cai/compare/v233.4.1...v233.7.0) (2023-12-28)
+
+
+### Features
+
+- **ec_pois:**
+  - Added fields to ec_pois.
+
+- **UGC:**
+  - Added create policy for ugc.
+  - Added new log driver for logging missing user during imports.
+  - Imported ugc from geohub v1.
+  - Added ugc relationships.
+  - Imported ugc v2.
+  - UGC sync.
+  - Enhanced Nova interface for ugc resources.
+  - Hiking route details action upload gpx policy.
+  - Hiking route details sync with OSM policy.
+  - HR areas and sectors columns resized.
+  - User Nova index query for regional referent.
+  - Added user filters.
+  - Added osm2cai and infomont map links to HR.
+  - Cleaned HR index columns.
+  - Added 'documentazione OSM2CAI' link in Nova tools sidebar menu.
+  - Map multi linestring component updated.
+  - HR feature image added helper.
+  - Update pagina sezione.
+  - Improved province, aree, settori list in HR Nova index.
+  - Added wm embed maps field to Nova ugc resources.
+  - Added URL oms2cai and infomont map to HR.
+
+### Fixes
+
+- Fixed import ugc.
+- Added more error handling to import ugc.
+- Fixed typo.
+- Fixed relationships ugc.
+- User relationship with ugc.
+- Fixed DBAL database error not recognizing geometry type in the database.
+- Fixed download users CSV action.
+- Fixed import ugc media relative URL.
+- Better error handling in ugc import.
+- Fixed error in geojsonable trait.
+- Fixed typo.
+- Fixed HR cards links, changed relation id to osm2cai id.
+- Better error handling in ugc import.
+- Fixed error in geojsonable trait.
+
+### Updates
+
+- De-commented APIs.
+- Updated release date in app.php.
+
 ## [233.4.0](https://github.com/webmappsrl/osm2cai/compare/v233.3.2...v233.4.0) (2023-12-20)
 
 
