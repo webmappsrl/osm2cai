@@ -42,7 +42,7 @@ class UgcTrack extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name'
+        'id', 'name',
     ];
 
     public static string $group = 'Rilievi';
