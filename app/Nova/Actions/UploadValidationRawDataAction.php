@@ -55,7 +55,7 @@ class UploadValidationRawDataAction extends Action
 
         if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
             $authorized = true;
-        } elseif ($permission == 'Referente regionale' && !$model->regions->intersect(auth()->user()->regions)->isEmpty()) {
+        } elseif ($permission == 'Referente regionale' && $model->regions->pluck('id')->contains(auth()->user()->region->id)) {
             $authorized = true;
         } elseif ($permission == 'Referente di zona' && (!$sectors->intersect(auth()->user()->sectors)->isEmpty() || !$areas->intersect(auth()->user()->areas)->isEmpty() || !$provinces->intersect(auth()->user()->provinces)->isEmpty())) {
             $authorized = true;
