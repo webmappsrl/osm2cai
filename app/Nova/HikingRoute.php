@@ -355,8 +355,7 @@ class HikingRoute extends Resource
         $osm2caiLink = $links['osm2caiLink'];
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
-        $hikingRoutesSda4 = \App\Models\HikingRoute::select('issues_status')->where('osm2cai_status', 4)->get();
-        $hikingRoutesSda34 = \App\Models\HikingRoute::select('issues_status')->whereIn('osm2cai_status', [3, 4])->get();
+
         if (!is_null($hr)) {
 
             $statoDiAccatastamento = 'Stato di accatastamento';
@@ -399,12 +398,6 @@ class HikingRoute extends Resource
                     ->heading($hr->osm2cai_status)
                     ->text($statoDiAccatastamento)
                     ->textAsHtml(),
-            ];
-        }
-        if (auth()->user()->getPermissionString() === 'Superadmin') {
-            return [
-                new \App\Nova\Metrics\Sda4IssueStatusPartition($hikingRoutesSda4),
-                new \App\Nova\Metrics\Sda3And4IssueStatusPartition($hikingRoutesSda34)
             ];
         }
 
