@@ -70,6 +70,6 @@ class Sda3And4IssueStatusPartition extends Partition
 
     public function name()
     {
-        return 'Percorribilità SDA 3 e 4';
+        return 'Percorribilità SDA 3 + 4';
     }
 }
