@@ -25,7 +25,7 @@ class OsmSyncHikingRouteAction extends Action
 
     public $showOnDetail = true;
 
-    public $name='SYNC WITH OSM DATA';
+    public $name = 'SYNC WITH OSM DATA';
 
     /**
      * Perform the action on the given models.
@@ -41,16 +41,16 @@ class OsmSyncHikingRouteAction extends Action
          * @var \App\Services\OsmService
          */
         $service = app()->make(OsmService::class);
-        foreach ($models as $model){
-            if ($model->osm2cai_status>3)
-                return Action::danger('The SDA must be less than 4! Revert Validation to perform this action');
+        foreach ($models as $model) {
+            if ($model->osm2cai_status > 3)
+                return Action::danger('"Per poter effetturare la sincronizzazione forzata con OpenStreetMap è necessarrio che il percorso abbia uno Stato di accatastamento minore o uguale a 3; se necessario procedere prima con REVERT VALIDATION"
+');
             else {
                 $service->updateHikingRouteModelWithOsmData($model);
             }
         }
         $count = $models->count();
-        if ( $count == 1 )
-        {
+        if ($count == 1) {
             $modelId = $models->first()->id;
             return Action::redirect('/resources/hiking-routes/' . $modelId);
         }
