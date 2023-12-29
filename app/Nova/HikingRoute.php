@@ -348,24 +348,9 @@ class HikingRoute extends Resource
      */
     public function cards(Request $request)
     {
-        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
-        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
-        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
-        $api = $endpoint . $request->resourceId;
-
-        $headers = get_headers($api);
-        $statusLine = $headers[0];
-
-        if (strpos($statusLine, '200 OK') !== false) {
-            // The API returned a success response
-            $data = json_decode(file_get_contents($api), true);
-            if (!empty($data)) {
-                if ($data['properties']['id'] !== null) {
-                    $infomontLink .= '?track=' . $data['properties']['id'];
-                    $osm2caiLink .= '?track=' . $data['properties']['id'];
-                }
-            }
-        }
+        $links = $this->getLinks($request);
+        $infomontLink = $links['infomontLink'];
+        $osm2caiLink = $links['osm2caiLink'];
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
         $hikingRoutesSda4 = \App\Models\HikingRoute::select('issues_status')->where('osm2cai_status', 4)->get();
@@ -414,9 +399,14 @@ class HikingRoute extends Resource
                     ->textAsHtml(),
             ];
         }
-        return [
-            new \App\Nova\Metrics\Sda4IssueStatusPartition($hikingRoutesSda4),
-        ];
+        if (auth()->user()->getPermissionString() === 'Superadmin') {
+            return [
+                new \App\Nova\Metrics\Sda4IssueStatusPartition($hikingRoutesSda4),
+                new \App\Nova\Metrics\Sda3And4IssueStatusPartition($hikingRoutesSda34)
+            ];
+        }
+
+        return [];
     }
 
     /**
@@ -668,6 +658,33 @@ class HikingRoute extends Resource
                 )
                 ->showOnTableRow(),
 
+        ];
+    }
+
+    private function getLinks($request)
+    {
+        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
+        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
+        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
+        $api = $endpoint . $request->resourceId;
+
+        $headers = get_headers($api);
+        $statusLine = $headers[0];
+
+        if (strpos($statusLine, '200 OK') !== false) {
+            // The API returned a success response
+            $data = json_decode(file_get_contents($api), true);
+            if (!empty($data)) {
+                if ($data['properties']['id'] !== null) {
+                    $infomontLink .= '?track=' . $data['properties']['id'];
+                    $osm2caiLink .= '?track=' . $data['properties']['id'];
+                }
+            }
+        }
+
+        return [
+            'infomontLink' => $infomontLink,
+            'osm2caiLink' => $osm2caiLink,
         ];
     }
 }

@@ -2,11 +2,18 @@
 
 namespace App\Nova\Metrics;
 
-use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Enums\IssueStatus;
 use Laravel\Nova\Metrics\Partition;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Sda3And4IssueStatusPartition extends Partition
 {
+    protected $hikingRoutes;
+
+    public function __construct(iterable $hikingRoutes)
+    {
+        $this->hikingRoutes = $hikingRoutes;
+    }
     /**
      * Calculate the value of the metric.
      *
@@ -15,7 +22,30 @@ class Sda3And4IssueStatusPartition extends Partition
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->count($request, Model::class, 'groupByColumn');
+        $sconosciuto = 0;
+        $percorribile = 0;
+        $nonPercorribile = 0;
+        $percorribileParzialmente = 0;
+        $issueStatus = IssueStatus::cases();
+
+        foreach ($this->hikingRoutes as $hr) {
+            switch ($hr->issues_status) {
+                case 'sconosciuto':
+                    $sconosciuto++;
+                    break;
+                case 'percorribile':
+                    $percorribile++;
+                    break;
+                case 'non percorribile':
+                    $nonPercorribile++;
+                case 'percorribile parzialmente':
+                    $percorribileParzialmente++;
+                    break;
+            }
+        }
+
+        $result = array_combine(array_keys($issueStatus), [$sconosciuto, $percorribile, $nonPercorribile, $percorribileParzialmente]);
+        return $this->result($result);
     }
 
     /**
@@ -36,5 +66,10 @@ class Sda3And4IssueStatusPartition extends Partition
     public function uriKey()
     {
         return 'sda3-and4-issue-status-partition';
+    }
+
+    public function name()
+    {
+        return 'Percorribilità SDA 3 e 4';
     }
 }
