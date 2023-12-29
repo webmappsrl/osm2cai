@@ -488,24 +488,53 @@ class HikingRoute extends Resource
     public function actions(Request $request)
     {
         return [
-            (new UploadValidationRawDataAction($this->id))
+            (new UploadValidationRawDataAction)
                 ->confirmButtonText('Carica')
-                ->cancelButtonText("Non caricare"),
+                ->cancelButtonText("Non caricare")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
             (new ValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Non validare")
                 ->canSee(function ($request) {
                     return true;
-                }),
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
             (new OsmSyncHikingRouteAction)
                 ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
                 ->confirmButtonText('Aggiorna con dati osm')
-                ->cancelButtonText("Annulla"),
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
             (new RevertValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
-                ->cancelButtonText("Annulla"),
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
             (new DeleteHikingRouteAction())
                 ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
@@ -513,9 +542,11 @@ class HikingRoute extends Resource
                 ->canSee(function ($request) {
                     return true;
                 })
-                ->canRun(function ($request, $user) {
-                    return true;
-                }),
+                ->canRun(
+                    function ($request, $user) {
+                        return true;
+                    }
+                ),
             (new SectorRefactoring())
                 ->onlyOnDetail('true')
                 ->confirmText('Sei sicuro di voler rifattorizzare i settori per il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
