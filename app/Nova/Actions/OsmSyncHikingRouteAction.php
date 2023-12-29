@@ -41,12 +41,39 @@ class OsmSyncHikingRouteAction extends Action
          * @var \App\Services\OsmService
          */
         $service = app()->make(OsmService::class);
+        $permission = auth()->user()->getPermissionString();
         foreach ($models as $model) {
             if ($model->osm2cai_status > 3)
                 return Action::danger('"Per poter effetturare la sincronizzazione forzata con OpenStreetMap è necessarrio che il percorso abbia uno Stato di accatastamento minore o uguale a 3; se necessario procedere prima con REVERT VALIDATION"
 ');
-            else {
+            $sectors = $model->sectors;
+            $areas = $model->areas;
+            $provinces = $model->provinces;
+            if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
                 $service->updateHikingRouteModelWithOsmData($model);
+                return Action::message("Percorsi aggiornati con successo!");
+            }
+            if ($permission == 'Referente regionale') {
+                if (!$model->regions->intersect(auth()->user()->regions)->isEmpty()) {
+                    $service->updateHikingRouteModelWithOsmData($model);
+                    return Action::message("Percorsi aggiornati con successo!");
+                } else {
+                    return Action::danger('Non sei autorizzato ad eseguire questa azione');
+                }
+            }
+            if ($permission == 'Referente di zona') {
+                if (!$sectors->intersect(auth()->user()->sectors)->isEmpty()) {
+                    $service->updateHikingRouteModelWithOsmData($model);
+                    return Action::message("Percorsi aggiornati con successo!");
+                } else if (!$areas->intersect(auth()->user()->areas)->isEmpty()) {
+                    $service->updateHikingRouteModelWithOsmData($model);
+                    return Action::message("Percorsi aggiornati con successo!");
+                } else if (!$provinces->intersect(auth()->user()->provinces)->isEmpty()) {
+                    $service->updateHikingRouteModelWithOsmData($model);
+                    return Action::message("Percorsi aggiornati con successo!");
+                } else {
+                    return Action::danger('Non sei autorizzato ad eseguire questa azione');
+                }
             }
         }
         $count = $models->count();
@@ -54,8 +81,6 @@ class OsmSyncHikingRouteAction extends Action
             $modelId = $models->first()->id;
             return Action::redirect('/resources/hiking-routes/' . $modelId);
         }
-
-        return Action::message("Percorsi aggiornati con successo!");
     }
 
 

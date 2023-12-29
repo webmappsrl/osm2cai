@@ -188,7 +188,8 @@ class HikingRoute extends Resource
             Text::make('REF', 'ref')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_OSM', 'ref_REI_osm')->onlyOnIndex()->sortable(),
             Text::make('COD_REI_COMP', 'ref_REI_comp')->onlyOnIndex()->sortable(),
-            Text::make('Percorribilità', 'issues_status')->sortable(),
+            Text::make('Percorribilità', 'issues_status')->sortable()
+                ->hideWhenUpdating(),
             Text::make('Ultima ricognizione', 'survey_date')->onlyOnIndex()->sortable(),
             Number::make('STATO', 'osm2cai_status')->sortable()->onlyOnIndex(),
             // Number::make('OSMID', 'relation_id')->onlyOnIndex(),
@@ -213,7 +214,8 @@ class HikingRoute extends Resource
                 'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
                 'defaultZoom' => 10,
                 'geojson' => json_encode($this->getGeojsonForMapView())
-            ])->hideFromIndex();
+            ])->hideFromIndex()
+                ->hideWhenUpdating();
         }
         $loggedInUser = auth()->user();
         $role = $loggedInUser->getTerritorialRole();
@@ -498,9 +500,9 @@ class HikingRoute extends Resource
                         return $this->regions->contains(auth()->user()->region);
                     }
                     if ($permission == 'Referente di zona') {
-                        return $this->areas->contains(auth()->user()->area) ||
-                            $this->sectors->contains(auth()->user()->sector) ||
-                            $this->provinces->contains(auth()->user()->province);
+                        return $this->areas->contains(auth()->user()->areas) ||
+                            $this->sectors->contains(auth()->user()->sectors) ||
+                            $this->provinces->contains(auth()->user()->provinces);
                     }
                     return false;
                 }),
@@ -520,22 +522,7 @@ class HikingRoute extends Resource
             (new OsmSyncHikingRouteAction)
                 ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
                 ->confirmButtonText('Aggiorna con dati osm')
-                ->cancelButtonText("Annulla")
-                ->canRun(function ($request, $user) {
-                    $permission = auth()->user()->getPermissionString();
-                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-                        return true;
-                    }
-                    if ($permission == 'Referente regionale') {
-                        return $this->regions->contains(auth()->user()->region);
-                    }
-                    if ($permission == 'Referente di zona') {
-                        return $this->areas->contains(auth()->user()->area) ||
-                            $this->sectors->contains(auth()->user()->sector) ||
-                            $this->provinces->contains(auth()->user()->province);
-                    }
-                    return false;
-                }),
+                ->cancelButtonText("Annulla"),
             (new RevertValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
