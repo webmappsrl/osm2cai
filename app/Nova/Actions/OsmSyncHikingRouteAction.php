@@ -54,7 +54,7 @@ class OsmSyncHikingRouteAction extends Action
                 return Action::message("Percorsi aggiornati con successo!");
             }
             if ($permission == 'Referente regionale') {
-                if (!$model->regions->intersect(auth()->user()->regions)->isEmpty()) {
+                if ($model->regions->pluck('id')->contains(auth()->user()->region->id)) {
                     $service->updateHikingRouteModelWithOsmData($model);
                     return Action::message("Percorsi aggiornati con successo!");
                 } else {
