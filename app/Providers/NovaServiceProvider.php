@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
 use App\Nova\Dashboards\SectorsDashboard;
+use App\Nova\Dashboards\Utenti;
 use App\Nova\UgcMedia;
 use App\Nova\UgcPoi;
 use App\Nova\UgcTrack;
@@ -367,9 +368,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-<a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -722,6 +723,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $dashboards = [
             new ItalyDashboard,
             new Percorribilità,
+            new Utenti,
         ];
 
         /**
