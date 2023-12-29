@@ -24,7 +24,7 @@ class RevertValidateHikingRouteAction extends Action
 
     public $showOnDetail = true;
 
-    public $name='REVERT VALIDATION';
+    public $name = 'REVERT VALIDATION';
 
     /**
      * Perform the action on the given models.
@@ -38,15 +38,34 @@ class RevertValidateHikingRouteAction extends Action
         $user = auth()->user();
 
         if (!$user && $user == null)
-            return Action::danger('User info is not available');
+            return Action::danger('Informazioni User non disponibili');
+
+        $permission = $user->getPermissionString();
         $model = $models->first();
 
+        if ($model->osm2cai_status != 4)
+            return Action::danger('Lo SDA non è 4!');
 
         if (!$user->canManageHikingRoute($model))
-            return Action::danger('You don\'t have permissions on this Hiking Route');
+            return Action::danger('Non hai i permessi su questo percorso');
 
-        if ($model->osm2cai_status != 4)
-            return Action::danger('The SDA is not 4!');
+        $sectors = $model->sectors;
+        $areas = $model->areas;
+        $provinces = $model->provinces;
+
+        $authorized = false;
+
+        if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+            $authorized = true;
+        } elseif ($permission == 'Referente regionale' && !$model->regions->intersect($user->regions)->isEmpty()) {
+            $authorized = true;
+        } elseif ($permission == 'Referente di zona' && (!$sectors->intersect($user->sectors)->isEmpty() || !$areas->intersect($user->areas)->isEmpty() || !$provinces->intersect($user->provinces)->isEmpty())) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
+            return Action::danger('Non sei autorizzato ad eseguire questa azione');
+        }
 
         $model->revertValidation();
 
