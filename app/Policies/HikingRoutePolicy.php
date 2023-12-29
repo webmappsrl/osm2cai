@@ -39,31 +39,31 @@ class HikingRoutePolicy
 
     public function update(User $user, HikingRoute $route)
     {
-        $permission = $user->getPermissionString();
-        if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-            return true;
-        }
+        // $permission = $user->getPermissionString();
+        // if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+        //     return true;
+        // }
 
-        if ($permission == 'Referente regionale') {
-            if (!$route->regions->intersect($user->regions)->isEmpty()) {
-                return true;
-            }
-            return false;
-        }
+        // if ($permission == 'Referente regionale') {
+        //     if (!$route->regions->intersect($user->regions)->isEmpty()) {
+        //         return true;
+        //     }
+        //     return false;
+        // }
 
-        if ($permission == 'Referente di zona') {
-            if (!$route->sectors->intersect($user->sectors)->isEmpty()) {
-                return true;
-            } else if (!$route->areas->intersect($user->areas)->isEmpty()) {
-                return true;
-            } else if (!$route->provinces->intersect($user->provinces)->isEmpty()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+        // if ($permission == 'Referente di zona') {
+        //     if (!$route->sectors->intersect($user->sectors)->isEmpty()) {
+        //         return true;
+        //     } else if (!$route->areas->intersect($user->areas)->isEmpty()) {
+        //         return true;
+        //     } else if (!$route->provinces->intersect($user->provinces)->isEmpty()) {
+        //         return true;
+        //     } else {
+        //         return false;
+        //     }
+        // }
 
-        return false;
+        return true;
     }
 
     public function delete(User $user, HikingRoute $route)

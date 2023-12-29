@@ -490,33 +490,12 @@ class HikingRoute extends Resource
         return [
             (new UploadValidationRawDataAction($this->id))
                 ->confirmButtonText('Carica')
-                ->cancelButtonText("Non caricare")
-                ->canRun(function ($request, $user) {
-                    $permission = auth()->user()->getPermissionString();
-                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-                        return true;
-                    }
-                    if ($permission == 'Referente regionale') {
-                        return $this->regions->contains(auth()->user()->region);
-                    }
-                    if ($permission == 'Referente di zona') {
-                        return $this->areas->contains(auth()->user()->areas) ||
-                            $this->sectors->contains(auth()->user()->sectors) ||
-                            $this->provinces->contains(auth()->user()->provinces);
-                    }
-                    return false;
-                }),
+                ->cancelButtonText("Non caricare"),
             (new ValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler validare questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Non validare")
                 ->canSee(function ($request) {
-                    return true;
-                })
-                ->canRun(function ($request, $user) {
-                    return true;
-                })
-                ->canRun(function ($request, $user) {
                     return true;
                 }),
             (new OsmSyncHikingRouteAction)
@@ -526,13 +505,7 @@ class HikingRoute extends Resource
             (new RevertValidateHikingRouteAction)
                 ->confirmText('Sei sicuro di voler revertare la validazione di questo percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
-                ->cancelButtonText("Annulla")
-                ->canSee(function ($request) {
-                    return true;
-                })
-                ->canRun(function ($request, $user) {
-                    return true;
-                }),
+                ->cancelButtonText("Annulla"),
             (new DeleteHikingRouteAction())
                 ->confirmText('Sei sicuro di voler eliminare il percorso?' . 'REF:' . $this->ref . ' (CODICE REI: ' . $this->ref_REI . ' / ' . $this->ref_REI_comp . ')')
                 ->confirmButtonText('Confermo')
