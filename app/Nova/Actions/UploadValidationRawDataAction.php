@@ -42,6 +42,10 @@ class UploadValidationRawDataAction extends Action
     {
         $model = $models->first();
 
+        if ($model->osm2cai_status > 3) {
+            return Action::danger("Per poter effetturare l'upload della traccia rilevata del percorso è necessario che il percorso abbia uno Stato di accatastamento minore o uguale a 3; se necessario procedere prima con REVERT VALIDATION");
+        }
+
         if ($fields->geometry) {
             $path = $fields->geometry->storeAs('local', explode('.', $fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
             $content = Storage::get($path);
