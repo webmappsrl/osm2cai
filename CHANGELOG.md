@@ -1,5 +1,14 @@
 # Changelog
 
+## [233.5.3](https://github.com/webmappsrl/osm2cai/compare/v233.5.2...v233.5.3) (2023-12-29)
+
+
+### Bug Fixes
+
+* fixed referente regionale issue ([170d9a1](https://github.com/webmappsrl/osm2cai/commit/170d9a117255b09a74bf58491f8d2bdac634e0a5))
+* fixed revert validate for regional referent ([665af44](https://github.com/webmappsrl/osm2cai/commit/665af44e5de4c10ebcc832c894aac2cd7735422d))
+* refactoring code ([0797f34](https://github.com/webmappsrl/osm2cai/commit/0797f34a193d30c59b0bafd50ff9dfa4a3e6124f))
+
 ## [233.5.2](https://github.com/webmappsrl/osm2cai/compare/v233.5.1...v233.5.2) (2023-12-29)
 
 
