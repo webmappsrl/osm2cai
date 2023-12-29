@@ -13,7 +13,7 @@ class DownloadGeojson extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = "Download settori Geojson";
+    public $name = "Download Geojson";
 
     public $showOnDetail = true;
     public $showOnIndex = false;
@@ -30,12 +30,12 @@ class DownloadGeojson extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        $model = $models->first();
-        $type = strtolower(last(explode('\\', get_class($model))));
-        $id = $model->id;
-        $name = $model->name;
-
-        return Action::download(route('api.geojson.' . $type, ['id' => $id]), $name . '.geojson');
+        foreach ($models as $model) {
+            $type = strtolower(last(explode('\\', get_class($model))));
+            $id = $model->id;
+            $name = $model->name;
+            return Action::redirect(route('api.geojson.' . $type, ['id' => $id]), $name . '.geojson');
+        }
     }
 
     /**
