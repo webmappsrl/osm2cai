@@ -489,28 +489,7 @@ class HikingRoute extends Resource
             (new UploadValidationRawDataAction($this->id))
                 ->confirmButtonText('Carica')
                 ->cancelButtonText("Non caricare")
-                ->canSee(function ($request) {
-                    if ($this->osm2cai_status == 4) {
-                        return false;
-                    }
-                    $permission = auth()->user()->getPermissionString();
-                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-                        return true;
-                    }
-                    if ($permission == 'Referente regionale') {
-                        return $this->regions->contains(auth()->user()->region);
-                    }
-                    if ($permission == 'Referente di zona') {
-                        return $this->areas->contains(auth()->user()->area) ||
-                            $this->sectors->contains(auth()->user()->sector) ||
-                            $this->provinces->contains(auth()->user()->province);
-                    }
-                    return false;
-                })
                 ->canRun(function ($request, $user) {
-                    if ($this->osm2cai_status == 4) {
-                        return false;
-                    }
                     $permission = auth()->user()->getPermissionString();
                     if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
                         return true;
@@ -542,28 +521,7 @@ class HikingRoute extends Resource
                 ->confirmText('Sei sicuro di voler sincronizzare i dati osm?')
                 ->confirmButtonText('Aggiorna con dati osm')
                 ->cancelButtonText("Annulla")
-                ->canSee(function ($request) {
-                    if ($this->osm2cai_status == 4) {
-                        return false;
-                    }
-                    $permission = auth()->user()->getPermissionString();
-                    if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-                        return true;
-                    }
-                    if ($permission == 'Referente regionale') {
-                        return $this->regions->contains(auth()->user()->region);
-                    }
-                    if ($permission == 'Referente di zona') {
-                        return $this->areas->contains(auth()->user()->area) ||
-                            $this->sectors->contains(auth()->user()->sector) ||
-                            $this->provinces->contains(auth()->user()->province);
-                    }
-                    return false;
-                })
                 ->canRun(function ($request, $user) {
-                    if ($this->osm2cai_status == 4) {
-                        return false;
-                    }
                     $permission = auth()->user()->getPermissionString();
                     if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
                         return true;
