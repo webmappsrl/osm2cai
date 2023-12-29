@@ -68,4 +68,9 @@ class Sda4IssueStatusPartition extends Partition
     {
         return 'sda4-issue-status-partition';
     }
+
+    public function name()
+    {
+        return 'Percorribilità SDA4';
+    }
 }
