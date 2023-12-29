@@ -13,11 +13,13 @@ use Laravel\Nova\Fields\HasMany;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Actions\DownloadRoutesCsv;
 use App\Nova\Filters\SectionRegionFilter;
-use App\Models\HikingRoute as ModelsHikingRoute;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Models\HikingRoute as ModelsHikingRoute;
 
 class Section extends Resource
 {
@@ -296,7 +298,20 @@ class Section extends Resource
      */
     public function actions(Request $request): array
     {
-        return [];
+        return [
+            (new DownloadGeojson)
+                ->canRun(
+                    function ($request, $model) {
+                        return true;
+                    }
+                ),
+            (new DownloadRoutesCsv)
+                ->canRun(
+                    function ($request, $model) {
+                        return true;
+                    }
+                ),
+        ];
     }
 
     public function authorizedToDetach(NovaRequest $request, $model, $relationship)

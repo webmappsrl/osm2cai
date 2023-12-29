@@ -7,6 +7,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\ItineraryController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 use App\Http\Resources\HikingRouteTDHResource;
@@ -33,6 +34,7 @@ Route::name('api.')->group(function () {
     Route::prefix('csv')->name('csv.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'csv'])->name('region');
         Route::get('/sector/{id}', [SectorController::class, 'csv'])->name('sector');
+        Route::get('/section/{id}', [SectionController::class, 'csv'])->name('section');
         Route::get('/users/', [UserController::class, 'csv'])->name('users');
     });
     Route::prefix('geojson/complete')->name('geojson_complete.')->group(function () {
@@ -43,6 +45,7 @@ Route::name('api.')->group(function () {
         Route::get('/province/{id}', [ProvinceController::class, 'geojson'])->name('province');
         Route::get('/area/{id}', [AreaController::class, 'geojson'])->name('area');
         Route::get('/sector/{id}', [SectorController::class, 'geojson'])->name('sector');
+        Route::get('/section/{id}', [SectionController::class, 'geojson'])->name('section');
         Route::post('/hiking_routes/bounding_box', [HikingRouteController::class, 'boundingBox'])->name('hiking_routes');
     });
     Route::prefix('shapefile')->name('shapefile.')->group(function () {
