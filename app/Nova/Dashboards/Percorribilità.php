@@ -9,7 +9,7 @@ class Percorribilità extends Dashboard
 
     public static function label()
     {
-        return 'Percorribilità';
+        return 'Riepilogo Percorribilità';
     }
     /**
      * Get the cards for the dashboard.

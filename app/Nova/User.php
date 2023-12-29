@@ -175,35 +175,6 @@ class User extends Resource
      */
     public function cards(Request $request): array
     {
-        $users = \App\Models\User::all();
-
-        $mostActiveUsers = DB::select(DB::raw("
-        SELECT u.id AS user_id, u.name AS user_name, COUNT(DISTINCT hr.id) AS numero_validazioni
-        FROM users u
-        JOIN hiking_routes hr ON u.id = hr.user_id
-        WHERE hr.osm2cai_status = '4'
-        GROUP BY u.id, u.name
-        ORDER BY numero_validazioni DESC
-        LIMIT 5
-    "));
-
-        $html = '<ol style="margin-top:10px;">';
-        foreach ($mostActiveUsers as $user) {
-            $url = url('/resources/users/' . $user->user_id);
-            $html .= "<li><a style='text-decoration:none; color: darkgreen;' href=\"$url\">$user->user_name</a> | N. Validazioni: <strong>$user->numero_validazioni</strong></li>";
-        }
-        $html .= '</ol>';
-        return [
-            new \App\Nova\Metrics\TotalUsers,
-            new \App\Nova\Metrics\UserDistributionByRole($users),
-            new \App\Nova\Metrics\UserDistributionByRegion($users),
-            (new TextCard())
-                ->center(false)
-                ->heading('Most Active Users')
-                ->text($html)
-                ->textAsHtml()
-                ->height(),
-        ];
     }
 
     /**
