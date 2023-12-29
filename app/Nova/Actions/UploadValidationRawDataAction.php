@@ -28,7 +28,7 @@ class UploadValidationRawDataAction extends Action
     public function __construct($HR = null)
     {
 
-        $this->HR = HikingRoute::find($HR);;
+        $this->HR = HikingRoute::find($HR);
     }
 
     /**
@@ -44,6 +44,25 @@ class UploadValidationRawDataAction extends Action
 
         if ($model->osm2cai_status > 3) {
             return Action::danger("Per poter effetturare l'upload della traccia rilevata del percorso è necessario che il percorso abbia uno Stato di accatastamento minore o uguale a 3; se necessario procedere prima con REVERT VALIDATION");
+        }
+
+        $permission = auth()->user()->getPermissionString();
+        $sectors = $model->sectors;
+        $areas = $model->areas;
+        $provinces = $model->provinces;
+
+        $authorized = false;
+
+        if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+            $authorized = true;
+        } elseif ($permission == 'Referente regionale' && !$model->regions->intersect(auth()->user()->regions)->isEmpty()) {
+            $authorized = true;
+        } elseif ($permission == 'Referente di zona' && (!$sectors->intersect(auth()->user()->sectors)->isEmpty() || !$areas->intersect(auth()->user()->areas)->isEmpty() || !$provinces->intersect(auth()->user()->provinces)->isEmpty())) {
+            $authorized = true;
+        }
+
+        if (!$authorized) {
+            return Action::danger('Non sei autorizzato ad eseguire questa azione');
         }
 
         if ($fields->geometry) {
