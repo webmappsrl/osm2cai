@@ -57,7 +57,7 @@ class RevertValidateHikingRouteAction extends Action
 
         if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
             $authorized = true;
-        } elseif ($permission == 'Referente regionale' && !$model->regions->intersect($user->regions)->isEmpty()) {
+        } elseif ($permission == 'Referente regionale' && $model->regions->pluck('id')->contains(auth()->user()->region->id)) {
             $authorized = true;
         } elseif ($permission == 'Referente di zona' && (!$sectors->intersect($user->sectors)->isEmpty() || !$areas->intersect($user->areas)->isEmpty() || !$provinces->intersect($user->provinces)->isEmpty())) {
             $authorized = true;
