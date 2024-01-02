@@ -11,7 +11,7 @@ class UserDistributionByRegion extends Partition
 
     protected $users;
 
-    public function __construct($users)
+    public function __construct(iterable $users)
     {
         $this->users = $users;
     }
@@ -60,7 +60,7 @@ class UserDistributionByRegion extends Partition
      */
     public function cacheFor()
     {
-        // return now()->addMinutes(5);
+        return now()->addMinutes(5);
     }
 
     /**
