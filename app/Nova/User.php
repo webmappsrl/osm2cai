@@ -175,6 +175,7 @@ class User extends Resource
      */
     public function cards(Request $request): array
     {
+        return [];
     }
 
     /**
