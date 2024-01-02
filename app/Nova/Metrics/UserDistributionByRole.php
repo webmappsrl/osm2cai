@@ -12,7 +12,7 @@ class UserDistributionByRole extends Partition
 
     protected $users;
 
-    public function __construct($users)
+    public function __construct(iterable $users)
     {
         $this->users = $users;
     }
@@ -62,7 +62,7 @@ class UserDistributionByRole extends Partition
      */
     public function cacheFor()
     {
-        // return now()->addMinutes(5);
+        return now()->addMinutes(5);
     }
 
     /**
