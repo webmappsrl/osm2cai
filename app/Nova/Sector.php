@@ -34,6 +34,7 @@ use Wm\MapMultiPolygonNova3\MapMultiPolygonNova3;
 use App\Nova\Actions\UploadSectorGeometryRawDataAction;
 use App\Nova\Lenses\NoResponsabileSectorsColumnsLens;
 use App\Nova\Actions\BulkSectorsModeratorAssignAction;
+use App\Nova\Actions\SectorAssignModerator;
 
 class Sector extends Resource
 {
@@ -296,7 +297,8 @@ class Sector extends Resource
                 }),
             (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
-            })
+            }),
+            (new SectorAssignModerator)
         ];
     }
 }
