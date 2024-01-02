@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
@@ -52,6 +53,14 @@ class UgcMedia extends Resource
         $label = 'Immagini';
 
         return __($label);
+    }
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+
+        if (Auth::user()->getTerritorialRole() === 'regional' || Auth::user()->getTerritorialRole() === 'local') {
+            return $query->where('user_id', Auth::user()->id);
+        }
     }
 
     /**

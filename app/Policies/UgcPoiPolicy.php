@@ -19,7 +19,7 @@ class UgcPoiPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -31,7 +31,7 @@ class UgcPoiPolicy
      */
     public function view(User $user, UgcPoi $ugcPoi)
     {
-        return true;
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**

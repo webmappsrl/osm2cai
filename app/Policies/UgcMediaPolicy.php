@@ -20,7 +20,7 @@ class UgcMediaPolicy
      */
     public function viewAny(User $user)
     {
-        return true;
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -32,7 +32,7 @@ class UgcMediaPolicy
      */
     public function view(User $user, UgcMedia $ugcMedia)
     {
-        return true;
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
