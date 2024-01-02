@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\CsvableModelTrait;
 use App\Traits\SallableTrait;
 use App\Traits\OwnableModelTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Area extends TerritorialUnit
 {
-    use HasFactory, SallableTrait, OwnableModelTrait;
+    use HasFactory, SallableTrait, OwnableModelTrait, CsvableModelTrait;
 
     public function province()
     {

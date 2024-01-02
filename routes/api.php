@@ -34,6 +34,8 @@ Route::name('api.')->group(function () {
     Route::prefix('csv')->name('csv.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'csv'])->name('region');
         Route::get('/sector/{id}', [SectorController::class, 'csv'])->name('sector');
+        Route::get('/area/{id}', [AreaController::class, 'csv'])->name('area');
+        Route::get('/province/{id}', [ProvinceController::class, 'csv'])->name('province');
         Route::get('/section/{id}', [SectionController::class, 'csv'])->name('section');
         Route::get('/users/', [UserController::class, 'csv'])->name('users');
     });
