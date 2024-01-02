@@ -373,16 +373,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                geojson
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                shape
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                csv
-                Percorsi</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    geojson
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    shape
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    csv
+    Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -761,16 +761,22 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         $dashboards = [
             new ItalyDashboard,
-            new Percorribilità,
-            new Utenti,
         ];
 
         /**
          * @var \App\Models\User
          */
         $loggedInUser = Auth::user();
+        if ($loggedInUser->getTerritorialRole() == 'admin') {
+            $dashboards[] = new Utenti;
+            $dashboards[] = new Percorribilità();
+        }
+        if ($loggedInUser->getTerritorialRole() == 'national') {
+            $dashboards[] = new Percorribilità();
+        }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;
+            $dashboards[] = new Percorribilità($loggedInUser);
         }
 
         return $dashboards;

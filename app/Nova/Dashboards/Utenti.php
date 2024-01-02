@@ -4,6 +4,7 @@ namespace App\Nova\Dashboards;
 
 use Laravel\Nova\Dashboard;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Ericlagarda\NovaTextCard\TextCard;
 
 class Utenti extends Dashboard
@@ -20,17 +21,21 @@ class Utenti extends Dashboard
      */
     public function cards()
     {
-        $users = \App\Models\User::all();
+        $users = Cache::remember('users', 60, function () {
+            return \App\Models\User::all();
+        });
 
-        $mostActiveUsers = DB::select(DB::raw("
-        SELECT u.id AS user_id, u.name AS user_name, COUNT(DISTINCT hr.id) AS numero_validazioni
-        FROM users u
-        JOIN hiking_routes hr ON u.id = hr.user_id
-        WHERE hr.osm2cai_status = '4'
-        GROUP BY u.id, u.name
-        ORDER BY numero_validazioni DESC
-        LIMIT 5
-    "));
+        $mostActiveUsers = Cache::remember('mostActiveUsers', 60, function () {
+            return DB::select(DB::raw("
+            SELECT u.id AS user_id, u.name AS user_name, COUNT(DISTINCT hr.id) AS numero_validazioni
+            FROM users u
+            JOIN hiking_routes hr ON u.id = hr.user_id
+            WHERE hr.osm2cai_status = '4'
+            GROUP BY u.id, u.name
+            ORDER BY numero_validazioni DESC
+            LIMIT 5
+        "));
+        });
 
         $html = '<ol style="margin-top:10px;">';
         foreach ($mostActiveUsers as $user) {
