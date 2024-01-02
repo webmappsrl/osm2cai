@@ -211,6 +211,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $sal_color = Osm2CaiHelper::getSalColor($sal);
 
         $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
+        $SALIssueStatus = $this->getSalIssueStatus();
 
         $cards = [
             (new TextCard)
@@ -225,8 +226,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->center(false),
             (new TextCard())
                 ->width('1/4')
-                ->heading('TBI')
-                ->text('LastLogin')
+                ->heading($SALIssueStatus)
+                ->text('Sal Stato percorribilitá')
                 ->center(false),
             (new TextCard())
                 ->width('1/4')
@@ -368,13 +369,14 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
+<a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
         $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
+
 
         $cards = [
             (new TextCard())
@@ -711,6 +713,32 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $sectorsCard->data($data);
 
         return $sectorsCard;
+    }
+
+    private function getSalIssueStatus(): string
+    {
+        $percorribile = 0;
+        $nonPercorribile = 0;
+        $percorribileParzialmente = 0;
+        $hikingRoutes = auth()->user()->region->hikingRoutes()->get();
+
+        foreach ($hikingRoutes as $hr) {
+            switch ($hr->issues_status) {
+                case 'percorribile':
+                    $percorribile++;
+                    break;
+                case 'non percorribile':
+                    $nonPercorribile++;
+                case 'percorribile parzialmente':
+                    $percorribileParzialmente++;
+                    break;
+            }
+        }
+
+        $result = (($percorribile + $percorribileParzialmente + $nonPercorribile) / count($hikingRoutes)) * 100;
+        $result = round($result, 2);
+
+        return strval($result) . '%';
     }
 
     /**
