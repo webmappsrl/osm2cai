@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -53,6 +54,14 @@ class UgcPoi extends Resource
         $label = 'Poi';
 
         return __($label);
+    }
+
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+
+        if (Auth::user()->getTerritorialRole() === 'regional' || Auth::user()->getTerritorialRole() === 'local') {
+            return $query->where('user_id', Auth::user()->id);
+        }
     }
 
     /**
