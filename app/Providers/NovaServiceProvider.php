@@ -227,7 +227,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             (new TextCard())
                 ->width('1/4')
                 ->heading($SALIssueStatus)
-                ->text('Sal Stato percorribilitá')
+                ->text('SAL Stato percorribilitá')
                 ->center(false),
             (new TextCard())
                 ->width('1/4')
@@ -240,15 +240,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
                 ->text('<h4 class="font-light">
-                <p>&nbsp;</p>
-                <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
-                <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
-                 <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
-                 <p>&nbsp;</p>
-                 <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
+    <p>&nbsp;</p>
+<a href="' . route('loading-download', ['type' => 'geojson-complete', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download geojson Percorsi</a>
 
-                 ')
+<a href="' . route('loading-download', ['type' => 'shapefile', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download shape Settori</a>
+
+<a href="' . route('loading-download', ['type' => 'csv', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download CSV Percorsi</a>    <p>&nbsp;</p>
+    <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
+    ')
                 ->textAsHtml(),
+
 
             // General Info
             (new TextCard())
@@ -332,7 +333,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
                 $sal = $province->getSal();
                 $sal_color = Osm2CaiHelper::getSalColor($sal);
-                $salHtml .= $province->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                $salHtml .= $province->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                    number_format($sal * 100, 2) . ' %</div>';
 
                 $num_areas += $province->areas->count();
                 if ($province->areas->count() > 0) {
@@ -348,7 +350,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 foreach ($user->areas as $area) {
                     $sal = $area->getSal();
                     $sal_color = Osm2CaiHelper::getSalColor($sal);
-                    $salHtml .= $area->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                    $salHtml .= $area->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                        number_format($sal * 100, 2) . ' %</div>';
                     $num_sectors += $area->sectors->count();
                 }
             }
@@ -357,7 +360,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             foreach ($user->sectors as $sector) {
                 $sal = $sector->getSal();
                 $sal_color = Osm2CaiHelper::getSalColor($sal);
-                $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                    number_format($sal * 100, 2) . ' %</div>';
             }
         }
 
@@ -370,9 +374,15 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $id = $relatedModel->id;
 ?>
             <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
-            <a href="<?= route("api.csv.$tableSingular", ['id' => $id]) ?>">Download csv Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
