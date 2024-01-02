@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\CsvableModelTrait;
 use App\Traits\SallableTrait;
 use App\Traits\OwnableModelTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Province extends TerritorialUnit
 {
-    use HasFactory, SallableTrait, OwnableModelTrait;
+    use HasFactory, SallableTrait, OwnableModelTrait, CsvableModelTrait;
 
     protected $fillable = [
         'num_expected',
@@ -33,19 +34,22 @@ class Province extends TerritorialUnit
     /**
      * Alias
      */
-    public function children(){
+    public function children()
+    {
         return $this->areas();
     }
     /**
      * Alias
      */
-    public function childrenIds() {
+    public function childrenIds()
+    {
         return $this->areasIds();
     }
     /**
      * Alias
      */
-    public function parent(){
+    public function parent()
+    {
         return $this->region();
     }
 
@@ -100,5 +104,4 @@ class Province extends TerritorialUnit
 
         return $query;
     }
-
 }

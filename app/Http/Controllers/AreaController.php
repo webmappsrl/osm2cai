@@ -8,8 +8,10 @@ use App\Nova\Province;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class AreaController extends Controller {
-    public function geojson(string $id) {
+class AreaController extends Controller
+{
+    public function geojson(string $id)
+    {
         $area = Area::find($id);
         $sectors = $area->sectorsIds();
         $results = Sector::whereIn('id', $sectors)->select('id', DB::raw('ST_AsGeoJSON(ST_ForceRHR(geometry)) as geom'))->get();
@@ -61,7 +63,8 @@ class AreaController extends Controller {
             return response()->json(['Error' => 'Area ' . $id . ' not found'], 404);
     }
 
-    public function shapefile(string $id) {
+    public function shapefile(string $id)
+    {
         $model = Area::find($id);
         $name = str_replace(" ", "_", $model->name);
         $shapefile = $model->getShapefile();
@@ -69,7 +72,8 @@ class AreaController extends Controller {
         return Storage::disk('public')->download($shapefile, $name . '.zip');
     }
 
-    public function kml(string $id) {
+    public function kml(string $id)
+    {
         $area = Area::find($id);
 
         $headers = [
@@ -78,5 +82,17 @@ class AreaController extends Controller {
         ];
 
         return response($area->getKml(), 200, $headers);
+    }
+
+    public function csv(string $id)
+    {
+        $area = Area::find($id);
+
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_area_' . $area->name . '.csv"',
+        ];
+
+        return response($area->getCsv(), 200, $headers);
     }
 }
