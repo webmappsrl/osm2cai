@@ -102,7 +102,6 @@ class RegionController extends Controller
         ];
 
         return response($region->getCsv(), 200, $headers);
-
     }
 
     public function geojsonComplete(string $id)
@@ -113,6 +112,7 @@ class RegionController extends Controller
             'Content-type' => 'application/json',
             'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_regione_complete_' . $region->name . '.geojson"',
         ];
+
         return response($region->getGeojsonComplete(), 200, $headers);
     }
 }

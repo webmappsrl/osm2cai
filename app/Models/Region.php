@@ -82,8 +82,9 @@ class Region extends TerritorialUnit
         $g = [];
         $g['type'] = 'FeatureCollection';
         $features = [];
-        if (count($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]))) {
-            foreach ($this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]) as $hr) {
+        $hikingRoutes = $this->hikingRoutes->whereIn('osm2cai_status', [1, 2, 3, 4]);
+        if (count($hikingRoutes)) {
+            foreach ($hikingRoutes as $hr) {
                 $sectors = $hr->sectors;
                 $f = [];
                 // Properties
