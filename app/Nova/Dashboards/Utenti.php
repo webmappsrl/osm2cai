@@ -2,6 +2,8 @@
 
 namespace App\Nova\Dashboards;
 
+use App\Nova\Metrics\IssueLastUpdatePerMonth;
+use App\Nova\Metrics\ValidatedHrPerMonth;
 use Laravel\Nova\Dashboard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
@@ -53,6 +55,8 @@ class Utenti extends Dashboard
                 ->text($html)
                 ->textAsHtml()
                 ->height(),
+            (new ValidatedHrPerMonth()),
+            (new IssueLastUpdatePerMonth()),
         ];
     }
 
