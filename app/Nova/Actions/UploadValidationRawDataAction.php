@@ -41,37 +41,36 @@ class UploadValidationRawDataAction extends Action
             return Action::danger("Per poter effetturare l'upload della traccia rilevata del percorso è necessario che il percorso abbia uno Stato di accatastamento minore o uguale a 3; se necessario procedere prima con REVERT VALIDATION");
         }
 
-            $permission = auth()->user()->getPermissionString();
-            $sectors = $model->sectors;
-            $areas = $model->areas;
-            $provinces = $model->provinces;
+        $permission = auth()->user()->getPermissionString();
+        $sectors = $model->sectors;
+        $areas = $model->areas;
+        $provinces = $model->provinces;
 
-            $authorized = false;
+        $authorized = false;
 
-            if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
-                $authorized = true;
-            } elseif ($permission == 'Referente regionale' && $model->regions->pluck('id')->contains(auth()->user()->region->id)) {
-                $authorized = true;
-            } elseif ($permission == 'Referente di zona' && (!$sectors->intersect(auth()->user()->sectors)->isEmpty() || !$areas->intersect(auth()->user()->areas)->isEmpty() || !$provinces->intersect(auth()->user()->provinces)->isEmpty())) {
-                $authorized = true;
-            }
-
-            if (!$authorized) {
-                return Action::danger('Non sei autorizzato ad eseguire questa azione');
-            }
-
-            if ($fields->geometry) {
-                $path = $fields->geometry->storeAs('local', explode('.', $fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
-                $content = Storage::get($path);
-                $geom = $model->fileToGeometry($content);
-
-                $model->geometry_raw_data = $geom;
-                $model->save();
-                return Action::message('File caricato e geometria aggiornata con successo!');
-            }
-
-            return Action::danger("Impossibile aggiornare la geometry. Inserisci un file valido.");
+        if ($permission == 'Superadmin' || $permission == 'Referente nazionale') {
+            $authorized = true;
+        } elseif ($permission == 'Referente regionale' && $model->regions->pluck('id')->contains(auth()->user()->region->id)) {
+            $authorized = true;
+        } elseif ($permission == 'Referente di zona' && (!$sectors->intersect(auth()->user()->sectors)->isEmpty() || !$areas->intersect(auth()->user()->areas)->isEmpty() || !$provinces->intersect(auth()->user()->provinces)->isEmpty())) {
+            $authorized = true;
         }
+
+        if (!$authorized) {
+            return Action::danger('Non sei autorizzato ad eseguire questa azione');
+        }
+
+        if ($fields->geometry) {
+            $path = $fields->geometry->storeAs('local', explode('.', $fields->geometry->hashName())[0] . '.' . $fields->geometry->getClientOriginalExtension());
+            $content = Storage::get($path);
+            $geom = $model->fileToGeometry($content);
+
+            $model->geometry_raw_data = $geom;
+            $model->save();
+            return Action::message('File caricato e geometria aggiornata con successo!');
+        }
+
+        return Action::danger("Impossibile aggiornare la geometry. Inserisci un file valido.");
     }
 
     /**
