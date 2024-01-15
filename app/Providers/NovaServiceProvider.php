@@ -378,16 +378,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                geojson
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                shape
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                csv
-                Percorsi</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    geojson
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    shape
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    csv
+    Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -781,6 +781,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;
+            $dashboards[] = new Percorribilità($loggedInUser);
+        }
+        if($loggedInUser->getTerritorialRole() == 'local'){
             $dashboards[] = new Percorribilità($loggedInUser);
         }
 
