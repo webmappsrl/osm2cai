@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\Commands\import;
 use App\Helpers\Osm2CaiHelper;
 use App\Models\Area;
 use App\Models\HikingRoute;
@@ -197,15 +198,19 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $numbers[4] = $data[0]->tot4;
 
         $num_areas = 0;
+        $area_codes = [];
         $num_sectors = 0;
         foreach (Auth::user()->region->provinces as $province) {
-            $num_areas += $province->areas->count();
+            array_push($area_codes, implode(',', $province->areas->pluck('code')->toArray()));
             if ($province->areas->count() > 0) {
                 foreach ($province->areas as $area) {
                     $num_sectors += $area->sectors->count();
                 }
             }
         }
+        $area_codes = implode(',', $area_codes);
+        $area_codes = implode(',', array_unique(explode(',', $area_codes)));
+        $num_areas = count(explode(',', $area_codes));
 
         $sal = Auth::user()->region->getSal();
         $sal_color = Osm2CaiHelper::getSalColor($sal);
@@ -373,16 +378,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    geojson
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    shape
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    csv
-    Percorsi</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
