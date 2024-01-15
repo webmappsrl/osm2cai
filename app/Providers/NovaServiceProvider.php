@@ -116,8 +116,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 $cards = [
                     (new TextCard())
                         ->forceFullWidth()
-                        ->heading('Nessun Permesso territoriale')
-                        ->text('Contatta catastorei@cai.it per informazioni')
+                        ->heading('Modalità visualizzazione - Nessun permesso territoriale')
+                        ->text('Contatta il tuo Referente SOSEC Regionale o catastorei@cai.it per informazioni.<br><br>
+                        La piattaforma può essere consultata attraverso le voci nel menu disponibile sulla sinistra di questa schermata')
                         ->textAsHtml(),
                 ];
         }
@@ -378,16 +379,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    geojson
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    shape
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    csv
-    Percorsi</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -783,7 +784,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $dashboards[] = new SectorsDashboard;
             $dashboards[] = new Percorribilità($loggedInUser);
         }
-        if($loggedInUser->getTerritorialRole() == 'local'){
+        if ($loggedInUser->getTerritorialRole() == 'local') {
             $dashboards[] = new Percorribilità($loggedInUser);
         }
 
