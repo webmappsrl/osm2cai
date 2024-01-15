@@ -17,9 +17,9 @@ class DeleteHikingRouteAction extends DestructiveAction
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
-    public $onlyOnDetail=true;
+    public $onlyOnDetail = true;
 
-    public $name='ELIMINA';
+    public $name = 'ELIMINA';
 
     /**
      * Perform the action on the given models.
@@ -33,23 +33,21 @@ class DeleteHikingRouteAction extends DestructiveAction
         $user = auth()->user();
         if (!$user && $user == null)
             return Action::danger('User info is not available');
-        if (($user->is_national_referent == true) or ($user->is_administrator == true)){
-            foreach ($models as $m){
-                if($m->deleted_on_osm) {
+        if (($user->is_national_referent == true) or ($user->is_administrator == true) or ($user->getTerritorialRole() === 'regional')) {
+            foreach ($models as $m) {
+                if ($m->deleted_on_osm) {
                     $m->regions()->sync([]);
                     $m->provinces()->sync([]);
                     $m->areas()->sync([]);
                     $m->sectors()->sync([]);
                     $m->save();
                     $m->delete();
-                }
-                else {
-                    return Action::danger('You can not delete this Hiking Route because it is not deleted from OSM' );
+                } else {
+                    return Action::danger('You can not delete this Hiking Route because it is not deleted from OSM');
                 }
             }
             return Action::redirect('/resources/hiking-routes');
-        }
-        else{
+        } else {
             return Action::danger('You do not have permissions to delete this Hiking Route');
         }
     }
