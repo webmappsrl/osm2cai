@@ -62,7 +62,7 @@ class SectionController extends Controller
                         'properties' => [
                             'id' => $hr->id,
                             'name' => $name,
-                            'user' => $hr->user->name,
+                            'user' => User::where('id', $hr->user_id)->first()->name,
                             'relation_id' => $hr->relation_id,
                             'ref' => $hr->ref ?? '',
                             'source_ref' => $hr->source_ref ?? '',
