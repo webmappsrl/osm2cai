@@ -13,11 +13,14 @@ use Laravel\Nova\Fields\HasMany;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Actions\DownloadRoutesCsv;
 use App\Nova\Filters\SectionRegionFilter;
-use App\Models\HikingRoute as ModelsHikingRoute;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Models\HikingRoute as ModelsHikingRoute;
+use App\Models\Section as ModelsSection;
 
 class Section extends Resource
 {
@@ -166,8 +169,11 @@ class Section extends Resource
      */
     public function cards(Request $request)
     {
+        $sectionId = $request->resourceId;
+        $section = ModelsSection::where('id', $sectionId)->first();
+        $hr = $section->hikingRoutes()->get();
         if (!Auth::user()->is_administrator && Auth::user()->section_id != null) {
-            $data = DB::table('sections_view') //TODO no section_view yet in the database
+            $data = DB::table('sections_view')
                 ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
                 ->where('id', Auth::user()->section->id)
                 ->get();
@@ -175,28 +181,20 @@ class Section extends Resource
             $numbers[2] = $data[0]->tot2;
             $numbers[3] = $data[0]->tot3;
             $numbers[4] = $data[0]->tot4;
-            $cards = [
+            $cards[] = [
                 (new TextCard())
                     ->onlyOnDetail()
                     ->forceFullWidth()
                     ->heading(\auth()->user()->region->name),
-                //TODO add the link to the geojson and csv for the section when ready
-                // ->text('<h4 class="font-light">
-                //     <p>&nbsp;</p>
-                //     <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
-                //      <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
-                //      <p>&nbsp;</p>
-
-                //      ')
                 $this->_getSdaCard(1, $numbers[1]),
                 $this->_getSdaCard(2, $numbers[2]),
                 $this->_getSdaCard(3, $numbers[3]),
                 $this->_getSdaCard(4, $numbers[4]),
+                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail(),
+                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail(),
             ];
             return $cards;
         } else {
-            $sectionId = $request->resourceId;
-
             $values = DB::table('hiking_routes')
                 ->join('hiking_route_section', 'hiking_routes.id', '=', 'hiking_route_section.hiking_route_id')
                 ->where('hiking_route_section.section_id', $sectionId)
@@ -244,6 +242,8 @@ class Section extends Resource
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')
                     ->headingAsHtml()
                     ->onlyOnDetail(),
+                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail(),
+                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail(),
             ];
             return $cards;
         }
@@ -296,7 +296,20 @@ class Section extends Resource
      */
     public function actions(Request $request): array
     {
-        return [];
+        return [
+            (new DownloadGeojson)
+                ->canRun(
+                    function ($request, $model) {
+                        return true;
+                    }
+                ),
+            (new DownloadRoutesCsv)
+                ->canRun(
+                    function ($request, $model) {
+                        return true;
+                    }
+                ),
+        ];
     }
 
     public function authorizedToDetach(NovaRequest $request, $model, $relationship)

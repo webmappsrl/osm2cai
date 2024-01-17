@@ -9,16 +9,18 @@ use Laravel\Nova\Fields\Boolean;
 use App\Models\User as UserModel;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
-use App\Nova\Actions\DownloadUsersCsv;
 use App\Nova\Filters\UserAreaFilter;
-use App\Nova\Filters\UserAssociationFilter;
-use App\Nova\Filters\UserProvinceFilter;
+use App\Nova\Filters\UserTypeFilter;
+use App\Nova\Actions\DownloadUsersCsv;
 use App\Nova\Filters\UserRegionFilter;
 use App\Nova\Filters\UserSectorFilter;
-use App\Nova\Filters\UserTypeFilter;
+use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\UserProvinceFilter;
 use Illuminate\Database\Eloquent\Builder;
+use App\Nova\Filters\UserAssociationFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource

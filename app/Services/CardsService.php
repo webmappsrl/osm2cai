@@ -15,10 +15,12 @@ use Ericlagarda\NovaTextCard\TextCard;
 use Mako\CustomTableCard\CustomTableCard;
 
 
-class CardsService {
+class CardsService
+{
 
 
-    public function getNationalSalCard(){
+    public function getNationalSalCard()
+    {
         $sal = (HikingRoute::where('osm2cai_status', 1)->count() * 0.25 +
             HikingRoute::where('osm2cai_status', 2)->count() * 0.50 +
             HikingRoute::where('osm2cai_status', 3)->count() * 0.75 +
@@ -27,14 +29,14 @@ class CardsService {
         $sal_color = Osm2CaiHelper::getSalColor($sal);
 
         return (new TextCard())
-        ->width('1/4')
-        ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
-        ->headingAsHtml()
-        ->text('SAL Nazionale');
+            ->width('1/4')
+            ->heading('<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>')
+            ->headingAsHtml()
+            ->text('SAL Nazionale');
     }
 
 
-  /**
+    /**
      * @return CustomTableCard
      */
     public function getSectorsTableCard(): CustomTableCard
@@ -72,7 +74,7 @@ class CardsService {
         // Extract data from views
         // select name,code,tot1,tot2,tot3,tot4,num_expected from regions_view;
         $items = DB::table('sectors_view')
-            ->select('id','full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
+            ->select('id', 'full_code', 'tot1', 'tot2', 'tot3', 'tot4', 'num_expected')
             ->whereIn('id', $sectors_id)
             ->get();
 
@@ -80,7 +82,10 @@ class CardsService {
         foreach ($items as $item) {
 
             $tot = $item->tot1 + $item->tot2 + $item->tot3 + $item->tot4;
-            $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
+            if ($item->num_expected == 0)
+                $sal = 0;
+            else
+                $sal = (($item->tot1 * 0.25) + ($item->tot2 * 0.50) + ($item->tot3 * 0.75) + ($item->tot4)) / $item->num_expected;
             $sal_color = Osm2CaiHelper::getSalColor($sal);
             $sector = Sector::find($item->id);
 
@@ -94,7 +99,7 @@ class CardsService {
                 new Cell($tot),
                 new Cell($item->num_expected),
                 new Cell('<div style="background-color: ' . $sal_color . '; color: white; font-size: x-large">' . number_format($sal * 100, 2) . ' %</div>'),
-                new Cell ('<a href="/resources/sectors/'.$item->id.'">[VIEW]</a>'),
+                new Cell('<a href="/resources/sectors/' . $item->id . '">[VIEW]</a>'),
             );
             $data[] = $row;
         }
@@ -106,12 +111,13 @@ class CardsService {
 
 
 
-    public function getTotalKmSda3Sda4Card(){
+    public function getTotalKmSda3Sda4Card()
+    {
         $tot = DB::table('regions_view')->selectRaw('SUM(km_tot3) + SUM (km_tot4) as total')
             ->get();
 
 
-        $formatted = doubleval( $tot->first()->total );
+        $formatted = doubleval($tot->first()->total);
 
         return (new TextCard())
             ->width('1/4')
@@ -120,12 +126,13 @@ class CardsService {
             ->headingAsHtml();
     }
 
-    public function getTotalKmSda4Card(){
+    public function getTotalKmSda4Card()
+    {
         $tot = DB::table('regions_view')->selectRaw('SUM (km_tot4) as total')
             ->get();
 
 
-        $formatted = doubleval( $tot->first()->total );
+        $formatted = doubleval($tot->first()->total);
 
         return (new TextCard())
             ->width('1/4')
@@ -133,7 +140,4 @@ class CardsService {
             ->heading('<div style="font-size: xx-large">' . $formatted . '</div>')
             ->headingAsHtml();
     }
-
-
-
 }
