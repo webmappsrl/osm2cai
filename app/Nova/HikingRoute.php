@@ -604,6 +604,7 @@ class HikingRoute extends Resource
                 )
                 ->showOnTableRow(),
             (new OverpassMap($this->model()))
+                ->onlyOnDetail('true')
                 ->confirmText('Sei sicuro di voler creare una mappa Overpass per questo percorso?')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Annulla")
