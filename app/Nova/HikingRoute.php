@@ -49,6 +49,8 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use App\Nova\Actions\ImportPois;
+use App\Nova\Actions\OverpassMap;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -223,6 +225,9 @@ class HikingRoute extends Resource
         //     $fields[] = Boolean::make('Eliminato su osm', 'deleted_on_osm')->onlyOnIndex()->sortable();
         // }
 
+        $fields[] = Boolean::make('Correttezza Geometria', 'geometry_check')
+            ->onlyOnDetail();
+
         $fields[] = Boolean::make('Coerenza ref REI', function () {
             return $this->ref_REI == $this->ref_REI_comp;
         })->onlyOnDetail()
@@ -350,30 +355,13 @@ class HikingRoute extends Resource
      */
     public function cards(Request $request)
     {
-        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
-        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
-        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
-        $api = $endpoint . $request->resourceId;
-
-        $headers = get_headers($api);
-        $statusLine = $headers[0];
-
-        if (strpos($statusLine, '200 OK') !== false) {
-            // The API returned a success response
-            $data = json_decode(file_get_contents($api), true);
-            if (!empty($data)) {
-                if ($data['properties']['id'] !== null) {
-                    $infomontLink .= '?track=' . $data['properties']['id'];
-                    $osm2caiLink .= '?track=' . $data['properties']['id'];
-                }
-            }
-        }
-
-
+        $links = $this->getLinks($request);
+        $infomontLink = $links['infomontLink'];
+        $osm2caiLink = $links['osm2caiLink'];
 
         $hr = \App\Models\HikingRoute::find($request->resourceId);
-        if (!is_null($hr)) {
 
+        if (!is_null($hr)) {
 
             $statoDiAccatastamento = 'Stato di accatastamento';
 
@@ -417,6 +405,7 @@ class HikingRoute extends Resource
                     ->textAsHtml(),
             ];
         }
+
         return [];
     }
 
@@ -615,7 +604,51 @@ class HikingRoute extends Resource
                     }
                 )
                 ->showOnTableRow(),
+            (new OverpassMap($this->model()))
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler creare una mappa Overpass per questo percorso?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    $u = auth()->user();
+                    //can only see if admin, itinerary manager or national referent
+                    return $u->is_administrator || $u->is_national_referent || $u->is_itinerary_manager;
+                }),
+            (new ImportPois($this->model()))
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler importare i POI per questo percorso?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla"),
 
+
+
+        ];
+    }
+
+    private function getLinks($request)
+    {
+        $infomontLink = 'https://15.app.geohub.webmapp.it/#/map';
+        $osm2caiLink = 'https://26.app.geohub.webmapp.it/#/map';
+        $endpoint = 'https://geohub.webmapp.it/api/osf/track/osm2cai/';
+        $api = $endpoint . $request->resourceId;
+
+        $headers = get_headers($api);
+        $statusLine = $headers[0];
+
+        if (strpos($statusLine, '200 OK') !== false) {
+            // The API returned a success response
+            $data = json_decode(file_get_contents($api), true);
+            if (!empty($data)) {
+                if ($data['properties']['id'] !== null) {
+                    $infomontLink .= '?track=' . $data['properties']['id'];
+                    $osm2caiLink .= '?track=' . $data['properties']['id'];
+                }
+            }
+        }
+
+        return [
+            'infomontLink' => $infomontLink,
+            'osm2caiLink' => $osm2caiLink,
         ];
     }
 }

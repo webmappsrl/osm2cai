@@ -10,11 +10,6 @@ class EcPoiPolicy
 {
     use HandlesAuthorization;
 
-    public function before()
-    {
-        return true;
-    }
-
     /**
      * Determine whether the user can view any models.
      *
@@ -23,7 +18,7 @@ class EcPoiPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return true;
     }
 
     /**
@@ -35,7 +30,7 @@ class EcPoiPolicy
      */
     public function view(User $user, EcPoi $ecPoi)
     {
-        //
+        return true;
     }
 
     /**
@@ -46,7 +41,7 @@ class EcPoiPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -58,7 +53,7 @@ class EcPoiPolicy
      */
     public function update(User $user, EcPoi $ecPoi)
     {
-        //
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -70,7 +65,7 @@ class EcPoiPolicy
      */
     public function delete(User $user, EcPoi $ecPoi)
     {
-        //
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -82,7 +77,7 @@ class EcPoiPolicy
      */
     public function restore(User $user, EcPoi $ecPoi)
     {
-        //
+        return $user->getTerritorialRole() !== 'unknown';
     }
 
     /**
@@ -94,6 +89,6 @@ class EcPoiPolicy
      */
     public function forceDelete(User $user, EcPoi $ecPoi)
     {
-        //
+        return $user->getTerritorialRole() !== 'unknown';
     }
 }
