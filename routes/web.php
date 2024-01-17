@@ -57,3 +57,10 @@ Route::get('hiking-route-map/{id}', function ($id) {
 
 Route::get('/hiking-route/{id}/issues', [HikingRouteController::class, 'showIssuesChronology'])->name('hiking-route-public-issues')->name('hiking-route-issues');
 Route::get('/import-ugc', [ImportUGCController::class, 'importUGCFromGeohub'])->name('import-ugc');
+Route::get('/loading-download/{type}/{model}/{id}', function () {
+    return view('loading', [
+        'type' => request()->type,
+        'model' => request()->model,
+        'id' => request()->id
+    ]);
+})->name('loading-download');

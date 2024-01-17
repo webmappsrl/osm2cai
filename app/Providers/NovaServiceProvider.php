@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Console\Commands\import;
 use App\Helpers\Osm2CaiHelper;
 use App\Models\Area;
 use App\Models\HikingRoute;
@@ -10,7 +11,9 @@ use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
+use App\Nova\Dashboards\Percorribilità;
 use App\Nova\Dashboards\SectorsDashboard;
+use App\Nova\Dashboards\Utenti;
 use App\Nova\UgcMedia;
 use App\Nova\UgcPoi;
 use App\Nova\UgcTrack;
@@ -113,8 +116,9 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 $cards = [
                     (new TextCard())
                         ->forceFullWidth()
-                        ->heading('Nessun Permesso territoriale')
-                        ->text('Contatta catastorei@cai.it per informazioni')
+                        ->heading('Modalità visualizzazione - Nessun permesso territoriale')
+                        ->text('Contatta il tuo Referente SOSEC Regionale o catastorei@cai.it per informazioni.<br><br>
+                        La piattaforma può essere consultata attraverso le voci nel menu disponibile sulla sinistra di questa schermata')
                         ->textAsHtml(),
                 ];
         }
@@ -195,20 +199,25 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $numbers[4] = $data[0]->tot4;
 
         $num_areas = 0;
+        $area_codes = [];
         $num_sectors = 0;
         foreach (Auth::user()->region->provinces as $province) {
-            $num_areas += $province->areas->count();
+            array_push($area_codes, implode(',', $province->areas->pluck('code')->toArray()));
             if ($province->areas->count() > 0) {
                 foreach ($province->areas as $area) {
                     $num_sectors += $area->sectors->count();
                 }
             }
         }
+        $area_codes = implode(',', $area_codes);
+        $area_codes = implode(',', array_unique(explode(',', $area_codes)));
+        $num_areas = count(explode(',', $area_codes));
 
         $sal = Auth::user()->region->getSal();
         $sal_color = Osm2CaiHelper::getSalColor($sal);
 
         $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
+        $SALIssueStatus = $this->getSalIssueStatus();
 
         $cards = [
             (new TextCard)
@@ -223,8 +232,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->center(false),
             (new TextCard())
                 ->width('1/4')
-                ->heading('TBI')
-                ->text('LastLogin')
+                ->heading($SALIssueStatus)
+                ->text('SAL Stato percorribilitá')
                 ->center(false),
             (new TextCard())
                 ->width('1/4')
@@ -237,15 +246,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 ->forceFullWidth()
                 ->heading(\auth()->user()->region->name)
                 ->text('<h4 class="font-light">
-                <p>&nbsp;</p>
-                <a href="' . route('api.geojson_complete.region', ['id' => \auth()->user()->region->id]) . '" >Download geojson Percorsi</a>
-                <a href="' . route('api.shapefile.region', ['id' => \auth()->user()->region->id]) . '" >Download shape Settori</a>
-                 <a href="' . route('api.csv.region', ['id' => \auth()->user()->region->id]) . '" >Download CSV Percorsi</a>
-                 <p>&nbsp;</p>
-                 <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
+    <p>&nbsp;</p>
+<a href="' . route('loading-download', ['type' => 'geojson-complete', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download geojson Percorsi</a>
 
-                 ')
+<a href="' . route('loading-download', ['type' => 'shapefile', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download shape Settori</a>
+
+<a href="' . route('loading-download', ['type' => 'csv', 'model' => 'region', 'id' => \auth()->user()->region->id]) . '" target="_blank">Download CSV Percorsi</a>    <p>&nbsp;</p>
+    <p>Ultima sincronizzazione da osm: ' . $syncDate . '</p>
+    ')
                 ->textAsHtml(),
+
 
             // General Info
             (new TextCard())
@@ -329,7 +339,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
                 $sal = $province->getSal();
                 $sal_color = Osm2CaiHelper::getSalColor($sal);
-                $salHtml .= $province->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                $salHtml .= $province->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                    number_format($sal * 100, 2) . ' %</div>';
 
                 $num_areas += $province->areas->count();
                 if ($province->areas->count() > 0) {
@@ -345,7 +356,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
                 foreach ($user->areas as $area) {
                     $sal = $area->getSal();
                     $sal_color = Osm2CaiHelper::getSalColor($sal);
-                    $salHtml .= $area->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                    $salHtml .= $area->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                        number_format($sal * 100, 2) . ' %</div>';
                     $num_sectors += $area->sectors->count();
                 }
             }
@@ -354,7 +366,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             foreach ($user->sectors as $sector) {
                 $sal = $sector->getSal();
                 $sal_color = Osm2CaiHelper::getSalColor($sal);
-                $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' . number_format($sal * 100, 2) . ' %</div>';
+                $salHtml .= $sector->name . '<div style="background-color: ' . $sal_color . '; color: white; font-size: xx-large">' .
+                    number_format($sal * 100, 2) . ' %</div>';
             }
         }
 
@@ -367,12 +380,20 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $id = $relatedModel->id;
 ?>
             <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("api.geojson.$tableSingular", ['id' => $id]) ?>">Download geojson Percorsi</a>
-            <a href="<?= route("api.shapefile.$tableSingular", ['id' => $id]) ?>">Download shape Settori</a>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
         $syncDate = app()->make(CacheService::class)->getLastOsmSyncDate();
+
 
         $cards = [
             (new TextCard())
@@ -711,6 +732,32 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         return $sectorsCard;
     }
 
+    private function getSalIssueStatus(): string
+    {
+        $percorribile = 0;
+        $nonPercorribile = 0;
+        $percorribileParzialmente = 0;
+        $hikingRoutes = auth()->user()->region->hikingRoutes()->get();
+
+        foreach ($hikingRoutes as $hr) {
+            switch ($hr->issues_status) {
+                case 'percorribile':
+                    $percorribile++;
+                    break;
+                case 'non percorribile':
+                    $nonPercorribile++;
+                case 'percorribile parzialmente':
+                    $percorribileParzialmente++;
+                    break;
+            }
+        }
+
+        $result = (($percorribile + $percorribileParzialmente + $nonPercorribile) / count($hikingRoutes)) * 100;
+        $result = round($result, 2);
+
+        return strval($result) . '%';
+    }
+
     /**
      * Get the extra dashboards that should be displayed on the Nova dashboard.
      *
@@ -726,8 +773,19 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
          * @var \App\Models\User
          */
         $loggedInUser = Auth::user();
+        if ($loggedInUser->getTerritorialRole() == 'admin') {
+            $dashboards[] = new Utenti;
+            $dashboards[] = new Percorribilità();
+        }
+        if ($loggedInUser->getTerritorialRole() == 'national') {
+            $dashboards[] = new Percorribilità();
+        }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;
+            $dashboards[] = new Percorribilità($loggedInUser);
+        }
+        if ($loggedInUser->getTerritorialRole() == 'local') {
+            $dashboards[] = new Percorribilità($loggedInUser);
         }
 
         return $dashboards;
