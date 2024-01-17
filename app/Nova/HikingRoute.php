@@ -49,6 +49,8 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use App\Nova\Actions\ImportPois;
+use App\Nova\Actions\OverpassMap;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -602,6 +604,23 @@ class HikingRoute extends Resource
                     }
                 )
                 ->showOnTableRow(),
+            (new OverpassMap($this->model()))
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler creare una mappa Overpass per questo percorso?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla")
+                ->canSee(function ($request) {
+                    $u = auth()->user();
+                    //can only see if admin, itinerary manager or national referent
+                    return $u->is_administrator || $u->is_national_referent || $u->is_itinerary_manager;
+                }),
+            (new ImportPois($this->model()))
+                ->onlyOnDetail('true')
+                ->confirmText('Sei sicuro di voler importare i POI per questo percorso?')
+                ->confirmButtonText('Confermo')
+                ->cancelButtonText("Annulla"),
+
+
 
         ];
     }
