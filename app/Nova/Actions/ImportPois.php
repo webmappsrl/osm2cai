@@ -77,7 +77,6 @@ class ImportPois extends Action
             }
             $elements = $data['elements'];
             if ($type !== 'node') {
-
                 $coordinates = [];
                 //loop over all the elements, take lat and long and calculate the centroid
                 foreach ($elements as $element) {
