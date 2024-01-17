@@ -1,5 +1,17 @@
 # Changelog
 
+## [233.7.0](https://github.com/webmappsrl/osm2cai/compare/v233.6.0...v233.7.0) (2024-01-17)
+
+
+### Features
+
+* action import poi from osm_id implemented in hr ([3fb0635](https://github.com/webmappsrl/osm2cai/commit/3fb06356233601b40e3856c7af8272563a05eefb))
+
+
+### Bug Fixes
+
+* fix on import poi command ([52ecd08](https://github.com/webmappsrl/osm2cai/commit/52ecd0854be9f07c95b899600f51047d179ba6f4))
+
 ## [233.6.0](https://github.com/webmappsrl/osm2cai/compare/v233.5.3...v233.6.0) (2024-01-17)
 
 
