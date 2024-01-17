@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\ActionFields;
 use Laravel\Nova\Fields\File;
+use App\Models\HikingRoute;
 
 class UploadValidationRawDataAction extends Action
 {
@@ -72,7 +73,6 @@ class UploadValidationRawDataAction extends Action
 
             return Action::danger("Impossibile aggiornare la geometry. Inserisci un file valido.");
         }
-    }
 
     /**
      * Get the fields available on the action.
