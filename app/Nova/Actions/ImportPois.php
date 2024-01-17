@@ -45,6 +45,8 @@ class ImportPois extends Action
         $osm_ids = str_replace(' ', '', $fields->osm_ids);
         $osm_ids = explode(',', $osm_ids);
         $osm_ids = array_unique($osm_ids);
+        $endpoints = count($osm_ids);
+        $counter = 0;
 
         foreach ($osm_ids as $osmId) {
             $typeAndId = explode('/', $osmId);
@@ -75,6 +77,7 @@ class ImportPois extends Action
             }
             $elements = $data['elements'];
             if ($type !== 'node') {
+
                 $coordinates = [];
                 //loop over all the elements, take lat and long and calculate the centroid
                 foreach ($elements as $element) {
@@ -87,21 +90,22 @@ class ImportPois extends Action
                             'geometry' => null,
                             'tags' => isset($element['tags']) ? json_encode($element['tags']) : null,
                         ]);
+                        $counter++;
                     }
                 }
                 //get the centroid using the coordinates array
                 $centroid = new Point($this->calculateCentroid($coordinates));
                 $poi->geometry = $centroid->toWKT();
                 $poi->save();
-                return Action::message('Import completato');
-            }
-
-
-            foreach ($data as $element) {
-                if ($element['type'] !== 'node') {
-                    continue;
+                if ($counter === $endpoints)
+                    return Action::message('Import completato');
+            } else {
+                foreach ($elements as $element) {
+                    if ($element['type'] !== 'node') {
+                        continue;
+                    }
+                    $this->importPoi($element);
                 }
-                $this->importPoi($element);
             }
         }
         return Action::message('Import completato');
@@ -111,7 +115,7 @@ class ImportPois extends Action
     {
         $type = $data['type'];
         $osmId = $data['id'];
-        $name = $data['name'] ?? 'no name (' . $element['id'] . ')';
+        $name = $data['name'] ?? 'no name (' . $data['id'] . ')';
         $description = $data['tags']['description'] ?? null;
         $geometry = $this->getGeometry($data, $type);
         $tags = isset($data['tags']) ? json_encode($data['tags']) : null;
