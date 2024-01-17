@@ -13,6 +13,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class OverpassMap extends Action
 {
+    use InteractsWithQueue, Queueable;
+
     public $model;
 
     function __construct($model = null)
@@ -26,7 +28,6 @@ class OverpassMap extends Action
     }
 
     public $name = "CERCA PUNTI DI INTERESSE";
-    use InteractsWithQueue, Queueable;
 
     /**
      * Perform the action on the given models.
