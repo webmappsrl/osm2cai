@@ -47,6 +47,11 @@
                     {{ __('Logout') }}
                 </a>
             </li>
+        <li>
+            <nova-dark-theme-toggle
+                label="{{ __('Dark Theme') }}"
+            ></nova-dark-theme-toggle>
+        </li>
         @endif
     </ul>
 </dropdown-menu>

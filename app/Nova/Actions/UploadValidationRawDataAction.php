@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\ActionFields;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
->
 
 class UploadValidationRawDataAction extends Action
 {
