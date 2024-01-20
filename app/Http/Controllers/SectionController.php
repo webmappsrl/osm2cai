@@ -56,6 +56,8 @@ class SectionController extends Controller
                             return $section->name;
                         })->implode(', ');
                     }
+                    $user = User::where('id', $hr->user_id)->first();
+                    $userName = $user ? $user->name : '';
 
                     $geojson['features'][] = [
                         'type' => 'Feature',
@@ -63,7 +65,7 @@ class SectionController extends Controller
                         'properties' => [
                             'id' => $hr->id,
                             'name' => $name,
-                            'user' => User::where('id', $hr->user_id)->first()->name,
+                            'user' => $userName,
                             'relation_id' => $hr->relation_id,
                             'ref' => $hr->ref ?? '',
                             'source_ref' => $hr->source_ref ?? '',

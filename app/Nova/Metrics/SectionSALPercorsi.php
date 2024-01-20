@@ -14,7 +14,7 @@ class SectionSALPercorsi extends Partition
     }
     protected $hikingRoutes;
 
-    public function __construct(iterable $hikingRoutes)
+    public function __construct(iterable $hikingRoutes = [])
     {
         $this->hikingRoutes = $hikingRoutes;
     }

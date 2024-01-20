@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Boolean;
 use App\Models\User as UserModel;
+use App\Nova\Actions\AssociaUtenteAction;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
 use Illuminate\Support\Facades\DB;
@@ -234,6 +235,11 @@ class User extends Resource
                 ->canRun(function ($request, $zone) {
                     return auth()->user()->is_administrator || auth()->user()->is_national_referent;
                 }),
+            (new AssociaUtenteAction)->standalone()->canSee(function ($request) {
+                return auth()->user()->is_administrator;
+            })->canRun(function ($request, $zone) {
+                return auth()->user()->is_administrator;
+            }),
         ];
     }
 

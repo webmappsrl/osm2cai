@@ -171,7 +171,7 @@ class Section extends Resource
     {
         $sectionId = $request->resourceId;
         $section = ModelsSection::where('id', $sectionId)->first();
-        $hr = $section->hikingRoutes()->get();
+        $hr = $section ?  $section->hikingRoutes()->get() : [];
         if (!Auth::user()->is_administrator && Auth::user()->section_id != null) {
             $data = DB::table('sections_view')
                 ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
