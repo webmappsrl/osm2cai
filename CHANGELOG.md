@@ -1,5 +1,20 @@
 # Changelog
 
+## [233.8.0](https://github.com/webmappsrl/osm2cai/compare/v233.7.0...v233.8.0) (2024-01-20)
+
+
+### Features
+
+* added associa utente action in user index ([a8920ee](https://github.com/webmappsrl/osm2cai/commit/a8920eec4bfc2f888d39f4a5a7a4a3ba0d321ed0))
+* added dark mode toggle ([84f438b](https://github.com/webmappsrl/osm2cai/commit/84f438be6346f22999756e0783c78ccb01380cd0))
+* colors updated for percorribilità dashboard ([df2ad76](https://github.com/webmappsrl/osm2cai/commit/df2ad76c2fb19974b330448b298a4958d0e146f8))
+
+
+### Bug Fixes
+
+* fixed import poi policies ([99a1041](https://github.com/webmappsrl/osm2cai/commit/99a104115676170d66549e716c811ddafbf39891))
+* fixewd download geojson action in section index ([32f8c98](https://github.com/webmappsrl/osm2cai/commit/32f8c988e8d33c6ec0e1e68e446461878cc113dd))
+
 ## [233.7.0](https://github.com/webmappsrl/osm2cai/compare/v233.6.0...v233.7.0) (2024-01-17)
 
 
