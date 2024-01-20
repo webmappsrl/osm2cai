@@ -12,6 +12,7 @@
     "ext-json": "*",
     "chriskonnertz/open-graph": "^2.0",
     "darkaonline/l5-swagger": "^8.3",
+    "david-griffiths/nova-dark-theme": "^1.0",
     "digital-creative/conditional-container": "^1.4",
     "dkulyk/nova-tabs": "^1.1",
     "doctrine/dbal": "^2.9",
@@ -33,10 +34,10 @@
     "subfission/cas": "^4",
     "suenerds/nova-searchable-belongs-to-filter": "^1.0",
     "symm/gisconverter": "^1.0",
+    "webmapp/wm-embedmaps-field": "*",
     "wm/map-multi-linestring-nova": "*",
     "wm/map-multi-polygon-nova3": "dev-main",
-    "wm/map-point-nova3": "^0.0.9",
-    "webmapp/wm-embedmaps-field": "*"
+    "wm/map-point-nova3": "^0.0.9"
   },
   "require-dev": {
     "facade/ignition": "^2.5",
