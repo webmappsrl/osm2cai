@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.8.1](https://github.com/webmappsrl/osm2cai/compare/v233.8.0...v233.8.1) (2024-01-23)
+
+
+### Bug Fixes
+
+* fixed associa utente action ([42866bc](https://github.com/webmappsrl/osm2cai/commit/42866bc36431fa20e18231efd685bf827ab96e05))
+
 ## [233.8.0](https://github.com/webmappsrl/osm2cai/compare/v233.7.0...v233.8.0) (2024-01-20)
 
 
