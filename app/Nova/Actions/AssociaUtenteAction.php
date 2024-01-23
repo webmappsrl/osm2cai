@@ -26,7 +26,7 @@ class AssociaUtenteAction extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        $link = url('/resources/users/' . $fields->user_id . '/edit');
+        $link = url('/resources/users/' . $fields->user_id);
 
         return Action::redirect($link);
     }
