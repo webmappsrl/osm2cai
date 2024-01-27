@@ -15,6 +15,8 @@ class SectionController extends Controller
     {
         $section = Section::find($id);
         if ($section) {
+            $sectionName = $section->name;
+            $downloadDate = date(('d-m-Y'));
             $hikingRoutes = $section->hikingRoutes()->get();
             $geojson = [
                 'type' => 'FeatureCollection',
@@ -85,7 +87,7 @@ class SectionController extends Controller
 
             $headers = [
                 'Content-type' => 'application/json',
-                'Content-Disposition' => 'attachment; filename="' . $id . '.geojson"',
+                'Content-Disposition' => 'attachment; filename="geometrie_percorsi_sezione_' . $sectionName . '_' . $downloadDate . '.geojson"',
             ];
 
             return response(json_encode($geojson), 200, $headers);
@@ -100,7 +102,7 @@ class SectionController extends Controller
 
         $headers = [
             'Content-type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_settore_' . $section->name . '.csv"',
+            'Content-Disposition' => 'attachment; filename="lista_percorsi_sezione_' . $section->name . '_' . date('d-m-Y') . '.csv"',
         ];
 
         return response($section->getCsv(), 200, $headers);
