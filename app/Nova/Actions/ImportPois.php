@@ -45,10 +45,12 @@ class ImportPois extends Action
         $osm_ids = str_replace(' ', '', $fields->osm_ids);
         $osm_ids = explode(',', $osm_ids);
         $osm_ids = array_unique($osm_ids);
-        $endpoints = count($osm_ids);
-        $counter = 0;
 
-        foreach ($osm_ids as $osmId) {
+        foreach ($osm_ids as $index => $osmId) {
+            $validationResult = $this->validateOsmId($osmId, $index);
+            if ($validationResult !== true) {
+                return $validationResult;
+            }
             $typeAndId = explode('/', $osmId);
             $type = $typeAndId[0];
             $id = $typeAndId[1];
@@ -81,24 +83,24 @@ class ImportPois extends Action
                 $coordinates = [];
                 //loop over all the elements, take lat and long and calculate the centroid
                 foreach ($elements as $element) {
-                    if ($element['type'] === 'node') {
-                        $coordinates[] = [$element['lon'], $element['lat']];
+                    if ($element['id'] != intval($id)) {
+                        if ($element['type'] === 'node') {
+                            $coordinates[] = [$element['lon'], $element['lat']];
+                        }
                     } else {
                         $poi = EcPoi::updateOrCreate(['osm_id' => $element['id']], [
-                            'name' => $element['name'] ?? 'no name (' . $element['id'] . ')',
+                            'name' => $element['tags']['name'] ?? 'no name (' . $type . '/' . $element['id'] . ')',
                             'description' => $element['tags']['description'] ?? null,
                             'geometry' => null,
                             'tags' => isset($element['tags']) ? json_encode($element['tags']) : null,
+                            'user_id' => auth()->user()->id,
                         ]);
-                        $counter++;
                     }
                 }
                 //get the centroid using the coordinates array
                 $centroid = new Point($this->calculateCentroid($coordinates));
                 $poi->geometry = $centroid->toWKT();
                 $poi->save();
-                if ($counter === $endpoints)
-                    return Action::message('Import completato');
             } else {
                 foreach ($elements as $element) {
                     if ($element['type'] !== 'node') {
@@ -126,6 +128,7 @@ class ImportPois extends Action
             'description' => $description,
             'geometry' => $geometry,
             'tags' => $tags,
+            'user_id' => auth()->user()->id,
         ]);
     }
 
@@ -153,6 +156,21 @@ class ImportPois extends Action
         $centroid = [$centroidLon, $centroidLat];
 
         return $centroid;
+    }
+
+    private function validateOsmId($osmId, $index)
+    {
+        $dangerMessage = "ID $osmId non valido alla posizione " . ($index + 1) . "'. Per favore verifica l'ID e riprova. Assicurati che dopo ogni ID ci sia una virgola e non mettere la virgola dopo l'ultimo ID.";
+        if (strpos($osmId, '/') === false) {
+            return Action::danger($dangerMessage);
+        }
+        if (strpos($osmId, 'node') === false && strpos($osmId, 'way') === false && strpos($osmId, 'relation') === false) {
+            return Action::danger($dangerMessage);
+        }
+        if (strlen($osmId) < 1) {
+            return false;
+        }
+        return true;
     }
 
     /**
