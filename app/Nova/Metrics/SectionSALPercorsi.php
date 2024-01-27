@@ -32,6 +32,15 @@ class SectionSALPercorsi extends Partition
         $sda3 = 0;
         $sda4 = 0;
         $statuses = ['SDA0', 'SDA1', 'SDA2', 'SDA3', 'SDA4'];
+        $colors = [
+            'SDA0' => '#969696',
+            'SDA1' => '#FFD23F',
+            'SDA2' => '#B43E8F',
+            'SDA3' => '#1E3888',
+            'SDA4' => '#47AC34',
+        ];
+
+
 
         foreach ($this->hikingRoutes as $hr) {
             switch ($hr->osm2cai_status) {
@@ -54,7 +63,7 @@ class SectionSALPercorsi extends Partition
 
 
         $result = array_combine($statuses, [$sda0, $sda1, $sda2, $sda3, $sda4]);
-        return $this->result($result);
+        return $this->result($result)->colors($colors);
     }
 
     /**
