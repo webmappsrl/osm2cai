@@ -32,6 +32,12 @@ class SectionSALPercorribilitá extends Partition
         $nonPercorribile = 0;
         $percorribileParzialmente = 0;
         $issueStatus = IssueStatus::cases();
+        $colors = [
+            'percorribile parzialmente' => '#ff9900',
+            'percorribile' => '#38761d',
+            'non percorribile' => '#ff0000',
+            'sconosciuto' => '#666666',
+        ];
 
         foreach ($this->hikingRoutes as $hr) {
             switch ($hr->issues_status) {
@@ -51,7 +57,7 @@ class SectionSALPercorribilitá extends Partition
 
 
         $result = array_combine(array_keys($issueStatus), [$sconosciuto, $percorribile, $nonPercorribile, $percorribileParzialmente]);
-        return $this->result($result);
+        return $this->result($result)->colors($colors);
     }
 
     /**
