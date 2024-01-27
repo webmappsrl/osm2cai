@@ -1,5 +1,21 @@
 # Changelog
 
+## [233.9.0](https://github.com/webmappsrl/osm2cai/compare/v233.8.1...v233.9.0) (2024-01-27)
+
+
+### Features
+
+* updated colors for section sal ([41c6e0d](https://github.com/webmappsrl/osm2cai/commit/41c6e0da028f81277fc97e52800f5a92c7419ebd))
+
+
+### Bug Fixes
+
+* fixed code column in natural spring table to be nullable ([f300215](https://github.com/webmappsrl/osm2cai/commit/f30021538e5cac6bc1dfe92ec8d89c059f6e5a37))
+* fixed geometries for pois mountain groups and natural springs ([ac4bd0a](https://github.com/webmappsrl/osm2cai/commit/ac4bd0a8396c9486d8092844df162376bf08fd71))
+* fixed import poi command ([d548f18](https://github.com/webmappsrl/osm2cai/commit/d548f1899ec4e18cab79396e3721aa11f3484359))
+* fixed redirect path in associa utente action ([beb9d61](https://github.com/webmappsrl/osm2cai/commit/beb9d6110f14a45d885515b8ec789711db7b843f))
+* fixed sections geojson and csv file names ([1b42dc5](https://github.com/webmappsrl/osm2cai/commit/1b42dc522fb60ef677fb4cf29941c9fbd328550f))
+
 ## [233.8.1](https://github.com/webmappsrl/osm2cai/compare/v233.8.0...v233.8.1) (2024-01-23)
 
 
