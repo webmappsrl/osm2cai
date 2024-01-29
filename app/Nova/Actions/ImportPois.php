@@ -42,9 +42,8 @@ class ImportPois extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
-        $osm_ids = str_replace(' ', '', $fields->osm_ids);
-        $osm_ids = explode(',', $osm_ids);
-        $osm_ids = array_unique($osm_ids);
+        $osm_ids = $this->parseOsmIds($fields->osm_ids);
+        $osm_types = ['node' => 'N', 'way' => 'W', 'relation' => 'R'];
 
         foreach ($osm_ids as $index => $osmId) {
             $validationResult = $this->validateOsmId($osmId, $index);
@@ -53,6 +52,7 @@ class ImportPois extends Action
             }
             $typeAndId = explode('/', $osmId);
             $type = $typeAndId[0];
+            $osmType = $osm_types[$type];
             $id = $typeAndId[1];
             $baseUrl = "https://api.openstreetmap.org/api/0.6/$type/$id";
             $urlTail = $type === 'node' ? ".json" : "/full.json";
@@ -94,6 +94,7 @@ class ImportPois extends Action
                             'geometry' => null,
                             'tags' => isset($element['tags']) ? json_encode($element['tags']) : null,
                             'user_id' => auth()->user()->id,
+                            'osm_type' => $osmType,
                         ]);
                     }
                 }
@@ -106,14 +107,20 @@ class ImportPois extends Action
                     if ($element['type'] !== 'node') {
                         continue;
                     }
-                    $this->importPoi($element);
+                    $this->importPoi($element, $osmType);
                 }
             }
         }
         return Action::message('Import completato');
     }
 
-    private function importPoi($data)
+    private function parseOsmIds($osm_ids_string)
+    {
+        $osm_ids = explode(',', str_replace(' ', '', $osm_ids_string));
+        return array_unique($osm_ids);
+    }
+
+    private function importPoi($data, $osmType)
     {
         $type = $data['type'];
         $osmId = $data['id'];
@@ -129,6 +136,7 @@ class ImportPois extends Action
             'geometry' => $geometry,
             'tags' => $tags,
             'user_id' => auth()->user()->id,
+            'osm_type' => $osmType,
         ]);
     }
 
