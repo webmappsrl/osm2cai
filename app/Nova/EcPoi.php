@@ -72,6 +72,38 @@ class EcPoi extends Resource
             //osm_tags is a jsonb type data
             Code::make('OSM Tags', 'tags')
                 ->hideFromIndex(),
+            Text::make('OSM Type', 'osm_type')->displayUsing(function ($value) {
+                //return a different color for each type
+                switch ($value) {
+                    case 'N':
+                        return '<span class="bg-green-200 text-green-800 font-bold py-1 px-3 rounded-full text-xs">' . $value . '</span>';
+                    case 'W':
+                        return '<span class="bg-blue-200 text-blue-800 font-bold py-1 px-3 rounded-full text-xs">' . $value . '</span>';
+                    case 'R':
+                        return '<span class="bg-yellow-200 text-yellow-800 font-bold py-1 px-3 rounded-full text-xs">' . $value . '</span>';
+                    default:
+                        return '<span class="bg-gray-200 text-gray-800 font-bold py-1 px-3 rounded-full text-xs">' . $value . '</span>';
+                }
+            })->asHtml(),
+            Text::make('OSM URL')->sortable()->displayUsing(
+                function ($value) {
+                    $type = $this->osm_type;
+                    $osmId = $this->osm_id;
+                    $urlType = '';
+                    switch ($type) {
+                        case 'N':
+                            $urlType = 'node';
+                            break;
+                        case 'W':
+                            $urlType = 'way';
+                            break;
+                        case 'R':
+                            $urlType = 'relation';
+                            break;
+                    }
+                    return "<a style='color:green;' href='https://www.openstreetmap.org/$urlType/$osmId' target='_blank'>$urlType/$osmId</a>";
+                }
+            )->asHtml(),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
