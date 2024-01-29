@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.10.0](https://github.com/webmappsrl/osm2cai/compare/v233.9.0...v233.10.0) (2024-01-29)
+
+
+### Features
+
+* added osm_type to ecPoi table and enhanced nova to show type and osm url ([60f4605](https://github.com/webmappsrl/osm2cai/commit/60f46050ab1680455bb8928d4b8205f08a3a648e))
+
 ## [233.9.0](https://github.com/webmappsrl/osm2cai/compare/v233.8.1...v233.9.0) (2024-01-27)
 
 
