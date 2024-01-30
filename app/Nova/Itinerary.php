@@ -24,6 +24,9 @@ class Itinerary extends Resource
      */
     public static string $title = 'name';
 
+    public static $perPageViaRelationship = 50;
+
+
     public static function label()
     {
         return __('Itinerari');
