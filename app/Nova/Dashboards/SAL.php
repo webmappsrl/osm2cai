@@ -36,8 +36,8 @@ class SAL extends Dashboard
             ->get();
 
         // Create the HTML string
-        $html = '<table class="table-auto w-full text-gray-800">
-    <thead class="bg-blue-500 text-white">
+        $html = '<table class="table-auto w-full mt-5 ">
+    <thead>
         <tr>
             <th class="px-4 py-2">Regioni</th>
             <th class="px-4 py-2">Gruppi Montuosi</th>
@@ -63,7 +63,7 @@ class SAL extends Dashboard
             $sumPoiTotal += $region->poi_total;
             $sumSections += $region->sections_count;
 
-            $html .= "<tr class='bg-blue-100 border-b border-blue-200'>
+            $html .= "<tr class='border-b'>
         <td class='px-4 py-2'>{$region->name}</td>
         <td class='px-4 py-2'>{$region->mountain_groups_count}</td>
         <td class='px-4 py-2'>{$region->ec_pois_count}</td>
@@ -74,7 +74,7 @@ class SAL extends Dashboard
     </tr>";
         }
 
-        $html .= "<tr class='bg-blue-200 border-t border-blue-300'>
+        $html .= "<tr class='border-t'>
     <td class='px-4 py-2 font-bold'>Total</td>
     <td class='px-4 py-2'>{$sumMountainGroups}</td>
     <td class='px-4 py-2'>{$sumEcPois}</td>
