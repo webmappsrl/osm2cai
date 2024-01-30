@@ -51,7 +51,10 @@ class OverpassMap extends Action
     public function fields()
     {
         $relationId = $this->model->relation_id;
-        $query = '[out:xml][timeout:250];
+        if (!empty(auth()->user()->default_overpass_query)) {
+            $query = auth()->user()->default_overpass_query;
+        } else {
+            $query = '[out:xml][timeout:250];
 relation(' . $relationId . ');
 (
 node(around:1000)["natural"="peak"];
@@ -67,6 +70,7 @@ node(around:1000)["amenity"="place_of_worship"];
 );
 out;
 ';
+        }
         return [
             Textarea::make("Overpass Query", "overpass_query")->rows(15)->help("Inserisci la query Overpass da eseguire. Puoi testare la query su https://overpass-turbo.eu/")
                 ->default($query)
