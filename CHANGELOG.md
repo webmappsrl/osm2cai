@@ -1,5 +1,20 @@
 # Changelog
 
+## [233.11.0](https://github.com/webmappsrl/osm2cai/compare/v233.10.0...v233.11.0) (2024-01-30)
+
+
+### Features
+
+* added poi table (1km buffer) to hiking routes ([f9de45b](https://github.com/webmappsrl/osm2cai/commit/f9de45bd329a299a2bbc729fb7ed3eac2dfe8ba3))
+* default overpass query added to user ([e7614bc](https://github.com/webmappsrl/osm2cai/commit/e7614bc9f85658cf24d7b16bfcf8986a938061ea))
+* itinerari default 50 ([9227697](https://github.com/webmappsrl/osm2cai/commit/9227697052ae8084585744e9d5dc676b9f4a4fba))
+* poi relazionati ([c88f149](https://github.com/webmappsrl/osm2cai/commit/c88f14972c9605dddf6fddffdcaae6a770b68c41))
+
+
+### Bug Fixes
+
+* poi name import fixed ([941aadc](https://github.com/webmappsrl/osm2cai/commit/941aadc10a11bc726385032c9311bd790c55e7d8))
+
 ## [233.10.0](https://github.com/webmappsrl/osm2cai/compare/v233.9.0...v233.10.0) (2024-01-29)
 
 
