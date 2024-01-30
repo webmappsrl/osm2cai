@@ -25,6 +25,7 @@ use App\Nova\Filters\IssueStatusFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Nova\Filters\GeometrySyncFilter;
 use AddRegionFavoriteToHikingRoutesTable;
+use App\Models\EcPoi;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\HikingRoutesAreaFilter;
@@ -352,29 +353,55 @@ class HikingRoute extends Resource
 
     public function getPoiContent(): array
     {
-        $fields = [
-            Text::make('Punti di interesse (buffer 1Km)', function () {
-                $routeGeometry = $this->geometry;
+        $routeGeometry = $this->geometry;
+        $pois = \App\Models\EcPoi::whereRaw(
+            "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
+            [$routeGeometry]
+        )->get();
+        //for test
+        // $pois = EcPoi::where('osm_type', '!=', '')->get();
+        $fields[] = Text::make('', function () use ($pois) {
+            if (count($pois) < 1) {
+                return '<h2>Nessun POI trovato in un buffer di 1km</h2>';
+            }
+            return '<h2>Punti di interesse (buffer 1km)</h2>';
+        })->asHtml()->onlyOnDetail();
 
-                // Get all the POIs within 1km from the route
-                $pois = \App\Models\EcPoi::whereRaw(
-                    "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
-                    [$routeGeometry]
-                )->get();
-
-
-                $poiList = [];
-                foreach ($pois as $poi) {
-                    $poiList[] = "<a style='text-decoration: none; color: #2697bc; font-weight: bold; ' href='/resources/pois/{$poi->id}'>{$poi->name}</a>";
+        if (count($pois) > 0) {
+            $tableRows = [];
+            foreach ($pois as $poi) {
+                $tags = json_decode($poi->tags, true);
+                $tagList = '';
+                if ($tags) {
+                    $tagList = '<ul>';
+                    foreach ($tags as $key => $value) {
+                        $tagList .= "<li>{$key}: {$value}</li>";
+                    }
+                    $tagList .= '</ul>';
                 }
 
-                if (count($poiList) > 0) {
-                    return implode(', ', $poiList);
-                } else {
-                    return 'Nessun POI trovato';
-                }
-            })->asHtml()->onlyOnDetail()
-        ];
+                $tableRows[] = "<tr style='border:1px solid grey;'>
+            <td style='border: 1px solid grey;'><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/pois/{$poi->id}'>{$poi->name}</a></td>
+            <td style='border: 1px solid grey;'>{$poi->osm_id}</td>
+            <td style='border: 1px solid grey;'>{$tagList}</td>
+            <td style='text-align:center;'>{$poi->osm_type}</td>
+        </tr>";
+            }
+
+            $fields[] = Text::make('Risultati', function () use ($tableRows) {
+                return "<table>
+            <thead style='margin-bottom: 10px;'>
+                <tr>
+                    <th>Name</th>
+                    <th>OSM ID</th>
+                    <th>Tag OSM</th>
+                    <th>Type OSM</th>
+                </tr>
+            </thead>
+            <tbody>" . implode('', $tableRows) . "</tbody>
+        </table>";
+            })->asHtml()->onlyOnDetail();
+        }
         return $fields;
     }
 
