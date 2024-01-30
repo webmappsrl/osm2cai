@@ -131,6 +131,8 @@ class HikingRoute extends Resource
 
     }
 
+    public static $perPageViaRelationship = 50;
+
     /**
      * Get the fields displayed by the resource.
      * SUGGESTION: use tabs https://novapackages.com/packages/dkulyk/nova-tabs
