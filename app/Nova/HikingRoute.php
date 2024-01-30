@@ -207,6 +207,7 @@ class HikingRoute extends Resource
                 'Other' => $this->getMetaFields('other'),
                 'Content' => $this->getEditorialContent(),
                 'Issues' => $this->getIssuesContent(),
+                'POI' => $this->getPoiContent(),
             ])),
         ];
         //handle the case when centroid is null (giving error to nova "[2023-07-13 15:05:05] local.ERROR: Trying to access array offset on value of type null {"userId":1,"exception":"[object] (ErrorException(code: 0): Trying to access array offset on value of type null at /Users/gennaromanzo/Webmapp/osm2cai/app/Nova/HikingRoute.php:174)")
@@ -346,6 +347,34 @@ class HikingRoute extends Resource
 
         ];
 
+        return $fields;
+    }
+
+    public function getPoiContent(): array
+    {
+        $fields = [
+            Text::make('Punti di interesse (buffer 1Km)', function () {
+                $routeGeometry = $this->geometry;
+
+                // Get all the POIs within 1km from the route
+                $pois = \App\Models\EcPoi::whereRaw(
+                    "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
+                    [$routeGeometry]
+                )->get();
+
+
+                $poiList = [];
+                foreach ($pois as $poi) {
+                    $poiList[] = "<a style='text-decoration: none; color: #2697bc; font-weight: bold; ' href='/resources/pois/{$poi->id}'>{$poi->name}</a>";
+                }
+
+                if (count($poiList) > 0) {
+                    return implode(', ', $poiList);
+                } else {
+                    return 'Nessun POI trovato';
+                }
+            })->asHtml()->onlyOnDetail()
+        ];
         return $fields;
     }
 
