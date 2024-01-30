@@ -124,7 +124,7 @@ class ImportPois extends Action
     {
         $type = $data['type'];
         $osmId = $data['id'];
-        $name = $data['name'] ?? 'no name (' . $data['id'] . ')';
+        $name = $data['name'] ?? $data['tags']['name'] ?? 'no name (' . $data['id'] . ')';
         $description = $data['tags']['description'] ?? null;
         $geometry = $this->getGeometry($data, $type);
         $tags = isset($data['tags']) ? json_encode($data['tags']) : null;
