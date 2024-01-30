@@ -22,6 +22,8 @@ use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UserProvinceFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Nova\Filters\UserAssociationFilter;
+use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -163,7 +165,14 @@ class User extends Resource
             Belongsto::make('Section')
                 ->hideFromIndex()
                 ->searchable()
-                ->nullable()
+                ->nullable(),
+            Code::make('Default overpass query', 'default_overpass_query')
+                ->onlyOnDetail(),
+            Code::make('Default overpass query', 'default_overpass_query')
+                ->onlyOnForms()
+                ->canSee(function ($request) {
+                    return auth()->user()->is_administrator || auth()->user()->is_national_referent || auth()->user()->id == $request->resourceId;
+                }),
         ];
     }
 
