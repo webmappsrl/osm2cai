@@ -12,6 +12,144 @@
         }
     },
     "paths": {
+        "/ecpois/bb/{bounding_box}/{type}": {
+            "get": {
+                "tags": [
+                    "API V2"
+                ],
+                "summary": "Get Ec POIs by Bounding Box and Type",
+                "description": "Returns a list of Eco POIs within the specified bounding box and of the specified type",
+                "operationId": "97bcf071520059c2050854feb37446c1",
+                "parameters": [
+                    {
+                        "name": "bounding_box",
+                        "in": "path",
+                        "description": "Bounding box in 'minLng,minLat,maxLng,maxLat' format",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "Type of the POIs to retrieve: R for relation, W for way, N for node",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ecpois/{hr_osm2cai_id}/{type}": {
+            "get": {
+                "tags": [
+                    "Eco Points of Interest"
+                ],
+                "summary": "Get Eco POIs by OSM2CAI ID and Type",
+                "description": "Returns a list of Eco POIs associated with a specific OSM2CAI hiking route ID and of a specified type",
+                "operationId": "a8ef3e285d3e11aa1f4fdc208005930b",
+                "parameters": [
+                    {
+                        "name": "hr_osm2cai_id",
+                        "in": "path",
+                        "description": "OSM2CAI ID of the hiking route",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "Type of the POIs to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ecpois/{hr_osm_id}/{type}": {
+            "get": {
+                "tags": [
+                    "Eco Points of Interest"
+                ],
+                "summary": "Get Eco POIs by OSM ID and Type",
+                "description": "Returns a list of Eco POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
+                "operationId": "13ee9c0dfd82bee1921ef4c8117af255",
+                "parameters": [
+                    {
+                        "name": "hr_osm_id",
+                        "in": "path",
+                        "description": "OSM ID of the hiking route",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "description": "Type of the POIs to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v2/itinerary/list": {
             "get": {
                 "tags": [
