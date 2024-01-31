@@ -12,7 +12,7 @@ class SAL extends Dashboard
 
     public static function label()
     {
-        return 'SAL';
+        return 'MITUR-Abruzzo';
     }
     /**
      * Get the cards for the dashboard.
@@ -26,8 +26,8 @@ class SAL extends Dashboard
                 'regions.name',
                 DB::raw('(SELECT COUNT(DISTINCT mountain_group_id) FROM mountain_groups_region WHERE region_id = regions.id) as mountain_groups_count'),
                 DB::raw('COUNT(DISTINCT ec_pois.id) as ec_pois_count'),
-                DB::raw('(SELECT COUNT(DISTINCT hiking_route_id) FROM hiking_route_region WHERE region_id = regions.id) as hiking_routes_count'),
-                DB::raw('(COUNT(DISTINCT ec_pois.id) + (SELECT COUNT(DISTINCT hiking_route_id) FROM hiking_route_region WHERE region_id = regions.id)) as poi_total'),
+                DB::raw('(SELECT COUNT(DISTINCT hr.id) FROM (SELECT hiking_route_id as id FROM hiking_route_region WHERE region_id = regions.id) as hr JOIN hiking_routes ON hr.id = hiking_routes.id WHERE hiking_routes.osm2cai_status = 4) as hiking_routes_count'),
+                DB::raw('(COUNT(DISTINCT ec_pois.id) + (SELECT COUNT(DISTINCT hr.id) FROM (SELECT hiking_route_id as id FROM hiking_route_region WHERE region_id = regions.id) as hr JOIN hiking_routes ON hr.id = hiking_routes.id  WHERE hiking_routes.osm2cai_status = 4)) as poi_total'),
                 DB::raw('COUNT(DISTINCT sections.id) as sections_count'),
             ])
             ->leftJoin('ec_pois', 'regions.id', '=', 'ec_pois.region_id')
