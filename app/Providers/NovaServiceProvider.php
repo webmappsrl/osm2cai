@@ -12,6 +12,7 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
+use App\Nova\Dashboards\SAL;
 use App\Nova\Dashboards\SectorsDashboard;
 use App\Nova\Dashboards\Utenti;
 use App\Nova\UgcMedia;
@@ -776,9 +777,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         if ($loggedInUser->getTerritorialRole() == 'admin') {
             $dashboards[] = new Utenti;
             $dashboards[] = new Percorribilità();
+            $dashboards[] = new SAL();
         }
         if ($loggedInUser->getTerritorialRole() == 'national') {
             $dashboards[] = new Percorribilità();
+            $dashboards[] = new SAL();
         }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;

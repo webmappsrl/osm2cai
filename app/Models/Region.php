@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\EcPoi;
 use App\Traits\SallableTrait;
+use App\Models\MountainGroups;
 use App\Traits\CsvableModelTrait;
 use App\Traits\OwnableModelTrait;
 use Illuminate\Support\Collection;
@@ -75,6 +77,16 @@ class Region extends TerritorialUnit
     public function sections()
     {
         return $this->hasMany(Section::class);
+    }
+
+    public function ecPois()
+    {
+        return $this->hasMany(EcPoi::class);
+    }
+
+    public function mountainGroups()
+    {
+        return $this->hasMany(MountainGroups::class);
     }
 
     public function getGeojsonComplete(): string
