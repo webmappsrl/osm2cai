@@ -15,7 +15,7 @@
         "/ecpois/bb/{bounding_box}/{type}": {
             "get": {
                 "tags": [
-                    "API V2"
+                    "Api V2"
                 ],
                 "summary": "Get Ec POIs by Bounding Box and Type",
                 "description": "Returns a list of Eco POIs within the specified bounding box and of the specified type",
@@ -61,10 +61,10 @@
         "/ecpois/{hr_osm2cai_id}/{type}": {
             "get": {
                 "tags": [
-                    "Eco Points of Interest"
+                    "Api V2"
                 ],
-                "summary": "Get Eco POIs by OSM2CAI ID and Type",
-                "description": "Returns a list of Eco POIs associated with a specific OSM2CAI hiking route ID and of a specified type",
+                "summary": "Get EcPOIs in a 1km buffer from the HikingRoutes defined by ID",
+                "description": "Returns a list of Ec POIs around 1km from a specific OSM2CAI hiking route ID and of a specified type",
                 "operationId": "a8ef3e285d3e11aa1f4fdc208005930b",
                 "parameters": [
                     {
@@ -109,8 +109,8 @@
                 "tags": [
                     "Eco Points of Interest"
                 ],
-                "summary": "Get Eco POIs by OSM ID and Type",
-                "description": "Returns a list of Eco POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
+                "summary": "Get EcPOIs in a 1km buffer from the HikingRoutes defined by OSM ID",
+                "description": "Returns a list of Ec POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
                 "operationId": "13ee9c0dfd82bee1921ef4c8117af255",
                 "parameters": [
                     {
