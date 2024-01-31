@@ -53,6 +53,8 @@ class OverpassMap extends Action
         $relationId = $this->model->relation_id;
         if (!empty(auth()->user()->default_overpass_query)) {
             $query = auth()->user()->default_overpass_query;
+            //search for all the occurrencies of '@osm_id' and replace them with the relation id
+            $query = str_replace("@osm_id", $relationId, $query);
         } else {
             $query = '[out:xml][timeout:250];
 relation(' . $relationId . ');
