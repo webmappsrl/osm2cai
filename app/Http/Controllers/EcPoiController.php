@@ -55,7 +55,7 @@ class EcPoiController extends Controller
         ST_Within(geometry::geometry, ST_MakeEnvelope(?, ?, ?, ?, 4326)) 
         AND type = ?",
             [$minLng, $minLat, $maxLng, $maxLat, $type]
-        )->where('osm_type', $type)->get();
+        )->where('type', $type)->get();
 
         $pois = $pois->mapWithKeys(function ($item) {
             return [$item['id'] => $item['updated_at']];
@@ -104,7 +104,7 @@ class EcPoiController extends Controller
         $pois = \App\Models\EcPoi::whereRaw(
             "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
             [$route->geometry]
-        )->get();
+        )->where('type', $type)->get();
 
         $pois = collect($pois)->mapWithKeys(function ($item) {
             return [$item['id'] => $item['updated_at']];
@@ -153,7 +153,7 @@ class EcPoiController extends Controller
         $pois = \App\Models\EcPoi::whereRaw(
             "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
             [$route->geometry]
-        )->get();
+        )->where('type', $type)->get();
         $pois = collect($pois)->mapWithKeys(function ($item) {
             return [$item['id'] => $item['updated_at']];
         });
