@@ -56,21 +56,33 @@ class OverpassMap extends Action
             //search for all the occurrencies of '@osm_id' and replace them with the relation id
             $query = str_replace("@osm_id", $relationId, $query);
         } else {
-            $query = '[out:xml][timeout:250];
-relation(' . $relationId . ');
+            $query = '[out:xml]
+[timeout:250];
 (
-node(around:1000)["natural"="peak"];
-node(around:1000)["natural"="saddle"];
-node(around:1000)["amenity"="drinking_water"];
-node(around:1000)["natural"="cave_entrance"];
-node(around:1000)["waterway"="waterfall"];
-node(around:1000)["historic"="castle"];
-node(around:1000)["historic"="monastery"];
-node(around:1000)["historic"="archaeological_site"];
-node(around:1000)["historic"="ruins"];
-node(around:1000)["amenity"="place_of_worship"];
+(
+(
+rel('. $relationId . ');node(around:1000)["amenity"~"monastery|place_of_worship|ruins"];
+rel('. $relationId . ');node(around:1000)["historic"~"castle|archaeological_site|tower|city_gate|ruins"];
+rel('. $relationId . ');node(around:1000)["building"~"castle|monastery|ruins|tower"];
+rel('. $relationId . ');node(around:1000)["religion"="christian"];
+rel('. $relationId . ');node(around:1000)["man_made"="tower"];
 );
+rel('. $relationId . ');way(around:1000)["amenity"~"monastery|place_of_worship|ruins"];
+rel('. $relationId . ');way(around:1000)["historic"~"castle|archaeological_site|tower|city_gate|ruins"];
+rel('. $relationId . ');way(around:1000)["building"~"castle|monastery|ruins|tower"];
+rel('. $relationId . ');way(around:1000)["religion"="christian"];
+rel('. $relationId . ');way(around:1000)["man_made"="tower"];
+);
+rel('. $relationId . ');rel(around:1000)["amenity"~"monastery|place_of_worship|ruins"];
+rel('. $relationId . ');rel(around:1000)["historic"~"castle|archaeological_site|tower|city_gate|ruins"];
+rel('. $relationId . ');rel(around:1000)["building"~"castle|monastery|ruins|tower"];
+rel('. $relationId . ');rel(around:1000)["religion"="christian"];
+rel('. $relationId . ');rel(around:1000)["man_made"="tower"];
+);
+(._;>;);
 out;
+
+
 ';
         }
         return [
