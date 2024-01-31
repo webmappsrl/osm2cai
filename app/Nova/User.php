@@ -172,7 +172,8 @@ class User extends Resource
                 ->onlyOnForms()
                 ->canSee(function ($request) {
                     return auth()->user()->is_administrator || auth()->user()->is_national_referent || auth()->user()->id == $request->resourceId;
-                }),
+                })
+                ->help('Utilizzare placeholder " @osm_id " per sostituire con l\'id della relazione(e.g. rel(@osm_id);node(around:1000)["amenity"~"monastery|place_of_worship|ruins"];);out;")'),
         ];
     }
 
