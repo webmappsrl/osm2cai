@@ -12,7 +12,7 @@ class EcPoiController extends Controller
     /**
      * @OA\Get(
      *     path="/ecpois/bb/{bounding_box}/{type}",
-     *     tags={"API V2"},
+     *     tags={"Api V2"},
      *     summary="Get Ec POIs by Bounding Box and Type",
      *     description="Returns a list of Eco POIs within the specified bounding box and of the specified type",
      *     @OA\Parameter(
@@ -67,9 +67,9 @@ class EcPoiController extends Controller
     /**
      * @OA\Get(
      *     path="/ecpois/{hr_osm2cai_id}/{type}",
-     *     tags={"Eco Points of Interest"},
-     *     summary="Get Eco POIs by OSM2CAI ID and Type",
-     *     description="Returns a list of Eco POIs associated with a specific OSM2CAI hiking route ID and of a specified type",
+     *     tags={"Api V2"},
+     *     summary="Get EcPOIs in a 1km buffer from the HikingRoutes defined by ID",
+     *     description="Returns a list of Ec POIs around 1km from a specific OSM2CAI hiking route ID and of a specified type",
      *     @OA\Parameter(
      *         name="hr_osm2cai_id",
      *         in="path",
@@ -117,8 +117,8 @@ class EcPoiController extends Controller
      * @OA\Get(
      *     path="/ecpois/{hr_osm_id}/{type}",
      *     tags={"Eco Points of Interest"},
-     *     summary="Get Eco POIs by OSM ID and Type",
-     *     description="Returns a list of Eco POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
+     *     summary="Get EcPOIs in a 1km buffer from the HikingRoutes defined by OSM ID",
+     *     description="Returns a list of Ec POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
      *     @OA\Parameter(
      *         name="hr_osm_id",
      *         in="path",
