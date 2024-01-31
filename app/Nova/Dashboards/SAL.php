@@ -90,7 +90,7 @@ class SAL extends Dashboard
             (new TextCard())
                 ->forceFullWidth()
                 ->height(850)
-                ->heading('SAL')
+                ->heading('MITUR-Abruzzo')
                 ->text($html)
                 ->textAsHtml()
         ];
