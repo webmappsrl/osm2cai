@@ -12,7 +12,7 @@ class SAL extends Dashboard
 
     public static function label()
     {
-        return 'MITUR-Abruzzo';
+        return 'Riepilogo MITUR-Abruzzo';
     }
     /**
      * Get the cards for the dashboard.
@@ -103,6 +103,6 @@ class SAL extends Dashboard
      */
     public static function uriKey()
     {
-        return 's-a-l';
+        return 'mitur-abruzzo';
     }
 }
