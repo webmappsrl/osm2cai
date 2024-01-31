@@ -1,5 +1,33 @@
 # Changelog
 
+## [233.12.0](https://github.com/webmappsrl/osm2cai/compare/v233.11.0...v233.12.0) (2024-01-31)
+
+
+### Features
+
+* added SAL dashboard table ([c616867](https://github.com/webmappsrl/osm2cai/commit/c6168670988e0721c4ad00e40a08e3bebf4ad033))
+* added swagger docs for ecpois api ([503d192](https://github.com/webmappsrl/osm2cai/commit/503d192ff5b5ba5b10ca925996cea1b8d695e639))
+* api for ecPois ([9a0ae8f](https://github.com/webmappsrl/osm2cai/commit/9a0ae8fa092d8839b7f10ede597b5c71b69fd4cd))
+* enhanced default user overpass query ([c1b6755](https://github.com/webmappsrl/osm2cai/commit/c1b6755709760d14f9c3397181c69a526f40d34b))
+* enhanced styles in sal table ([bf061be](https://github.com/webmappsrl/osm2cai/commit/bf061be9d68362a06b8e22be0c4d28e8ae499068))
+* modified default query in cerca punti di interesse action ([0d4d783](https://github.com/webmappsrl/osm2cai/commit/0d4d783dc436782560d17bc4991ff48daab4907e))
+
+
+### Bug Fixes
+
+* fixed mitur abruzzo url ([a1ff1d6](https://github.com/webmappsrl/osm2cai/commit/a1ff1d6aacfa0bba0cdf5e8fb2ba10129293dce0))
+* fixed osm sync action ([9fa1f28](https://github.com/webmappsrl/osm2cai/commit/9fa1f28e3d153439d9ba1eac9f4957aaaeca5d67))
+* fixed SAL mitur-abruzzo ([d936e3f](https://github.com/webmappsrl/osm2cai/commit/d936e3f96ca5145fb87b4617374f714627c3f407))
+* fixed swagger documentation for ecpoi apis ([9fd6923](https://github.com/webmappsrl/osm2cai/commit/9fd6923438f438c98af4b2ab085510f5e6ab689e))
+* fixed table name ([f03e8c7](https://github.com/webmappsrl/osm2cai/commit/f03e8c70633fec54d1f9f8a277196db318498147))
+* increased max length of default overpass query ([9bd8a9e](https://github.com/webmappsrl/osm2cai/commit/9bd8a9e6b7c8f41fd53a76917f79137f413c3614))
+* problem with sync osm data action in hiking route ([5b4576d](https://github.com/webmappsrl/osm2cai/commit/5b4576d0f071929721fb6ca644307f4692795499))
+
+
+### Miscellaneous Chores
+
+* enhanced swagger api description ([7507217](https://github.com/webmappsrl/osm2cai/commit/750721720e286bbca2e3d4ce3977ad0a09558e03))
+
 ## [233.11.0](https://github.com/webmappsrl/osm2cai/compare/v233.10.0...v233.11.0) (2024-01-30)
 
 
