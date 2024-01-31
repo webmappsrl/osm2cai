@@ -116,7 +116,7 @@ class EcPoiController extends Controller
     /**
      * @OA\Get(
      *     path="/ecpois/{hr_osm_id}/{type}",
-     *     tags={"Eco Points of Interest"},
+     *     tags={"Api V2"},
      *     summary="Get EcPOIs in a 1km buffer from the HikingRoutes defined by OSM ID",
      *     description="Returns a list of Ec POIs associated with a specific OpenStreetMap hiking route ID and of a specified type",
      *     @OA\Parameter(
