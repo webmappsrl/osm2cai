@@ -3,6 +3,7 @@
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\EcPoiController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HikingRouteController;
@@ -93,5 +94,8 @@ Route::name('api.')->group(function () {
         Route::get('/hiking-routes-collection/bb/{bounding_box}/{sda}', [HikingRoutesRegionControllerV2::class, 'hikingroutelist_collection'])->name('v2-hr-collection-by-bb');
         Route::get('/itinerary/list', [ItineraryController::class, 'itineraryList'])->name('v2-itinerary-list');
         Route::get('/itinerary/{id}', [ItineraryController::class, 'itineraryById'])->name('v2-itinerary-id');
+        Route::get('/ecpois/bb/{bounding_box}/{type}', [EcPoiController::class, 'ecPoisBBox'])->name('v2-ecpois-by-bb');
+        Route::get('/ecpois/{hr_osm2cai_id}/{type}', [EcPoiController::class, 'ecPoisByOsm2CaiId'])->name('v2-ecpois-by-osm2caiId');
+        Route::get('/ecpois/{hr_osm_id}/{type}', [EcPoiController::class, 'ecPoisByOsmId'])->name('v2-ecpois-by-OsmId');
     });
 });
