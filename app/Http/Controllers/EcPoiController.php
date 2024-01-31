@@ -2,85 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEcPoiRequest;
-use App\Http\Requests\UpdateEcPoiRequest;
 use App\Models\EcPoi;
+use App\Models\HikingRoute;
+use Illuminate\Http\Request;
 
 class EcPoiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+
+    public function ecPoisBBox($bounding_box, $type)
     {
-        //
+        // $bounding_box should be in 'minLng,minLat,maxLng,maxLat' format
+        [$minLng, $minLat, $maxLng, $maxLat] = explode(',', $bounding_box);
+        $type = strtoupper($type);
+
+
+        $pois = EcPoi::whereRaw(
+            "
+        ST_Within(geometry::geometry, ST_MakeEnvelope(?, ?, ?, ?, 4326)) 
+        AND type = ?",
+            [$minLng, $minLat, $maxLng, $maxLat, $type]
+        )->where('osm_type', $type)->get();
+
+        $pois = $pois->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['updated_at']];
+        });
+
+        return response()->json($pois);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function ecPoisByOsm2CaiId($hr_osm2cai_id, $type)
     {
-        //
+        $route = HikingRoute::where('id', $hr_osm2cai_id)->firstOrFail();
+
+        $pois = \App\Models\EcPoi::whereRaw(
+            "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
+            [$route->geometry]
+        )->get();
+
+        $pois = collect($pois)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['updated_at']];
+        });
+
+        return response()->json($pois);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreEcPoiRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreEcPoiRequest $request)
+    public function ecPoisByOsmId($hr_osm_id, $type)
     {
-        //
-    }
+        $route = HikingRoute::where('relation_id', $hr_osm_id)->firstOrFail();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\EcPoi  $ecPoi
-     * @return \Illuminate\Http\Response
-     */
-    public function show(EcPoi $ecPoi)
-    {
-        //
-    }
+        $pois = \App\Models\EcPoi::whereRaw(
+            "ST_DWithin(geometry, ST_GeomFromEWKB(?::geometry), 1000)",
+            [$route->geometry]
+        )->get();
+        $pois = collect($pois)->mapWithKeys(function ($item) {
+            return [$item['id'] => $item['updated_at']];
+        });
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\EcPoi  $ecPoi
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(EcPoi $ecPoi)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateEcPoiRequest  $request
-     * @param  \App\Models\EcPoi  $ecPoi
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateEcPoiRequest $request, EcPoi $ecPoi)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\EcPoi  $ecPoi
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(EcPoi $ecPoi)
-    {
-        //
+        return response()->json($pois);
     }
 }
