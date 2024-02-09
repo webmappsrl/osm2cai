@@ -36,6 +36,7 @@ class AssociateMountainGroupsToRegions extends Command
             foreach ($regions as $region) {
                 $this->info("Processing region: {$region->name}");
 
+                //mountain groups association
                 $mountainGroups = DB::table('mountain_groups')
                     ->join('mountain_groups_region', 'mountain_groups.id', '=', 'mountain_groups_region.mountain_group_id')
                     ->select('mountain_groups.*')
@@ -45,20 +46,33 @@ class AssociateMountainGroupsToRegions extends Command
                     )
                     ->get();
 
-
-
-
                 foreach ($mountainGroups as $mountainGroup) {
                     $region->mountainGroups()->syncWithoutDetaching([$mountainGroup->id]);
                 }
 
-                $this->info("Associated " . count($mountainGroups) . " mountain groups to region: {$region->name}");
+                //ec pois association
+                $poisToUpdate = DB::table('ec_pois')
+                    ->select('ec_pois.*')
+                    ->whereRaw(
+                        'ST_Within(ec_pois.geometry::geometry, ST_SetSRID(?::geometry, 4326))',
+                        [$region->geometry]
+                    )
+                    ->get();
+
+                foreach ($poisToUpdate as $poi) {
+                    DB::table('ec_pois')
+                        ->where('id', $poi->id)
+                        ->update(['region_id' => $region->id]);
+                }
+
+                $this->info("Associated " . count($mountainGroups) . " mountain groups and " . count($poisToUpdate) . " ec pois to region: {$region->name}");
             }
         } else {
             $region = Region::where('name', $this->argument('name'))->first();
             if ($region) {
                 $this->info("Processing region: {$region->name}");
 
+                //mountain groups association
                 $mountainGroups = MountainGroups::select('mountain_groups.*')
                     ->join(DB::raw('mountain_groups_region'), function ($join) use ($region) {
                         $join->on('mountain_groups.id', '=', 'mountain_groups_region.mountain_group_id')
@@ -71,7 +85,22 @@ class AssociateMountainGroupsToRegions extends Command
                     $region->mountainGroups()->syncWithoutDetaching([$mountainGroup->id]);
                 }
 
-                $this->info("Associated " . count($mountainGroups) . " mountain groups to region: {$region->name}");
+                //ec pois association
+                $poisToUpdate = DB::table('ec_pois')
+                    ->select('ec_pois.*')
+                    ->whereRaw(
+                        'ST_Within(ec_pois.geometry::geometry, ST_SetSRID(?::geometry, 4326))',
+                        [$region->geometry]
+                    )
+                    ->get();
+
+                foreach ($poisToUpdate as $poi) {
+                    DB::table('ec_pois')
+                        ->where('id', $poi->id)
+                        ->update(['region_id' => $region->id]);
+                }
+
+                $this->info("Associated " . count($mountainGroups) . " mountain groups and " . count($poisToUpdate) . " ec pois to region: {$region->name}");
             } else {
                 $this->error("Region not found: {$this->argument('name')}");
             }

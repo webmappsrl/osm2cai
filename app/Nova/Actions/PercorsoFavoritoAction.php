@@ -41,8 +41,9 @@ class PercorsoFavoritoAction extends Action
     public function fields()
     {
 
-        $id = $_REQUEST['resourceId'] ?? $_REQUEST['resources'];
-        $region_favorite = \App\Models\HikingRoute::find(intval($id))->region_favorite;
+        $id = $_REQUEST['resourceId'] ?? $_REQUEST['resources'] ?? null;
+        $hr = \App\Models\HikingRoute::find(intval($id));
+        $region_favorite = $hr->region_favorite ?? false;
         return [
             Boolean::make('Percorso Favorito', 'favorite')
                 ->default($region_favorite ?? false),
