@@ -47,7 +47,7 @@ class CreateIssue extends Action
         $user = User::find(auth()->user()->id);
         foreach ($models as $hikingRoute) {
             $hikingRoute->issues_status = $fields->issues_status ?? $hikingRoute->issues_status;
-            $hikingRoute->issues_description = $fields->issues_description ?? $hikingRoute->issues_description;
+            $hikingRoute->issues_description = $fields->issues_description;
             //set the date field to the current date time when the action is performed
             $hikingRoute->issues_last_update = now();
             $hikingRoute->issues_user_id = $user->id ?? $hikingRoute->issues_user_id;
