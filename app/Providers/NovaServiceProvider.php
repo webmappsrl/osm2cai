@@ -12,6 +12,7 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
+use App\Nova\Dashboards\PercorsiFavoriti;
 use App\Nova\Dashboards\SAL;
 use App\Nova\Dashboards\SectorsDashboard;
 use App\Nova\Dashboards\Utenti;
@@ -380,16 +381,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                geojson
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                shape
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                csv
-                Percorsi</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    geojson
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    shape
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    csv
+    Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -778,10 +779,12 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $dashboards[] = new Utenti;
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
+            $dashboards[] = new PercorsiFavoriti;
         }
         if ($loggedInUser->getTerritorialRole() == 'national') {
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
+  
         }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;
