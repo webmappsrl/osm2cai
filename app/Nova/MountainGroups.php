@@ -5,6 +5,7 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Imumz\LeafletMap\LeafletMap;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -64,6 +65,8 @@ class MountainGroups extends Resource
                 ->center($this->getCentroid()[1], $this->getCentroid()[0])
                 ->zoom(9)
                 ->onlyOnDetail(),
+            BelongsToMany::make('Regioni', 'regions', Region::class)
+                ->searchable()
         ];
     }
 
