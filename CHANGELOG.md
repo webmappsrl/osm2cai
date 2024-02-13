@@ -1,5 +1,24 @@
 # Changelog
 
+## [233.13.0](https://github.com/webmappsrl/osm2cai/compare/v233.12.0...v233.13.0) (2024-02-13)
+
+
+### Features
+
+* added action Percorso favorito ([1f15154](https://github.com/webmappsrl/osm2cai/commit/1f15154043ae3b549c05ad7311ef44d75d709697))
+* added reg_ref to sync with osm data ([c25546f](https://github.com/webmappsrl/osm2cai/commit/c25546f3ac9739dcc421fcf5447f9939b56d6bbc))
+* added region field in ecpoi nova ([d2a1dc5](https://github.com/webmappsrl/osm2cai/commit/d2a1dc52ee0c2f685cb88db0c7335a36bfb22e4d))
+* added regions field to mountain groups nova ([2abb354](https://github.com/webmappsrl/osm2cai/commit/2abb3544283660c24bc33dfeb85fbe9bbc3a73b1))
+* added script to associate mountain groups to regions based on geometric data ([22201d7](https://github.com/webmappsrl/osm2cai/commit/22201d7d324e2dc047784876d8c1ab0389486293))
+* added sync ecpoi and mountaingroup tool for admins ([29c91d6](https://github.com/webmappsrl/osm2cai/commit/29c91d69eab33706a4a58c1f9098d865a3a40534))
+* added ugcTrack download geojson zip ([ba45dba](https://github.com/webmappsrl/osm2cai/commit/ba45dbaedff46a68f4f79bacceb188c5646b5e67))
+* dashboard percorsi favoriti ([cb6a903](https://github.com/webmappsrl/osm2cai/commit/cb6a9032136e3c8a45393cf53d75d54e5a57e2ef))
+
+
+### Bug Fixes
+
+* fixed issues_description in action percorribilità ([631942a](https://github.com/webmappsrl/osm2cai/commit/631942afb3d20d4caaebda1d9607feaea89d3e86))
+
 ## [233.12.0](https://github.com/webmappsrl/osm2cai/compare/v233.11.0...v233.12.0) (2024-01-31)
 
 
