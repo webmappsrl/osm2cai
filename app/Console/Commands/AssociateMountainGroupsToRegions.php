@@ -39,7 +39,7 @@ class AssociateMountainGroupsToRegions extends Command
                 //mountain groups association
                 $mountainGroups = DB::table('mountain_groups')
                     ->join('mountain_groups_region', 'mountain_groups.id', '=', 'mountain_groups_region.mountain_group_id')
-                    ->select('mountain_groups.*')
+                    ->select('mountain_groups.id')
                     ->whereRaw(
                         'ST_Intersects(mountain_groups.geometry, ST_Transform(ST_SetSRID(?::geometry, 4326), 4326))',
                         [$region->geometry]
@@ -76,8 +76,7 @@ class AssociateMountainGroupsToRegions extends Command
                 $mountainGroups = MountainGroups::select('mountain_groups.*')
                     ->join(DB::raw('mountain_groups_region'), function ($join) use ($region) {
                         $join->on('mountain_groups.id', '=', 'mountain_groups_region.mountain_group_id')
-                            ->whereRaw('ST_Intersects(mountain_groups.geometry, ?)', [$region->geometry])
-                            ->orWhereRaw('ST_Contains(?, mountain_groups.geometry)', [$region->geometry]);
+                            ->whereRaw('ST_Intersects(mountain_groups.geometry, ?)', [$region->geometry]);
                     })
                     ->get();
 

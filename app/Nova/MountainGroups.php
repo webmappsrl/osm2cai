@@ -55,6 +55,8 @@ class MountainGroups extends Resource
      */
     public function fields(Request $request)
     {
+        $centerLat = $this->getCentroid()[1] ?? 0;
+        $centerLng = $this->getCentroid()[0] ?? 0;
         return [
             ID::make(__('ID'), 'id')->sortable(),
             Text::make("Nome", "name")->sortable(),
@@ -62,7 +64,7 @@ class MountainGroups extends Resource
             LeafletMap::make('Mappa')
                 ->type('GeoJson')
                 ->geoJson(json_encode($this->getEmptyGeojson()))
-                ->center($this->getCentroid()[1], $this->getCentroid()[0])
+                ->center($centerLat, $centerLng)
                 ->zoom(9)
                 ->onlyOnDetail(),
             BelongsToMany::make('Regioni', 'regions', Region::class)

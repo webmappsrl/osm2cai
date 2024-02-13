@@ -13,6 +13,6 @@ class MountainGroups extends Model
 
     public function regions()
     {
-        return $this->belongsToMany(Region::class);
+        return $this->belongsToMany(Region::class, 'mountain_groups_region', 'mountain_group_id', 'region_id');
     }
 }
