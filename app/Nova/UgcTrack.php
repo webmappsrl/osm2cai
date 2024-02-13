@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
+use App\Nova\Actions\DownloadGeojsonZipUgcTracks;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
 class UgcTrack extends Resource
@@ -95,9 +96,12 @@ class UgcTrack extends Resource
                 $rawData = json_decode($model->raw_data, true);
                 $result = [];
 
-                foreach ($rawData as $key => $value) {
-                    $result[] = $key . ' = ' . json_encode($value);
-                }
+                if ($rawData)
+                    foreach ($rawData as $key => $value) {
+                        $result[] = $key . ' = ' . json_encode($value);
+                    }
+                else
+                    $result[] = 'No raw data';
 
                 return join('<br>', $result);
             })->onlyOnDetail()->asHtml(),
@@ -151,6 +155,11 @@ class UgcTrack extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new DownloadGeojsonZipUgcTracks())
+                ->canSee(function ($request) {
+                    return true;
+                })
+        ];
     }
 }

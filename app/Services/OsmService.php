@@ -71,7 +71,7 @@ class OsmService
       'ascent', 'descent', 'distance', 'duration_forward', 'duration_backward',
       'operator', 'state', 'description', 'description_it', 'website', 'wikimedia_commons',
       'maintenance', 'maintenance_it', 'note', 'note_it', 'note_project_page', 'cai_scale', 'network', 'source',
-      'ele_from', 'ele_to', 'ele_max', 'ele_min',
+      'ele_from', 'ele_to', 'ele_max', 'ele_min', 'reg_ref'
     ];
   }
 

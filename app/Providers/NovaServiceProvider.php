@@ -12,6 +12,7 @@ use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
+use App\Nova\Dashboards\PercorsiFavoriti;
 use App\Nova\Dashboards\SAL;
 use App\Nova\Dashboards\SectorsDashboard;
 use App\Nova\Dashboards\Utenti;
@@ -778,6 +779,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $dashboards[] = new Utenti;
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
+            $dashboards[] = new PercorsiFavoriti;
         }
         if ($loggedInUser->getTerritorialRole() == 'national') {
             $dashboards[] = new Percorribilità();
@@ -812,6 +814,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $user = Auth::user();
         if ($user->is_administrator) {
             $tools[] = ['Sync UGC', route('import-ugc')];
+            $tools[] = ['Sync EcPois and Mountain groups', route('sync-ecpois-mountain-groups')];
         }
         return [
             (new NovaSidebar())->hydrate([
