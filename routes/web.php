@@ -2,6 +2,7 @@
 
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\CasLoginController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
@@ -64,3 +65,17 @@ Route::get('/loading-download/{type}/{model}/{id}', function () {
         'id' => request()->id
     ]);
 })->name('loading-download');
+
+Route::get('/sync-ecpois-mountain-groups', function () {
+    try {
+        $result = Artisan::call('osm2cai:associate-mountain-groups-to-regions');
+        $result == 0 ? $message = 'Sync completed, go back and refresh the page to see the results.' : $message = 'Sync failed';
+        return response()->json([
+            'message' => $message
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
+    }
+})->name('sync-ecpois-mountain-groups');

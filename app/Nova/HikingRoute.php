@@ -52,6 +52,7 @@ use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Actions\ImportPois;
 use App\Nova\Actions\OverpassMap;
+use App\Nova\Actions\PercorsoFavoritoAction;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -307,6 +308,11 @@ class HikingRoute extends Resource
             }
             return '<img src="' . Storage::url($this->feature_image) . '"/>';
         })->onlyOnDetail()->asHtml();
+
+        //Description CAI IT
+        $fields[] = Textarea::make('Description CAI IT', 'description_cai_it')
+            ->onlyOnDetail()
+            ->alwaysShow();
 
         //Region Favorite
         // $fields[] = Boolean::make('Region Favorite', 'region_favorite');
@@ -607,22 +613,35 @@ class HikingRoute extends Resource
                         return true;
                     }
                 ),
-            (new ToggleRegionFavoriteHikingRouteAction())
+            // (new ToggleRegionFavoriteHikingRouteAction())
+            //     ->onlyOnDetail('true')
+            //     ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
+            //     ->confirmButtonText('Confermo')
+            //     ->cancelButtonText("Annulla")
+            //     ->canSee(function ($request) {
+            //         return true;
+            //     })
+            //     ->canRun(
+            //         function ($request, $user) {
+            //             return true;
+            //         }
+            //     ),
+            // (new AddFeatureImageToHikingRoute())
+            //     ->onlyOnDetail('true')
+            //     ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
+            //     ->confirmButtonText('Confermo')
+            //     ->cancelButtonText("Annulla")
+            //     ->canSee(function ($request) {
+            //         return true;
+            //     })
+            //     ->canRun(
+            //         function ($request, $user) {
+            //             return true;
+            //         }
+            //     ),
+            (new PercorsoFavoritoAction())
                 ->onlyOnDetail('true')
-                ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')
-                ->confirmButtonText('Confermo')
-                ->cancelButtonText("Annulla")
-                ->canSee(function ($request) {
-                    return true;
-                })
-                ->canRun(
-                    function ($request, $user) {
-                        return true;
-                    }
-                ),
-            (new AddFeatureImageToHikingRoute())
-                ->onlyOnDetail('true')
-                ->confirmText('Sei sicuro di voler caricare una nuova immagine in evidenza e sostituire quella esistente?')
+                ->confirmText('Sei sicuro di voler aggiornare il percorso?')
                 ->confirmButtonText('Confermo')
                 ->cancelButtonText("Annulla")
                 ->canSee(function ($request) {
