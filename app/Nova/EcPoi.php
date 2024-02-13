@@ -112,6 +112,7 @@ class EcPoi extends Resource
                 'maxZoom' => 17,
                 'defaultZoom' => 13
             ])->hideFromIndex(),
+            BelongsTo::make('Region', 'region', Region::class)->sortable()->searchable(),
         ];
     }
 
