@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.13.1](https://github.com/webmappsrl/osm2cai/compare/v233.13.0...v233.13.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* fix on sync mountain groups command ([c3fe98c](https://github.com/webmappsrl/osm2cai/commit/c3fe98cfa681791566969d62b9229bf2f7ffb852))
+
 ## [233.13.0](https://github.com/webmappsrl/osm2cai/compare/v233.12.0...v233.13.0) (2024-02-13)
 
 
