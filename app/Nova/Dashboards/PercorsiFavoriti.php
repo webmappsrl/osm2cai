@@ -26,7 +26,9 @@ class PercorsiFavoriti extends Dashboard
                 DB::raw('(SELECT COUNT(*) FROM hiking_route_region hrr JOIN hiking_routes hr ON hrr.hiking_route_id = hr.id WHERE hrr.region_id = regions.id AND hr.region_favorite = true) as favorite_routes_count'),
                 DB::raw('(SELECT COUNT(*) FROM hiking_route_region hrr JOIN hiking_routes hr ON hrr.hiking_route_id = hr.id WHERE hrr.region_id = regions.id AND hr.osm2cai_status = 4) as sda4_routes_count'),
             ])
+            ->orderByDesc('favorite_routes_count')
             ->get();
+
 
         $html = '<table class="table-auto w-full mt-5">
     <thead>
