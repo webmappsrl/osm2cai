@@ -15,9 +15,9 @@ class CaiHuts extends Model
 
     protected static function booted()
     {
-        static::saved(function ($caiHut) {
-            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes CaiHuts ' . $caiHut->id);
-        });
+        // static::saved(function ($caiHut) {
+        //     Artisan::call('osm2cai:add_cai_huts_to_hiking_routes CaiHuts ' . $caiHut->id);
+        // });
 
         static::created(function ($caiHut) {
             Artisan::call('osm2cai:add_cai_huts_to_hiking_routes CaiHuts ' . $caiHut->id);

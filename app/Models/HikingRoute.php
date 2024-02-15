@@ -105,10 +105,16 @@ class HikingRoute extends Model
                 return;
             }
             Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
         });
 
         static::created(function ($hikingRoute) {
+            if ($hikingRoute->is_syncing) {
+                $hikingRoute->is_syncing = false;
+                return;
+            }
             Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
         });
     }
 
