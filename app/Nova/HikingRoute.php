@@ -53,6 +53,7 @@ use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
 use App\Nova\Actions\ImportPois;
 use App\Nova\Actions\OverpassMap;
 use App\Nova\Actions\PercorsoFavoritoAction;
+use App\Nova\Filters\CaiHutsHRFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -210,6 +211,7 @@ class HikingRoute extends Resource
                 'Content' => $this->getEditorialContent(),
                 'Issues' => $this->getIssuesContent(),
                 'POI' => $this->getPoiContent(),
+                'Huts' => $this->getHutsContent(),
             ])),
         ];
         //handle the case when centroid is null (giving error to nova "[2023-07-13 15:05:05] local.ERROR: Trying to access array offset on value of type null {"userId":1,"exception":"[object] (ErrorException(code: 0): Trying to access array offset on value of type null at /Users/gennaromanzo/Webmapp/osm2cai/app/Nova/HikingRoute.php:174)")
@@ -410,6 +412,54 @@ class HikingRoute extends Resource
         }
         return $fields;
     }
+    public function getHutsContent()
+    {
+        $hikingRouteId = $this->model()->getKey();
+
+        $hr = \App\Models\HikingRoute::find($hikingRouteId);
+
+        if (!$hr) {
+            return [];
+        }
+        $hutsId = $hr->cai_huts ? json_decode($hr->cai_huts) : [];
+
+        if (empty($hutsId)) {
+            $fields = [
+                Text::make('', function () {
+                    return '<h2>Nessun rifugio nelle vicinanze</h2>';
+                })->asHtml()->onlyOnDetail()
+            ];
+        }
+
+        $fields = [
+            Text::make('', function () {
+                return '<h2>Rifugi nelle vicinanze</h2>';
+            })->asHtml()->onlyOnDetail()
+        ];
+
+        $tableRows = [];
+        foreach ($hutsId as $hutId) {
+            $hut = \App\Models\CaiHuts::find($hutId);
+            if ($hut) {
+                $tableRows[] = "<tr style='margin-top:10px;'>
+            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/cai-huts/{$hut->id}'>{$hut->name}</a></td>
+        </tr>";
+            }
+        }
+
+        $fields[] = Text::make('Risultati', function () use ($tableRows) {
+            return "<table>
+            <thead style='margin-bottom: 10px;'>
+                <tr>
+                    <th>Nome</th>
+                </tr>
+            </thead>
+            <tbody>" . implode('', $tableRows) . "</tbody>
+        </table>";
+        })->asHtml()->onlyOnDetail();
+
+        return $fields;
+    }
 
     /**
      * Get the cards available for the request.
@@ -501,6 +551,7 @@ class HikingRoute extends Resource
                 (new RegionFavoriteHikingRouteFilter()),
                 (new IssueStatusFilter()),
                 (new HrCorrectGeometryFilter()),
+                (new CaiHutsHRFilter()),
             ];
         }
     }

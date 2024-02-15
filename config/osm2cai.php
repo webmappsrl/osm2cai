@@ -27,5 +27,7 @@ return [
         '18' => 'Calabria',
         '19' => 'Sicilia',
         '20' => 'Sardegna'
-    ]
+    ],
+
+    'hiking_route_buffer' => 250,
 ];
