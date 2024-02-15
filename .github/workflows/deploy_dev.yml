@@ -44,6 +44,7 @@ jobs:
         run: |
           psql -h 127.0.0.1 -U postgres -c "DROP DATABASE osm2cai"
           psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE osm2cai"
+          psql -h 127.0.0.1 -U postgres -c "CREATE ROLE osm2cai LOGIN;"
           psql -h 127.0.0.1 -U postgres -d osm2cai -c "CREATE EXTENSION IF NOT EXISTS POSTGIS"
           psql -h 127.0.0.1 -U postgres -d osm2cai -f storage/app/database/last-dump.sql
         env:
