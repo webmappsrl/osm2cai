@@ -212,6 +212,7 @@ class HikingRoute extends Resource
                 'Issues' => $this->getIssuesContent(),
                 'POI' => $this->getPoiContent(),
                 'Huts' => $this->getHutsContent(),
+                'Natural Springs' => $this->getSpringsContent(),
             ])),
         ];
         //handle the case when centroid is null (giving error to nova "[2023-07-13 15:05:05] local.ERROR: Trying to access array offset on value of type null {"userId":1,"exception":"[object] (ErrorException(code: 0): Trying to access array offset on value of type null at /Users/gennaromanzo/Webmapp/osm2cai/app/Nova/HikingRoute.php:174)")
@@ -443,6 +444,55 @@ class HikingRoute extends Resource
             if ($hut) {
                 $tableRows[] = "<tr style='margin-top:10px;'>
             <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/cai-huts/{$hut->id}'>{$hut->name}</a></td>
+        </tr>";
+            }
+        }
+
+        $fields[] = Text::make('Risultati', function () use ($tableRows) {
+            return "<table>
+            <thead style='margin-bottom: 10px;'>
+                <tr>
+                    <th>Nome</th>
+                </tr>
+            </thead>
+            <tbody>" . implode('', $tableRows) . "</tbody>
+        </table>";
+        })->asHtml()->onlyOnDetail();
+
+        return $fields;
+    }
+
+    public function getSpringsContent()
+    {
+        $hikingRouteId = $this->model()->getKey();
+
+        $hr = \App\Models\HikingRoute::find($hikingRouteId);
+
+        if (!$hr) {
+            return [];
+        }
+        $springsId = $hr->natural_springs ? json_decode($hr->natural_springs) : [];
+
+        if (empty($springsId)) {
+            $fields = [
+                Text::make('', function () {
+                    return '<h2>Nessuna sorgente nelle vicinanze</h2>';
+                })->asHtml()->onlyOnDetail()
+            ];
+        }
+
+        $fields = [
+            Text::make('', function () {
+                return '<h2>Sorgenti nelle vicinanze</h2>';
+            })->asHtml()->onlyOnDetail()
+        ];
+
+        $tableRows = [];
+        foreach ($springsId as $springId) {
+            $spring = \App\Models\NaturalSpring::find($springId);
+            if ($spring) {
+                $tableRows[] = "<tr style='margin-top:10px;'>
+            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/natural-springs/{$spring->id}'>{$spring->name}</a></td>
         </tr>";
             }
         }
