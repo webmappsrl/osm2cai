@@ -24,7 +24,6 @@
     "imumz/leaflet-map": "^1.1",
     "laravel/framework": "^8.12",
     "laravel/nova": "*",
-    "laravel/prompts": "dev-support-older-php",
     "laravel/tinker": "^2.5",
     "league/flysystem-aws-s3-v3": "~1.0",
     "m-a-k-o/nova-custom-table-card": "^3.2",

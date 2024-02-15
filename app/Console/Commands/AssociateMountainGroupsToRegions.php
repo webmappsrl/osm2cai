@@ -40,17 +40,8 @@ class AssociateMountainGroupsToRegions extends Command
         $regions = Region::all();
         $regionNames = $regions->pluck('name')->toArray();
         array_unshift($regionNames, 'all');
-        $resource = select(
-            'Resource',
-            ['mountain_groups', 'ec_pois', 'huts', 'all'],
-            'all'
-        );
-
-        $regionName = select(
-            'Region',
-            $regionNames,
-            'all'
-        );
+        $resource = $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
+        $regionName = $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
 
 
         if ($regionName === 'all') {
