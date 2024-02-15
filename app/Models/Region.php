@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\EcPoi;
+use App\Models\CaiHuts;
 use App\Traits\SallableTrait;
 use App\Models\MountainGroups;
 use App\Traits\CsvableModelTrait;
@@ -87,6 +88,11 @@ class Region extends TerritorialUnit
     public function mountainGroups()
     {
         return $this->hasMany(MountainGroups::class);
+    }
+
+    public function caiHuts()
+    {
+        return $this->hasMany(CaiHuts::class);
     }
 
     public function getGeojsonComplete(): string
