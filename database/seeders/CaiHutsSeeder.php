@@ -13,6 +13,6 @@ class CaiHutsSeeder extends Seeder
      */
     public function run()
     {
-        //
+        \App\Models\CaiHuts::factory(10)->create();
     }
 }

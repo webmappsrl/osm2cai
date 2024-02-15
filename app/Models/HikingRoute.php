@@ -8,6 +8,7 @@ use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
@@ -27,6 +28,9 @@ use Symm\Gisconverter\Gisconverter;
 class HikingRoute extends Model
 {
     use HasFactory, GeojsonableTrait, OwnableModelTrait;
+
+    public $is_syncing = false;
+
 
     protected $fillable = [
         'relation_id',
@@ -92,6 +96,21 @@ class HikingRoute extends Model
             'wikimedia_commons' => ['type' => 'string', 'comp' => false, 'label' => 'Immagine su wikimedia'],
         ],
     ];
+
+    protected static function booted()
+    {
+        static::saved(function ($hikingRoute) {
+            if ($hikingRoute->is_syncing) {
+                $hikingRoute->is_syncing = false;
+                return;
+            }
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+        });
+
+        static::created(function ($hikingRoute) {
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+        });
+    }
 
     public static function getInfoFields(): array
     {
