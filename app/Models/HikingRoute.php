@@ -39,6 +39,7 @@ class HikingRoute extends Model
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
         'ascent_osm', 'descent_osm', 'distance_osm', 'duration_forward_osm', 'duration_backward_comp',
         'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status', 'reg_ref_osm', 'reg_ref',
+        'natural_springs', 'cai_huts', 'has_natural_springs', 'has_cai_huts'
     ];
 
     protected $casts = [
