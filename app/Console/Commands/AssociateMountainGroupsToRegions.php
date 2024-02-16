@@ -19,6 +19,7 @@ class AssociateMountainGroupsToRegions extends Command
      * @var string
      */
     protected $signature = 'osm2cai:associate-to-regions';
+    protected $isFromNova;
 
     /**
      * The console command description.
@@ -27,9 +28,10 @@ class AssociateMountainGroupsToRegions extends Command
      */
     protected $description = 'Associate the specified model to regions based on geometric data';
 
-    public function __construct()
+    public function __construct(bool $isFromNova = false)
     {
         parent::__construct();
+        $this->isFromNova = $isFromNova;
     }
 
 
@@ -40,8 +42,8 @@ class AssociateMountainGroupsToRegions extends Command
         $regions = Region::all();
         $regionNames = $regions->pluck('name')->toArray();
         array_unshift($regionNames, 'all');
-        $resource = $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
-        $regionName = $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
+        $resource = $this->isFromNova ? 'all' : $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
+        $regionName = $this->isFromNova ? 'all' : $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
 
 
         if ($regionName === 'all') {
@@ -160,5 +162,6 @@ class AssociateMountainGroupsToRegions extends Command
     {
         $this->associateMountainGroupsToRegion($region);
         $this->associateEcPoisToRegion($region);
+        $this->associateHutsToRegion($region);
     }
 }

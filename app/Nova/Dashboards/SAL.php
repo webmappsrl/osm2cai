@@ -83,7 +83,7 @@ class SAL extends Dashboard
     <td class='px-4 py-2 font-bold'>Total</td>
     <td class='px-4 py-2'>{$sumMountainGroups}</td>
     <td class='px-4 py-2'>{$sumEcPois}</td>
-    <td class='px-4 py-2'></td>
+    <td class='px-4 py-2'> {$sumCaiHuts}</td>
     <td class='px-4 py-2'>{$sumHikingRoutes}</td>
     <td class='px-4 py-2'>{$sumPoiTotal}</td>
     <td class='px-4 py-2'>{$sumSections}</td>

@@ -69,7 +69,7 @@ Route::get('/loading-download/{type}/{model}/{id}', function () {
 
 Route::get('/sync-ecpois-mountain-groups', function () {
     try {
-        $command = new AssociateMountainGroupsToRegions();
+        $command = new AssociateMountainGroupsToRegions(true);
         $result = $command->handle();
         $result == 0 ? $message = 'Sync completed, go back and refresh the page to see the results.' : $message = 'Sync failed';
         return response()->json([
