@@ -16,13 +16,13 @@ gzip -d $DUMP_LOCAL_PATH
 
 
 # Elimina il database esistente
-dropdb -h localhost -U $DB_USER --if-exists $DB_NAME
+psql -h 127.0.0.1 -U $DB_USER -c "DROP DATABASE osm2cai"
 
 # Crea un nuovo database vuoto
-createdb -h localhost -U $DB_USER $DB_NAME
+psql -h 127.0.0.1 -U $DB_USER -c "CREATE DATABASE $DB_NAME"
 
 # Importa il dump nel nuovo database
-psql -h localhost -U $DB_USER -d $DB_NAME -f "${DUMP_LOCAL_PATH%.gz}"
+psql -h 127.0.0.1 -U $DB_USER -d $DB_NAME -f "${DUMP_LOCAL_PATH%.gz}"
 
 # Pulizia
 rm "${DUMP_LOCAL_PATH%.gz}"

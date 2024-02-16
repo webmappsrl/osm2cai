@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Models\User;
+use App\Models\EcPoi;
 use DKulyk\Nova\Tabs;
 use Laravel\Nova\Panel;
 use Illuminate\Support\Arr;
@@ -12,11 +13,15 @@ use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
+use App\Nova\Actions\ImportPois;
 use Imumz\LeafletMap\LeafletMap;
 use Laravel\Nova\Fields\Boolean;
 use App\Nova\Actions\CreateIssue;
+use App\Nova\Actions\OverpassMap;
 use Laravel\Nova\Fields\Textarea;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Nova\Filters\CaiHutsHRFilter;
 use Ericlagarda\NovaTextCard\TextCard;
 use App\Nova\Actions\SectorRefactoring;
 use App\Nova\Filters\DeleteOnOsmFilter;
@@ -25,9 +30,9 @@ use App\Nova\Filters\IssueStatusFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Nova\Filters\GeometrySyncFilter;
 use AddRegionFavoriteToHikingRoutesTable;
-use App\Models\EcPoi;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Actions\PercorsoFavoritoAction;
 use App\Nova\Filters\HikingRoutesAreaFilter;
 use App\Nova\Lenses\HikingRoutesStatus0Lens;
 use App\Nova\Lenses\HikingRoutesStatus1Lens;
@@ -50,10 +55,6 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
-use App\Nova\Actions\ImportPois;
-use App\Nova\Actions\OverpassMap;
-use App\Nova\Actions\PercorsoFavoritoAction;
-use App\Nova\Filters\CaiHutsHRFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -444,7 +445,7 @@ class HikingRoute extends Resource
             $hut = \App\Models\CaiHuts::find($hutId);
             if ($hut) {
                 $tableRows[] = "<tr style='margin-top:10px;'>
-            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/cai-huts/{$hut->id}'>{$hut->name}</a></td>
+            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/cai-huts/{$hut->id}'>{$hut->id}</a></td>
         </tr>";
             }
         }
@@ -453,7 +454,7 @@ class HikingRoute extends Resource
             return "<table>
             <thead style='margin-bottom: 10px;'>
                 <tr>
-                    <th>Nome</th>
+                    <th>ID</th>
                 </tr>
             </thead>
             <tbody>" . implode('', $tableRows) . "</tbody>
@@ -494,16 +495,18 @@ class HikingRoute extends Resource
             $spring = \App\Models\NaturalSpring::find($springId);
             if ($spring) {
                 $tableRows[] = "<tr style='margin-top:10px;'>
-            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/natural-springs/{$spring->id}'>{$spring->name}</a></td>
+            <td><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/natural-springs/{$spring->id}'>{$spring->id}</a></td>
         </tr>";
             }
         }
+
+        Log::info($tableRows);
 
         $fields[] = Text::make('Risultati', function () use ($tableRows) {
             return "<table>
             <thead style='margin-bottom: 10px;'>
                 <tr>
-                    <th>Nome</th>
+                    <th>ID</th>
                 </tr>
             </thead>
             <tbody>" . implode('', $tableRows) . "</tbody>
