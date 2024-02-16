@@ -96,6 +96,7 @@ class SyncNaturalSpringHR extends Command
     {
         if ($this->argument('id')) {
             $model = \App\Models\HikingRoute::where('id', $this->argument('id'))->first();
+            Log::info("Hiking route {$model->id}");
             if (!$model->geometry) {
                 Log::warning("Hiking route {$model->id} has no geometry");
                 return;
@@ -113,6 +114,8 @@ class SyncNaturalSpringHR extends Command
             }, $nearbySpringIds);
 
             $hr = HikingRoute::find($model->id);
+            Log::info("Hiking route {$hr->id} has " . count($nearbySpringIds) . " nearby springs");
+
 
             $currentSprings = json_decode($hr->natural_springs, true) ?: [];
             sort($currentSprings);
@@ -120,7 +123,8 @@ class SyncNaturalSpringHR extends Command
 
 
             if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0))
-                $hr->natural_springs = json_encode($nearbySpringIds);
+                Log::info("Hiking route {$hr->id} has changed");
+            $hr->natural_springs = json_encode($nearbySpringIds);
             $hr->has_natural_springs = count($nearbySpringIds) > 0;
 
             $hr->is_syncing = true;
@@ -131,6 +135,7 @@ class SyncNaturalSpringHR extends Command
                 ->get();
 
             foreach ($models as $model) {
+                Log::info("Hiking route {$model->id}");
                 if (!$model->geometry) {
                     Log::warning("Hiking route {$model->id} has no geometry");
                     return;
@@ -148,6 +153,8 @@ class SyncNaturalSpringHR extends Command
                 }, $nearbySpringIds);
 
                 $hr = HikingRoute::find($model->id);
+                Log::info("Hiking route {$hr->id} has " . count($nearbySpringIds) . " nearby springs");
+
 
                 $currentSprings = json_decode($hr->natural_springs, true) ?: [];
                 sort($currentSprings);
@@ -155,7 +162,8 @@ class SyncNaturalSpringHR extends Command
 
 
                 if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0))
-                    $hr->natural_springs = json_encode($nearbySpringIds);
+                    Log::info("Hiking route {$hr->id} has changed");
+                $hr->natural_springs = json_encode($nearbySpringIds);
                 $hr->has_natural_springs = count($nearbySpringIds) > 0;
 
                 $hr->is_syncing = true;
