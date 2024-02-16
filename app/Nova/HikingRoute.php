@@ -430,6 +430,7 @@ class HikingRoute extends Resource
                     return '<h2>Nessun rifugio nelle vicinanze</h2>';
                 })->asHtml()->onlyOnDetail()
             ];
+            return $fields;
         }
 
         $fields = [
@@ -479,6 +480,7 @@ class HikingRoute extends Resource
                     return '<h2>Nessuna sorgente nelle vicinanze</h2>';
                 })->asHtml()->onlyOnDetail()
             ];
+            return $fields;
         }
 
         $fields = [
