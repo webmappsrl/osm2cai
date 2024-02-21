@@ -60,7 +60,7 @@ class SyncCaiHuts extends Command
                     break;
                 } catch (\Exception $e) {
                     $attempt++;
-                    sleep($backoff);
+                    // sleep($backoff);
                     $backoff *= 4;
                     $this->error("Error fetching hut data for unico_id: {$unicoId} . {$e->getMessage()}");
                     $this->info("Retrying attempt: {$attempt} in {$backoff} seconds");
