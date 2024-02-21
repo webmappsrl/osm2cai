@@ -1,0 +1,52 @@
+version: "3.7"
+services:
+  phpfpm_php74:
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    # user: root
+    build: ./docker
+    # restart: always
+    container_name: php74
+    image: phpfpm:7.4
+    ports:
+      - ${DOCKER_SERVE_PORT}:8000
+    # external_links:
+    #   # - postgres
+    #   - mariadb
+    #   # - solr7
+    volumes:
+      - ".:/var/www/html/osm2cai"
+    environment:
+      # XDEBUG_CONFIG : remote_host=host.docker.internal remote_port=9074 remote_enable=1 remote_handler=dbgp
+      PHP_EXTENSIONS_DISABLE : ''
+      PHP_FPM_USER : 'wodby'
+      PHP_FPM_GROUP : 'wodby'
+      # - PHP_XDEBUG=1
+      # - PHP_XDEBUG_DEFAULT_ENABLE=1
+      # - PHP_XDEBUG_REMOTE_HOST=host.docker.internal # your local docker0 IP
+      # - PHP_XDEBUG_REMOTE_CONNECT_BACK=0
+      # - PHP_XDEBUG_REMOTE_PORT=9001
+      # - PHP_XDEBUG_IDEKEY=VSCODE
+      # - PHP_XDEBUG_REMOTE_AUTOSTART=0
+      # - PHP_XDEBUG_REMOTE_LOG=/var/log/xdebug.log
+  db:
+    image: postgis/postgis:13-3.4
+    # build: ./postgres
+    container_name: "postgres_${APP_NAME}"
+    restart: always
+    environment:
+      # POSTGRES_PASSWORD: ${DB_PASSWORD:?err}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?err}
+      POSTGRES_USER_PASSWORD: ${DB_PASSWORD:?err}
+      POSTGRES_USER: ${DB_USERNAME:?err}
+      POSTGRES_DB: ${DB_DATABASE:?err}
+    ports:
+      - "2345:5432"
+    expose:
+      - 5432
+    volumes:
+      - "./docker/volumes/postgres/logs:/var/log/postgresql"
+      - "./docker/volumes/postgres/data:/var/lib/postgresql/data"
+
+# DOCKER_SERVE_PORT=8888
+# psql -h localhost -p 2345 osm2cai
