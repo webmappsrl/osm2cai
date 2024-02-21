@@ -17,3 +17,4 @@ yarn-error.log
 .vscode
 /storage/api-docs
 dump.sql
+docker/volumes
