@@ -37,10 +37,6 @@ class SyncCaiHuts extends Command
         $createdHuts = 0;
         $updatedHuts = 0;
 
-        // there is a request limit for the api, implemented a backoff logic
-        $attempt = 0;
-        $maxAttempts = 5;
-        $backoff = 1;
 
         $hutsListApi = 'https://rifugi.cai.it/api/v1/shelters/updatedAt';
         try {
@@ -54,21 +50,11 @@ class SyncCaiHuts extends Command
 
         foreach ($hutsList as $unicoId => $updatedAt) {
             $hutApi = 'https://rifugi.cai.it/api/v1/shelters/geojson/' . $unicoId;
-            while ($attempt < $maxAttempts) {
-                try {
-                    $hutData = json_decode(file_get_contents($hutApi), true);
-                    break;
-                } catch (\Exception $e) {
-                    $attempt++;
-                    // sleep($backoff);
-                    $backoff *= 4;
-                    $this->error("Error fetching hut data for unico_id: {$unicoId} . {$e->getMessage()}");
-                    $this->info("Retrying attempt: {$attempt} in {$backoff} seconds");
-                }
-            }
-            if ($attempt >= $maxAttempts) {
-                $this->error("API request limit reached");
-                return 1;
+            try {
+                $hutData = json_decode(file_get_contents($hutApi), true);
+                break;
+            } catch (\Exception $e) {
+                $this->error("Error fetching hut data for unico_id: {$unicoId} . {$e->getMessage()}");
             }
 
             try {
