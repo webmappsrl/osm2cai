@@ -12,7 +12,7 @@ class EcPoi extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type'];
+    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type, region_id'];
 
     public function user()
     {
