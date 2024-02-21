@@ -8,6 +8,7 @@ use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Imumz\LeafletMap\LeafletMap;
@@ -28,6 +29,9 @@ class HikingRoute extends Model
 {
     use HasFactory, GeojsonableTrait, OwnableModelTrait;
 
+    public $is_syncing = false;
+
+
     protected $fillable = [
         'relation_id',
         'ref_osm', 'old_ref_osm', 'source_osm', 'source_ref_osm', 'survey_date_osm', 'name_osm', 'rwn_osm', 'rwn_name', 'ref_REI_osm',
@@ -35,6 +39,7 @@ class HikingRoute extends Model
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
         'ascent_osm', 'descent_osm', 'distance_osm', 'duration_forward_osm', 'duration_backward_comp',
         'operator_osm', 'state_osm', 'description_osm', 'description_it_osm', 'website_osm', 'wikimedia_commons_osm', 'maintenance_osm', 'maintenance_it_osm', 'note_osm', 'note_it_osm', 'note_project_page_osm', 'geometry_raw_data', 'osm2cai_status', 'reg_ref_osm', 'reg_ref',
+        'natural_springs', 'cai_huts', 'has_natural_springs', 'has_cai_huts'
     ];
 
     protected $casts = [
@@ -92,6 +97,27 @@ class HikingRoute extends Model
             'wikimedia_commons' => ['type' => 'string', 'comp' => false, 'label' => 'Immagine su wikimedia'],
         ],
     ];
+
+    protected static function booted()
+    {
+        static::saved(function ($hikingRoute) {
+            if ($hikingRoute->is_syncing) {
+                $hikingRoute->is_syncing = false;
+                return;
+            }
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+        });
+
+        static::created(function ($hikingRoute) {
+            if ($hikingRoute->is_syncing) {
+                $hikingRoute->is_syncing = false;
+                return;
+            }
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+        });
+    }
 
     public static function getInfoFields(): array
     {

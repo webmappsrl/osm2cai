@@ -1,0 +1,51 @@
+name: Import Database Dump to Development
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  import-dump:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.PG_DEV_PASSWORD }}
+          POSTGRES_DB: osm2cai
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Create Database Dump Directory
+        run: |
+          mkdir -p storage/app/database
+
+      - name: Download Database Dump
+        run: |
+          scp -o StrictHostKeyChecking=no root@116.203.180.132:/root/osm2cai/storage/app/database/osm2cai/last-dump.sql.gz storage/app/database/last-dump.sql.gz
+
+      - name: Decompress Database Dump
+        run: |
+          gzip -d storage/app/database/last-dump.sql.gz
+
+      - name: Import Database Dump
+        run: |
+          psql -h 127.0.0.1 -U postgres -c "DROP DATABASE osm2cai"
+          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE osm2cai"
+          psql -h 127.0.0.1 -U postgres -c "CREATE ROLE osm2cai LOGIN;"
+          psql -h 127.0.0.1 -U postgres -d osm2cai -c "CREATE EXTENSION IF NOT EXISTS POSTGIS"
+          psql -h 127.0.0.1 -U postgres -d osm2cai -f storage/app/database/last-dump.sql
+        env:
+          PGPASSWORD: ${{ secrets.PG_DEV_PASSWORD }}
