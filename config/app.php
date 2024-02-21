@@ -13,7 +13,7 @@ return [
 
 
     'version' => "233.11.0", // x-release-please-version
-    'release_date' => "13/02/2024",
+    'release_date' => "21/02/2024",
 
 
 
