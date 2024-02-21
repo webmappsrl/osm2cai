@@ -1,5 +1,92 @@
 # Changelog
 
+## [233.14.0](https://github.com/webmappsrl/osm2cai/compare/v233.13.1...v233.14.0) (2024-02-21)
+
+
+### Features
+
+* add cai huts tab to hiking routes ([376e28c](https://github.com/webmappsrl/osm2cai/commit/376e28c4ad7a5a06bee2ae21001cfea1b414f19d))
+* add natural spring tab to hiking routes ([eba126b](https://github.com/webmappsrl/osm2cai/commit/eba126b684e8863e900f45098990eec18b769416))
+* added caihuts ([cb35a44](https://github.com/webmappsrl/osm2cai/commit/cb35a4432426713daff24f71a7558b77fc0c0edc))
+* added fillables to hiking routes ([65b4558](https://github.com/webmappsrl/osm2cai/commit/65b455867339c6e6d75e8f11dc87147e50459473))
+* added logs to natural spring sync command ([c8f6400](https://github.com/webmappsrl/osm2cai/commit/c8f6400a3c0db47ddfe4045a695faf036e7d9af7))
+* added migrations ([b216af0](https://github.com/webmappsrl/osm2cai/commit/b216af0b8097117ec3a6b21696e2d768807a5df5))
+* added postgis to workflow git ([6d56197](https://github.com/webmappsrl/osm2cai/commit/6d56197ebf4ec0796d8ca89e6cb49174bbc4180b))
+* added postgres service to workflow ([ee80e56](https://github.com/webmappsrl/osm2cai/commit/ee80e56a8c321a2345b2397b427dd0e21b02f28c))
+* create sync command for huts ([df57941](https://github.com/webmappsrl/osm2cai/commit/df579414dfdf650a0a83081cd014f5e38c2ec4df))
+* deploy_dev_workflow ([399051c](https://github.com/webmappsrl/osm2cai/commit/399051c180ab39f4d585fad990a05255d7420f31))
+* installed laravel prompts ([9c3ed86](https://github.com/webmappsrl/osm2cai/commit/9c3ed8627605a256bf4ce85a549f66e021c62c74))
+* ordered results by favorite routes count in descending order ([d63d95d](https://github.com/webmappsrl/osm2cai/commit/d63d95d41dcc62faa816fd7d9da50954fbe2ddaf))
+* updated associate command to associate huts ([46008c4](https://github.com/webmappsrl/osm2cai/commit/46008c49d565f1f33ba02b89ac08a956d2c76a61))
+* updated mitur abruzzo page and sync tool in nova ([46016d7](https://github.com/webmappsrl/osm2cai/commit/46016d7236e548cc1989e7d40a850024dbc689ef))
+
+
+### Bug Fixes
+
+* added role to psql git workflow ([3700af2](https://github.com/webmappsrl/osm2cai/commit/3700af22ee2f62d4e86a58c3fa67dae7b083a841))
+* fixed region api ([ec9f343](https://github.com/webmappsrl/osm2cai/commit/ec9f343f229f7257ebe99c409aed73f9279f8937))
+* improved associate to region command ([c810355](https://github.com/webmappsrl/osm2cai/commit/c810355ad1bb8439dc3935ec2b05ec2900dde137))
+* workflow dev deploy fix 1 ([c9e9003](https://github.com/webmappsrl/osm2cai/commit/c9e900326ad6aed8adc1803d3a742365cb4b65fd))
+
+
+### Miscellaneous Chores
+
+* removed laravel prompts ([aebfb47](https://github.com/webmappsrl/osm2cai/commit/aebfb4785ea69791730adadbdf1df6b907d2df86))
+
+## [233.13.1](https://github.com/webmappsrl/osm2cai/compare/v233.13.0...v233.13.1) (2024-02-13)
+
+
+### Bug Fixes
+
+* fix on sync mountain groups command ([c3fe98c](https://github.com/webmappsrl/osm2cai/commit/c3fe98cfa681791566969d62b9229bf2f7ffb852))
+
+## [233.13.0](https://github.com/webmappsrl/osm2cai/compare/v233.12.0...v233.13.0) (2024-02-13)
+
+
+### Features
+
+* added action Percorso favorito ([1f15154](https://github.com/webmappsrl/osm2cai/commit/1f15154043ae3b549c05ad7311ef44d75d709697))
+* added reg_ref to sync with osm data ([c25546f](https://github.com/webmappsrl/osm2cai/commit/c25546f3ac9739dcc421fcf5447f9939b56d6bbc))
+* added region field in ecpoi nova ([d2a1dc5](https://github.com/webmappsrl/osm2cai/commit/d2a1dc52ee0c2f685cb88db0c7335a36bfb22e4d))
+* added regions field to mountain groups nova ([2abb354](https://github.com/webmappsrl/osm2cai/commit/2abb3544283660c24bc33dfeb85fbe9bbc3a73b1))
+* added script to associate mountain groups to regions based on geometric data ([22201d7](https://github.com/webmappsrl/osm2cai/commit/22201d7d324e2dc047784876d8c1ab0389486293))
+* added sync ecpoi and mountaingroup tool for admins ([29c91d6](https://github.com/webmappsrl/osm2cai/commit/29c91d69eab33706a4a58c1f9098d865a3a40534))
+* added ugcTrack download geojson zip ([ba45dba](https://github.com/webmappsrl/osm2cai/commit/ba45dbaedff46a68f4f79bacceb188c5646b5e67))
+* dashboard percorsi favoriti ([cb6a903](https://github.com/webmappsrl/osm2cai/commit/cb6a9032136e3c8a45393cf53d75d54e5a57e2ef))
+
+
+### Bug Fixes
+
+* fixed issues_description in action percorribilità ([631942a](https://github.com/webmappsrl/osm2cai/commit/631942afb3d20d4caaebda1d9607feaea89d3e86))
+
+## [233.12.0](https://github.com/webmappsrl/osm2cai/compare/v233.11.0...v233.12.0) (2024-01-31)
+
+
+### Features
+
+* added SAL dashboard table ([c616867](https://github.com/webmappsrl/osm2cai/commit/c6168670988e0721c4ad00e40a08e3bebf4ad033))
+* added swagger docs for ecpois api ([503d192](https://github.com/webmappsrl/osm2cai/commit/503d192ff5b5ba5b10ca925996cea1b8d695e639))
+* api for ecPois ([9a0ae8f](https://github.com/webmappsrl/osm2cai/commit/9a0ae8fa092d8839b7f10ede597b5c71b69fd4cd))
+* enhanced default user overpass query ([c1b6755](https://github.com/webmappsrl/osm2cai/commit/c1b6755709760d14f9c3397181c69a526f40d34b))
+* enhanced styles in sal table ([bf061be](https://github.com/webmappsrl/osm2cai/commit/bf061be9d68362a06b8e22be0c4d28e8ae499068))
+* modified default query in cerca punti di interesse action ([0d4d783](https://github.com/webmappsrl/osm2cai/commit/0d4d783dc436782560d17bc4991ff48daab4907e))
+
+
+### Bug Fixes
+
+* fixed mitur abruzzo url ([a1ff1d6](https://github.com/webmappsrl/osm2cai/commit/a1ff1d6aacfa0bba0cdf5e8fb2ba10129293dce0))
+* fixed osm sync action ([9fa1f28](https://github.com/webmappsrl/osm2cai/commit/9fa1f28e3d153439d9ba1eac9f4957aaaeca5d67))
+* fixed SAL mitur-abruzzo ([d936e3f](https://github.com/webmappsrl/osm2cai/commit/d936e3f96ca5145fb87b4617374f714627c3f407))
+* fixed swagger documentation for ecpoi apis ([9fd6923](https://github.com/webmappsrl/osm2cai/commit/9fd6923438f438c98af4b2ab085510f5e6ab689e))
+* fixed table name ([f03e8c7](https://github.com/webmappsrl/osm2cai/commit/f03e8c70633fec54d1f9f8a277196db318498147))
+* increased max length of default overpass query ([9bd8a9e](https://github.com/webmappsrl/osm2cai/commit/9bd8a9e6b7c8f41fd53a76917f79137f413c3614))
+* problem with sync osm data action in hiking route ([5b4576d](https://github.com/webmappsrl/osm2cai/commit/5b4576d0f071929721fb6ca644307f4692795499))
+
+
+### Miscellaneous Chores
+
+* enhanced swagger api description ([7507217](https://github.com/webmappsrl/osm2cai/commit/750721720e286bbca2e3d4ce3977ad0a09558e03))
+
 ## [233.11.0](https://github.com/webmappsrl/osm2cai/compare/v233.10.0...v233.11.0) (2024-01-30)
 
 
