@@ -1,5 +1,38 @@
 # Changelog
 
+## [233.14.0](https://github.com/webmappsrl/osm2cai/compare/v233.13.1...v233.14.0) (2024-02-21)
+
+
+### Features
+
+* add cai huts tab to hiking routes ([376e28c](https://github.com/webmappsrl/osm2cai/commit/376e28c4ad7a5a06bee2ae21001cfea1b414f19d))
+* add natural spring tab to hiking routes ([eba126b](https://github.com/webmappsrl/osm2cai/commit/eba126b684e8863e900f45098990eec18b769416))
+* added caihuts ([cb35a44](https://github.com/webmappsrl/osm2cai/commit/cb35a4432426713daff24f71a7558b77fc0c0edc))
+* added fillables to hiking routes ([65b4558](https://github.com/webmappsrl/osm2cai/commit/65b455867339c6e6d75e8f11dc87147e50459473))
+* added logs to natural spring sync command ([c8f6400](https://github.com/webmappsrl/osm2cai/commit/c8f6400a3c0db47ddfe4045a695faf036e7d9af7))
+* added migrations ([b216af0](https://github.com/webmappsrl/osm2cai/commit/b216af0b8097117ec3a6b21696e2d768807a5df5))
+* added postgis to workflow git ([6d56197](https://github.com/webmappsrl/osm2cai/commit/6d56197ebf4ec0796d8ca89e6cb49174bbc4180b))
+* added postgres service to workflow ([ee80e56](https://github.com/webmappsrl/osm2cai/commit/ee80e56a8c321a2345b2397b427dd0e21b02f28c))
+* create sync command for huts ([df57941](https://github.com/webmappsrl/osm2cai/commit/df579414dfdf650a0a83081cd014f5e38c2ec4df))
+* deploy_dev_workflow ([399051c](https://github.com/webmappsrl/osm2cai/commit/399051c180ab39f4d585fad990a05255d7420f31))
+* installed laravel prompts ([9c3ed86](https://github.com/webmappsrl/osm2cai/commit/9c3ed8627605a256bf4ce85a549f66e021c62c74))
+* ordered results by favorite routes count in descending order ([d63d95d](https://github.com/webmappsrl/osm2cai/commit/d63d95d41dcc62faa816fd7d9da50954fbe2ddaf))
+* updated associate command to associate huts ([46008c4](https://github.com/webmappsrl/osm2cai/commit/46008c49d565f1f33ba02b89ac08a956d2c76a61))
+* updated mitur abruzzo page and sync tool in nova ([46016d7](https://github.com/webmappsrl/osm2cai/commit/46016d7236e548cc1989e7d40a850024dbc689ef))
+
+
+### Bug Fixes
+
+* added role to psql git workflow ([3700af2](https://github.com/webmappsrl/osm2cai/commit/3700af22ee2f62d4e86a58c3fa67dae7b083a841))
+* fixed region api ([ec9f343](https://github.com/webmappsrl/osm2cai/commit/ec9f343f229f7257ebe99c409aed73f9279f8937))
+* improved associate to region command ([c810355](https://github.com/webmappsrl/osm2cai/commit/c810355ad1bb8439dc3935ec2b05ec2900dde137))
+* workflow dev deploy fix 1 ([c9e9003](https://github.com/webmappsrl/osm2cai/commit/c9e900326ad6aed8adc1803d3a742365cb4b65fd))
+
+
+### Miscellaneous Chores
+
+* removed laravel prompts ([aebfb47](https://github.com/webmappsrl/osm2cai/commit/aebfb4785ea69791730adadbdf1df6b907d2df86))
+
 ## [233.13.1](https://github.com/webmappsrl/osm2cai/compare/v233.13.0...v233.13.1) (2024-02-13)
 
 
