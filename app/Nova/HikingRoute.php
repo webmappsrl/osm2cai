@@ -322,7 +322,7 @@ class HikingRoute extends Resource
             ->alwaysShow();
 
         //Region Favorite
-        // $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
 
         //Data pubblicazione LoScarpone
         // $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
