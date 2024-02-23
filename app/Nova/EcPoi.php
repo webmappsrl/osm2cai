@@ -3,6 +3,10 @@
 namespace App\Nova;
 
 use App\Enums\EcPoiTypes;
+use App\Nova\Filters\EcPoiOsmTypeFilter;
+use App\Nova\Filters\EcPoiRegionFilter;
+use App\Nova\Filters\EcPoiTypeFilter;
+use App\Nova\Filters\EcPoiUtenteFilter;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -135,7 +139,20 @@ class EcPoi extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            (new EcPoiOsmTypeFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiRegionFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiTypeFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiUtenteFilter)->canSee(function ($request) {
+                return $request->user()->is_administrator || $request->user()->getPermissionString() === 'Referente nazionale';
+            }),
+        ];
     }
 
     /**
