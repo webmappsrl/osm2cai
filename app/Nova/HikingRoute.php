@@ -154,6 +154,9 @@ class HikingRoute extends Resource
                     if (count($this->regions) > 0) {
                         $val = implode(', ', $this->regions->pluck('name')->toArray());
                     }
+                    if (count($this->regions) >= 2) {
+                        $val = implode(', ', $this->regions->pluck('name')->take(1)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
