@@ -20,9 +20,12 @@ class UpdateEcPoisOsmType extends Command
     public function handle()
     {
         // Retrieve all EC POIs records that have a null or empty 'osm_type'
-        $ecPois = DB::table('ec_pois')->whereNull('osm_type')->orWhere('osm_type', '')->get();
+        $ecPois = EcPoi::whereNull('osm_type')->orWhere('osm_type', '')->get();
+
+        $this->info("Found " . count($ecPois) . " EC POIs with null or empty 'osm_type'");
 
         foreach ($ecPois as $ecPoi) {
+            $this->info("Checking OSM type for EC POI with OSM ID: " . $ecPoi->osm_id);
             $types = ['node', 'way', 'relation'];
             $foundTypes = [];
 
@@ -50,6 +53,8 @@ class UpdateEcPoisOsmType extends Command
                         $this->info("EC POI {$ecPoi->name} name does not match with OSM type: " . $type . "/" . $ecPoi->osm_id . " after name matching");
                     }
                 }
+            } else {
+                $this->info("EC POI with name: {$ecPoi->name}  does not match with any OSM type: " . $ecPoi->osm_id);
             }
         }
 
@@ -72,9 +77,11 @@ class UpdateEcPoisOsmType extends Command
             // Extract the name from the OSM element tags
             if (isset($array[$type]['tag'])) {
                 foreach ($array[$type]['tag'] as $tag) {
-                    if ($tag['@attributes']['k'] === 'name') {
-                        $name = $tag['@attributes']['v'];
-                        break;
+                    if (array_key_exists('@attributes', $tag)) {
+                        if ($tag['@attributes']['k'] === 'name' || $tag['@attributes']['k'] === 'name:it') {
+                            $name = $tag['@attributes']['v'];
+                            break;
+                        }
                     }
                 }
             }
