@@ -41,7 +41,9 @@ class DownloadGeojsonZipUgcTracks extends Action
                 Storage::disk('public')->delete('ugctracks/' . $model->id . '.geojson');
             }
 
-            return Action::download(url('storage/' . $zipFileName), $zipFileName);
+            $publicPath = Storage::disk('public')->url($zipFileName);
+
+            return Action::redirect($publicPath, $zipFileName);
         } else {
             return Action::danger('Impossibile creare il file zip.');
         }
