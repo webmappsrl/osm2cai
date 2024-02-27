@@ -3,6 +3,10 @@
 namespace App\Nova;
 
 use App\Enums\EcPoiTypes;
+use App\Nova\Filters\EcPoiOsmTypeFilter;
+use App\Nova\Filters\EcPoiRegionFilter;
+use App\Nova\Filters\EcPoiTypeFilter;
+use App\Nova\Filters\EcPoiUtenteFilter;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -85,25 +89,23 @@ class EcPoi extends Resource
                         return '<span class="bg-gray-200 text-gray-800 font-bold py-1 px-3 rounded-full text-xs">' . $value . '</span>';
                 }
             })->asHtml(),
-            Text::make('OSM URL')->sortable()->displayUsing(
-                function ($value) {
-                    $type = $this->osm_type;
-                    $osmId = $this->osm_id;
-                    $urlType = '';
-                    switch ($type) {
-                        case 'N':
-                            $urlType = 'node';
-                            break;
-                        case 'W':
-                            $urlType = 'way';
-                            break;
-                        case 'R':
-                            $urlType = 'relation';
-                            break;
-                    }
-                    return "<a style='color:green;' href='https://www.openstreetmap.org/$urlType/$osmId' target='_blank'>$urlType/$osmId</a>";
+            Text::make('OSM URL', function () {
+                $type = $this->osm_type;
+                $osmId = $this->osm_id;
+                $urlType = '';
+                switch ($type) {
+                    case 'N':
+                        $urlType = 'node';
+                        break;
+                    case 'W':
+                        $urlType = 'way';
+                        break;
+                    case 'R':
+                        $urlType = 'relation';
+                        break;
                 }
-            )->asHtml(),
+                return "<a style='color:green;' href='https://www.openstreetmap.org/$urlType/$osmId' target='_blank'>$urlType/$osmId</a>";
+            })->asHtml(),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
@@ -135,7 +137,20 @@ class EcPoi extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            (new EcPoiOsmTypeFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiRegionFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiTypeFilter)->canSee(function ($request) {
+                return true;
+            }),
+            (new EcPoiUtenteFilter)->canSee(function ($request) {
+                return $request->user()->is_administrator || $request->user()->getPermissionString() === 'Referente nazionale';
+            }),
+        ];
     }
 
     /**

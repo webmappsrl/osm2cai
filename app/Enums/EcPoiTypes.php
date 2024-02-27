@@ -6,6 +6,7 @@ use ReflectionClass;
 
 
 class EcPoiTypes
+
 {
 
     const Signed_Post = 'signed_post';

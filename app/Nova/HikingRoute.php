@@ -154,6 +154,9 @@ class HikingRoute extends Resource
                     if (count($this->regions) > 0) {
                         $val = implode(', ', $this->regions->pluck('name')->toArray());
                     }
+                    if (count($this->regions) >= 2) {
+                        $val = implode(', ', $this->regions->pluck('name')->take(1)->toArray()) . ' [...]';
+                    }
                 }
                 return $val;
             })->onlyOnIndex(),
@@ -319,7 +322,7 @@ class HikingRoute extends Resource
             ->alwaysShow();
 
         //Region Favorite
-        // $fields[] = Boolean::make('Region Favorite', 'region_favorite');
+        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
 
         //Data pubblicazione LoScarpone
         // $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
@@ -534,6 +537,9 @@ class HikingRoute extends Resource
 
             $statoDiAccatastamento = 'Stato di accatastamento';
 
+            if ($hr->osm2cai_status == 0)
+                $statoDiAccatastamento .= "<h5 class=\"font-light\">Non accatastato</h5>";
+
             if ($hr->validation_date)
                 $statoDiAccatastamento .= "<h5 class=\"font-light\">Data di validazione: {$hr->validation_date->format('d/m/Y')}</h5>";
 
@@ -569,7 +575,7 @@ class HikingRoute extends Resource
                     ->center(false)
                     ->onlyOnDetail()
                     ->width('1/4')
-                    ->heading($hr->osm2cai_status)
+                    ->heading($hr->osm2cai_status == 0 ? '0' : $hr->osm2cai_status)
                     ->text($statoDiAccatastamento)
                     ->textAsHtml(),
             ];
