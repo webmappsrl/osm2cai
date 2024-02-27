@@ -1,5 +1,26 @@
 # Changelog
 
+## [233.15.0](https://github.com/webmappsrl/osm2cai/compare/v233.14.0...v233.15.0) (2024-02-27)
+
+
+### Features
+
+* added filters to ecpois ([794176a](https://github.com/webmappsrl/osm2cai/commit/794176a07c0fdd3a33661e2793af75ea14124d96))
+* added region favorite to content tab in metadata field in hiking route detail ([3aa7392](https://github.com/webmappsrl/osm2cai/commit/3aa7392e5dc385fd2837f44ab1c9f2a219dc1eb4))
+* created command to update pois with missing osm type ([cab27df](https://github.com/webmappsrl/osm2cai/commit/cab27dfd6ec769143a0b525652bdd215ed751961))
+* limited value length on regione field on hiking routes section ([7d68da5](https://github.com/webmappsrl/osm2cai/commit/7d68da52f05c721640ed03ea87f959035d9d43e3))
+
+
+### Bug Fixes
+
+* bug fix on osm type ([ca5a4e8](https://github.com/webmappsrl/osm2cai/commit/ca5a4e8ac2495eca437881764d2397530d84f0da))
+* bug fix on stato di accatastamento card in hiking route details ([8d6d795](https://github.com/webmappsrl/osm2cai/commit/8d6d79543848ed19e7151071b065c681fe5bebff))
+* command fix ([5c5d601](https://github.com/webmappsrl/osm2cai/commit/5c5d6011ee3d84fba7c0332abd8d1253cae3a095))
+* fix zip download on ugc tracks ([5f19652](https://github.com/webmappsrl/osm2cai/commit/5f196528099a502e8afb956cb7a17d9c0a9b8e57))
+* fixed ([add4b08](https://github.com/webmappsrl/osm2cai/commit/add4b080d74dad3c34dc46ee050e857b135cbb0e))
+* hut sync sleep ([c05143c](https://github.com/webmappsrl/osm2cai/commit/c05143c601fa98df9e2cdaa5e940f7ad74e98a7e))
+* sync huts attemps and sleep ([6440269](https://github.com/webmappsrl/osm2cai/commit/6440269f00c8b1c4d4bcaaf9fe043bc48155de68))
+
 ## [233.14.0](https://github.com/webmappsrl/osm2cai/compare/v233.13.1...v233.14.0) (2024-02-21)
 
 
