@@ -65,13 +65,15 @@ class UpdateEcPoisOsmType extends Command
             $xml = simplexml_load_string($response->body());
             $json = json_encode($xml);
             $array = json_decode($json, true);
-            $name = '';
+            $name = $array[$type]['@attributes']['name'] ?? '';
 
             // Extract the name from the OSM element tags
-            foreach ($array[$type]['tag'] as $tag) {
-                if ($tag['@attributes']['k'] === 'name') {
-                    $name = $tag['@attributes']['v'];
-                    break;
+            if (isset($array[$type]['tag'])) {
+                foreach ($array[$type]['tag'] as $tag) {
+                    if ($tag['@attributes']['k'] === 'name') {
+                        $name = $tag['@attributes']['v'];
+                        break;
+                    }
                 }
             }
 
