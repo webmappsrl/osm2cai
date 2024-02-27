@@ -46,6 +46,8 @@ class UpdateEcPoisOsmType extends Command
                         DB::table('ec_pois')->where('id', $ecPoi->id)->update(['osm_type' => substr(ucfirst($type), 0, 1)]);
                         $this->info("Updated EC POI {$ecPoi->id} with OSM type: " . ucfirst($type) . " after name matching");
                         break;
+                    } else {
+                        $this->info("EC POI {$ecPoi->name} name does not match with OSM type: " . $type . "/" . $ecPoi->osm_id . " after name matching");
                     }
                 }
             }
