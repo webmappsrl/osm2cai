@@ -89,7 +89,7 @@ class ImportPois extends Action
                         }
                     } else {
                         $poi = EcPoi::updateOrCreate(['osm_id' => $element['id']], [
-                            'name' => $element['tags']['name'] ?? 'no name (' . $type . '/' . $element['id'] . ')',
+                            'name' => $element['tags']['name'] ?? $element['tags']['name:it'] ?? 'no name (' . $type . '/' . $element['id'] . ')',
                             'description' => $element['tags']['description'] ?? null,
                             'geometry' => null,
                             'tags' => isset($element['tags']) ? json_encode($element['tags']) : null,
@@ -124,7 +124,7 @@ class ImportPois extends Action
     {
         $type = $data['type'];
         $osmId = $data['id'];
-        $name = $data['name'] ?? $data['tags']['name'] ?? 'no name (' . $data['id'] . ')';
+        $name = $data['name'] ?? $data['tags']['name'] ?? $data['tags']['name:it'] ?? 'no name (' . $data['id'] . ')';
         $description = $data['tags']['description'] ?? null;
         $geometry = $this->getGeometry($data, $type);
         $tags = isset($data['tags']) ? json_encode($data['tags']) : null;
