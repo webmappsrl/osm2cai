@@ -119,6 +119,11 @@ return [
             'driver' => 'single',
             'level' => env('LOG_LEVEL', 'debug'),
         ],
+        'osm2caisync' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/osm2caisync.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];
