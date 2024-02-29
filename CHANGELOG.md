@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.15.1](https://github.com/webmappsrl/osm2cai/compare/v233.15.0...v233.15.1) (2024-02-27)
+
+
+### Bug Fixes
+
+* fixed osm_id update command ([c73d539](https://github.com/webmappsrl/osm2cai/commit/c73d5398d25312b43a5c1445908d65d6fe0a95ea))
+
 ## [233.15.0](https://github.com/webmappsrl/osm2cai/compare/v233.14.0...v233.15.0) (2024-02-27)
 
 
