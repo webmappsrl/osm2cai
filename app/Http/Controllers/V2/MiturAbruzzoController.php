@@ -16,7 +16,7 @@ class MiturAbruzzoController extends Controller
      *     path="/api/v2/mitur_abruzzo/region_list",
      *     tags={"Api V2 - MITUR Abruzzo"},
      *     summary="List all regions",
-     *     description="Returns a list of all regions with their ID and last updated timestamp.",
+     *     description="Returns a list of all regions with their ID and last updated timestamp. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -71,7 +71,7 @@ class MiturAbruzzoController extends Controller
      *     operationId="getRegionById",
      *     tags={"Api V2 - MITUR Abruzzo"},
      *     summary="Get Region by ID",
-     *     description="Returns a single region, including mountain groups and region geometry, by ID.",
+     *     description="Returns a single region, including mountain groups and region geometry, by ID. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -185,7 +185,7 @@ class MiturAbruzzoController extends Controller
      *     operationId="getMountainGroupById",
      *     tags={"Api V2 - MITUR Abruzzo"},
      *     summary="Get Mountain group by ID",
-     *     description="Returns a single mountain group, including hiking routes, huts, POIs, and sections that intersect with the mountain group geometry, by ID.",
+     *     description="Returns a single mountain group, including hiking routes, huts and POIs that intersect with the mountain group geometry. Sections are hardcoded for now. Will be implemented soon. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -228,7 +228,8 @@ class MiturAbruzzoController extends Controller
      *                             property="201",
      *                               type="string",
      *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00"
+     *                             example="2021-11-03T09:36:41+00:00",
+     * description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
      *                         ),
      *                     )
      *                 ),
@@ -241,7 +242,9 @@ class MiturAbruzzoController extends Controller
      *                             property="202",
      *                             type="string",
      *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00"
+     *                             example="2021-11-03T09:36:41+00:00",
+     *      description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
+
      *                         ),
      *                     )
      *                 ),
@@ -254,7 +257,9 @@ class MiturAbruzzoController extends Controller
      *                             property="203",
      *                             type="string",
      *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00"
+     *                             example="2021-11-03T09:36:41+00:00",
+     *      description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
+
      *                         ),
      *                     )
      *                 ),
