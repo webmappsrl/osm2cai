@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V2;
 
 use App\Models\Region;
 use Illuminate\Http\Request;
+use App\Models\MountainGroups;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
@@ -53,11 +54,15 @@ class MiturAbruzzoController extends Controller
         $regions = Region::all();
 
         $formattedRegions = $regions->mapWithKeys(function ($region) {
-            return [$region->id => $region->updated_at->format('Y-m-d H:i:s')];
+
+            $formattedDate = $region->updated_at->toIso8601String();
+
+            return [$region->id => $formattedDate];
         });
 
         return response()->json($formattedRegions);
     }
+
 
     /**
      * @OA\Get(
@@ -141,6 +146,12 @@ class MiturAbruzzoController extends Controller
 
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
+        //format the date
+        $mountainGroups = $mountainGroups->mapWithKeys(function ($mountainGroup) {
+            $formattedDate = $mountainGroup->updated_at ? $mountainGroup->updated_at->toIso8601String() : null;
+
+            return [$mountainGroup->id => $formattedDate];
+        });
 
         //get the region geometry
         $geom_s = $region
@@ -160,9 +171,176 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $region->id;
         $properties['name'] = $region->name;
-        $properties['mountain_groups'] = $mountainGroups->pluck('updated_at', 'id')->toArray();
+        $properties['mountain_groups'] = $mountainGroups;
 
         $geojson['properties'] = $properties;
+
+        return response()->json($geojson);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v2/mitur_abruzzo/mountain_group/{id}",
+     *     operationId="getMountainGroupById",
+     *     tags={"Api V2 - MITUR Abruzzo"},
+     *     summary="Get Mountain group by ID",
+     *     description="Returns a single mountain group, including hiking routes, huts, POIs, and sections that intersect with the mountain group geometry, by ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the mountain group to return",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="Feature"
+     *             ),
+     *             @OA\Property(
+     *                 property="properties",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=406
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Nodo della Scoffera - Gruppo del Monte Ramaceto"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="hiking_routes",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(
+     *                             property="201",
+     *                               type="string",
+     *                             format="date-time",
+     *                             example="2021-11-03T09:36:41+00:00"
+     *                         ),
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="huts",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(
+     *                             property="202",
+     *                             type="string",
+     *                             format="date-time",
+     *                             example="2021-11-03T09:36:41+00:00"
+     *                         ),
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="pois",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(
+     *                             property="203",
+     *                             type="string",
+     *                             format="date-time",
+     *                             example="2021-11-03T09:36:41+00:00"
+     *                         ),
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="sections",
+     *                     type="object",
+     *                     example={
+     *                         "501": "2022-12-03 12:34:25",
+     *                         "502": "2023-01-15 09:30:00",
+     *                         "503": "2023-02-20 14:45:10"
+     *                     }
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="geometry",
+     *                 description="GeoJSON geometry of the mountain group",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="MultiPolygon"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="coordinates",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="array",
+     *                         @OA\Items(
+     *                             type="number",
+     *                             format="float",
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Mountain group not found"
+     *     )
+     * )
+     */
+
+    public function miturAbruzzoMountainGroupById($id)
+    {
+        //get the mountain group by id
+        $mountainGroup = MountainGroups::find($id);
+
+        //get the hiking routes that intersect with the mountain group geometry
+        $hikingRoutes = $mountainGroup->getHikingRoutesIntersecting();
+        //get only hiking routes with osm2cai_status =  4
+        $hikingRoutes = $hikingRoutes->where('osm2cai_status', 4)->pluck('updated_at', 'id')->toArray();
+        //format the date 
+        foreach ($hikingRoutes as $key => $value) {
+            $hikingRoutes[$key] = $value->toIso8601String();
+        }
+
+        //get the huts that intersect with the mountain group geometry
+        $huts = $mountainGroup->getHutsIntersecting();
+        $huts = $huts->pluck('updated_at', 'id')->toArray();
+        //format the date
+        foreach ($huts as $key => $value) {
+            $huts[$key] = $value->toIso8601String();
+        }
+
+        //get the pois that intersect with the mountain group geometry
+        $pois = $mountainGroup->getPoisIntersecting();
+        $pois = $pois->pluck('updated_at', 'id')->toArray();
+        //format the date
+        foreach ($pois as $key => $value) {
+            $pois[$key] = $value->toIso8601String();
+        }
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $mountainGroup->id;
+        $properties['name'] = $mountainGroup->name;
+        $properties['hiking_routes'] = $hikingRoutes;
+        $properties['huts'] = $huts;
+        $properties['pois'] = $pois;
+        $properties['sections'] = [501 => "2022-12-03 12:34:25", 502 => "2023-01-15 09:30:00", 503 => "2023-02-20 14:45:10"]; //todo get the sections when the model has the geometry. Hardcoded for the moment
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $mountainGroup->getGeometry();
 
         return response()->json($geojson);
     }
