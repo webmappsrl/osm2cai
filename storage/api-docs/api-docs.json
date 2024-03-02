@@ -1544,7 +1544,7 @@
                     "Api V2 - MITUR Abruzzo"
                 ],
                 "summary": "List all regions",
-                "description": "Returns a list of all regions with their ID and last updated timestamp.",
+                "description": "Returns a list of all regions with their ID and last updated timestamp. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                 "operationId": "28a9a4f0e9b426878ab031d6fb721d68",
                 "responses": {
                     "200": {
@@ -1591,7 +1591,7 @@
                     "Api V2 - MITUR Abruzzo"
                 ],
                 "summary": "Get Region by ID",
-                "description": "Returns a single region, including mountain groups and region geometry, by ID.",
+                "description": "Returns a single region, including mountain groups and region geometry, by ID. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                 "operationId": "getRegionById",
                 "parameters": [
                     {
@@ -1675,7 +1675,7 @@
                     "Api V2 - MITUR Abruzzo"
                 ],
                 "summary": "Get Mountain group by ID",
-                "description": "Returns a single mountain group, including hiking routes, huts, POIs, and sections that intersect with the mountain group geometry, by ID.",
+                "description": "Returns a single mountain group, including hiking routes, huts and POIs that intersect with the mountain group geometry. Sections are hardcoded for now. Will be implemented soon. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                 "operationId": "getMountainGroupById",
                 "parameters": [
                     {
@@ -1715,6 +1715,7 @@
                                                     "items": {
                                                         "properties": {
                                                             "201": {
+                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                                                                 "type": "string",
                                                                 "format": "date-time",
                                                                 "example": "2021-11-03T09:36:41+00:00"
@@ -1728,6 +1729,7 @@
                                                     "items": {
                                                         "properties": {
                                                             "202": {
+                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                                                                 "type": "string",
                                                                 "format": "date-time",
                                                                 "example": "2021-11-03T09:36:41+00:00"
@@ -1741,6 +1743,7 @@
                                                     "items": {
                                                         "properties": {
                                                             "203": {
+                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                                                                 "type": "string",
                                                                 "format": "date-time",
                                                                 "example": "2021-11-03T09:36:41+00:00"
