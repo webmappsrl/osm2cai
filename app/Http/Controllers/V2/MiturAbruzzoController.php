@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\V2;
 
 use App\Models\Region;
+use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Models\MountainGroups;
 use Illuminate\Support\Facades\DB;
@@ -341,6 +342,96 @@ class MiturAbruzzoController extends Controller
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $mountainGroup->getGeometry();
+
+        return response()->json($geojson);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v2/mitur_abruzzo/hiking_route/{id}",
+     *     operationId="getMiturAbruzzoHikingRouteById",
+     *     tags={"Api V2 - MITUR Abruzzo"},
+     *     summary="Get Hiking route by ID",
+     *     description="Returns a single hiking route by ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the hiking route to return",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="Feature"
+     *             ),
+     *             @OA\Property(
+     *                 property="properties",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="ref",
+     *                     type="string",
+     *                     example="T001"
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="geometry",
+     *                 description="GeoJSON geometry of the hiking route",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="LineString"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="coordinates",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="array",
+     *                         @OA\Items(
+     *                             type="number",
+     *                             format="float",
+     *                         )
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Hiking route not found"
+     *     )
+     * )
+     */
+    public function miturAbruzzoHikingRouteById($id)
+    {
+        $hikingRoute = HikingRoute::find($id);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $hikingRoute->id;
+        $properties['ref'] = $hikingRoute->ref;
+
+        $geometry = $hikingRoute->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
 
         return response()->json($geojson);
     }

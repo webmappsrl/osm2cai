@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\GeometryService;
+use App\Traits\GeoIntersectTrait;
 use App\Traits\GeojsonableTrait;
 use App\Traits\OwnableModelTrait;
 use GeoJson\Geometry\Polygon;
@@ -27,7 +28,7 @@ use Symm\Gisconverter\Gisconverter;
  */
 class HikingRoute extends Model
 {
-    use HasFactory, GeojsonableTrait, OwnableModelTrait;
+    use HasFactory, GeojsonableTrait, OwnableModelTrait, GeoIntersectTrait;
 
     public $is_syncing = false;
 
