@@ -87,7 +87,7 @@ class Region extends TerritorialUnit
 
     public function mountainGroups()
     {
-        return $this->hasMany(MountainGroups::class);
+        return $this->belongsToMany(MountainGroups::class, 'mountain_groups_region', 'region_id', 'mountain_group_id');
     }
 
     public function caiHuts()
