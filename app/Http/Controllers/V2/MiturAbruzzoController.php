@@ -423,7 +423,7 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoHikingRouteById($id)
     {
-        $hikingRoute = HikingRoute::find($id);
+        $hikingRoute = HikingRoute::findOrfail($id);
 
         //build the geojson
         $geojson = [];
