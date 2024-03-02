@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HikingRouteResource;
 
-define('_BOUNDIG_BOX_LIMIT', 0.1);
 
 
 class HikingRoutesRegionControllerV2 extends Controller
