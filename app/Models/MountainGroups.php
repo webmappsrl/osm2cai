@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Models\Region;
+use App\Traits\GeoIntersectTrait;
 use App\Traits\GeojsonableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MountainGroups extends Model
 {
-    use HasFactory,  GeojsonableTrait;
+    use HasFactory,  GeojsonableTrait, GeoIntersectTrait;
 
     public function regions()
     {

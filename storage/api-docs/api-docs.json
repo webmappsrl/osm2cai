@@ -1668,6 +1668,129 @@
                     }
                 }
             }
+        },
+        "/api/v2/mitur_abruzzo/mountain_group/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Mountain group by ID",
+                "description": "Returns a single mountain group, including hiking routes, huts, POIs, and sections that intersect with the mountain group geometry, by ID.",
+                "operationId": "getMountainGroupById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the mountain group to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 406
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Nodo della Scoffera - Gruppo del Monte Ramaceto"
+                                                },
+                                                "hiking_routes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "201": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2021-11-03T09:36:41+00:00"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "huts": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "202": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2021-11-03T09:36:41+00:00"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "pois": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "203": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2021-11-03T09:36:41+00:00"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "sections": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "501": "2022-12-03 12:34:25",
+                                                        "502": "2023-01-15 09:30:00",
+                                                        "503": "2023-02-20 14:45:10"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "description": "GeoJSON geometry of the mountain group",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "MultiPolygon"
+                                                },
+                                                "coordinates": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "number",
+                                                            "format": "float"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Mountain group not found"
+                    }
+                }
+            }
         }
     },
     "components": {
