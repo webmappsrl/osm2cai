@@ -1584,6 +1584,90 @@
                     }
                 }
             }
+        },
+        "/api/v2/mitur_abruzzo/region/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Region by ID",
+                "description": "Returns a single region, including mountain groups and region geometry, by ID.",
+                "operationId": "getRegionById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the region to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Region Name"
+                                                },
+                                                "mountain_groups": {
+                                                    "type": "object",
+                                                    "example": {
+                                                        "1": "2022-12-03 12:34:25",
+                                                        "2": "2023-01-15 09:30:00",
+                                                        "3": "2023-02-20 14:45:10"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "description": "GeoJSON geometry of the region",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "MultiPolygon"
+                                                },
+                                                "coordinates": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "number",
+                                                            "format": "float"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Region not found"
+                    }
+                }
+            }
         }
     },
     "components": {
