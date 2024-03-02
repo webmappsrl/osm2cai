@@ -1791,6 +1791,82 @@
                     }
                 }
             }
+        },
+        "/api/v2/mitur_abruzzo/hiking_route/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Hiking route by ID",
+                "description": "Returns a single hiking route by ID.",
+                "operationId": "getMiturAbruzzoHikingRouteById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the hiking route to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "ref": {
+                                                    "type": "string",
+                                                    "example": "T001"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "description": "GeoJSON geometry of the hiking route",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "LineString"
+                                                },
+                                                "coordinates": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "number",
+                                                            "format": "float"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Hiking route not found"
+                    }
+                }
+            }
         }
     },
     "components": {
