@@ -99,16 +99,19 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $route_cai->geometry_osm = $service->geometryTo4326Srid($route_osm->geom);
 
             if($route_cai->osm2cai_status == 4) {
+                $route_cai->is_syncing = true;
                 $route_cai->save();
                 $this->info("Route has status {$route_cai->osm2cai_status }: SYNC only osm field");
                 return;
             }
 
             $route_cai->setOsm2CaiStatus();
+            $route_cai->is_syncing = true;
             $route_cai->save();
             $this->info("Status set to:{$route_cai->osm2cai_status} cai_scale:{$route_cai->cai_scale_osm} source:{$route_cai->source_osm}");
 
             $route_cai->copyFromOsm2Cai();
+            $route_cai->is_syncing = true;
             $route_cai->save();
             $route_cai->computeAndSetTechInfo();
             $route_cai->computeAndSetTerritorialUnits();
