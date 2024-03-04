@@ -35,6 +35,7 @@ class HikingRoute extends Model
 
     protected $fillable = [
         'relation_id',
+        'geometry',
         'ref_osm', 'old_ref_osm', 'source_osm', 'source_ref_osm', 'survey_date_osm', 'name_osm', 'rwn_osm', 'rwn_name', 'ref_REI_osm',
         'tags_osm', 'geometry_osm',
         'cai_scale_osm', 'from_osm', 'to_osm', 'osmc_symbol_osm', 'network_osm', 'roundtrip_osm', 'symbol_osm', 'symbol_it_osm',
