@@ -12,6 +12,8 @@ class MountainGroups extends Model
 {
     use HasFactory,  GeojsonableTrait, GeoIntersectTrait;
 
+    protected $fillable = ['name', 'description', 'updated_at', 'geometry'];
+
     public function regions()
     {
         return $this->belongsToMany(Region::class, 'mountain_groups_region', 'mountain_group_id', 'region_id');
