@@ -88,14 +88,10 @@ trait GeoIntersectTrait
     public function getGeometry(): array
     {
         $model = $this;
-        $geom_s = $model
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry) as geom")
-            )
-            ->first()
-            ->geom;
-        $geom = json_decode($geom_s, TRUE);
+        $geometryQuery = 'SELECT ST_AsGeoJSON(geometry) as geom FROM ' . $model->getTable() . ' WHERE id = ' . $model->id;
+        $geom = DB::select($geometryQuery)[0]->geom;
 
-        return $geom;
+
+        return json_decode($geom, true);
     }
 }
