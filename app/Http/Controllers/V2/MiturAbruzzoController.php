@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\V2;
 
+use App\Models\EcPoi;
 use App\Models\Region;
+use App\Models\CaiHuts;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Models\MountainGroups;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Section;
 
 class MiturAbruzzoController extends Controller
 {
@@ -111,39 +114,23 @@ class MiturAbruzzoController extends Controller
      *                     example={"1": "2022-12-03 12:34:25", "2": "2023-01-15 09:30:00", "3": "2023-02-20 14:45:10"}
      *                 )
      *             ),
-     *             @OA\Property(
-     *                 property="geometry",
-     *                 description="GeoJSON geometry of the region",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="type",
-     *                     type="string",
-     *                     example="MultiPolygon"
+     *               @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
+     *                      @OA\Property( property="coordinates", type="object",  description="region coordinates (WGS84)")
      *                 ),
-     *                 @OA\Property(
-     *                     property="coordinates",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="array",
-     *                         @OA\Items(
-     *                             type="number",
-     *                             format="float",
-     *                         )
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Region not found"
-     *     )
+     *               example={"type":"Feature","properties":{"id":1,"name":"Abruzzo","mountain_groups":{"1":"2022-12-03 12:34:25","2":"2023-01-15 09:30:00","3":"2023-02-20 14:45:10"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *        )
+     *   ),
+     *  @OA\Response(
+     *    response=404,
+     *  description="Region not found"
+     * )
      * )
      */
     public function miturAbruzzoRegionById($id)
     {
 
-        $region = Region::find($id);
+        $region = Region::findOrfail($id);
 
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
@@ -273,40 +260,64 @@ class MiturAbruzzoController extends Controller
      *                     }
      *                 )
      *             ),
-     *             @OA\Property(
-     *                 property="geometry",
-     *                 description="GeoJSON geometry of the mountain group",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="type",
-     *                     type="string",
-     *                     example="MultiPolygon"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="coordinates",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="array",
-     *                         @OA\Items(
-     *                             type="number",
-     *                             format="float",
-     *                         )
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Mountain group not found"
-     *     )
+     *             @OA\Property(property="geometry", type="object",
+     *                     @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
+     *                    @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
+     *                ),
+     * example={
+     *"type": "Feature",
+     *"properties": {
+     *   "id": 406,
+     *  "name": "Nodo della Scoffera - Gruppo del Monte Ramaceto",
+     * "hiking_routes": {
+     *    "201": "2021-11-03T09:36:41+00:00"
+     *},
+     *"huts": {
+     *   "202": "2021-11-03T09:36:41+00:00"
+     *},
+     *"pois": {
+     *   "203": "2021-11-03T09:36:41+00:00"
+     *},
+     *"sections": {
+     *   "501": "2022-12-03 12:34:25",
+     *  "502": "2023-01-15 09:30:00",
+     * "503": "2023-02-20 14:45:10"
+     *}
+     *},
+     *"geometry": {
+     *   "type": "MultiPolygon",
+     *  "coordinates": {
+     *     {
+     *        {
+     *           {
+     *              10.4495294,
+     *             43.7615252
+     *        },
+     *       {
+     *          10.4495998,
+     *         43.7615566
+     *    },
+     *   {
+     *      10.4495294,
+     *     43.7615252
+     *}
+     *}
+     *}
+     *}
+     *}
+     *}
+     *       ),
+     *  ),
+     * @OA\Response(
+     *  response=404,
+     * description="Mountain group not found"
+     * )
      * )
      */
-
     public function miturAbruzzoMountainGroupById($id)
     {
         //get the mountain group by id
-        $mountainGroup = MountainGroups::find($id);
+        $mountainGroup = MountainGroups::findOrfail($id);
 
         //get the hiking routes that intersect with the mountain group geometry
         $hikingRoutes = $mountainGroup->getHikingRoutesIntersecting();
@@ -392,33 +403,18 @@ class MiturAbruzzoController extends Controller
      *                     example="T001"
      *                 )
      *             ),
-     *             @OA\Property(
-     *                 property="geometry",
-     *                 description="GeoJSON geometry of the hiking route",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="type",
-     *                     type="string",
-     *                     example="LineString"
+     
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Linestring, MultilineString, etc."),
+     *                      @OA\Property( property="coordinates", type="object",  description="hut coordinates (WGS84)")
      *                 ),
-     *                 @OA\Property(
-     *                     property="coordinates",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="array",
-     *                         @OA\Items(
-     *                             type="number",
-     *                             format="float",
-     *                         )
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Hiking route not found"
-     *     )
+     *                example={"type":"Feature","properties":{"id":1,"ref":"T001"},"geometry":{"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *            )
+     *        ),
+     *    @OA\Response(
+     *       response=404,
+     *      description="Hiking route not found"
+     *   )
      * )
      */
     public function miturAbruzzoHikingRouteById($id)
@@ -434,6 +430,233 @@ class MiturAbruzzoController extends Controller
         $properties['ref'] = $hikingRoute->ref;
 
         $geometry = $hikingRoute->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        return response()->json($geojson);
+    }
+    /**
+     * @OA\Get(
+     *    path="/api/v2/mitur_abruzzo/hut/{id}",
+     *   operationId="getMiturAbruzzoHutById",
+     *  tags={"Api V2 - MITUR Abruzzo"},
+     * summary="Get Hut by ID",
+     * description="Returns a single hut by ID.",
+     * @OA\Parameter(
+     *    name="id",
+     *  in="path",
+     * description="ID of the hut to return",
+     * required=true,
+     * @OA\Schema(
+     *   type="integer",
+     * format="int64"
+     * )
+     * ),
+     * @OA\Response(
+     *   response=200,
+     * description="Successful operation",
+     * @OA\JsonContent(
+     *  type="object",
+     * @OA\Property(
+     * property="type",
+     * type="string",
+     * example="Feature"
+     * ),
+     * @OA\Property(
+     * property="properties",
+     * type="object",
+     * @OA\Property(
+     * property="id",
+     * type="integer",
+     * example=1
+     * ),
+     * @OA\Property(
+     * property="name",
+     * type="string",
+     * example="Rifugio Rossi"
+     * )
+     * ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
+     *                      @OA\Property( property="coordinates", type="object",  description="hut coordinates (WGS84)")
+     *                 ),
+     * example={"type":"Feature","properties":{"id":1,"name":"Rifugio Rossi"},"geometry":{"type":"Point","coordinates":{13.399,42.123}}}
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Hut not found"
+     * )
+     * )
+     */
+    public function miturAbruzzoHutById($id)
+    {
+        $hut = CaiHuts::findOrFail($id);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $hut->id;
+        $properties['name'] = $hut->name;
+
+        $geometry = $hut->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        return response()->json($geojson);
+    }
+    /**
+     * @OA\Get(
+     *     path="/api/v2/mitur_abruzzo/poi/{id}",
+     *     operationId="getMiturAbruzzoPoiById",
+     *     tags={"Api V2 - MITUR Abruzzo"},
+     *     summary="Get Poi by ID",
+     *     description="Returns a single poi by ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the poi to return",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="Feature"
+     *             ),
+     *             @OA\Property(
+     *                 property="properties",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Monte Rosa"
+     *                 )
+     *             ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
+     *                      @OA\Property( property="coordinates", type="object",  description="poi coordinates (WGS84)")
+     *                 ),
+     *                example={"type":"Feature","properties":{"id":1,"name":"Poi Name"},"geometry":{"type":"Point","coordinates":{102.2,2.4}}}
+     *            )
+     *        ),
+     *    @OA\Response(
+     *       response=404,
+     *      description="Poi not found"
+     *   )
+     * )
+     */
+    public function miturAbruzzoPoiById($id)
+    {
+        $poi = EcPoi::findOrFail($id);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $poi->id;
+        $properties['name'] = $poi->name;
+
+        $geometry = $poi->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        return response()->json($geojson);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v2/mitur_abruzzo/section/{id}",
+     *     operationId="getMiturAbruzzoSectionById",
+     *     tags={"Api V2 - MITUR Abruzzo"},
+     *     summary="Get Section by ID",
+     *     description="Returns a single section by ID. Coordinates are hardcoded for now. Will be implemented soon.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the section to return",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="Feature"
+     *             ),
+     *             @OA\Property(
+     *                 property="properties",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Section Name"
+     *                 )
+     *             ),
+     *                 @OA\Property(property="geometry", type="object",
+     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
+     *                      @OA\Property( property="coordinates", type="object",  description="section coordinates (WGS84)")
+     *                 ),
+     *                example={"type":"Feature","properties":{"id":1,"name":"Sezione di Roma"},"geometry":{"type":"Point","coordinates":{12.4964,41.9028}}}
+     *            )
+     *        ),
+     *    @OA\Response(
+     *       response=404,
+     *      description="Section not found"
+     *   )
+     * )
+     */
+    public function miturAbruzzoSectionById($id)
+    {
+
+
+        $section = Section::findOrFail($id);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $section->id;
+        $properties['name'] = $section->name;
+
+        //todo implement when the model has the geometry 
+        // $geometry = $section->getGeometry();
+        $geometry = [
+            "type" => "Point",
+            "coordinates" => [12.4964, 41.9028]
+        ];
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
