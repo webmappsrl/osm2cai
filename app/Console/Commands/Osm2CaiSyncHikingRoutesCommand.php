@@ -115,6 +115,7 @@ class Osm2CaiSyncHikingRoutesCommand extends Command
             $route_cai->save();
             $route_cai->computeAndSetTechInfo();
             $route_cai->computeAndSetTerritorialUnits();
+            $route_cai->is_syncing = true;
             $route_cai->save();
         } catch (\Exception $e) {
             Log::channel('osm2caisync')->error("An error occurred: {$e->getMessage()}");
