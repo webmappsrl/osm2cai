@@ -1638,27 +1638,47 @@
                                             "type": "object"
                                         },
                                         "geometry": {
-                                            "description": "GeoJSON geometry of the region",
                                             "properties": {
                                                 "type": {
-                                                    "type": "string",
-                                                    "example": "MultiPolygon"
+                                                    "description": "Postgis geometry type: MultiPolygon, etc.",
+                                                    "type": "string"
                                                 },
                                                 "coordinates": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "number",
-                                                            "format": "float"
-                                                        }
-                                                    }
+                                                    "description": "region coordinates (WGS84)",
+                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
                                         }
                                     },
                                     "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 1,
+                                        "name": "Abruzzo",
+                                        "mountain_groups": {
+                                            "1": "2022-12-03 12:34:25",
+                                            "2": "2023-01-15 09:30:00",
+                                            "3": "2023-02-20 14:45:10"
+                                        }
+                                    },
+                                    "geometry": {
+                                        "type": "MultiPolygon",
+                                        "coordinates": [
+                                            [
+                                                [
+                                                    10.4495294,
+                                                    43.7615252
+                                                ],
+                                                [
+                                                    10.4495998,
+                                                    43.7615566
+                                                ]
+                                            ]
+                                        ]
+                                    }
                                 }
                             }
                         }
@@ -1764,27 +1784,62 @@
                                             "type": "object"
                                         },
                                         "geometry": {
-                                            "description": "GeoJSON geometry of the mountain group",
                                             "properties": {
                                                 "type": {
-                                                    "type": "string",
-                                                    "example": "MultiPolygon"
+                                                    "description": "Postgis geometry type: MultiPolygon, etc.",
+                                                    "type": "string"
                                                 },
                                                 "coordinates": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "number",
-                                                            "format": "float"
-                                                        }
-                                                    }
+                                                    "description": "mountain group coordinates (WGS84)",
+                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
                                         }
                                     },
                                     "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 406,
+                                        "name": "Nodo della Scoffera - Gruppo del Monte Ramaceto",
+                                        "hiking_routes": {
+                                            "201": "2021-11-03T09:36:41+00:00"
+                                        },
+                                        "huts": {
+                                            "202": "2021-11-03T09:36:41+00:00"
+                                        },
+                                        "pois": {
+                                            "203": "2021-11-03T09:36:41+00:00"
+                                        },
+                                        "sections": {
+                                            "501": "2022-12-03 12:34:25",
+                                            "502": "2023-01-15 09:30:00",
+                                            "503": "2023-02-20 14:45:10"
+                                        }
+                                    },
+                                    "geometry": {
+                                        "type": "MultiPolygon",
+                                        "coordinates": [
+                                            [
+                                                [
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ],
+                                                    [
+                                                        10.4495998,
+                                                        43.7615566
+                                                    ],
+                                                    [
+                                                        10.4495294,
+                                                        43.7615252
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    }
                                 }
                             }
                         }
@@ -1840,33 +1895,297 @@
                                             "type": "object"
                                         },
                                         "geometry": {
-                                            "description": "GeoJSON geometry of the hiking route",
                                             "properties": {
                                                 "type": {
-                                                    "type": "string",
-                                                    "example": "LineString"
+                                                    "description": "Postgis geometry type: Linestring, MultilineString, etc.",
+                                                    "type": "string"
                                                 },
                                                 "coordinates": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "number",
-                                                            "format": "float"
-                                                        }
-                                                    }
+                                                    "description": "hut coordinates (WGS84)",
+                                                    "type": "object"
                                                 }
                                             },
                                             "type": "object"
                                         }
                                     },
                                     "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 1,
+                                        "ref": "T001"
+                                    },
+                                    "geometry": {
+                                        "type": "MultiLineString",
+                                        "coordinates": [
+                                            [
+                                                [
+                                                    10.4495294,
+                                                    43.7615252
+                                                ],
+                                                [
+                                                    10.4495998,
+                                                    43.7615566
+                                                ]
+                                            ]
+                                        ]
+                                    }
                                 }
                             }
                         }
                     },
                     "404": {
                         "description": "Hiking route not found"
+                    }
+                }
+            }
+        },
+        "/api/v2/mitur_abruzzo/hut/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Hut by ID",
+                "description": "Returns a single hut by ID.",
+                "operationId": "getMiturAbruzzoHutById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the hut to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Rifugio Rossi"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry type: Point",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "hut coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 1,
+                                        "name": "Rifugio Rossi"
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [
+                                            13.399,
+                                            42.123
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Hut not found"
+                    }
+                }
+            }
+        },
+        "/api/v2/mitur_abruzzo/poi/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Poi by ID",
+                "description": "Returns a single poi by ID.",
+                "operationId": "getMiturAbruzzoPoiById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the poi to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Monte Rosa"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry type: Point",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "poi coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 1,
+                                        "name": "Poi Name"
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [
+                                            102.2,
+                                            2.4
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Poi not found"
+                    }
+                }
+            }
+        },
+        "/api/v2/mitur_abruzzo/section/{id}": {
+            "get": {
+                "tags": [
+                    "Api V2 - MITUR Abruzzo"
+                ],
+                "summary": "Get Section by ID",
+                "description": "Returns a single section by ID. Coordinates are hardcoded for now. Will be implemented soon.",
+                "operationId": "getMiturAbruzzoSectionById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the section to return",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "example": "Feature"
+                                        },
+                                        "properties": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Section Name"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "geometry": {
+                                            "properties": {
+                                                "type": {
+                                                    "description": "Postgis geometry type: Point",
+                                                    "type": "string"
+                                                },
+                                                "coordinates": {
+                                                    "description": "section coordinates (WGS84)",
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "type": "Feature",
+                                    "properties": {
+                                        "id": 1,
+                                        "name": "Sezione di Roma"
+                                    },
+                                    "geometry": {
+                                        "type": "Point",
+                                        "coordinates": [
+                                            12.4964,
+                                            41.9028
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Section not found"
                     }
                 }
             }
