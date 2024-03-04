@@ -1,5 +1,26 @@
 # Changelog
 
+## [233.16.0](https://github.com/webmappsrl/osm2cai/compare/v233.15.1...v233.16.0) (2024-03-04)
+
+
+### Features
+
+* added mitur abruzzo apis for mountain groups ([02f0f0f](https://github.com/webmappsrl/osm2cai/commit/02f0f0fa8587b2012e526aad3134d2ed5a994484))
+* added mitur abruzzo hiking routes apis ([1371ff9](https://github.com/webmappsrl/osm2cai/commit/1371ff9626ea150151898a52a45922e6f25f9ad4))
+* added mitur single region api ([94c163b](https://github.com/webmappsrl/osm2cai/commit/94c163bca12617c53da964a528facb651786ad24))
+* added swagger documentation for mitur region list ([73368b2](https://github.com/webmappsrl/osm2cai/commit/73368b256e21e00493da67e84cf6991149d584c1))
+* api endpoints for mitur abruzzo and controller ([6d5c1f0](https://github.com/webmappsrl/osm2cai/commit/6d5c1f01b4366a979ff85da479f9b929377eaa95))
+* created geoIntersect trait ([73ed5c4](https://github.com/webmappsrl/osm2cai/commit/73ed5c484012646ca8de479a7b8205902888d4e1))
+* implemented api for mitur huts regions and sections ([6e5f513](https://github.com/webmappsrl/osm2cai/commit/6e5f513f63b2e1a185dbaf31ab6e903799041eb7))
+* region_list api implemented ([d29f174](https://github.com/webmappsrl/osm2cai/commit/d29f174e166043247c427dcf44144c2c359d6bae))
+* tests for mitur abruzzo api ([4a9ff1a](https://github.com/webmappsrl/osm2cai/commit/4a9ff1a5031a7b5e023b1ad0b155a5174da9603c))
+* updated timestamp documentation in swagger ([a0d6d51](https://github.com/webmappsrl/osm2cai/commit/a0d6d510059355f94b98abeabecc805c4db65a00))
+
+
+### Bug Fixes
+
+* fixed hiking route api ([0d22403](https://github.com/webmappsrl/osm2cai/commit/0d224035c45a2206dd426fb7bbad1dfa3a323a93))
+
 ## [233.15.1](https://github.com/webmappsrl/osm2cai/compare/v233.15.0...v233.15.1) (2024-02-27)
 
 
