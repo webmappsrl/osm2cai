@@ -3,12 +3,20 @@
 namespace App\Nova\Filters;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Filters\BooleanFilter;
+use Laravel\Nova\Filters\Filter;
 
-class GeometrySyncFilter extends BooleanFilter
+class SDAFilter extends Filter
 {
 
-    public $name = 'Geometria Sincronizzata';
+    public $name = 'SDA';
+
+    /**
+     * The filter's component.
+     *
+     * @var string
+     */
+    public $component = 'select-filter';
+
     /**
      * Apply the filter to the given query.
      *
@@ -17,12 +25,9 @@ class GeometrySyncFilter extends BooleanFilter
      * @param  mixed  $value
      * @return \Illuminate\Database\Eloquent\Builder
      */
-
-    public $component = 'select-filter';
-
     public function apply(Request $request, $query, $value)
     {
-        return $query->where('geometry_sync', $value);
+        return $query->where('osm2cai_status', $value);
     }
 
     /**
@@ -34,18 +39,10 @@ class GeometrySyncFilter extends BooleanFilter
     public function options(Request $request)
     {
         return [
-            'Si' => 1,
-            'No' => 0
+            'SDA1' => 1,
+            'SDA2' => 2,
+            'SDA3' => 3,
+            'SDA4' => 4,
         ];
-    }
-
-    /**
-     * The default value of the filter.
-     *
-     * @var string
-     */
-    public function default()
-    {
-        return "";
     }
 }
