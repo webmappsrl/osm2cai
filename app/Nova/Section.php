@@ -216,6 +216,9 @@ class Section extends Resource
             }
 
             $tot = array_sum($numbers);
+            if (count($hr) > 0) {
+                $hikingRoutesTotKm = number_format($hr->sum('distance'), 2, ',', '.');
+            }
 
             $cards = [
                 (new TextCard())->width('1/4')
@@ -242,8 +245,17 @@ class Section extends Resource
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')
                     ->headingAsHtml()
                     ->onlyOnDetail(),
-                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail(),
-                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail(),
+                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail()->width('1/3'),
+                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail()->width('1/3'),
+                (new TextCard())->width('1/6')
+                    ->heading($tot)
+                    ->text('Totale Percorsi')
+                    ->onlyOnDetail(),
+                (new TextCard())->width('1/6')
+                    ->heading($hikingRoutesTotKm)
+                    ->text('Totale Chilometri')
+                    ->onlyOnDetail(),
+
             ];
             return $cards;
         }
