@@ -10,10 +10,6 @@ class CaiHutsPolicy
 {
     use HandlesAuthorization;
 
-    public function before()
-    {
-        return true;
-    }
 
     /**
      * Determine whether the user can view any models.
@@ -23,7 +19,7 @@ class CaiHutsPolicy
      */
     public function viewAny(User $user)
     {
-        //
+          return true;
     }
 
     /**
@@ -35,7 +31,7 @@ class CaiHutsPolicy
      */
     public function view(User $user, CaiHuts $caiHuts)
     {
-        //
+          return true;
     }
 
     /**
@@ -46,7 +42,7 @@ class CaiHutsPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->is_administrator || $user->getTerritorialRole() == 'national';
     }
 
     /**
@@ -58,7 +54,7 @@ class CaiHutsPolicy
      */
     public function update(User $user, CaiHuts $caiHuts)
     {
-        //
+          return true;
     }
 
     /**
@@ -70,7 +66,7 @@ class CaiHutsPolicy
      */
     public function delete(User $user, CaiHuts $caiHuts)
     {
-        //
+          return true;
     }
 
     /**
@@ -82,7 +78,7 @@ class CaiHutsPolicy
      */
     public function restore(User $user, CaiHuts $caiHuts)
     {
-        //
+          return true;
     }
 
     /**
@@ -94,6 +90,6 @@ class CaiHutsPolicy
      */
     public function forceDelete(User $user, CaiHuts $caiHuts)
     {
-        //
+          return true;
     }
 }
