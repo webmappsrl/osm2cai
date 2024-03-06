@@ -142,6 +142,7 @@ class SAL extends Dashboard
     <td class='px-4 py-2'>{$sumMountainGroupsEcPois}</td>
     <td class='px-4 py-2'> {$sumMountainGroupsHuts}</td>
     <td class='px-4 py-2'>{$sumMountainGroupsPoiTotal}</td>
+    <td class='px-4 py-2'>{$sumMountainGroupsSections}</td>
 </tr>";
 
         $html .= '</tbody></table>';
