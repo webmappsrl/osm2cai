@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Region;
 use App\Models\MountainGroups;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Spatie\SchemaOrg\HinduTemple;
 
@@ -95,6 +96,8 @@ class AssociateMountainGroupsToRegions extends Command
                 throw new \Exception("Region not found: {$regionName}");
             }
         }
+        //call the command to fill aggregated_data in the mountain_groups table for mitur abruzzo dashboard
+        Artisan::call('osm2cai:associate-to-mountain-groups');
     }
 
     protected function associateMountainGroupsToRegion($region)
@@ -112,6 +115,14 @@ class AssociateMountainGroupsToRegions extends Command
         }
 
         foreach ($mountainGroups as $mountainGroup) {
+            //if the mountain group is already associated to the region, skip
+            if (DB::table('mountain_groups_region')
+                ->where('mountain_group_id', $mountainGroup->id)
+                ->where('region_id', $region->id)
+                ->exists()
+            ) {
+                continue;
+            }
             DB::table(('mountain_groups_region'))
                 ->insert([
                     'mountain_group_id' => $mountainGroup->id,
