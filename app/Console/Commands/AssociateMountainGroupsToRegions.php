@@ -19,7 +19,7 @@ class AssociateMountainGroupsToRegions extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:associate-to-regions';
+    protected $signature = 'osm2cai:associate-to-regions {--all}';
     protected $isFromNova;
 
     /**
@@ -38,17 +38,16 @@ class AssociateMountainGroupsToRegions extends Command
 
     public function handle()
     {
+        $associateAll = $this->option('all');
 
         //create an array with all the regions name taken from the database and add the option "all"
         $regions = Region::all();
         $regionNames = $regions->pluck('name')->toArray();
         array_unshift($regionNames, 'all');
-        $resource = $this->isFromNova ? 'all' : $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
-        $regionName = $this->isFromNova ? 'all' : $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
-
+        $resource = $this->isFromNova || $associateAll ? 'all' : $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
+        $regionName = $this->isFromNova || $associateAll ? 'all' : $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
 
         if ($regionName === 'all') {
-            $regions = Region::all();
             foreach ($regions as $region) {
 
                 switch ($resource) {
@@ -115,19 +114,23 @@ class AssociateMountainGroupsToRegions extends Command
         }
 
         foreach ($mountainGroups as $mountainGroup) {
-            //if the mountain group is already associated to the region, skip
-            if (DB::table('mountain_groups_region')
-                ->where('mountain_group_id', $mountainGroup->id)
-                ->where('region_id', $region->id)
-                ->exists()
-            ) {
-                continue;
+            //first delete all duplicated records for the current mountain group and region
+            while (count(DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->where('region_id', $region->id)->get()) > 1) {
+                DB::table('mountain_groups_region')
+                    ->where('mountain_group_id', $mountainGroup->id)
+                    ->where('region_id', $region->id)
+                    ->limit(1)
+                    ->delete();
             }
-            DB::table(('mountain_groups_region'))
-                ->insert([
-                    'mountain_group_id' => $mountainGroup->id,
-                    'region_id' => $region->id
-                ]);
+            //then insert the record if it does not exist
+
+            if (DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->count() < 1) {
+                DB::table(('mountain_groups_region'))
+                    ->insert([
+                        'mountain_group_id' => $mountainGroup->id,
+                        'region_id' => $region->id
+                    ]);
+            }
         }
     }
 
