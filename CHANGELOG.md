@@ -1,5 +1,14 @@
 # Changelog
 
+## [233.16.1](https://github.com/webmappsrl/osm2cai/compare/v233.16.0...v233.16.1) (2024-03-12)
+
+
+### Bug Fixes
+
+* added $route_cai-&gt;is_syncing = true; ([a97e5dc](https://github.com/webmappsrl/osm2cai/commit/a97e5dcfb9f6b7dce75e0cd701d956f9da0c5fe1))
+* added $route_cai-&gt;is_syncing = true; to all ([1a081c5](https://github.com/webmappsrl/osm2cai/commit/1a081c58103c006609b7fdf4de7f55a84c2aad4f))
+* fixed relation table for mountain groups and regions ([7756b98](https://github.com/webmappsrl/osm2cai/commit/7756b981d5a3973e51953793924379085ecd2348))
+
 ## [233.16.0](https://github.com/webmappsrl/osm2cai/compare/v233.15.1...v233.16.0) (2024-03-04)
 
 
