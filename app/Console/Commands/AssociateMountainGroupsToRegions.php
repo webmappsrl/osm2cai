@@ -38,7 +38,7 @@ class AssociateMountainGroupsToRegions extends Command
 
     public function handle()
     {
-        $associateAll = $this->option('all');
+        $this->isFromNova ? $associateAll = true : $associateAll = $this->option('all');
 
         //create an array with all the regions name taken from the database and add the option "all"
         $regions = Region::all();
