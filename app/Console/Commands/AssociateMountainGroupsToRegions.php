@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Region;
 use App\Models\MountainGroups;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Spatie\SchemaOrg\HinduTemple;
 
@@ -18,7 +19,7 @@ class AssociateMountainGroupsToRegions extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:associate-to-regions';
+    protected $signature = 'osm2cai:associate-to-regions {--all}';
     protected $isFromNova;
 
     /**
@@ -37,17 +38,16 @@ class AssociateMountainGroupsToRegions extends Command
 
     public function handle()
     {
+        $associateAll = $this->option('all');
 
         //create an array with all the regions name taken from the database and add the option "all"
         $regions = Region::all();
         $regionNames = $regions->pluck('name')->toArray();
         array_unshift($regionNames, 'all');
-        $resource = $this->isFromNova ? 'all' : $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
-        $regionName = $this->isFromNova ? 'all' : $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
-
+        $resource = $this->isFromNova || $associateAll ? 'all' : $this->choice('Which resource do you want to associate to regions?', ['mountain_groups', 'ec_pois', 'huts', 'all'], 'all');
+        $regionName = $this->isFromNova || $associateAll ? 'all' : $this->choice('Which region do you want to associate the resource to?', $regionNames, 'all');
 
         if ($regionName === 'all') {
-            $regions = Region::all();
             foreach ($regions as $region) {
 
                 switch ($resource) {
@@ -67,6 +67,9 @@ class AssociateMountainGroupsToRegions extends Command
                         throw new \Exception("Resource not found: {$resource}");
                         break;
                 }
+
+                //calculate the aggregated data for the region to fill the mitur-abruzzo dashboard
+                $this->calculateAggregatedData($region);
             }
         } else {
             $region = Region::where('name', $regionName)->first();
@@ -85,10 +88,15 @@ class AssociateMountainGroupsToRegions extends Command
                         throw new \Exception("Resource not found: {$resource}");
                         break;
                 }
+
+                //calculate the aggregated data for the region to fill the mitur-abruzzo dashboard
+                $this->calculateAggregatedData($region);
             } else {
                 throw new \Exception("Region not found: {$regionName}");
             }
         }
+        //call the command to fill aggregated_data in the mountain_groups table for mitur abruzzo dashboard
+        Artisan::call('osm2cai:associate-to-mountain-groups');
     }
 
     protected function associateMountainGroupsToRegion($region)
@@ -106,11 +114,23 @@ class AssociateMountainGroupsToRegions extends Command
         }
 
         foreach ($mountainGroups as $mountainGroup) {
-            DB::table(('mountain_groups_region'))
-                ->insert([
-                    'mountain_group_id' => $mountainGroup->id,
-                    'region_id' => $region->id
-                ]);
+            //first delete all duplicated records for the current mountain group and region
+            while (count(DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->where('region_id', $region->id)->get()) > 1) {
+                DB::table('mountain_groups_region')
+                    ->where('mountain_group_id', $mountainGroup->id)
+                    ->where('region_id', $region->id)
+                    ->limit(1)
+                    ->delete();
+            }
+            //then insert the record if it does not exist
+
+            if (DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->count() < 1) {
+                DB::table(('mountain_groups_region'))
+                    ->insert([
+                        'mountain_group_id' => $mountainGroup->id,
+                        'region_id' => $region->id
+                    ]);
+            }
         }
     }
 
@@ -163,5 +183,41 @@ class AssociateMountainGroupsToRegions extends Command
         $this->associateMountainGroupsToRegion($region);
         $this->associateEcPoisToRegion($region);
         $this->associateHutsToRegion($region);
+    }
+
+    /**
+     * Calculate the aggregated data for the region to fill the mitur-abruzzo dashboard
+     * @param Region $region
+     * @return void
+     */
+    protected function calculateAggregatedData($region)
+    {
+        $mountainGroupCount = DB::table('mountain_groups_region')
+            ->where('region_id', $region->id)
+            ->count();
+        $ecPoisCount = DB::table('ec_pois')
+            ->where('region_id', $region->id)
+            ->count();
+        $hikingRoutesCount = DB::table('hiking_route_region')
+            ->where('region_id', $region->id)
+            ->count();
+        $sectionsCount = DB::table('sections')
+            ->where('region_id', $region->id)
+            ->count();
+        $caiHutsCount = DB::table('cai_huts')
+            ->where('region_id', $region->id)
+            ->count();
+
+        $aggregatedData = [
+            'mountain_groups_count' => $mountainGroupCount,
+            'ec_pois_count' => $ecPoisCount,
+            'hiking_routes_count' => $hikingRoutesCount,
+            'poi_total' => $ecPoisCount + $hikingRoutesCount,
+            'sections_count' => $sectionsCount,
+            'cai_huts_count' => $caiHutsCount
+        ];
+
+        $region->aggregated_data = $aggregatedData;
+        $region->save();
     }
 }

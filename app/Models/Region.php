@@ -17,7 +17,7 @@ class Region extends TerritorialUnit
     use HasFactory, SallableTrait, OwnableModelTrait, CsvableModelTrait;
 
     protected $fillable = [
-        'num_expected', 'name', 'code', 'geometry', 'updated_at', 'created_at'
+        'num_expected', 'name', 'code', 'geometry', 'updated_at', 'created_at', 'aggregated_data'
     ];
 
     public function provinces()

@@ -55,6 +55,8 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use App\Nova\Filters\HikingRoutesSectionFilter;
+use App\Nova\Filters\SDAFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
 
 class HikingRoute extends Resource
@@ -613,6 +615,7 @@ class HikingRoute extends Resource
                 (new IssueStatusFilter()),
                 (new HrCorrectGeometryFilter()),
                 (new CaiHutsHRFilter()),
+                (new SDAFilter()),
             ];
         }
     }

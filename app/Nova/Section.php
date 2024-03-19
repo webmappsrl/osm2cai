@@ -169,7 +169,17 @@ class Section extends Resource
      */
     public function cards(Request $request)
     {
+        $exploreBaseUrl = '/resources/hiking-routes/lens/hiking-routes-status-';
         $sectionId = $request->resourceId;
+        $filters = json_encode([
+            ["class" => "App\\Nova\\Filters\\HikingRoutesRegionFilter", "value" => ""],
+            ["class" => "App\\Nova\\Filters\\HikingRoutesProvinceFilter", "value" => ""],
+            ["class" => "App\\Nova\\Filters\\HikingRoutesAreaFilter", "value" => ""],
+            ["class" => "App\\Nova\\Filters\\HikingRoutesSectorFilter", "value" => ""],
+            ["class" => "App\\Nova\\Filters\\HikingRoutesSectionFilter", "value" => strval($sectionId)],
+        ]);
+        $base64Filters = base64_encode($filters);
+
         $section = ModelsSection::where('id', $sectionId)->first();
         $hr = $section ?  $section->hikingRoutes()->get() : [];
         if (!Auth::user()->is_administrator && Auth::user()->section_id != null) {
@@ -186,10 +196,10 @@ class Section extends Resource
                     ->onlyOnDetail()
                     ->forceFullWidth()
                     ->heading(\auth()->user()->region->name),
-                $this->_getSdaCard(1, $numbers[1]),
-                $this->_getSdaCard(2, $numbers[2]),
-                $this->_getSdaCard(3, $numbers[3]),
-                $this->_getSdaCard(4, $numbers[4]),
+                $this->_getSdaCard(1, $numbers[1], $exploreBaseUrl, $base64Filters),
+                $this->_getSdaCard(2, $numbers[2], $exploreBaseUrl, $base64Filters),
+                $this->_getSdaCard(3, $numbers[3], $exploreBaseUrl, $base64Filters),
+                $this->_getSdaCard(4, $numbers[4], $exploreBaseUrl, $base64Filters),
                 (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail(),
                 (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail(),
             ];
@@ -209,6 +219,11 @@ class Section extends Resource
             $numbers[3] = 0;
             $numbers[4] = 0;
 
+            $exploreUrlSDA1 = url($exploreBaseUrl . '1-lens') . '?hiking-routes_page=1&hiking-routes_filter=' . $base64Filters;
+            $exploreUrlSDA2 = url($exploreBaseUrl . '2-lens') . '?hiking-routes_page=1&hiking-routes_filter=' . $base64Filters;
+            $exploreUrlSDA3 = url($exploreBaseUrl . '3-lens') . '?hiking-routes_page=1&hiking-routes_filter=' . $base64Filters;
+            $exploreUrlSDA4 = url($exploreBaseUrl . '4-lens') . '?hiking-routes_page=1&hiking-routes_filter=' . $base64Filters;
+
             if (count($values) > 0) {
                 foreach ($values as $value) {
                     $numbers[$value->osm2cai_status] = $value->num;
@@ -219,42 +234,55 @@ class Section extends Resource
 
             $cards = [
                 (new TextCard())->width('1/4')
-                    ->text('<div>#sda 1 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-1-lens') . '">[Esplora]</a></div>')
+                    ->text('<div>#sda 1 <a href="' . $exploreUrlSDA1 . '">[Esplora]</a></div>')
                     ->textAsHtml()
                     ->onlyOnDetail()
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(1) . '; color: white; font-size: xx-large">' . $numbers[1] . '</div>')
                     ->headingAsHtml(),
                 (new TextCard())->width('1/4')
-                    ->text('<div>#sda 2 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-2-lens') . '">[Esplora]</a></div>')
+                    ->text('<div>#sda 2 <a href="' . $exploreUrlSDA2 . '">[Esplora]</a></div>')
                     ->textAsHtml()
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(2) . '; color: white; font-size: xx-large">' . $numbers[2] . '</div>')
                     ->headingAsHtml()
                     ->onlyOnDetail(),
                 (new TextCard())->width('1/4')
-                    ->text('<div>#sda 3 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-3-lens') . '">[Esplora]</a></div>')
+                    ->text('<div>#sda 3 <a href="' . $exploreUrlSDA3 . '">[Esplora]</a></div>')
                     ->textAsHtml()
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(3) . '; color: white; font-size: xx-large">' . $numbers[3] . '</div>')
                     ->headingAsHtml()
                     ->onlyOnDetail(),
                 (new TextCard())->width('1/4')
-                    ->text('<div>#sda 4 <a href="' . url('/resources/hiking-routes/lens/hiking-routes-status-4-lens') . '">[Esplora]</a></div>')
+                    ->text('<div>#sda 4 <a href="' . $exploreUrlSDA4 . '">[Esplora]</a></div>')
                     ->textAsHtml()
                     ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor(4) . '; color: white; font-size: xx-large">' . $numbers[4] . '</div>')
                     ->headingAsHtml()
                     ->onlyOnDetail(),
-                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail(),
-                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail(),
+                (new \App\Nova\Metrics\SectionSALPercorribilitá($hr))->onlyOnDetail()->width('1/3'),
+                (new \App\Nova\Metrics\SectionSALPercorsi($hr))->onlyOnDetail()->width('1/3'),
+                (new TextCard())->width('1/6')
+                    ->heading($tot)
+                    ->text('Totale Percorsi')
+                    ->onlyOnDetail(),
             ];
+
+            //$hr is filled only when in detail view
+            if (count($hr) > 0) {
+                $cards[] = (new TextCard())->width('1/6')
+                    ->heading(number_format($hr->sum('distance'), 2, ',', '.'))
+                    ->text('Totale km')
+                    ->onlyOnDetail();
+            }
             return $cards;
         }
     }
 
-    private function _getSdaCard(int $sda, int $num): TextCard
+    private function _getSdaCard(int $sda, int $num, string $baseUrl, string $base64Filters): TextCard
     {
+        $exploreUrlSDA = url($baseUrl . $sda . '-lens') . '?hiking-routes_page=1&hiking-routes_filter=' . $base64Filters;
 
         $path = '/resources/hiking-routes/lens/hiking-routes-status-' . $sda . '-lens';
         return (new TextCard())->width('1/4')
-            ->text('<div>#sda ' . $sda . ' <a href="' . url($path) . '">[Esplora]</a></div>')
+            ->text('<div>#sda ' . $sda . ' <a href="' . $exploreUrlSDA . '">[Esplora]</a></div>')
             ->textAsHtml()
             ->onlyOnDetail()
             ->heading('<div style="background-color: ' . Osm2CaiHelper::getSdaColor($sda) . '; color: white; font-size: xx-large">' . $num . '</div>')
