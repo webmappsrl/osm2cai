@@ -12,8 +12,8 @@ return [
     */
 
 
-    'version' => "233.16.1", // x-release-please-version
-    'release_date' => "27/02/2024",
+    'version' => "233.17.0", // x-release-please-version
+    'release_date' => "19/03/2024",
 
 
 
