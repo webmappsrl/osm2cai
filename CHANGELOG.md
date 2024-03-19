@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.16.2](https://github.com/webmappsrl/osm2cai/compare/v233.16.1...v233.16.2) (2024-03-19)
+
+
+### Bug Fixes
+
+* fixed mountain groups issue ([261a327](https://github.com/webmappsrl/osm2cai/commit/261a327cbc0cd38670d56b8afc3f760bfebf96cd))
+
 ## [233.16.1](https://github.com/webmappsrl/osm2cai/compare/v233.16.0...v233.16.1) (2024-03-12)
 
 
