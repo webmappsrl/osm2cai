@@ -22,6 +22,7 @@ class Section extends Model
         'region_id',
         'name',
         'cai_code',
+        'geometry',
     ];
 
     public function region()

@@ -2,18 +2,19 @@
 
 namespace App\Nova\Lenses;
 
+use Illuminate\Support\Arr;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Lenses\Lens;
+use Laravel\Nova\Fields\Number;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Nova\Http\Requests\LensRequest;
 use App\Nova\Filters\HikingRoutesAreaFilter;
-use App\Nova\Filters\HikingRoutesProvinceFilter;
 use App\Nova\Filters\HikingRoutesRegionFilter;
 use App\Nova\Filters\HikingRoutesSectorFilter;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Http\Requests\LensRequest;
-use Laravel\Nova\Lenses\Lens;
+use App\Nova\Filters\HikingRoutesSectionFilter;
+use App\Nova\Filters\HikingRoutesProvinceFilter;
 
 
 class HikingRoutesStatusLens extends Lens
@@ -45,7 +46,6 @@ class HikingRoutesStatusLens extends Lens
                 $query->where('osm2cai_status', static::$sda)
             ));
         }
-
     }
 
 
@@ -128,14 +128,15 @@ class HikingRoutesStatusLens extends Lens
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new HikingRoutesSectionFilter()),
             ];
-
         } else {
             return [
                 (new HikingRoutesRegionFilter()),
                 (new HikingRoutesProvinceFilter()),
                 (new HikingRoutesAreaFilter()),
                 (new HikingRoutesSectorFilter()),
+                (new HikingRoutesSectionFilter()),
             ];
         }
     }
@@ -176,7 +177,6 @@ class HikingRoutesStatus0Lens extends HikingRoutesStatusLens
     {
         return 'hiking-routes-status-0-lens';
     }
-
 }
 
 class HikingRoutesStatus1Lens extends HikingRoutesStatusLens
@@ -193,7 +193,6 @@ class HikingRoutesStatus1Lens extends HikingRoutesStatusLens
     {
         return 'hiking-routes-status-1-lens';
     }
-
 }
 
 
@@ -211,7 +210,6 @@ class HikingRoutesStatus2Lens extends HikingRoutesStatusLens
     {
         return 'hiking-routes-status-2-lens';
     }
-
 }
 
 class HikingRoutesStatus3Lens extends HikingRoutesStatusLens
@@ -228,7 +226,6 @@ class HikingRoutesStatus3Lens extends HikingRoutesStatusLens
     {
         return 'hiking-routes-status-3-lens';
     }
-
 }
 
 class HikingRoutesStatus4Lens extends HikingRoutesStatusLens
@@ -245,6 +242,4 @@ class HikingRoutesStatus4Lens extends HikingRoutesStatusLens
     {
         return 'hiking-routes-status-4-lens';
     }
-
 }
-

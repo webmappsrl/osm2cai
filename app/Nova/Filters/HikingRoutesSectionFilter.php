@@ -2,12 +2,15 @@
 
 namespace App\Nova\Filters;
 
+use App\Models\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Filters\Filter;
 
-class RegionFavoriteHikingRouteFilter extends Filter
+class HikingRoutesSectionFilter extends Filter
 {
-    public $name = 'Regione preferita';
+    public $name = 'Sezione';
+
     /**
      * The filter's component.
      *
@@ -25,7 +28,10 @@ class RegionFavoriteHikingRouteFilter extends Filter
      */
     public function apply(Request $request, $query, $value)
     {
-        return $query->where('region_favorite', $value);
+        //pivot table hiking_route_section
+        return $query->whereHas('sections', function ($query) use ($value) {
+            $query->where('section_id', $value);
+        });
     }
 
     /**
@@ -36,9 +42,15 @@ class RegionFavoriteHikingRouteFilter extends Filter
      */
     public function options(Request $request)
     {
-        return [
-            'Si' => true,
-            'No' => false
-        ];
+        $sections = DB::select('select id, name from sections');
+        $options = [];
+        foreach ($sections as $section) {
+            $options[$section->name] = $section->id;
+        }
+
+        //order options by name
+        ksort($options);
+
+        return $options;
     }
 }

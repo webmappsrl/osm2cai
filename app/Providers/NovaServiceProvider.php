@@ -769,6 +769,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     {
         $dashboards = [
             new ItalyDashboard,
+            new PercorsiFavoriti,
         ];
 
         /**
@@ -779,7 +780,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $dashboards[] = new Utenti;
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
-            $dashboards[] = new PercorsiFavoriti;
         }
         if ($loggedInUser->getTerritorialRole() == 'national') {
             $dashboards[] = new Percorribilità();
