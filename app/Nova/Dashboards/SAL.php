@@ -88,69 +88,69 @@ class SAL extends Dashboard
         // ----------------------Mountain groups table----------------------------
 
 
-        $mountainGroups = DB::table('mountain_groups')->get();
+        //         $mountainGroups = DB::table('mountain_groups')->get();
 
-        //add a separator between the two tables
-        $html .= '<div style="margin-top:50px; margin-bottom:50px; border-bottom: 1px solid black;" ><h2> Gruppi Montuosi </h2></div>';
+        //         //add a separator between the two tables
+        //         $html .= '<div style="margin-top:50px; margin-bottom:50px; border-bottom: 1px solid black;" ><h2> Gruppi Montuosi </h2></div>';
 
-        // Create the HTML string
-        $html .= '<table class="table-auto w-full mt-5 ">
-    <thead>
-        <tr>
-            <th class="px-4 py-2">Nome</th>
-            <th class="px-4 py-2">POI Generico</th>
-            <th class="px-4 py-2">POI Rifugio</th>
-            <th class="px-4 py-2">Percorsi POI Totali</th>
-            <th class="px-4 py-2">Attivtá o Esperienze</th>
-        </tr>
-    </thead>
-    <tbody>';
+        //         // Create the HTML string
+        //         $html .= '<table class="table-auto w-full mt-5 ">
+        //     <thead>
+        //         <tr>
+        //             <th class="px-4 py-2">Nome</th>
+        //             <th class="px-4 py-2">POI Generico</th>
+        //             <th class="px-4 py-2">POI Rifugio</th>
+        //             <th class="px-4 py-2">Percorsi POI Totali</th>
+        //             <th class="px-4 py-2">Attivtá o Esperienze</th>
+        //         </tr>
+        //     </thead>
+        //     <tbody>';
 
-        $sumMountainGroupsEcPois = 0;
-        $sumMountainGroupsHikingRoutes = 0;
-        $sumMountainGroupsPoiTotal = 0;
-        $sumMountainGroupsSections = 0;
-        $sumMountainGroupsHuts = 0;
+        //         $sumMountainGroupsEcPois = 0;
+        //         $sumMountainGroupsHikingRoutes = 0;
+        //         $sumMountainGroupsPoiTotal = 0;
+        //         $sumMountainGroupsSections = 0;
+        //         $sumMountainGroupsHuts = 0;
 
-        foreach ($mountainGroups as $mountainGroup) {
-            $mountainGroupData = json_decode($mountainGroup->aggregated_data) ?? (object) [
-                'ec_pois_count' => 0,
-                'hiking_routes_count' => 0,
-                'poi_total' => 0,
-                'sections_count' => 0,
-                'cai_huts_count' => 0
-            ];
+        //         foreach ($mountainGroups as $mountainGroup) {
+        //             $mountainGroupData = json_decode($mountainGroup->aggregated_data) ?? (object) [
+        //                 'ec_pois_count' => 0,
+        //                 'hiking_routes_count' => 0,
+        //                 'poi_total' => 0,
+        //                 'sections_count' => 0,
+        //                 'cai_huts_count' => 0
+        //             ];
 
-            $html .= "<tr class='border-b'>
-        <td class='px-4 py-2'>{$mountainGroup->name}</td>
-        <td class='px-4 py-2'>{$mountainGroupData->ec_pois_count}</td>
-        <td class='px-4 py-2'>{$mountainGroupData->cai_huts_count}</td>
-        <td class='px-4 py-2'>{$mountainGroupData->poi_total}</td>
-        <td class='px-4 py-2'>{$mountainGroupData->sections_count}</td>
+        //             $html .= "<tr class='border-b'>
+        //         <td class='px-4 py-2'>{$mountainGroup->name}</td>
+        //         <td class='px-4 py-2'>{$mountainGroupData->ec_pois_count}</td>
+        //         <td class='px-4 py-2'>{$mountainGroupData->cai_huts_count}</td>
+        //         <td class='px-4 py-2'>{$mountainGroupData->poi_total}</td>
+        //         <td class='px-4 py-2'>{$mountainGroupData->sections_count}</td>
 
-    </tr>";
+        //     </tr>";
 
-            $sumMountainGroupsEcPois += $mountainGroupData->ec_pois_count;
-            $sumMountainGroupsHikingRoutes += $mountainGroupData->hiking_routes_count;
-            $sumMountainGroupsPoiTotal += $mountainGroupData->poi_total;
-            $sumMountainGroupsHuts += $mountainGroupData->cai_huts_count;
-            $sumMountainGroupsSections += $mountainGroupData->sections_count;
-        }
+        //             $sumMountainGroupsEcPois += $mountainGroupData->ec_pois_count;
+        //             $sumMountainGroupsHikingRoutes += $mountainGroupData->hiking_routes_count;
+        //             $sumMountainGroupsPoiTotal += $mountainGroupData->poi_total;
+        //             $sumMountainGroupsHuts += $mountainGroupData->cai_huts_count;
+        //             $sumMountainGroupsSections += $mountainGroupData->sections_count;
+        //         }
 
-        $html .= "<tr class='border-t'>
-    <td class='px-4 py-2 font-bold'>Total</td>
-    <td class='px-4 py-2'>{$sumMountainGroupsEcPois}</td>
-    <td class='px-4 py-2'> {$sumMountainGroupsHuts}</td>
-    <td class='px-4 py-2'>{$sumMountainGroupsPoiTotal}</td>
-    <td class='px-4 py-2'>{$sumMountainGroupsSections}</td>
-</tr>";
+        //         $html .= "<tr class='border-t'>
+        //     <td class='px-4 py-2 font-bold'>Total</td>
+        //     <td class='px-4 py-2'>{$sumMountainGroupsEcPois}</td>
+        //     <td class='px-4 py-2'> {$sumMountainGroupsHuts}</td>
+        //     <td class='px-4 py-2'>{$sumMountainGroupsPoiTotal}</td>
+        //     <td class='px-4 py-2'>{$sumMountainGroupsSections}</td>
+        // </tr>";
 
-        $html .= '</tbody></table>';
+        //         $html .= '</tbody></table>';
 
         return [
             (new TextCard())
                 ->forceFullWidth()
-                ->height('10800px')
+                ->height('1000px')
                 ->heading('MITUR-Abruzzo')
                 ->text($html)
                 ->textAsHtml()
