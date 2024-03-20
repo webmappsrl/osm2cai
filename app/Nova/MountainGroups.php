@@ -57,6 +57,7 @@ class MountainGroups extends Resource
     {
         $centerLat = $this->getCentroid()[1] ?? 0;
         $centerLng = $this->getCentroid()[0] ?? 0;
+        $aggregatedData = json_decode($this->aggregated_data);
         return [
             ID::make(__('ID'), 'id')->sortable(),
             Text::make("Nome", "name")->sortable(),
@@ -68,7 +69,19 @@ class MountainGroups extends Resource
                 ->zoom(9)
                 ->onlyOnDetail(),
             BelongsToMany::make('Regioni', 'regions', Region::class)
-                ->searchable()
+                ->searchable(),
+            Text::make('POI Generico', function () use ($aggregatedData) {
+                return $aggregatedData->ec_pois_count;
+            })->sortable(),
+            Text::make('POI Rifugio', function () use ($aggregatedData) {
+                return $aggregatedData->cai_huts_count;
+            })->sortable(),
+            Text::make('Percorsi POI Totali', function () use ($aggregatedData) {
+                return $aggregatedData->poi_total;
+            })->sortable(),
+            Text::make('Attivitá o Esperienze', function () use ($aggregatedData) {
+                return $aggregatedData->sections_count;
+            })->sortable(),
         ];
     }
 
@@ -113,6 +126,12 @@ class MountainGroups extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new \App\Nova\Actions\DownloadMountainGroupsCsv)->canRun(
+                function ($request) {
+                    return true;
+                }
+            ),
+        ];
     }
 }
