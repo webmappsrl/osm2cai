@@ -22,7 +22,8 @@ class AcquaSorgente extends Dashboard
         //get all the ugcPoi with form_id = 'water'
         $ugcPoiWaterCount = \App\Models\UgcPoi::where('form_id', 'water')->count();
         return [
-            (new TextCard())->width('1/4')->text('Numero di Poi Acqua Sorgente')->heading($ugcPoiWaterCount),
+            (new TextCard())->width('1/2')->text('Inserimenti Acqua Sorgente')->heading($ugcPoiWaterCount),
+            (new \App\Nova\Metrics\AcquaSorgenteTrend)->width('1/2'),
         ];
     }
 
