@@ -140,6 +140,8 @@ class UgcPoi extends Resource
             Text::make('Form ID', 'form_id')
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
+            Text::make('User no Match', 'user_no_match')
+                ->onlyOnDetail(),
         ];
     }
 
@@ -163,7 +165,8 @@ class UgcPoi extends Resource
     public function filters(Request $request)
     {
         return [
-            (new \App\Nova\Filters\UgcFormIdFilter())->canSeeWhen('viewAny', \App\Models\UgcPoi::class)
+            (new \App\Nova\Filters\UgcFormIdFilter()),
+            (new \App\Nova\Filters\UgcUserNoMatchFilter()),
         ];
     }
 
