@@ -126,6 +126,7 @@ class ImportUgcFromGeohub extends Command
             $data['user_id'] = $user->id;
         } else {
             Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
+            $data['user_no_match'] = $geoJson['properties']['user_email'];
         }
         if ($model instanceof UgcMedia) {
             $data['relative_url'] = $geoJson['url'];
