@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.16.3](https://github.com/webmappsrl/osm2cai/compare/v233.16.2...v233.16.3) (2024-03-20)
+
+
+### Bug Fixes
+
+* deactivated mountain groups table in mitur abruzzo dashboard ([8f1677f](https://github.com/webmappsrl/osm2cai/commit/8f1677fa58a90b0ec4c78fea06368f7168edeb39))
+
 ## [233.16.2](https://github.com/webmappsrl/osm2cai/compare/v233.16.1...v233.16.2) (2024-03-19)
 
 
