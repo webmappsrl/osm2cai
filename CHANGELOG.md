@@ -1,5 +1,15 @@
 # Changelog
 
+## [233.17.0](https://github.com/webmappsrl/osm2cai/compare/v233.16.3...v233.17.0) (2024-03-21)
+
+
+### Features
+
+* added count card and trend for acqua sorgente dashboard ([d7d9b1e](https://github.com/webmappsrl/osm2cai/commit/d7d9b1ef21f719a782cfa119d941e86d1fdc6852))
+* added nova action to csv download mountain groups ([325b895](https://github.com/webmappsrl/osm2cai/commit/325b8958418582404682d11f5e1b50dd59fbd4ae))
+* added region filter to mountain groups ([f97b1de](https://github.com/webmappsrl/osm2cai/commit/f97b1dec5c258d45df10c48981aaf3be03d54a2f))
+* added ugc download csv action ([fee06c1](https://github.com/webmappsrl/osm2cai/commit/fee06c1e2ce498b1f76d05f615c112df3abb1435))
+
 ## [233.16.1](https://github.com/webmappsrl/osm2cai/compare/v233.16.0...v233.16.1) (2024-03-12)
 
 ### Bug Fixes
