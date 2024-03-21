@@ -88,7 +88,19 @@ class UgcPoi extends Resource
                 ->searchable()
                 ->sortable(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
-            Text::make('Tassonomie Where', 'taxonomy_wheres'),
+            Text::make('Taxonomy wheres', function () {
+                //split the string by ','
+                $array = explode(',', $this->taxonomy_wheres);
+                //get only the first value of the array
+                $result = $array[0];
+                //add ... if the array has more than one element
+                if (count($array) > 1) {
+                    $result .= '[...]';
+                }
+                return $result;
+            })->onlyOnIndex(),
+            Text::make('Taxonomy wheres', 'taxonomy_wheres')
+                ->hideFromIndex(),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
@@ -125,6 +137,11 @@ class UgcPoi extends Resource
                 $rawData = json_encode(json_decode($model->raw_data, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 return  $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
+            Text::make('Form ID', 'form_id')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
+            Text::make('User no Match', 'user_no_match')
+                ->onlyOnDetail(),
         ];
     }
 
@@ -147,7 +164,10 @@ class UgcPoi extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            (new \App\Nova\Filters\UgcFormIdFilter()),
+            (new \App\Nova\Filters\UgcUserNoMatchFilter()),
+        ];
     }
 
     /**
@@ -169,6 +189,8 @@ class UgcPoi extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new \App\Nova\Actions\DownloadUgcCsv())
+        ];
     }
 }

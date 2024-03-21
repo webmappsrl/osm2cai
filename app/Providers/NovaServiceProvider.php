@@ -10,6 +10,7 @@ use App\Models\Province;
 use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
+use App\Nova\Dashboards\AcquaSorgente;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
 use App\Nova\Dashboards\PercorsiFavoriti;
@@ -780,10 +781,12 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             $dashboards[] = new Utenti;
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
+            $dashboards[] = new AcquaSorgente();
         }
         if ($loggedInUser->getTerritorialRole() == 'national') {
             $dashboards[] = new Percorribilità();
             $dashboards[] = new SAL();
+            $dashboards[] = new AcquaSorgente();
         }
         if ($loggedInUser->getTerritorialRole() == 'regional') {
             $dashboards[] = new SectorsDashboard;

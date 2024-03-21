@@ -396,7 +396,7 @@ class HikingRoute extends Resource
                 }
 
                 $tableRows[] = "<tr style='border:1px solid grey;'>
-            <td style='border: 1px solid grey;'><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/pois/{$poi->id}'>{$poi->name}</a></td>
+            <td style='border: 1px solid grey;'><a style='text-decoration: none; color: #2697bc; font-weight: bold;' href='/resources/ec-pois/{$poi->id}'>{$poi->name}</a></td>
             <td style='border: 1px solid grey;'>{$poi->osm_id}</td>
             <td style='border: 1px solid grey;'>{$tagList}</td>
             <td style='text-align:center;'>{$poi->osm_type}</td>
