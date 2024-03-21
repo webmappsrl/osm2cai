@@ -104,7 +104,7 @@ class ImportUgcFromGeohub extends Command
 
     private function syncRecord($model, $geoJson, $id)
     {
-        $user = DB::raw('(SELECT id FROM users WHERE email = \'' . $geoJson['properties']['user_email'] . '\')');
+        $user = User::where('email', $geoJson['properties']['user_email'])->first();
         $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
         $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
 
@@ -116,10 +116,17 @@ class ImportUgcFromGeohub extends Command
             'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'],
         ];
 
+        //if the model is a poi get the id from the raw_data and fill the form_id column with the value
+        if ($model instanceof UgcPoi) {
+            $rawData = json_decode($geoJson['properties']['raw_data'], true);
+            $data['form_id'] = $rawData['id'] ?? null;
+        }
+
         if ($user != null) {
             $data['user_id'] = $user->id;
         } else {
             Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
+            $data['user_no_match'] = $geoJson['properties']['user_email'];
         }
         if ($model instanceof UgcMedia) {
             $data['relative_url'] = $geoJson['url'];

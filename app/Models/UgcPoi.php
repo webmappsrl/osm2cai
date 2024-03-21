@@ -11,7 +11,7 @@ class UgcPoi extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match'];
 
     public function user()
     {
