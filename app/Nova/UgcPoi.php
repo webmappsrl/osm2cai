@@ -43,7 +43,15 @@ class UgcPoi extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name',
+        'id', 'name', 'user_no_match'
+    ];
+
+    /**
+     * The relationship columns that should be searched
+     * @var array
+     */
+    public static $searchRelations = [
+        'user' => ['name', 'email'],
     ];
 
     public static string $group = 'Rilievi';
@@ -84,9 +92,14 @@ class UgcPoi extends Resource
             Text::make('Nome', 'name')
                 ->sortable(),
             Textarea::make('Descrizione', 'description'),
-            BelongsTo::make('User', 'user')
-                ->searchable()
-                ->sortable(),
+            //create a field that show the user name when the user_id is not null, otherwise show the user_no_match. The user name should be clickable and redirect to the user detail page
+            Text::make('User', function () {
+                if ($this->user_id) {
+                    return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . '</a>';
+                } else {
+                    return $this->user_no_match;
+                }
+            })->asHtml(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Taxonomy wheres', function () {
                 //split the string by ','
@@ -140,8 +153,6 @@ class UgcPoi extends Resource
             Text::make('Form ID', 'form_id')
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
-            Text::make('User no Match', 'user_no_match')
-                ->onlyOnDetail(),
         ];
     }
 
