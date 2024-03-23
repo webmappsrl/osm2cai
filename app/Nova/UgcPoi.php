@@ -83,6 +83,9 @@ class UgcPoi extends Resource
         return [
             ID::make(__('ID'), 'id')
                 ->sortable(),
+            Text::make('Form ID', 'form_id')
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
             DateTime::make('Updated At')
                 ->format('DD MMM YYYY HH:mm:ss')
                 ->hideWhenCreating()
@@ -100,6 +103,8 @@ class UgcPoi extends Resource
                     return $this->user_no_match;
                 }
             })->asHtml(),
+            Text::make('User No Match', 'user_no_match')
+                ->onlyOnDetail(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Taxonomy wheres', function () {
                 //split the string by ','
@@ -150,9 +155,6 @@ class UgcPoi extends Resource
                 $rawData = json_encode(json_decode($model->raw_data, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 return  $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
-            Text::make('Form ID', 'form_id')
-                ->hideWhenCreating()
-                ->hideWhenUpdating(),
         ];
     }
 
