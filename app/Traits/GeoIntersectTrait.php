@@ -131,4 +131,22 @@ trait GeoIntersectTrait
 
         return json_decode($geom, true);
     }
+
+    /**
+     * Get the municipality boundaries that intersect with the given model
+     * 
+     * @return Collection
+     */
+    public function getMunicipalityIntersecting(): Collection
+    {
+        $model = $this;
+        $intersectingMunicipalitiesIds = DB::table('municipality_boundaries')
+            ->select('gid')
+            ->whereRaw("ST_Intersects(geom, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
+            ->pluck('gid');
+
+        $municipality = DB::table('municipality_boundaries')->whereIn('gid', $intersectingMunicipalitiesIds)->get();
+
+        return $municipality;
+    }
 }

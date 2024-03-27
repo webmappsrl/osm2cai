@@ -756,17 +756,18 @@ class MiturAbruzzoController extends Controller
 
         return response()->json($geojson);
     }
+
     /**
      * @OA\Get(
      *     path="/api/v2/mitur_abruzzo/poi/{id}",
      *     operationId="getMiturAbruzzoPoiById",
      *     tags={"Api V2 - MITUR Abruzzo"},
-     *     summary="Get Poi by ID",
-     *     description="Returns a single poi by ID.",
+     *     summary="Get POI by ID",
+     *     description="Returns a single POI by ID.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="ID of the poi to return",
+     *         description="ID of the POI to return",
      *         required=true,
      *         @OA\Schema(
      *             type="integer",
@@ -794,29 +795,84 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Monte Rosa"
-     *                 )
-     *             ),
-     *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
-     *                      @OA\Property( property="coordinates", type="object",  description="poi coordinates (WGS84)")
+     *                     example="POI Name"
      *                 ),
-     *                example={"type":"Feature","properties":{"id":1,"name":"Poi Name"},"geometry":{"type":"Point","coordinates":{102.2,2.4}}}
-     *            )
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="POI Type"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="comune",
+     *                     type="string",
+     *                     example="Comune Name"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Description of the POI"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="info",
+     *                     type="string",
+     *                     example="Info about the POI"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="difficulty",
+     *                     type="string",
+     *                     example="Difficulty of the POI"
+     *                 ),
+     *                @OA\Property(
+     *                    property="from",
+     *                  type="string",
+     *                example="From"
+     *            ),
+     *           @OA\Property(
+     *             property="activity",
+     *          type="string",
+     *        example="Activity"
+     *   ),
+     * 
+     * @OA\Property(
+     * property="has_hiking_routes",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="map",
+     * type="string",
+     * example="https://osm2cai.cai.it/poi/id/{}"
+     * )
+     *           ),
+     *               @OA\Property(property="geometry", type="object",
+     *                    @OA\Property( property="type", type="string",  description="Postgis geometry type: Point, etc."),
+     *                  @OA\Property( property="coordinates", type="object",  description="poi coordinates (WGS84)")
+     *             ),
      *        ),
-     *    @OA\Response(
-     *       response=404,
-     *      description="Poi not found"
-     *   )
+     *   ),
+     * @OA\Response(
+     * response=404,
+     * description="POI not found"
+     * )
      * )
      */
     public function miturAbruzzoPoiById($id)
     {
         $poi = EcPoi::findOrFail($id);
+        $lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut nec tincidunt arcu, vel sollicitudin nisi. Fusce a nulla sit amet odio accumsan auctor.
+                    Sed ultricies ullamcorper velit, ac faucibus dolor. Nullam in risus neque. Quisque in dolor et est ullamcorper commodo at vitae libero.';
 
         //check if there is an hiking route in a 1km buffer from the poi
         $hikingRoutes = $poi->getHikingRoutesInBuffer(1000);
         $hikingRoute = $hikingRoutes->first();
+
+        //check the municipality intersecting
+        $municipality = $poi->getMunicipalityIntersecting();
+        //get the comuni from the municipalities and create a string with comma separated values
+        $comuni = $municipality->pluck('comune')->implode(',');
 
         //build the geojson
         $geojson = [];
@@ -826,12 +882,14 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $poi->id;
         $properties['name'] = $poi->name;
         $properties['type'] = $poi->getTagsMapping();
-        $properties['description'] = 'Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa.';
-        $properties['info'] = 'Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa.';
+        $properties['comune'] = $comuni;
+        $properties['description'] = $lorem;
+        $properties['info'] = $lorem;
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
         $properties['from'] = $hikingRoute ? $hikingRoute->from : '';
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
+        $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
 
         $geometry = $poi->getGeometry();
 
