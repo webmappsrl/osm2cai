@@ -2147,6 +2147,54 @@
                                                 "name": {
                                                     "type": "string",
                                                     "example": "Section Name"
+                                                },
+                                                "addr:city": {
+                                                    "type": "string",
+                                                    "example": "Rome"
+                                                },
+                                                "addr:housenumber": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "addr:postcode": {
+                                                    "type": "string",
+                                                    "example": "00100"
+                                                },
+                                                "addr:street": {
+                                                    "type": "string",
+                                                    "example": "Via Roma"
+                                                },
+                                                "provinces": {
+                                                    "type": "string",
+                                                    "example": "MOCKUP > Provincia"
+                                                },
+                                                "source:ref": {
+                                                    "type": "string",
+                                                    "example": "9219007"
+                                                },
+                                                "website": {
+                                                    "type": "string",
+                                                    "example": "http://example.com"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "info@example.com"
+                                                },
+                                                "opening_hours": {
+                                                    "type": "string",
+                                                    "example": "Mo-Fr 09:00-17:00"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+390612345678"
+                                                },
+                                                "wheelchair": {
+                                                    "type": "string",
+                                                    "example": "yes"
+                                                },
+                                                "fax": {
+                                                    "type": "string",
+                                                    "example": "+390612345679"
                                                 }
                                             },
                                             "type": "object"
@@ -2154,32 +2202,25 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry type: Point",
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "example": "Point"
                                                 },
                                                 "coordinates": {
-                                                    "description": "section coordinates (WGS84)",
-                                                    "type": "object"
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "number",
+                                                        "format": "float"
+                                                    },
+                                                    "example": [
+                                                        "longitude",
+                                                        "latitude"
+                                                    ]
                                                 }
                                             },
                                             "type": "object"
                                         }
                                     },
                                     "type": "object"
-                                },
-                                "example": {
-                                    "type": "Feature",
-                                    "properties": {
-                                        "id": 1,
-                                        "name": "Sezione di Roma"
-                                    },
-                                    "geometry": {
-                                        "type": "Point",
-                                        "coordinates": [
-                                            12.4964,
-                                            41.9028
-                                        ]
-                                    }
                                 }
                             }
                         }
