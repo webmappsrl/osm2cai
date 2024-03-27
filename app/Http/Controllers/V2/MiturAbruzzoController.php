@@ -567,6 +567,10 @@ class MiturAbruzzoController extends Controller
     {
         $poi = EcPoi::findOrFail($id);
 
+        //check if there is an hiking route in a 1km buffer from the poi
+        $hikingRoutes = $poi->getHikingRoutesInBuffer(1000);
+        $hikingRoute = $hikingRoutes->first();
+
         //build the geojson
         $geojson = [];
         $geojson['type'] = 'Feature';
@@ -574,6 +578,13 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $poi->id;
         $properties['name'] = $poi->name;
+        $properties['type'] = $poi->getTagsMapping();
+        $properties['description'] = 'Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa.';
+        $properties['info'] = 'Lorem Ipsum è un testo segnaposto utilizzato nel settore della tipografia e della stampa.';
+        $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
+        $properties['from'] = $hikingRoute ? $hikingRoute->from : '';
+        $properties['activity'] = 'Escursionismo';
+        $properties['has_hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
 
         $geometry = $poi->getGeometry();
 
@@ -622,19 +633,92 @@ class MiturAbruzzoController extends Controller
      *                     property="name",
      *                     type="string",
      *                     example="Section Name"
-     *                 )
-     *             ),
-     *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
-     *                      @OA\Property( property="coordinates", type="object",  description="section coordinates (WGS84)")
      *                 ),
-     *                example={"type":"Feature","properties":{"id":1,"name":"Sezione di Roma"},"geometry":{"type":"Point","coordinates":{12.4964,41.9028}}}
-     *            )
-     *        ),
-     *    @OA\Response(
-     *       response=404,
-     *      description="Section not found"
-     *   )
+     *                 @OA\Property(
+     *                     property="addr:city",
+     *                     type="string",
+     *                     example="Rome"
+     *                 ),
+     *                   @OA\Property(
+     *                     property="addr:housenumber",
+     *                     type="string",
+     *                     example="1"
+     *                 ),
+     *                    @OA\Property(
+     *                     property="addr:postcode",
+     *                     type="string",
+     *                     example="00100"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="addr:street",
+     *                     type="string",
+     *                     example="Via Roma"
+     *                 ),
+     *                @OA\Property(
+     *                    property="provinces",
+     *                   type="string",
+     *                  example="MOCKUP > Provincia"
+     *             ),
+     *                  @OA\Property(
+     *                     property="source:ref",
+     *                     type="string",
+     *                     example="9219007"
+     *                 ),
+     *                    @OA\Property(
+     *                     property="website",
+     *                     type="string",
+     *                     example="http://example.com"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="email",
+     *                     type="string",
+     *                     example="info@example.com"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="opening_hours",
+     *                     type="string",
+     *                     example="Mo-Fr 09:00-17:00"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="phone",
+     *                     type="string",
+     *                     example="+390612345678"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="wheelchair",
+     *                     type="string",
+     *                     example="yes"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="fax",
+     *                     type="string",
+     *                     example="+390612345679"
+     *                 ),
+     *             ),
+     *             @OA\Property(
+     *                 property="geometry",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="Point"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="coordinates",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="number",
+     *                         format="float"
+     *                     ),
+     *                     example={"longitude", "latitude"}
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Section not found"
+     *     )
      * )
      */
     public function miturAbruzzoSectionById($id)
@@ -650,13 +734,20 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $section->id;
         $properties['name'] = $section->name;
+        $properties['addr:city'] = $section->addr_city;
+        $properties['addr:housenumber'] = $section->addr_housenumber;
+        $properties['addr:postcode'] = $section->addr_postcode;
+        $properties['addr:street'] = $section->addr_street;
+        $properties['provinces'] = 'MOCKUP > Provincia';
+        $properties['source:ref'] = $section->cai_code;
+        $properties['website'] = $section->website;
+        $properties['email'] = $section->email;
+        $properties['opening_hours'] = $section->opening_hours;
+        $properties['phone'] = $section->phone;
+        $properties['wheelchair'] = $section->wheelchair;
+        $properties['fax'] = $section->fax;
 
-        //todo implement when the model has the geometry 
-        // $geometry = $section->getGeometry();
-        $geometry = [
-            "type" => "Point",
-            "coordinates" => [12.4964, 41.9028]
-        ];
+        $geometry = $section->getGeometry();
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
