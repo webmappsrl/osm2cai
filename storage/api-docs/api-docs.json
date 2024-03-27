@@ -1980,7 +1980,165 @@
                                                 },
                                                 "name": {
                                                     "type": "string",
-                                                    "example": "Rifugio Rossi"
+                                                    "example": "Rifugio"
+                                                },
+                                                "second_name": {
+                                                    "type": "string",
+                                                    "example": "Rifugio 2"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "Bivacco"
+                                                },
+                                                "elevation": {
+                                                    "type": "integer",
+                                                    "example": 2000
+                                                },
+                                                "mountain_groups": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "type_custodial": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "company_management_property": {
+                                                    "type": "string",
+                                                    "example": "Montagna srl"
+                                                },
+                                                "addr:street": {
+                                                    "type": "string",
+                                                    "example": "via guglie alte"
+                                                },
+                                                "addr:housenumber": {
+                                                    "type": "string",
+                                                    "example": "23"
+                                                },
+                                                "addr:postcode": {
+                                                    "type": "string",
+                                                    "example": "54787"
+                                                },
+                                                "addr:city": {
+                                                    "type": "string",
+                                                    "example": "Alpi"
+                                                },
+                                                "ref:vatin": {
+                                                    "type": "string",
+                                                    "example": "IT0000000000000"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+39 000 00000000"
+                                                },
+                                                "fax": {
+                                                    "type": "string",
+                                                    "example": "+39 000 00000001"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "example@email.com"
+                                                },
+                                                "email_pec": {
+                                                    "type": "string",
+                                                    "example": "pec@email.com"
+                                                },
+                                                "website": {
+                                                    "type": "string",
+                                                    "example": "www.sito.it"
+                                                },
+                                                "facebook_contact": {
+                                                    "type": "string",
+                                                    "example": "https://facebook.com/rifugio"
+                                                },
+                                                "municipality_geo": {
+                                                    "type": "string",
+                                                    "example": "Alagna Valsesia"
+                                                },
+                                                "province_geo": {
+                                                    "type": "string",
+                                                    "example": "Lucca"
+                                                },
+                                                "site_geo": {
+                                                    "type": "string",
+                                                    "example": "Piemonte"
+                                                },
+                                                "source:ref": {
+                                                    "type": "string",
+                                                    "example": "123456"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Description of the hut"
+                                                },
+                                                "pois": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "opening": {
+                                                    "type": "string",
+                                                    "example": "Opening hours"
+                                                },
+                                                "acqua_in_rifugio_service": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "acqua_calda_service": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "acqua_esterno_service": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "posti_letto_invernali_service": {
+                                                    "type": "string",
+                                                    "example": "12"
+                                                },
+                                                "posti_totali_service": {
+                                                    "type": "string",
+                                                    "example": "23"
+                                                },
+                                                "ristorante_service": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "activities": {
+                                                    "type": "string",
+                                                    "example": "Escursionismo/Alpinismo"
+                                                },
+                                                "necessary_equipment": {
+                                                    "type": "string",
+                                                    "example": "Normale dotazione Escursionistica / Normale dotazione Alpinistica"
+                                                },
+                                                "rates": {
+                                                    "type": "string",
+                                                    "example": "https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf"
+                                                },
+                                                "payment_credit_cards": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "hiking_routes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "accessibilitá_ai_disabili_service": {
+                                                    "type": "string",
+                                                    "example": "1"
+                                                },
+                                                "gallery": {
+                                                    "type": "string",
+                                                    "example": "https://galleria.it/"
+                                                },
+                                                "rule": {
+                                                    "type": "string",
+                                                    "example": "https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf"
                                                 }
                                             },
                                             "type": "object"
@@ -1988,7 +2146,7 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry type: Point",
+                                                    "description": "Postgis geometry type: Point, etc.",
                                                     "type": "string"
                                                 },
                                                 "coordinates": {
@@ -2000,20 +2158,6 @@
                                         }
                                     },
                                     "type": "object"
-                                },
-                                "example": {
-                                    "type": "Feature",
-                                    "properties": {
-                                        "id": 1,
-                                        "name": "Rifugio Rossi"
-                                    },
-                                    "geometry": {
-                                        "type": "Point",
-                                        "coordinates": [
-                                            13.399,
-                                            42.123
-                                        ]
-                                    }
                                 }
                             }
                         }
@@ -2029,14 +2173,14 @@
                 "tags": [
                     "Api V2 - MITUR Abruzzo"
                 ],
-                "summary": "Get Poi by ID",
-                "description": "Returns a single poi by ID.",
+                "summary": "Get POI by ID",
+                "description": "Returns a single POI by ID.",
                 "operationId": "getMiturAbruzzoPoiById",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of the poi to return",
+                        "description": "ID of the POI to return",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -2063,7 +2207,46 @@
                                                 },
                                                 "name": {
                                                     "type": "string",
-                                                    "example": "Monte Rosa"
+                                                    "example": "POI Name"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "POI Type"
+                                                },
+                                                "comune": {
+                                                    "type": "string",
+                                                    "example": "Comune Name"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Description of the POI"
+                                                },
+                                                "info": {
+                                                    "type": "string",
+                                                    "example": "Info about the POI"
+                                                },
+                                                "difficulty": {
+                                                    "type": "string",
+                                                    "example": "Difficulty of the POI"
+                                                },
+                                                "from": {
+                                                    "type": "string",
+                                                    "example": "From"
+                                                },
+                                                "activity": {
+                                                    "type": "string",
+                                                    "example": "Activity"
+                                                },
+                                                "has_hiking_routes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "map": {
+                                                    "type": "string",
+                                                    "example": "https://osm2cai.cai.it/poi/id/{}"
                                                 }
                                             },
                                             "type": "object"
@@ -2071,7 +2254,7 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry type: Point",
+                                                    "description": "Postgis geometry type: Point, etc.",
                                                     "type": "string"
                                                 },
                                                 "coordinates": {
@@ -2083,26 +2266,12 @@
                                         }
                                     },
                                     "type": "object"
-                                },
-                                "example": {
-                                    "type": "Feature",
-                                    "properties": {
-                                        "id": 1,
-                                        "name": "Poi Name"
-                                    },
-                                    "geometry": {
-                                        "type": "Point",
-                                        "coordinates": [
-                                            102.2,
-                                            2.4
-                                        ]
-                                    }
                                 }
                             }
                         }
                     },
                     "404": {
-                        "description": "Poi not found"
+                        "description": "POI not found"
                     }
                 }
             }
