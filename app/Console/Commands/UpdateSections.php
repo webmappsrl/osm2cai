@@ -8,21 +8,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Symm\Gisconverter\Geometry\Point;
 
-class UpdateSectionGeometry extends Command
+class UpdateSections extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'osm2cai:update-sections-geometry';
+    protected $signature = 'osm2cai:update-sections';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Update the geometry column in the sections table retrieving the data from overpass';
+    protected $description = 'Update the sections table retrieving the data from overpass';
 
     /**
      * Create a new command instance.
@@ -103,14 +103,27 @@ class UpdateSectionGeometry extends Command
                 continue;
             } else {
                 $caiCode = $section['tags']['source:ref'];
+                $update = [
+                    'geometry' => $geometry,
+                    'addr_city' => isset($section['tags']['addr:city']) ? $section['tags']['addr:city'] : null,
+                    'addr_street' => isset($section['tags']['addr:street']) ? $section['tags']['addr:street'] : null,
+                    'addr_housenumber' => isset($section['tags']['addr:housenumber']) ? $section['tags']['addr:housenumber'] : null,
+                    'addr_postcode' => isset($section['tags']['addr:postcode']) ? $section['tags']['addr:postcode'] : null,
+                    'website' => $section['tags']['website'] ?? $section['tags']['contact:website'] ?? null,
+                    'phone' => $section['tags']['phone'] ?? $section['tags']['contact:phone'] ?? null,
+                    'email' => $section['tags']['email'] ?? $section['tags']['contact:email'] ?? null,
+                    'opening_hours' => isset($section['tags']['opening_hours']) ? $section['tags']['opening_hours'] : null,
+                    'wheelchair' => isset($section['tags']['wheelchair']) ? $section['tags']['wheelchair'] : null,
+                    'fax' => isset($section['tags']['fax']) ? $section['tags']['fax'] : null,
+                ];
             }
 
-            DB::table('sections')->where('cai_code', $caiCode)->update(['geometry' => $geometry]);
+            DB::table('sections')->where('cai_code', $caiCode)->update($update);
 
-            $this->info('geometry updated for section ' . $caiCode . ' using the source:ref tag');
+            $this->info('updated section ' . $caiCode . ' using the source:ref tag');
         }
 
-        $this->info('All Sections geometry are updated correctly!');
+        $this->info('All Sections are updated correctly!');
         return 0;
     }
 }
