@@ -31,6 +31,25 @@ trait GeoIntersectTrait
     }
 
     /**
+     * Get hiking routes in a given buffer distance (m) from the given model
+     * 
+     * @param int $buffer
+     * 
+     * @return Collection
+     */
+    public function getHikingRoutesInBuffer(int $buffer): Collection
+    {
+        $model = $this;
+
+        $hikingRouteIds = DB::table('hiking_routes')
+            ->select('id')
+            ->whereRaw("ST_DWithin(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?), ?)", [$model->id, $buffer])
+            ->pluck('id');
+
+        return HikingRoute::whereIn('id', $hikingRouteIds)->get();
+    }
+
+    /**
      * Get huts that intersect with the given model
      * 
      * @return Collection

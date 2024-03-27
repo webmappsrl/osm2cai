@@ -23,6 +23,16 @@ class Section extends Model
         'name',
         'cai_code',
         'geometry',
+        'addr:city',
+        'addr:street',
+        'addr:housenumber',
+        'addr:postcode',
+        'website',
+        'phone',
+        'email',
+        'opening_hours',
+        'wheelchair',
+        'fax',
     ];
 
     public function region()
