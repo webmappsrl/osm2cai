@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\CaiHuts;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SyncCaiHuts extends Command
 {
@@ -54,15 +55,15 @@ class SyncCaiHuts extends Command
         foreach ($hutsList as $unicoId => $updatedAt) {
             $hutApi = 'https://rifugi.cai.it/api/v1/shelters/geojson/' . $unicoId;
             // while ($attempt < $maxAttempts) {
-                try {
-                    $hutData = json_decode(file_get_contents($hutApi), true);
-                } catch (\Exception $e) {
-                    // $attempt++;
-                    // sleep($backoff);
-                    // $backoff *= 4;
-                    $this->error("Error fetching hut data for unico_id: {$unicoId} . {$e->getMessage()}");
-                    // $this->info("Retrying attempt: {$attempt} in {$backoff} seconds");
-                }
+            try {
+                $hutData = json_decode(file_get_contents($hutApi), true);
+            } catch (\Exception $e) {
+                // $attempt++;
+                // sleep($backoff);
+                // $backoff *= 4;
+                $this->error("Error fetching hut data for unico_id: {$unicoId} . {$e->getMessage()}");
+                // $this->info("Retrying attempt: {$attempt} in {$backoff} seconds");
+            }
             // }
             // if ($attempt >= $maxAttempts) {
             //     $this->error("API request limit reached");
@@ -80,14 +81,20 @@ class SyncCaiHuts extends Command
             try {
                 $props = $hutData['properties'] ?? [];
                 $mappedDataForUpdate = [
-                    'name' => $props['official_name'],
-                    'second_name' => $props['second_official_name'],
-                    'description' => $props['description'],
-                    'elevation' => $props['elevation'],
-                    'owner' => $props['owner'],
-                    'geometry' => $geometry
+                    'name' => $props['official_name'] ?? null,
+                    'second_name' => $props['second_official_name'] ?? null,
+                    'description' => $props['description'] ?? null,
+                    'elevation' => $props['elevation'] ?? null,
+                    'owner' => $props['owner'] ?? null,
+                    'geometry' => $geometry,
+                    'gallery' => $props['url'] ?? null, //https://orchestrator.maphub.it/resources/stories/2860
+                    'addr_street' => $props['address'] ?? null,
+                    'phone' => $props['operating_phone'] ?? null,
+                    'email' => $props['operating_email'] ?? null,
+
                 ];
             } catch (\Exception $e) {
+                Log::error("Error parsing properties for unico_id: {$unicoId} . {$e->getMessage()}");
                 $this->error("Error parsing properties for unico_id: {$unicoId} . {$e->getMessage()}");
                 continue;
             }

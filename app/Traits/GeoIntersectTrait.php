@@ -83,6 +83,24 @@ trait GeoIntersectTrait
     }
 
     /**
+     * Get pois in buffer distance (m) from the given model
+     * 
+     * @param int $buffer
+     * 
+     * @return collection
+     */
+    public function getPoisInBuffer(int $buffer): Collection
+    {
+        $model = $this;
+        $poiIds = DB::table('ec_pois')
+            ->select('id')
+            ->whereRaw("ST_DWithin(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?), ?)", [$model->id, $buffer])
+            ->pluck('id');
+
+        return EcPoi::whereIn('id', $poiIds)->get();
+    }
+
+    /**
      * Get Mountain groups that intersect with the given model
      * 
      * @return Collection

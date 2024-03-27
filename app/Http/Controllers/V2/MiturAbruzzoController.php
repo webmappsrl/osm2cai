@@ -436,53 +436,252 @@ class MiturAbruzzoController extends Controller
 
         return response()->json($geojson);
     }
+
+
+
+
     /**
      * @OA\Get(
-     *    path="/api/v2/mitur_abruzzo/hut/{id}",
-     *   operationId="getMiturAbruzzoHutById",
-     *  tags={"Api V2 - MITUR Abruzzo"},
-     * summary="Get Hut by ID",
-     * description="Returns a single hut by ID.",
-     * @OA\Parameter(
-     *    name="id",
-     *  in="path",
-     * description="ID of the hut to return",
-     * required=true,
-     * @OA\Schema(
-     *   type="integer",
-     * format="int64"
-     * )
+     *     path="/api/v2/mitur_abruzzo/hut/{id}",
+     *     operationId="getMiturAbruzzoHutById",
+     *     tags={"Api V2 - MITUR Abruzzo"},
+     *     summary="Get Hut by ID",
+     *     description="Returns a single hut by ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the hut to return",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="type",
+     *                 type="string",
+     *                 example="Feature"
+     *             ),
+     *             @OA\Property(
+     *                 property="properties",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Rifugio"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="second_name",
+     *                     type="string",
+     *                     example="Rifugio 2"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="type",
+     *                     type="string",
+     *                     example="Bivacco"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="elevation",
+     *                     type="integer",
+     *                     example=2000
+     *                 ),
+     *                 @OA\Property(
+     *                     property="mountain_groups",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="type_custodial",
+     *                     type="string",
+     *                     example="1"
+     *                 ),
+     *                 @OA\Property(
+     *                    property="company_management_property",
+     *                   type="string",
+     *                 example="Montagna srl"
+     *                ),
+     *                @OA\Property(
+     *                   property="addr:street",
+     *                 type="string",
+     *                example="via guglie alte"
+     *              ),
+     *             @OA\Property(
+     *               property="addr:housenumber",
+     *            type="string",
+     *          example="23"
+     *       ),
+     *     @OA\Property(
+     *      property="addr:postcode",
+     *  type="string",
+     * example="54787"
      * ),
-     * @OA\Response(
-     *   response=200,
-     * description="Successful operation",
-     * @OA\JsonContent(
-     *  type="object",
      * @OA\Property(
-     * property="type",
+     * property="addr:city",
      * type="string",
-     * example="Feature"
+     * example="Alpi"
      * ),
      * @OA\Property(
-     * property="properties",
-     * type="object",
+     * property="ref:vatin",
+     * type="string",
+     * example="IT0000000000000"
+     * ),
      * @OA\Property(
-     * property="id",
+     * property="phone",
+     * type="string",
+     * example="+39 000 00000000"
+     * ),
+     * @OA\Property(
+     * property="fax",
+     * type="string",
+     * example="+39 000 00000001"
+     * ),
+     * @OA\Property(
+     * property="email",
+     * type="string",
+     * example="example@email.com"
+     * ),
+     * @OA\Property(
+     * property="email_pec",
+     * type="string",
+     * example="pec@email.com"
+     * ),
+     * @OA\Property(
+     * property="website",
+     * type="string",
+     * example="www.sito.it"
+     * ),
+     * @OA\Property(
+     * property="facebook_contact",
+     * type="string",
+     * example="https://facebook.com/rifugio"
+     * ),
+     * @OA\Property(
+     * property="municipality_geo",
+     * type="string",
+     * example="Alagna Valsesia"
+     * ),
+     * @OA\Property(
+     * property="province_geo",
+     * type="string",
+     * example="Lucca"
+     * ),
+     * @OA\Property(
+     * property="site_geo",
+     * type="string",
+     * example="Piemonte"
+     * ),
+     * @OA\Property(
+     * property="source:ref",
+     * type="string",
+     * example="123456"
+     * ),
+     * @OA\Property(
+     * property="description",
+     * type="string",
+     * example="Description of the hut"
+     * ),
+     * @OA\Property(
+     * property="pois",
+     * type="array",
+     * @OA\Items(
      * type="integer",
      * example=1
+     * )
      * ),
      * @OA\Property(
-     * property="name",
+     * property="opening",
      * type="string",
-     * example="Rifugio Rossi"
+     * example="Opening hours"
+     * ),
+     * @OA\Property(
+     * property="acqua_in_rifugio_service",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="acqua_calda_service",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="acqua_esterno_service",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="posti_letto_invernali_service",
+     * type="string",
+     * example="12"
+     * ),
+     * @OA\Property(
+     * property="posti_totali_service",
+     * type="string",
+     * example="23"
+     * ),
+     * @OA\Property(
+     * property="ristorante_service",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="activities",
+     * type="string",
+     * example="Escursionismo/Alpinismo"
+     * ),
+     * @OA\Property(
+     * property="necessary_equipment",
+     * type="string",
+     * example="Normale dotazione Escursionistica / Normale dotazione Alpinistica"
+     * ),
+     * @OA\Property(
+     * property="rates",
+     * type="string",
+     * example="https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf"
+     * ),
+     * @OA\Property(
+     * property="payment_credit_cards",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="hiking_routes",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
      * )
      * ),
-     *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Point"),
-     *                      @OA\Property( property="coordinates", type="object",  description="hut coordinates (WGS84)")
-     *                 ),
-     * example={"type":"Feature","properties":{"id":1,"name":"Rifugio Rossi"},"geometry":{"type":"Point","coordinates":{13.399,42.123}}}
+     * @OA\Property(
+     * property="accessibilitá_ai_disabili_service",
+     * type="string",
+     * example="1"
+     * ),
+     * @OA\Property(
+     * property="gallery",
+     * type="string",
+     * example="https://galleria.it/"
+     * ),
+     * @OA\Property(
+     * property="rule",
+     * type="string",
+     * example="https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf"
      * )
+     *            ),
+     *                @OA\Property(property="geometry", type="object",
+     *                     @OA\Property( property="type", type="string",  description="Postgis geometry type: Point, etc."),
+     *                    @OA\Property( property="coordinates", type="object",  description="hut coordinates (WGS84)")
+     *               ),
+     *       ),
      * ),
      * @OA\Response(
      * response=404,
@@ -494,13 +693,61 @@ class MiturAbruzzoController extends Controller
     {
         $hut = CaiHuts::findOrFail($id);
 
+        //get the mountain groups for the hut based on the geometry intersection
+        $mountainGroups = $hut->getMountainGroupsIntersecting()->first();
+
+        //get the pois in a 1km buffer from the hut
+        $pois = $hut->getPoisInBuffer(1000);
+
+        //get the hiking routes in a 1km buffer from the hut
+        $hikingRoutes = $hut->getHikingRoutesInBuffer(1000);
+
         //build the geojson
         $geojson = [];
         $geojson['type'] = 'Feature';
 
         $properties = [];
         $properties['id'] = $hut->id;
-        $properties['name'] = $hut->name;
+        $properties['name'] = $hut->name ?? '';
+        $properties['second_name'] = $hut->second_name ?? '';
+        $properties['type'] = 'Bivacco';
+        $properties['elevation'] = $hut->elevation ?? '';
+        $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
+        $properties['type_custodial'] = $hut->type_custodial ?? '1';
+        $properties['company_management_property'] = $hut->company_management_property ?? 'Montagna srl';
+        $properties['addr:street'] = $hut->addr_street ?? 'via guglie alte';
+        $properties['addr:housenumber'] = $hut->addr_housenumber ?? '23';
+        $properties['addr:postcode'] = $hut->addr_postcode ?? '54787';
+        $properties['addr:city'] = $hut->addr_city ?? 'Alpi';
+        $properties['ref:vatin'] = $hut->ref_vatin ?? 'IT0000000000000';
+        $properties['phone'] = $hut->phone ?? '+39 000 00000000';
+        $properties['fax'] = $hut->fax ?? '+39 000 00000001';
+        $properties['email'] = $hut->email ?? 'info@email.com';
+        $properties['email_pec'] = $hut->email_pec ?? 'info@pec.com';
+        $properties['website'] = $hut->website ?? 'www.sito.it';
+        $properties['facebook_contact'] = $hut->facebook_contact ?? 'https://facebook.com/rifugio';
+        $properties['municipality_geo'] = $hut->municipality_geo ?? 'Alagna Valsesia';
+        $properties['province_geo'] = $hut->province_geo ?? 'Lucca';
+        $properties['site_geo'] = $hut->site_geo ?? 'Piemonte';
+        $properties['source:ref'] = $hut->unico_id;
+        $properties['description'] = $hut->description;
+        $properties['pois'] = $pois->count() > 0 ? $pois->pluck('id')->toArray() : [];
+        $properties['opening'] = $hut->opening ?? '';
+        $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1 (possibilitá 0 o 1)';
+        $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1 (possibilitá 0 o 1)';
+        $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '1 (possibilitá 0 o 1)';
+        $properties['posti_letto_invernali_service'] = $hut->posti_letto_invernali_service ?? '12';
+        $properties['posti_totali_service'] = $hut->posti_totali_service ?? '23';
+        $properties['ristorante_service'] = $hut->ristorante_service ?? '1 (possibilitá 0 o 1)';
+        $properties['activities'] = $hut->activities ?? 'Escursionismo/Alpinismo';
+        $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
+        $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
+        $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1 (possibilitá 0 o 1)';
+        $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('relation_id')->toArray() : [];
+        $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1 (possibilitá 0 o 1)';
+        $properties['gallery'] = $hut->gallery ?? 'https://galleria.it/';
+        $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
+        $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
 
         $geometry = $hut->getGeometry();
 
