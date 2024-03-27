@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use App\Models\Region;
-use App\Traits\GeoIntersectTrait;
 use App\Traits\GeojsonableTrait;
+use App\Traits\TagsMappingTrait;
+use App\Traits\GeoIntersectTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EcPoi extends Model
 {
-    use HasFactory, GeojsonableTrait, GeoIntersectTrait;
+    use HasFactory, GeojsonableTrait, GeoIntersectTrait, TagsMappingTrait;
 
     protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id'];
 
