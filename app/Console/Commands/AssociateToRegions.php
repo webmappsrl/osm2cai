@@ -12,7 +12,7 @@ use Spatie\SchemaOrg\HinduTemple;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\text;
 
-class AssociateMountainGroupsToRegions extends Command
+class AssociateToRegions extends Command
 {
     /**
      * The name and signature of the console command.
@@ -198,8 +198,10 @@ class AssociateMountainGroupsToRegions extends Command
         $ecPoisCount = DB::table('ec_pois')
             ->where('region_id', $region->id)
             ->count();
-        $hikingRoutesCount = DB::table('hiking_route_region')
-            ->where('region_id', $region->id)
+        $hikingRoutesCount = DB::table('hiking_routes')
+            ->join('hiking_route_region', 'hiking_routes.id', '=', 'hiking_route_region.hiking_route_id')
+            ->where('hiking_route_region.region_id', $region->id)
+            ->where('hiking_routes.osm2cai_status', 4)
             ->count();
         $sectionsCount = DB::table('sections')
             ->where('region_id', $region->id)
