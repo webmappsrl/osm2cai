@@ -150,6 +150,11 @@ class HikingRoute extends Resource
     {
 
         $fields = [
+            Text::make('OSM ID', function () {
+                $osmId = $this->relation_id;
+                return "<a href='https://www.openstreetmap.org/relation/{$osmId}' target='_blank'>{$osmId}</a>";
+            })->sortable()
+                ->asHtml(),
             Text::make('Regioni', function () {
                 $val = "ND";
                 if (Arr::accessible($this->regions)) {
@@ -322,9 +327,6 @@ class HikingRoute extends Resource
         $fields[] = Textarea::make('Description CAI IT', 'description_cai_it')
             ->onlyOnDetail()
             ->alwaysShow();
-
-        //Region Favorite
-        $fields[] = Boolean::make('Region Favorite', 'region_favorite');
 
         //Data pubblicazione LoScarpone
         // $fields[] = Date::make('Data publicazione LoScarpone', 'region_favorite_publication_date');
