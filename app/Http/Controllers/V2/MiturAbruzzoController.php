@@ -166,13 +166,14 @@ class MiturAbruzzoController extends Controller
         return response()->json($geojson);
     }
 
+
     /**
      * @OA\Get(
      *     path="/api/v2/mitur_abruzzo/mountain_group/{id}",
      *     operationId="getMountainGroupById",
      *     tags={"Api V2 - MITUR Abruzzo"},
-     *     summary="Get Mountain group by ID",
-     *     description="Returns a single mountain group, including hiking routes, huts and POIs that intersect with the mountain group geometry. Sections are hardcoded for now. Will be implemented soon. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
+     *     summary="Get Mountain Group by ID",
+     *     description="Returns a single mountain group, including hiking routes, huts, pois, and sections that intersect with the mountain group geometry. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -199,117 +200,135 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=406
+     *                     example=1
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Nodo della Scoffera - Gruppo del Monte Ramaceto"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="hiking_routes",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="object",
-     *                         @OA\Property(
-     *                             property="201",
-     *                               type="string",
-     *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00",
-     * description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
-     *                         ),
-     *                     )
-     *                 ),
-     *                 @OA\Property(
-     *                     property="huts",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="object",
-     *                         @OA\Property(
-     *                             property="202",
-     *                             type="string",
-     *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00",
-     *      description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
-
-     *                         ),
-     *                     )
-     *                 ),
-     *                 @OA\Property(
-     *                     property="pois",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="object",
-     *                         @OA\Property(
-     *                             property="203",
-     *                             type="string",
-     *                             format="date-time",
-     *                             example="2021-11-03T09:36:41+00:00",
-     *      description="The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe."
-
-     *                         ),
-     *                     )
+     *                     example="Mountain Group Name"
      *                 ),
      *                 @OA\Property(
      *                     property="sections",
-     *                     type="object",
-     *                     example={
-     *                         "501": "2022-12-03 12:34:25",
-     *                         "502": "2023-01-15 09:30:00",
-     *                         "503": "2023-02-20 14:45:10"
-     *                     }
-     *                 )
-     *             ),
-     *             @OA\Property(property="geometry", type="object",
-     *                     @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
-     *                    @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
-     *                ),
-     * example={
-     *"type": "Feature",
-     *"properties": {
-     *   "id": 406,
-     *  "name": "Nodo della Scoffera - Gruppo del Monte Ramaceto",
-     * "hiking_routes": {
-     *    "201": "2021-11-03T09:36:41+00:00"
-     *},
-     *"huts": {
-     *   "202": "2021-11-03T09:36:41+00:00"
-     *},
-     *"pois": {
-     *   "203": "2021-11-03T09:36:41+00:00"
-     *},
-     *"sections": {
-     *   "501": "2022-12-03 12:34:25",
-     *  "502": "2023-01-15 09:30:00",
-     * "503": "2023-02-20 14:45:10"
-     *}
-     *},
-     *"geometry": {
-     *   "type": "MultiPolygon",
-     *  "coordinates": {
-     *     {
-     *        {
-     *           {
-     *              10.4495294,
-     *             43.7615252
-     *        },
-     *       {
-     *          10.4495998,
-     *         43.7615566
-     *    },
-     *   {
-     *      10.4495294,
-     *     43.7615252
-     *}
-     *}
-     *}
-     *}
-     *}
-     *}
-     *       ),
-     *  ),
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="integer",
+     *                         example=1
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="area",
+     *                     type="string",
+     *                     example="123"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="ele:min",
+     *                    type="string",
+     *                  example="856"
+     *              ),
+     *           @OA\Property(
+     *              property="ele:max",
+     *         type="string",
+     *      example="1785"
+     *  ), 
+     * @OA\Property(
+     * property="region",
+     * type="string",
+     * example="Lazio"
+     * ),
+     * @OA\Property(
+     * property="provinces",
+     * type="string",
+     * example="Roma"
+     * ),
+     * @OA\Property(
+     * property="municipalities",
+     * type="string",
+     * example="Roma"
+     * ),
+     * @OA\Property(
+     * property="map",
+     * type="string",
+     * example="url_mappa"
+     * ),
+     * @OA\Property(
+     * property="description",
+     * type="string",
+     * example="Description of the mountain group"
+     * ),
+     * @OA\Property(
+     * property="aggregated_data",
+     * type="string",
+     * example="aggregated data"
+     * ),
+     * @OA\Property(
+     * property="tourist_attraction",
+     * type="string",
+     * example="Matera"
+     * ),
+     * @OA\Property(
+     * property="protected_area",
+     * type="string",
+     * example="Parchi Aree protette Natura 2000"
+     * ),
+     * @OA\Property(
+     * property="activity",
+     * type="string",
+     * example="Escursionismo, Alpinismo"
+     * ),
+     * @OA\Property(
+     * property="hiking_routes",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="ec_pois",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="cai_huts",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="hiking_routes_map",
+     * type="string",
+     * example="mappa percorsi"
+     * ),
+     * @OA\Property(
+     * property="disclaimer",
+     * type="string",
+     * example="testo disclaimer"
+     * ),
+     * @OA\Property(
+     * property="ec_pois_count",
+     * type="integer",
+     * example=1
+     * ),
+     * @OA\Property(
+     * property="cai_huts_count",
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(property="geometry", type="object",
+     * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
+     * @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
+     * ),
+     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","tourist_attraction":"Matera","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo","hiking_routes":{1},"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
+     * )
+     * ),
      * @OA\Response(
-     *  response=404,
+     * response=404,
      * description="Mountain group not found"
      * )
      * )
@@ -321,28 +340,39 @@ class MiturAbruzzoController extends Controller
 
         //get the hiking routes that intersect with the mountain group geometry
         $hikingRoutes = $mountainGroup->getHikingRoutesIntersecting();
-        //get only hiking routes with osm2cai_status =  4
-        $hikingRoutes = $hikingRoutes->where('osm2cai_status', 4)->pluck('updated_at', 'id')->toArray();
-        //format the date 
-        foreach ($hikingRoutes as $key => $value) {
-            $hikingRoutes[$key] = $value->toIso8601String();
+        if ($hikingRoutes->count() > 0) {
+            $hikingRoutes = $hikingRoutes->pluck('id')->toArray();
+        } else {
+            $hikingRoutes = [];
         }
 
         //get the huts that intersect with the mountain group geometry
         $huts = $mountainGroup->getHutsIntersecting();
-        $huts = $huts->pluck('updated_at', 'id')->toArray();
-        //format the date
-        foreach ($huts as $key => $value) {
-            $huts[$key] = $value->toIso8601String();
+        if ($huts->count() > 0) {
+            $huts = $huts->pluck('id')->toArray();
+        } else {
+            $huts = [];
         }
 
         //get the pois that intersect with the mountain group geometry
         $pois = $mountainGroup->getPoisIntersecting();
-        $pois = $pois->pluck('updated_at', 'id')->toArray();
-        //format the date
-        foreach ($pois as $key => $value) {
-            $pois[$key] = $value->toIso8601String();
+        if ($pois->count() > 0) {
+            $pois = $pois->pluck('id')->toArray();
+        } else {
+            $pois = [];
         }
+
+
+        //get the sections that intersect with the mountain group geometry
+        $sections = $mountainGroup->getSectionsIntersecting();
+        if ($sections->count() > 0) {
+            $sections = $sections->pluck('id')->toArray();
+        } else {
+            $sections = [];
+        }
+
+        //decode aggregated_data
+        $aggregated_data = json_decode($mountainGroup->aggregated_data, true);
 
         //build the geojson
         $geojson = [];
@@ -351,10 +381,27 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $mountainGroup->id;
         $properties['name'] = $mountainGroup->name;
+        $properties['sections'] = $sections;
+        $properties['area'] = '123';
+        $properties['ele:min'] = '856';
+        $properties['ele:max'] = '1785';
+        $properties['region'] = 'Lazio';
+        $properties['provinces'] = 'Roma';
+        $properties['municipalities'] = 'Roma';
+        $properties['map'] = 'url_mappa';
+        $properties['description'] = $mountainGroup->description ?? '';
+        $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
+        $properties['tourist_attraction'] = 'Matera';
+        $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
+        $properties['activity'] = 'Escursionismo, Alpinismo';
         $properties['hiking_routes'] = $hikingRoutes;
-        $properties['huts'] = $huts;
-        $properties['pois'] = $pois;
-        $properties['sections'] = [501 => "2022-12-03 12:34:25", 502 => "2023-01-15 09:30:00", 503 => "2023-02-20 14:45:10"]; //todo get the sections when the model has the geometry. Hardcoded for the moment
+        $properties['ec_pois'] = $pois;
+        $properties['cai_huts'] = $huts;
+        $properties['map'] = 'mappa gruppo montuoso';
+        $properties['hiking_routes_map'] = 'mappa percorsi';
+        $properties['disclaimer'] = 'testo disclaimer';
+        $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
+        $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $mountainGroup->getGeometry();
@@ -362,13 +409,14 @@ class MiturAbruzzoController extends Controller
         return response()->json($geojson);
     }
 
+
     /**
      * @OA\Get(
      *     path="/api/v2/mitur_abruzzo/hiking_route/{id}",
-     *     operationId="getMiturAbruzzoHikingRouteById",
+     *     operationId="getHikingRouteById",
      *     tags={"Api V2 - MITUR Abruzzo"},
-     *     summary="Get Hiking route by ID",
-     *     description="Returns a single hiking route by ID.",
+     *     summary="Get Hiking Route by ID",
+     *     description="Returns a single hiking route, including cai_huts and pois that intersect with the hiking route geometry. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -401,25 +449,221 @@ class MiturAbruzzoController extends Controller
      *                     property="ref",
      *                     type="string",
      *                     example="T001"
-     *                 )
-     *             ),
-     
-     *                 @OA\Property(property="geometry", type="object",
-     *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: Linestring, MultilineString, etc."),
-     *                      @OA\Property( property="coordinates", type="object",  description="hut coordinates (WGS84)")
      *                 ),
-     *                example={"type":"Feature","properties":{"id":1,"ref":"T001"},"geometry":{"type":"MultiLineString","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
-     *            )
-     *        ),
-     *    @OA\Response(
-     *       response=404,
-     *      description="Hiking route not found"
-     *   )
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="string",
+     *                     example="Sentiero 1"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="cai_scale",
+     *                     type="string",
+     *                     example="T"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="rwn_name",
+     *                     type="string",
+     *                     example="Sentiero 1"
+     *                ),
+     *               @OA\Property(
+     *                    property="source:ref",
+     *                   type="string",
+     *                example="123456"
+     *            ),
+     *          @OA\Property(
+     *            property="from",
+     *        type="string",
+     *   example="Rifugio"
+     * ),
+     *  @OA\Property(
+     *   property="from:coordinate",
+     * type="string",
+     * example="43.71699,10.51083"
+     * ),
+     * @OA\Property(
+     * property="to",
+     * type="string",
+     * example="Rifugio"
+     * ),
+     * @OA\Property(
+     * property="to:coordinate",
+     * type="string",
+     * example="43.71699,10.51083"
+     * ),
+     * @OA\Property(
+     * property="tdh",
+     * type="string",
+     * example="1000"
+     * ),
+     * @OA\Property(
+     * property="distance",
+     * type="string",
+     * example="10"
+     * ),
+     * @OA\Property(
+     * property="duration_forward",
+     * type="string",
+     * example="3"
+     * ),
+     * @OA\Property(
+     * property="ele:max",
+     * type="string",
+     * example="1000"
+     *  ),
+     * @OA\Property(
+     * property="ele:min",
+     * type="string",
+     * example="500"
+     * ),
+     * @OA\Property(
+     * property="incline",
+     * type="string",
+     * example="15%"
+     * ),
+     * @OA\Property(
+     * property="issues_status",
+     * type="string",
+     * example="ok"
+     * ),
+     * @OA\Property(
+     * property="symbol",
+     * type="string",
+     * example="Segnaletica standard CAI"
+     * ),
+     * @OA\Property(
+     * property="difficulty",
+     * type="string",
+     * example="Turistico"
+     * ),
+     * @OA\Property(
+     * property="info",
+     * type="string",
+     * example="Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche"
+     * ),
+     * @OA\Property(
+     * property="cai_huts",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="pois",
+     * type="array",
+     * @OA\Items(
+     * type="integer",
+     * example=1
+     * )
+     * ),
+     * @OA\Property(
+     * property="activitiy",
+     * type="string",
+     * example="Escursionismo"
+     * ),
+     * @OA\Property(
+     * property="map",
+     * type="string",
+     * example="https://osm2cai.cai.it/hiking-route/id/9689"
+     * )
+     * ),
+     * @OA\Property(property="geometry", type="object",
+     * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiLineString, etc."),
+     * @OA\Property( property="coordinates", type="object",  description="hiking route coordinates (WGS84)")
+     * ),
+     * example={
+     * "type": "Feature",
+     * "properties": {
+     * "id": 1,
+     * "ref": "T001",
+     * "name": "Sentiero 1",
+     * "cai_scale": "T",
+     * "rwn_name": "Sentiero 1",
+     * "source:ref": "123456",
+     * "from": "Rifugio",
+     * "from:coordinate": "43.71699,10.51083",
+     * "to": "Rifugio",
+     * "to:coordinate": "43.71699,10.51083",
+     * "tdh": "1000",
+     * "distance": "10",
+     * "duration_forward": "3",
+     * "ele:max": "1000",
+     * "ele:min": "500",
+     * "incline": "15%",
+     * "issues_status": "ok",
+     * "symbol": "Segnaletica standard CAI",
+     * "difficulty": "Turistico",
+     * "info": "Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche",
+     * "cai_huts": {1},
+     * "pois": {1},
+     * "activitiy": "Escursionismo",
+     * "map": "https://osm2cai.cai.it/hiking-route/id/9689"
+     * },
+     * "geometry": {
+     * "type": "MultiLineString",
+     * "coordinates": {
+     * {
+     * {
+     * 10.4495294,
+     * 43.7615252
+     * },
+     * {
+     * 10.4495998,
+     * 43.7615566
+     * }
+     * }
+     * }
+     * }
+     * }
+     * )
+     * ),
+     * @OA\Response(
+     * response=404,
+     * description="Hiking route not found"
+     * )
      * )
      */
     public function miturAbruzzoHikingRouteById($id)
     {
         $hikingRoute = HikingRoute::findOrfail($id);
+
+        //get the cai_huts intersecting with the hiking route
+        $caiHuts = $hikingRoute->getHutsIntersecting();
+
+        //get the pois intersecting with the hiking route
+        $pois = $hikingRoute->getPoisIntersecting();
+
+        //get the difficulty based on cai_scale value
+        $difficulty;
+
+        switch ($hikingRoute->cai_scale) {
+            case 'T':
+                $difficulty = 'Turistico';
+                break;
+            case 'E':
+                $difficulty = 'Escursionistico';
+                break;
+            case 'EE':
+                $difficulty = 'Escursionistico per Esperti';
+                break;
+            case 'EEA':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:F':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:D':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:MD':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:E':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            default:
+                $difficulty = 'Non definito';
+        }
 
         //build the geojson
         $geojson = [];
@@ -428,6 +672,28 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $hikingRoute->id;
         $properties['ref'] = $hikingRoute->ref;
+        $properties['name'] = $hikingRoute->name;
+        $properties['cai_scale'] = $hikingRoute->cai_scale;
+        $properties['rwn_name'] = $hikingRoute->rwn_name;
+        $properties['source:ref'] = $hikingRoute->source_ref;
+        $properties['from'] = $hikingRoute->from;
+        $properties['from:coordinate'] = '43.71699,10.51083';
+        $properties['to'] = $hikingRoute->to;
+        $properties['to:coordinate'] = '43.71699,10.51083';
+        $properties['tdh'] = $hikingRoute->tdh;
+        $properties['distance'] = $hikingRoute->distance;
+        $properties['duration_forward'] = $hikingRoute->duration_forward;
+        $properties['ele:max'] = $hikingRoute->ele_max;
+        $properties['ele:min'] = $hikingRoute->ele_min;
+        $properties['incline'] = '15%';
+        $properties['issues_status'] = $hikingRoute->issues_status;
+        $properties['symbol'] = 'Segnaletica standard CAI';
+        $proprties['difficulty'] = $difficulty;
+        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['cai_huts'] = count($caiHuts) > 0 ? $caiHuts->pluck('id')->toArray() : [];
+        $properties['pois'] = count($pois) > 0 ? $pois->pluck('id')->toArray() : [];
+        $properties['activitiy'] = 'Escursionismo';
+        $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
 
         $geometry = $hikingRoute->getGeometry();
 
