@@ -383,16 +383,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-            <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                geojson
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                shape
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-                csv
-                Percorsi</a>
+<h5><?= $relatedModel->name ?>: </h5>
+<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    geojson
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    shape
+    Percorsi</a>
+<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+    csv
+    Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -819,7 +819,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $user = Auth::user();
         if ($user->is_administrator) {
             $tools[] = ['Sync UGC', route('import-ugc')];
-            $tools[] = ['Sync EcPois,Mountain groups and Huts to regions', route('sync-ecpois-mountain-groups')];
+            $tools[] = ['Sync EcPois,Mountain groups and Huts to regions', route('sync-to-regions')];
         }
         return [
             (new NovaSidebar())->hydrate([
