@@ -12,7 +12,7 @@ class UpdateEcPoisScore extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:update-ec-pois-score {?id}';
+    protected $signature = 'osm2cai:update-ec-pois-score {id?}';
 
     /**
      * The console command description.
