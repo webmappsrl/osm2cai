@@ -1694,8 +1694,8 @@
                 "tags": [
                     "Api V2 - MITUR Abruzzo"
                 ],
-                "summary": "Get Mountain group by ID",
-                "description": "Returns a single mountain group, including hiking routes, huts and POIs that intersect with the mountain group geometry. Sections are hardcoded for now. Will be implemented soon. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
+                "summary": "Get Mountain Group by ID",
+                "description": "Returns a single mountain group, including hiking routes, huts, pois, and sections that intersect with the mountain group geometry. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
                 "operationId": "getMountainGroupById",
                 "parameters": [
                     {
@@ -1724,61 +1724,103 @@
                                             "properties": {
                                                 "id": {
                                                     "type": "integer",
-                                                    "example": 406
+                                                    "example": 1
                                                 },
                                                 "name": {
                                                     "type": "string",
-                                                    "example": "Nodo della Scoffera - Gruppo del Monte Ramaceto"
+                                                    "example": "Mountain Group Name"
+                                                },
+                                                "sections": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "area": {
+                                                    "type": "string",
+                                                    "example": "123"
+                                                },
+                                                "ele:min": {
+                                                    "type": "string",
+                                                    "example": "856"
+                                                },
+                                                "ele:max": {
+                                                    "type": "string",
+                                                    "example": "1785"
+                                                },
+                                                "region": {
+                                                    "type": "string",
+                                                    "example": "Lazio"
+                                                },
+                                                "provinces": {
+                                                    "type": "string",
+                                                    "example": "Roma"
+                                                },
+                                                "municipalities": {
+                                                    "type": "string",
+                                                    "example": "Roma"
+                                                },
+                                                "map": {
+                                                    "type": "string",
+                                                    "example": "url_mappa"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Description of the mountain group"
+                                                },
+                                                "aggregated_data": {
+                                                    "type": "string",
+                                                    "example": "aggregated data"
+                                                },
+                                                "tourist_attraction": {
+                                                    "type": "string",
+                                                    "example": "Matera"
+                                                },
+                                                "protected_area": {
+                                                    "type": "string",
+                                                    "example": "Parchi Aree protette Natura 2000"
+                                                },
+                                                "activity": {
+                                                    "type": "string",
+                                                    "example": "Escursionismo, Alpinismo"
                                                 },
                                                 "hiking_routes": {
                                                     "type": "array",
                                                     "items": {
-                                                        "properties": {
-                                                            "201": {
-                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "example": "2021-11-03T09:36:41+00:00"
-                                                            }
-                                                        },
-                                                        "type": "object"
+                                                        "type": "integer",
+                                                        "example": 1
                                                     }
                                                 },
-                                                "huts": {
+                                                "ec_pois": {
                                                     "type": "array",
                                                     "items": {
-                                                        "properties": {
-                                                            "202": {
-                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "example": "2021-11-03T09:36:41+00:00"
-                                                            }
-                                                        },
-                                                        "type": "object"
+                                                        "type": "integer",
+                                                        "example": 1
                                                     }
                                                 },
-                                                "pois": {
+                                                "cai_huts": {
                                                     "type": "array",
                                                     "items": {
-                                                        "properties": {
-                                                            "203": {
-                                                                "description": "The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "example": "2021-11-03T09:36:41+00:00"
-                                                            }
-                                                        },
-                                                        "type": "object"
+                                                        "type": "integer",
+                                                        "example": 1
                                                     }
                                                 },
-                                                "sections": {
-                                                    "type": "object",
-                                                    "example": {
-                                                        "501": "2022-12-03 12:34:25",
-                                                        "502": "2023-01-15 09:30:00",
-                                                        "503": "2023-02-20 14:45:10"
-                                                    }
+                                                "hiking_routes_map": {
+                                                    "type": "string",
+                                                    "example": "mappa percorsi"
+                                                },
+                                                "disclaimer": {
+                                                    "type": "string",
+                                                    "example": "testo disclaimer"
+                                                },
+                                                "ec_pois_count": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "cai_huts_count": {
+                                                    "type": "integer",
+                                                    "example": 1
                                                 }
                                             },
                                             "type": "object"
@@ -1802,40 +1844,48 @@
                                 "example": {
                                     "type": "Feature",
                                     "properties": {
-                                        "id": 406,
-                                        "name": "Nodo della Scoffera - Gruppo del Monte Ramaceto",
-                                        "hiking_routes": {
-                                            "201": "2021-11-03T09:36:41+00:00"
-                                        },
-                                        "huts": {
-                                            "202": "2021-11-03T09:36:41+00:00"
-                                        },
-                                        "pois": {
-                                            "203": "2021-11-03T09:36:41+00:00"
-                                        },
-                                        "sections": {
-                                            "501": "2022-12-03 12:34:25",
-                                            "502": "2023-01-15 09:30:00",
-                                            "503": "2023-02-20 14:45:10"
-                                        }
+                                        "id": 1,
+                                        "name": "Mountain Group Name",
+                                        "sections": [
+                                            1
+                                        ],
+                                        "area": "123",
+                                        "ele:min": "856",
+                                        "ele:max": "1785",
+                                        "region": "Lazio",
+                                        "provinces": "Roma",
+                                        "municipalities": "Roma",
+                                        "map": "mappa gruppo montuoso",
+                                        "description": "Description of the mountain group",
+                                        "aggregated_data": "aggregated data",
+                                        "tourist_attraction": "Matera",
+                                        "protected_area": "Parchi Aree protette Natura 2000",
+                                        "activity": "Escursionismo, Alpinismo",
+                                        "hiking_routes": [
+                                            1
+                                        ],
+                                        "ec_pois": [
+                                            1
+                                        ],
+                                        "cai_huts": [
+                                            1
+                                        ],
+                                        "hiking_routes_map": "mappa percorsi",
+                                        "disclaimer": "testo disclaimer",
+                                        "ec_pois_count": 1,
+                                        "cai_huts_count": 1
                                     },
                                     "geometry": {
                                         "type": "MultiPolygon",
                                         "coordinates": [
                                             [
                                                 [
-                                                    [
-                                                        10.4495294,
-                                                        43.7615252
-                                                    ],
-                                                    [
-                                                        10.4495998,
-                                                        43.7615566
-                                                    ],
-                                                    [
-                                                        10.4495294,
-                                                        43.7615252
-                                                    ]
+                                                    10.4495294,
+                                                    43.7615252
+                                                ],
+                                                [
+                                                    10.4495998,
+                                                    43.7615566
                                                 ]
                                             ]
                                         ]
@@ -1855,9 +1905,9 @@
                 "tags": [
                     "Api V2 - MITUR Abruzzo"
                 ],
-                "summary": "Get Hiking route by ID",
-                "description": "Returns a single hiking route by ID.",
-                "operationId": "getMiturAbruzzoHikingRouteById",
+                "summary": "Get Hiking Route by ID",
+                "description": "Returns a single hiking route, including cai_huts and pois that intersect with the hiking route geometry. The update timestamp of an item in the database is formatted as 'YYYY-MM-DD-Thh:mm:ss+HH:M', adhering to the ISO8601 standard. This notation represents the date and time with an offset of hours (HH) and minutes (MM) from Coordinated Universal Time (UTC), ensuring a consistent formatting and interpretation across the globe.",
+                "operationId": "getHikingRouteById",
                 "parameters": [
                     {
                         "name": "id",
@@ -1890,6 +1940,100 @@
                                                 "ref": {
                                                     "type": "string",
                                                     "example": "T001"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Sentiero 1"
+                                                },
+                                                "cai_scale": {
+                                                    "type": "string",
+                                                    "example": "T"
+                                                },
+                                                "rwn_name": {
+                                                    "type": "string",
+                                                    "example": "Sentiero 1"
+                                                },
+                                                "source:ref": {
+                                                    "type": "string",
+                                                    "example": "123456"
+                                                },
+                                                "from": {
+                                                    "type": "string",
+                                                    "example": "Rifugio"
+                                                },
+                                                "from:coordinate": {
+                                                    "type": "string",
+                                                    "example": "43.71699,10.51083"
+                                                },
+                                                "to": {
+                                                    "type": "string",
+                                                    "example": "Rifugio"
+                                                },
+                                                "to:coordinate": {
+                                                    "type": "string",
+                                                    "example": "43.71699,10.51083"
+                                                },
+                                                "tdh": {
+                                                    "type": "string",
+                                                    "example": "1000"
+                                                },
+                                                "distance": {
+                                                    "type": "string",
+                                                    "example": "10"
+                                                },
+                                                "duration_forward": {
+                                                    "type": "string",
+                                                    "example": "3"
+                                                },
+                                                "ele:max": {
+                                                    "type": "string",
+                                                    "example": "1000"
+                                                },
+                                                "ele:min": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "incline": {
+                                                    "type": "string",
+                                                    "example": "15%"
+                                                },
+                                                "issues_status": {
+                                                    "type": "string",
+                                                    "example": "ok"
+                                                },
+                                                "symbol": {
+                                                    "type": "string",
+                                                    "example": "Segnaletica standard CAI"
+                                                },
+                                                "difficulty": {
+                                                    "type": "string",
+                                                    "example": "Turistico"
+                                                },
+                                                "info": {
+                                                    "type": "string",
+                                                    "example": "Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche"
+                                                },
+                                                "cai_huts": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "pois": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
+                                                "activitiy": {
+                                                    "type": "string",
+                                                    "example": "Escursionismo"
+                                                },
+                                                "map": {
+                                                    "type": "string",
+                                                    "example": "https://osm2cai.cai.it/hiking-route/id/9689"
                                                 }
                                             },
                                             "type": "object"
@@ -1897,11 +2041,11 @@
                                         "geometry": {
                                             "properties": {
                                                 "type": {
-                                                    "description": "Postgis geometry type: Linestring, MultilineString, etc.",
+                                                    "description": "Postgis geometry type: MultiLineString, etc.",
                                                     "type": "string"
                                                 },
                                                 "coordinates": {
-                                                    "description": "hut coordinates (WGS84)",
+                                                    "description": "hiking route coordinates (WGS84)",
                                                     "type": "object"
                                                 }
                                             },
@@ -1914,7 +2058,33 @@
                                     "type": "Feature",
                                     "properties": {
                                         "id": 1,
-                                        "ref": "T001"
+                                        "ref": "T001",
+                                        "name": "Sentiero 1",
+                                        "cai_scale": "T",
+                                        "rwn_name": "Sentiero 1",
+                                        "source:ref": "123456",
+                                        "from": "Rifugio",
+                                        "from:coordinate": "43.71699,10.51083",
+                                        "to": "Rifugio",
+                                        "to:coordinate": "43.71699,10.51083",
+                                        "tdh": "1000",
+                                        "distance": "10",
+                                        "duration_forward": "3",
+                                        "ele:max": "1000",
+                                        "ele:min": "500",
+                                        "incline": "15%",
+                                        "issues_status": "ok",
+                                        "symbol": "Segnaletica standard CAI",
+                                        "difficulty": "Turistico",
+                                        "info": "Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche",
+                                        "cai_huts": [
+                                            1
+                                        ],
+                                        "pois": [
+                                            1
+                                        ],
+                                        "activitiy": "Escursionismo",
+                                        "map": "https://osm2cai.cai.it/hiking-route/id/9689"
                                     },
                                     "geometry": {
                                         "type": "MultiLineString",
