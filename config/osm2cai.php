@@ -30,4 +30,55 @@ return [
     ],
 
     'hiking_route_buffer' => 250,
+
+    'osmTagsMapping' => [
+        'amenity' => [
+            'monastery' => 'monastery',
+            'castle' => 'castle',
+            'place_of_worship' => 'place_of_worship',
+            'ruins' => 'ruins',
+            'museum' => 'museum',
+            'theatre' => 'theatre',
+        ],
+        'historic' => [
+            'castle' => 'castle',
+            'archeological_site' => 'archeological_site',
+            'tower' => 'tower',
+            'city_gate' => 'city_gate',
+            'ruins' => 'ruins',
+            'museum' => 'museum',
+        ],
+        'building' => [
+            'castle' => 'castle',
+            'monastery' => 'monastery',
+            'ruins' => 'ruins',
+            'tower' => 'tower',
+            'museum' => 'museum',
+        ],
+        'religion' => [
+            'christian' => 'christian',
+        ],
+        'man_made' => [
+            'tower' => 'tower',
+        ],
+        'tourism' => [
+            'museum' => 'museum',
+            'theatre' => 'theatre',
+        ],
+        'natural' => [
+            'cave_entrance' => 'cave_entrance',
+            'peak' => 'peak',
+            'saddle' => 'saddle',
+            'volcano' => 'volcano',
+            'cliff' => 'cliff',
+            'water' => 'water',
+            'hot_spring' => 'hot_spring',
+            'spring' => 'spring',
+        ],
+        'water' => [
+            'lake' => 'lake',
+            'river' => 'river',
+            'waterfall' => 'waterfall',
+        ],
+    ],
 ];

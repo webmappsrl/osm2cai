@@ -11,6 +11,7 @@ use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\AcquaSorgente;
+use App\Nova\Dashboards\EcPoisDashboard;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
 use App\Nova\Dashboards\PercorsiFavoriti;
@@ -382,16 +383,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    geojson
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    shape
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    csv
-    Percorsi</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -771,6 +772,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $dashboards = [
             new ItalyDashboard,
             new PercorsiFavoriti,
+            new EcPoisDashboard
         ];
 
         /**

@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use App\Traits\CsvableModelTrait;
+use App\Traits\GeoIntersectTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Section extends Model
 {
-    use HasFactory, CsvableModelTrait;
+    use HasFactory, CsvableModelTrait, GeoIntersectTrait;
 
     protected $casts = [
         'id' => 'integer',
@@ -23,6 +24,16 @@ class Section extends Model
         'name',
         'cai_code',
         'geometry',
+        'addr:city',
+        'addr:street',
+        'addr:housenumber',
+        'addr:postcode',
+        'website',
+        'phone',
+        'email',
+        'opening_hours',
+        'wheelchair',
+        'fax',
     ];
 
     public function region()
