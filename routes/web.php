@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\AssociateMountainGroupsToRegions;
+use App\Console\Commands\AssociateToRegions;
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -67,9 +68,9 @@ Route::get('/loading-download/{type}/{model}/{id}', function () {
     ]);
 })->name('loading-download');
 
-Route::get('/sync-ecpois-mountain-groups', function () {
+Route::get('/sync-to-regions', function () {
     try {
-        $command = new AssociateMountainGroupsToRegions(true);
+        $command = new AssociateToRegions(true);
         $result = $command->handle();
         $result == 0 ? $message = 'Sync completed, go back and refresh the page to see the results.' : $message = 'Sync failed';
         return response()->json([
@@ -80,4 +81,4 @@ Route::get('/sync-ecpois-mountain-groups', function () {
             'error' => $e->getMessage()
         ], 500);
     }
-})->name('sync-ecpois-mountain-groups');
+})->name('sync-to-regions');

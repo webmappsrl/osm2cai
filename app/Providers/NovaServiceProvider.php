@@ -11,6 +11,7 @@ use App\Models\Region;
 use App\Models\Sector;
 use App\Models\User;
 use App\Nova\Dashboards\AcquaSorgente;
+use App\Nova\Dashboards\EcPoisDashboard;
 use App\Nova\Dashboards\ItalyDashboard;
 use App\Nova\Dashboards\Percorribilità;
 use App\Nova\Dashboards\PercorsiFavoriti;
@@ -771,6 +772,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $dashboards = [
             new ItalyDashboard,
             new PercorsiFavoriti,
+            new EcPoisDashboard
         ];
 
         /**
@@ -817,7 +819,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         $user = Auth::user();
         if ($user->is_administrator) {
             $tools[] = ['Sync UGC', route('import-ugc')];
-            $tools[] = ['Sync EcPois,Mountain groups and Huts to regions', route('sync-ecpois-mountain-groups')];
+            $tools[] = ['Sync EcPois,Mountain groups and Huts to regions', route('sync-to-regions')];
         }
         return [
             (new NovaSidebar())->hydrate([

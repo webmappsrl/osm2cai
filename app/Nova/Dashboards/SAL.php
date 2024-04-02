@@ -2,10 +2,10 @@
 
 namespace App\Nova\Dashboards;
 
-use DB;
 use Laravel\Nova\Card;
 use Laravel\Nova\Dashboard;
 use Ericlagarda\NovaTextCard\TextCard;
+use Illuminate\Support\Facades\DB;
 
 class SAL extends Dashboard
 {
@@ -43,12 +43,12 @@ class SAL extends Dashboard
     </thead>
     <tbody>';
 
-        $sumMountainGroups = 0;
-        $sumEcPois = 0;
-        $sumHikingRoutes = 0;
-        $sumPoiTotal = 0;
-        $sumSections = 0;
-        $sumCaiHuts = 0;
+        $sumMountainGroups = DB::select('SELECT count(*) as count FROM mountain_groups')[0]->count;
+        $sumEcPois = DB::select('SELECT count(*) as count FROM ec_pois')[0]->count;
+        $sumHikingRoutes = DB::select('SELECT count(*) as count FROM hiking_routes WHERE osm2cai_status = 4')[0]->count;
+        $sumPoiTotal = $sumEcPois + $sumHikingRoutes;
+        $sumSections = DB::select('SELECT count(*) as count FROM sections')[0]->count;
+        $sumCaiHuts = DB::select('SELECT count(*) as count FROM cai_huts')[0]->count;
 
         foreach ($regions as $region) {
             $data = json_decode($region->aggregated_data);
@@ -62,13 +62,6 @@ class SAL extends Dashboard
         <td class='px-4 py-2'>{$data->poi_total}</td>
         <td class='px-4 py-2'>{$data->sections_count}</td>
     </tr>";
-
-            $sumMountainGroups += $data->mountain_groups_count;
-            $sumEcPois += $data->ec_pois_count;
-            $sumHikingRoutes += $data->hiking_routes_count;
-            $sumPoiTotal += $data->poi_total;
-            $sumSections += $data->sections_count;
-            $sumCaiHuts += $data->cai_huts_count;
         }
 
         $html .= "<tr class='border-t'>
