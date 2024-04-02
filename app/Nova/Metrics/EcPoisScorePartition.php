@@ -19,11 +19,9 @@ class EcPoisScorePartition extends Partition
      */
     public function calculate(NovaRequest $request)
     {
-        return $this->count($request, \App\Models\EcPoi::class, 'score')
-            ->label(function ($value) {
-                return $value;
-            });
+        return $this->count($request, \App\Models\EcPoi::class, 'score');
     }
+
 
     /**
      * Determine for how many minutes the metric should be cached.
@@ -32,7 +30,7 @@ class EcPoisScorePartition extends Partition
      */
     public function cacheFor()
     {
-        return now()->addMinutes(5);
+        //    return now()->addMinutes(5);
     }
 
     /**
