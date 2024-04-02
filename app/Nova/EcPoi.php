@@ -3,17 +3,20 @@
 namespace App\Nova;
 
 use App\Enums\EcPoiTypes;
-use App\Nova\Filters\EcPoiOsmTypeFilter;
-use App\Nova\Filters\EcPoiRegionFilter;
-use App\Nova\Filters\EcPoiTypeFilter;
-use App\Nova\Filters\EcPoiUtenteFilter;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
+use App\Nova\Filters\EcPoiTypeFilter;
+use App\Nova\Filters\EcPoiRegionFilter;
+use App\Nova\Filters\EcPoisScoreFilter;
+use App\Nova\Filters\EcPoiUtenteFilter;
+use App\Nova\Filters\EcPoiOsmTypeFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class EcPoi extends Resource
@@ -66,10 +69,16 @@ class EcPoi extends Resource
             ID::make(__('ID'), 'id')->sortable(),
             Text::make('OSM ID', 'osm_id')->sortable(),
             Text::make('Nome', 'name')->sortable(),
-            Text::make('Descrizione', 'description')->sortable()->displayUsing(function ($value) {
-                return strlen($value) > 10 ? substr($value, 0, 10) . '...' : $value;
-            })->onlyOnIndex(),
-            Text::make('Descrizione', 'description')->hideFromIndex(),
+            Textarea::make('Descrizione', 'description')->hideFromIndex(),
+            Text::make('Score', 'score')->displayUsing(function ($value) {
+                $stars = '';
+                for ($i = 0; $i < $value; $i++) {
+                    $stars .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="gold" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 12.794l-5.225 3.388 1.26-6.978-4.465-4.35 6.21-.906L10 1.106l2.22 4.844 6.21.906-4.465 4.35 1.26 6.978z" clip-rule="evenodd" />
+                    </svg>';
+                }
+                return $stars;
+            })->asHtml()->sortable()->onlyOnDetail(),
             BelongsTo::make('Utente', 'user', User::class)->sortable()->searchable(),
             Select::make('Type', 'type')
                 ->options(EcPoiTypes::cases()),
@@ -115,6 +124,15 @@ class EcPoi extends Resource
                 'defaultZoom' => 13
             ])->hideFromIndex(),
             BelongsTo::make('Region', 'region', Region::class)->sortable()->searchable()->nullable(),
+            Text::make('Score', 'score')->displayUsing(function ($value) {
+                $stars = '';
+                for ($i = 0; $i < $value; $i++) {
+                    $stars .= '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="gold" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M10 12.794l-5.225 3.388 1.26-6.978-4.465-4.35 6.21-.906L10 1.106l2.22 4.844 6.21.906-4.465 4.35 1.26 6.978z" clip-rule="evenodd" />
+                    </svg>';
+                }
+                return $stars;
+            })->asHtml()->sortable()->onlyOnIndex(),
         ];
     }
 
@@ -150,6 +168,9 @@ class EcPoi extends Resource
             (new EcPoiUtenteFilter)->canSee(function ($request) {
                 return $request->user()->is_administrator || $request->user()->getPermissionString() === 'Referente nazionale';
             }),
+            (new EcPoisScoreFilter)->canSee(function ($request) {
+                return true;
+            }),
         ];
     }
 
@@ -172,6 +193,8 @@ class EcPoi extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new Actions\EcPoisDownloadXlsx)
+        ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\EcPoi;
 use App\Models\CaiHuts;
+use App\Models\Section;
 use App\Models\HikingRoute;
 use App\Models\MountainGroups;
 use Illuminate\Support\Collection;
@@ -28,6 +29,25 @@ trait GeoIntersectTrait
 
 
         return HikingRoute::whereIn('id', $intersectingHikingRouteIds)->get();
+    }
+
+    /**
+     * Get hiking routes in a given buffer distance (m) from the given model
+     * 
+     * @param int $buffer
+     * 
+     * @return Collection
+     */
+    public function getHikingRoutesInBuffer(int $buffer): Collection
+    {
+        $model = $this;
+
+        $hikingRouteIds = DB::table('hiking_routes')
+            ->select('id')
+            ->whereRaw("ST_DWithin(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?), ?)", [$model->id, $buffer])
+            ->pluck('id');
+
+        return HikingRoute::whereIn('id', $hikingRouteIds)->get();
     }
 
     /**
@@ -64,6 +84,24 @@ trait GeoIntersectTrait
     }
 
     /**
+     * Get pois in buffer distance (m) from the given model
+     * 
+     * @param int $buffer
+     * 
+     * @return collection
+     */
+    public function getPoisInBuffer(int $buffer): Collection
+    {
+        $model = $this;
+        $poiIds = DB::table('ec_pois')
+            ->select('id')
+            ->whereRaw("ST_DWithin(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?), ?)", [$model->id, $buffer])
+            ->pluck('id');
+
+        return EcPoi::whereIn('id', $poiIds)->get();
+    }
+
+    /**
      * Get Mountain groups that intersect with the given model
      * 
      * @return Collection
@@ -79,6 +117,40 @@ trait GeoIntersectTrait
         return MountainGroups::whereIn('id', $intersectingMountainGroupsIds)->get();
     }
 
+
+    /**
+     * Get the municipality boundaries that intersect with the given model
+     * 
+     * @return Collection
+     */
+    public function getMunicipalityIntersecting(): Collection
+    {
+        $model = $this;
+        $intersectingMunicipalitiesIds = DB::table('municipality_boundaries')
+            ->select('gid')
+            ->whereRaw("ST_Intersects(geom, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
+            ->pluck('gid');
+
+        $municipality = DB::table('municipality_boundaries')->whereIn('gid', $intersectingMunicipalitiesIds)->get();
+
+        return $municipality;
+    }
+
+    /**
+     * Get the sections that intersect with the given model
+     * 
+     * @return Collection
+     */
+    public function getSectionsIntersecting(): Collection
+    {
+        $model = $this;
+        $intersectingSectionsIds = DB::table('sections')
+            ->select('id')
+            ->whereRaw("ST_Intersects(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
+            ->pluck('id');
+
+        return Section::whereIn('id', $intersectingSectionsIds)->get();
+    }
     /**
      * Get the geometry of the given model
      * 
