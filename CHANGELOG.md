@@ -1,5 +1,29 @@
 # Changelog
 
+## [233.18.0](https://github.com/webmappsrl/osm2cai/compare/v233.17.0...v233.18.0) (2024-04-02)
+
+
+### Features
+
+* added fields for api to sections table and updated section sync to overpass command ([4d6e1bd](https://github.com/webmappsrl/osm2cai/commit/4d6e1bdfff2dfbb89475972a5bfb67c672194d90))
+* created tags mapping config variable ([12707d9](https://github.com/webmappsrl/osm2cai/commit/12707d93a99855b8cd15cb79e4ac9e5e3574168d))
+* created trait for tags mapping ([b9a4ebe](https://github.com/webmappsrl/osm2cai/commit/b9a4ebe845ea5daf323a0e1fd22d5f747c6fc41a))
+* implemented apis ([d5ce2e9](https://github.com/webmappsrl/osm2cai/commit/d5ce2e95157991575330cded6e4d8f00ebf34074))
+* implemented cai huts mitur abruzzo api ([bb8c220](https://github.com/webmappsrl/osm2cai/commit/bb8c220bd66d6d818a3be7d24e48e0719530e1c0))
+* mitur abruzzo sections api updated ([4517967](https://github.com/webmappsrl/osm2cai/commit/45179674b985db53a3e72062c9a21abcf21fbe5d))
+* updated poi apis for mitur abruzzo ([a519e87](https://github.com/webmappsrl/osm2cai/commit/a519e8746c38428841421265550c8e919effc7c7))
+
+
+### Bug Fixes
+
+* ecpois wiki fields clickable in xls file download ([e20d328](https://github.com/webmappsrl/osm2cai/commit/e20d328c892c5f26b1132a2e24c95636bde8833a))
+* fix score update command ([957b0cb](https://github.com/webmappsrl/osm2cai/commit/957b0cb28119542910bd8f06371a027e47a89553))
+* fixed hiking routes count in mitur abruzzo dashboard ([347f55b](https://github.com/webmappsrl/osm2cai/commit/347f55bff1cb8695d58ddd71f975134d7d89b2bc))
+* fixed lat and lon in ugc poi csv download ([c1d914c](https://github.com/webmappsrl/osm2cai/commit/c1d914c76c4fb0b7a95a40890c9c0443ac447ae7))
+* fixed lista percorsi in itinerary details ([f091c6f](https://github.com/webmappsrl/osm2cai/commit/f091c6fc50fe9a8b9c44be56829106acca92a654))
+* fixed mitur dashboard values ([0723776](https://github.com/webmappsrl/osm2cai/commit/07237764c26612a964929aa17acb1317a816019d))
+* fixed sync command ([4903cc2](https://github.com/webmappsrl/osm2cai/commit/4903cc224227adff80ec00b9f6abc20f84a818e3))
+
 ## [233.17.0](https://github.com/webmappsrl/osm2cai/compare/v233.16.3...v233.17.0) (2024-03-21)
 
 
