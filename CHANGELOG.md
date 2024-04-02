@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.19.0](https://github.com/webmappsrl/osm2cai/compare/v233.18.0...v233.19.0) (2024-04-02)
+
+
+### Features
+
+* implemented form_id update on creating new ugc poi ([e749f48](https://github.com/webmappsrl/osm2cai/commit/e749f48517eb1e7a3fa0e14c40cb308fa39223b0))
+
 ## [233.18.0](https://github.com/webmappsrl/osm2cai/compare/v233.17.0...v233.18.0) (2024-04-02)
 
 
