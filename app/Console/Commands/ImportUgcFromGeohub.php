@@ -81,6 +81,12 @@ class ImportUgcFromGeohub extends Command
                     }
                 }
             }
+            //populate the form_id column in the ugc_poi table
+            $ugcPois = DB::table('ugc_pois')->whereNull('form_id')->get();
+            foreach ($ugcPois as $ugcPoi) {
+                $rawData = json_decode($ugcPoi->raw_data, true);
+                DB::table('ugc_pois')->where('id', $ugcPoi->id)->update(['form_id' => $rawData['id'] ?? null]);
+            }
             $this->info("Finished sync. Created: " . implode(', ', $createdElements) . ", Updated: " . count($updatedElements));
         } catch (\Exception $e) {
             $this->error("An error occurred: " . $e->getMessage());
@@ -132,7 +138,8 @@ class ImportUgcFromGeohub extends Command
             $data['relative_url'] = $geoJson['url'];
         }
 
-        $model->updateOrCreate(['geohub_id' => $id], $data);
+        $model->update($data);
+        $model->save();
     }
 
     private function get_content($url)
