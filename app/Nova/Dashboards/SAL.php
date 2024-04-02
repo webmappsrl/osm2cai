@@ -45,7 +45,7 @@ class SAL extends Dashboard
 
         $sumMountainGroups = DB::select('SELECT count(*) as count FROM mountain_groups')[0]->count;
         $sumEcPois = DB::select('SELECT count(*) as count FROM ec_pois')[0]->count;
-        $sumHikingRoutes = DB::select('SELECT count(*) as count FROM hiking_routes')[0]->count;
+        $sumHikingRoutes = DB::select('SELECT count(*) as count FROM hiking_routes WHERE osm2cai_status = 4')[0]->count;
         $sumPoiTotal = $sumEcPois + $sumHikingRoutes;
         $sumSections = DB::select('SELECT count(*) as count FROM sections')[0]->count;
         $sumCaiHuts = DB::select('SELECT count(*) as count FROM cai_huts')[0]->count;
