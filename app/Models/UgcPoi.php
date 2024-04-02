@@ -13,6 +13,17 @@ class UgcPoi extends Model
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            $rawData = json_decode($model->raw_data, true);
+            $model->form_id = $rawData['id'] ?? null;
+            $model->save();
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
