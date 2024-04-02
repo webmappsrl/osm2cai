@@ -83,7 +83,10 @@ class UgcPoi extends Resource
         return [
             ID::make(__('ID'), 'id')
                 ->sortable(),
-            Text::make('Form ID', 'form_id')
+            Text::make('Form ID', function () {
+                $rawData = json_decode($this->raw_data, true);
+                return $this->form_id ?? $rawData['id'] ?? null;
+            })
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
             DateTime::make('Updated At')
@@ -95,7 +98,6 @@ class UgcPoi extends Resource
             Text::make('Nome', 'name')
                 ->sortable(),
             Textarea::make('Descrizione', 'description'),
-            //create a field that show the user name when the user_id is not null, otherwise show the user_no_match. The user name should be clickable and redirect to the user detail page
             Text::make('User', function () {
                 if ($this->user_id) {
                     return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . '</a>';
