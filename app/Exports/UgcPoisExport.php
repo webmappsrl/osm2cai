@@ -22,8 +22,8 @@ class UgcPoisExport implements FromCollection, WithHeadings
             return [
                 'osm2cai_id' => $model->id,
                 'url' => 'https://osm2cai.cai.it/resources/ugc-pois/' . $model->id,
-                'lon' => $rawData['longitude'] ?? '/',
-                'lat' => $rawData['latitude'] ?? '/',
+                'lon' => $rawData['position']['longitude'] ?? '/',
+                'lat' => $rawData['position']['latitude'] ?? '/',
                 'ele' => $rawData['position']['altitude'] ?? '/',
                 'name' => $model->name ?? '/',
                 'active' => $rawData['active'] ?? '/',
