@@ -42,9 +42,9 @@ class EcPoisExport implements FromCollection, WithHeadings, ShouldAutoSize, With
                 'elevation' => isset($tags['ele']) ? $tags['ele'] : '/',
                 'man_made' => isset($tags['man_made']) ? $tags['man_made'] : '/',
                 'religion' => isset($tags['religion']) ? $tags['religion'] : '/',
-                'wikipedia' => isset($tags['wikipedia']) ? $tags['wikipedia'] : '/',
-                'wikidata' => isset($tags['wikidata']) ? $tags['wikidata'] : '/',
-                'wikimedia_commons' => isset($tags['wikimedia_commons']) ? $tags['wikimedia_commons'] : '/',
+                'wikipedia' => isset($tags['wikipedia']) ? "https://en.wikipedia.org/wiki/" . $tags['wikipedia'] : '/',
+                'wikidata' => isset($tags['wikidata']) ? "https://www.wikidata.org/wiki/" . $tags['wikidata'] : '/',
+                'wikimedia_commons' => isset($tags['wikimedia_commons']) ? "https://commons.wikimedia.org/wiki/" . $tags['wikimedia_commons'] : '/',
                 'score' => $model->score ?? '/',
                 'feature_type' => $model->type ?? '/',
             ];
@@ -65,7 +65,7 @@ class EcPoisExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet;
                 $highestRow = $sheet->getHighestRow();
-                $columns = ['D', 'E', 'R', 'S', 'T'];
+                $columns = ['D', 'E', 'P', 'Q', 'R'];
 
                 foreach ($columns as $column) {
                     for ($row = 2; $row <= $highestRow; $row++) {

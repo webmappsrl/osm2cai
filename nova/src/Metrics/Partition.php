@@ -113,14 +113,15 @@ abstract class Partition extends Metric
         $query = $model instanceof Builder ? $model : (new $model)->newQuery();
 
         $wrappedColumn = $column instanceof Expression
-                ? (string) $column
-                : $query->getQuery()->getGrammar()->wrap(
-                    $column ?? $query->getModel()->getQualifiedKeyName()
-                );
+            ? (string) $column
+            : $query->getQuery()->getGrammar()->wrap(
+                $column ?? $query->getModel()->getQualifiedKeyName()
+            );
 
         $results = $query->select(
-            $groupBy, DB::raw("{$function}({$wrappedColumn}) as aggregate")
-        )->groupBy($groupBy)->get();
+            $groupBy,
+            DB::raw("{$function}({$wrappedColumn}) as aggregate")
+        )->groupBy($groupBy)->orderBy('aggregate', 'asc')->get();
 
         return $this->result($results->mapWithKeys(function ($result) use ($groupBy) {
             return $this->formatAggregateResult($result, $groupBy);
