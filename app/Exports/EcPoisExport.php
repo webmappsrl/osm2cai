@@ -26,6 +26,17 @@ class EcPoisExport implements FromCollection, WithHeadings, ShouldAutoSize, With
             $tags = json_decode($model->tags, true);
             $osmtype = $model->osm_type == 'N' ? 'node' : ($model->osm_type == 'W' ? 'way' : 'relation');
             $osmUrl = 'https://www.openstreetmap.org/' . $osmtype . '/' . $model->osm_id;
+            //change all the space in the wikipedia, wikidata and wikimedia_commons tags with _
+            if (isset($tags['wikipedia'])) {
+                $wikipedia = str_replace(' ', '_', $tags['wikipedia']);
+            }
+            if (isset($tags['wikidata'])) {
+                $wikidata = str_replace(' ', '_', $tags['wikidata']);
+            }
+            if (isset($tags['wikimedia_commons'])) {
+                $wikimedia = str_replace(' ', '_', $tags['wikimedia_commons']);
+            }
+
             return [
                 'id' => $model->id ?? '/',
                 'osm_id' => $model->osm_id ?? '/',
@@ -42,9 +53,9 @@ class EcPoisExport implements FromCollection, WithHeadings, ShouldAutoSize, With
                 'elevation' => isset($tags['ele']) ? $tags['ele'] : '/',
                 'man_made' => isset($tags['man_made']) ? $tags['man_made'] : '/',
                 'religion' => isset($tags['religion']) ? $tags['religion'] : '/',
-                'wikipedia' => isset($tags['wikipedia']) ? "https://en.wikipedia.org/wiki/" . $tags['wikipedia'] : '/',
-                'wikidata' => isset($tags['wikidata']) ? "https://www.wikidata.org/wiki/" . $tags['wikidata'] : '/',
-                'wikimedia_commons' => isset($tags['wikimedia_commons']) ? "https://commons.wikimedia.org/wiki/" . $tags['wikimedia_commons'] : '/',
+                'wikipedia' => isset($tags['wikipedia']) ? "https://it.wikipedia.org/wiki/" . $wikipedia : '/',
+                'wikidata' => isset($tags['wikidata']) ? "https://www.wikidata.org/wiki/" . $wikidata : '/',
+                'wikimedia_commons' => isset($tags['wikimedia_commons']) ? "https://commons.wikimedia.org/wiki/" . $wikimedia : '/',
                 'score' => $model->score ?? '/',
                 'feature_type' => $model->type ?? '/',
             ];
