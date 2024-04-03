@@ -2,6 +2,16 @@
 
 ## [233.28.0](https://github.com/webmappsrl/osm2cai/compare/v233.27.0...v233.28.0) (2024-06-06)
 
+## [233.19.1](https://github.com/webmappsrl/osm2cai/compare/v233.19.0...v233.19.1) (2024-04-03)
+
+### Bug Fixes
+
+- fixed ec pois xlsx ([407b25b](https://github.com/webmappsrl/osm2cai/commit/407b25b2d45ed4838d79621013942ff39ff158cc))
+
+## [233.19.0](https://github.com/webmappsrl/osm2cai/compare/v233.18.0...v233.19.0) (2024-04-02)
+
+> > > > > > > 7872ae3 (release 233.19.1)
+
 ### Features
 
 - added source survey nova resource oc:3431 ([1487c73](https://github.com/webmappsrl/osm2cai/commit/1487c73d8b4d494946cca5c6965f41a0a1a9bce2))
