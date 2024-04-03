@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.19.1](https://github.com/webmappsrl/osm2cai/compare/v233.19.0...v233.19.1) (2024-04-03)
+
+
+### Bug Fixes
+
+* fixed ec pois xlsx ([407b25b](https://github.com/webmappsrl/osm2cai/commit/407b25b2d45ed4838d79621013942ff39ff158cc))
+
 ## [233.19.0](https://github.com/webmappsrl/osm2cai/compare/v233.18.0...v233.19.0) (2024-04-02)
 
 
