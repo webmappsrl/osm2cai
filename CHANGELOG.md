@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.19.2](https://github.com/webmappsrl/osm2cai/compare/v233.19.1...v233.19.2) (2024-04-10)
+
+
+### Bug Fixes
+
+* fixed import ugc ([8f91d29](https://github.com/webmappsrl/osm2cai/commit/8f91d297f623f59251f77e4b9204123f54b0004f))
+
 ## [233.19.1](https://github.com/webmappsrl/osm2cai/compare/v233.19.0...v233.19.1) (2024-04-03)
 
 
