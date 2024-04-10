@@ -116,8 +116,7 @@ class ImportUGCController extends Controller
             $rawData = json_decode($geoJson['properties']['raw_data'], true);
             $data['form_id'] = $rawData['id'] ?? null;
             if ($user == null) {
-                Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
-                $data['user_no_match'] = $geoJson['properties']['user_email'];
+                Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found for poi with geohub id ' . $id);
             }
         }
 
