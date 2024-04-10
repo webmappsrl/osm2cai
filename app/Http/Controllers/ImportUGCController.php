@@ -55,6 +55,15 @@ class ImportUGCController extends Controller
                 }
             }
 
+            //get the ugc pois with form_id = null
+            $ugcPois = UgcPoi::whereNull('form_id')->get();
+
+            if ($ugcPois->count() > 0) {
+                foreach ($ugcPois as $ugcPoi) {
+                    $this->fillNullFormId($ugcPoi);
+                }
+            }
+
             Log::info('Import process completed. Created elements: ' . json_encode($createdElements) . ', Updated elements: ' . json_encode($updatedElements));
 
             return view('importedUgc', array_merge($createdElements, ['updatedElements' => $updatedElements]));
@@ -82,9 +91,6 @@ class ImportUGCController extends Controller
     private function syncRecord($model, $geoJson, $id)
     {
         $user = User::where('email', $geoJson['properties']['user_email'])->first();
-        if ($user === null) {
-            Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
-        }
 
         if ($geoJson['geometry']) {
             $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
@@ -99,8 +105,21 @@ class ImportUGCController extends Controller
             'raw_data' => $geoJson['properties']['raw_data'] ?? null,
             'updated_at' => $geoJson['properties']['updated_at'] ?? null,
             'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'] ?? null,
-            'user_id' => $user ? $user->id : null,
         ];
+
+        if ($user != null) {
+            $data['user_id'] = $user->id;
+        }
+
+        //if the model is a poi get the id from the raw_data and fill the form_id column with the value
+        if ($model instanceof UgcPoi) {
+            $rawData = json_decode($geoJson['properties']['raw_data'], true);
+            $data['form_id'] = $rawData['id'] ?? null;
+            if ($user == null) {
+                Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
+                $data['user_no_match'] = $geoJson['properties']['user_email'];
+            }
+        }
 
         if ($model instanceof UgcMedia) {
             $data['relative_url'] = $geoJson['properties']['url'] ?? null;
@@ -135,5 +154,18 @@ class ImportUGCController extends Controller
         }
         curl_close($ch);
         return $data;
+    }
+
+    private function fillNullFormId(UgcPoi $ugcPoi)
+    {
+        //get the raw_data
+        $rawData = json_decode($ugcPoi->raw_data, true);
+        //if the raw_data is not null
+        if ($rawData) {
+            //get the id from the raw_data
+            $formId = $rawData['id'];
+            //update the form_id of the ugc poi
+            $ugcPoi->update(['form_id' => $formId]);
+        }
     }
 }
