@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class CalculateIntersectionsCommand extends Command
 {
@@ -40,20 +41,70 @@ class CalculateIntersectionsCommand extends Command
         $model = $this->argument('model');
         $id = $this->argument('id');
 
-        if ($model && $id) {
+        if ($model) {
             $model = "App\\Models\\$model";
-            $model = $model::find($id);
-            if ($model) {
-                if ($model instanceof \App\Models\MountainGroups) {
-                    try {
-                        $hikingRoutes = $model->getHikingRoutesIntersecting();
-                        $huts = $model->getHutsIntersecting();
-                        $sections = $model->getSectionsIntersecting();
-                        $ecPois = $model->getPoisIntersecting();
-                    } catch (\Exception $e) {
-                        $this->error($e->getMessage());
-                        return 1;
-                    }
+            if (!app($model) instanceof \App\Models\MountainGroups) {
+                $this->error("Only model MountainGroups is supported at the moment.");
+                return 1;
+            }
+            if ($id) {
+                $model = $model::find($id);
+                try {
+                    $this->info("Calculating intersections for  $model->id...");
+                    Log::info("Calculating intersections for  $model->id...");
+
+                    $hikingRoutes = $model->getHikingRoutesIntersecting();
+                    $this->info("Hiking routes: " . $hikingRoutes->count());
+                    Log::info("Hiking routes: " . $hikingRoutes->count());
+
+                    $huts = $model->getHutsIntersecting();
+                    $this->info("Huts: " . $huts->count());
+                    Log::info("Huts: " . $huts->count());
+
+                    $sections = $model->getSectionsIntersecting();
+                    $this->info("Sections: " . $sections->count());
+                    Log::info("Sections: " . $sections->count());
+
+                    $ecPois = $model->getPoisIntersecting();
+                    $this->info("EC POIs: " . $ecPois->count());
+                    Log::info("EC POIs: " . $ecPois->count());
+                } catch (\Exception $e) {
+                    $this->error($e->getMessage());
+                    return 1;
+                }
+
+                $hikingRoutesIds = $hikingRoutes->pluck('updated_at', 'id')->toArray();
+                $model->hiking_routes_intersecting = $hikingRoutesIds;
+
+                $hutsIds = $huts->pluck('id')->toArray();
+                $model->huts_intersecting = $hutsIds;
+
+                $sectionsIds = $sections->pluck('id')->toArray();
+                $model->sections_intersecting = $sectionsIds;
+
+                $ecPoisIds = $ecPois->pluck('id')->toArray();
+                $model->ec_pois_intersecting = $ecPoisIds;
+
+                $model->save();
+            } else {
+                foreach ($model::all() as $model) {
+                    $this->info("Calculating intersections for model $model->id...");
+                    Log::info("Calculating intersections for model $model->id...");
+                    $hikingRoutes = $model->getHikingRoutesIntersecting();
+                    $this->info("Hiking routes: " . $hikingRoutes->count());
+                    Log::info("Hiking routes: " . $hikingRoutes->count());
+
+                    $huts = $model->getHutsIntersecting();
+                    $this->info("Huts: " . $huts->count());
+                    Log::info("Huts: " . $huts->count());
+
+                    $sections = $model->getSectionsIntersecting();
+                    $this->info("Sections: " . $sections->count());
+                    Log::info("Sections: " . $sections->count());
+
+                    $ecPois = $model->getPoisIntersecting();
+                    $this->info("EC POIs: " . $ecPois->count());
+                    Log::info("EC POIs: " . $ecPois->count());
 
                     $hikingRoutesIds = $hikingRoutes->pluck('updated_at', 'id')->toArray();
                     $model->hiking_routes_intersecting = $hikingRoutesIds;
@@ -70,10 +121,16 @@ class CalculateIntersectionsCommand extends Command
                     $model->save();
                 }
             }
-        } else {
-            $this->error("Only model MountainGroups is supported at the moment.");
-        }
 
-        return 0;
+            $this->info("Intersections calculated successfully.");
+            Log::info("Intersections calculated successfully.");
+
+            return 0;
+        } else {
+            $this->error("Model is required.");
+            Log::error("Model is required.");
+
+            return 1;
+        }
     }
 }
