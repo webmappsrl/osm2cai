@@ -622,7 +622,7 @@ class MiturAbruzzoController extends Controller
      * "from:coordinate": "43.71699,10.51083",
      * "to": "Rifugio",
      * "to:coordinate": "43.71699,10.51083",
-     * "abstract": "1000",
+     * "abstract": {"gpx_url": "https://geohub.webmapp.it/api/ec/track/download/27456.gpx", "cai_scale_string": {"it": "escursionistico", "en": "hiking Trail"}},
      * "distance": "10",
      * "duration_forward": "3",
      * "ele:max": "1000",
