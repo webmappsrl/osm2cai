@@ -444,111 +444,132 @@ class MiturAbruzzoController extends Controller
      *                     property="id",
      *                     type="integer",
      *                     example=1,
+     *                    description="The hiking route ID"
      *                 ),
      *                 @OA\Property(
      *                     property="ref",
      *                     type="string",
-     *                     example="T001"
+     *                     example="T001",
+     *                    description="The hiking route reference"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Sentiero 1"
+     *                     example="Sentiero 1",
+     *                   description="The hiking route name"
      *                 ),
      *                 @OA\Property(
      *                     property="cai_scale",
      *                     type="string",
-     *                     example="T"
+     *                     example="T",
+     *                  description="The hiking route CAI scale"
      *                 ),
      *                 @OA\Property(
      *                     property="rwn_name",
      *                     type="string",
-     *                     example="Sentiero 1"
+     *                     example="Sentiero 1",
+     *                 description="The hiking route RWN name"
      *                ),
      *               @OA\Property(
      *                    property="section_id",
      *                   type="array",
      *                 @OA\Items(
      *                    type="integer",
-     *                 example=1
+     *                 example=1,
+     *                description="The section IDs associated with the hiking route"
      *             )
      *            ),
      *          @OA\Property(
      *            property="from",
      *        type="string",
-     *   example="Rifugio"
+     *   example="Rifugio",
+     * description="The starting point of the hiking route"
      * ),
      *  @OA\Property(
      *   property="from:coordinate",
      * type="string",
-     * example="43.71699,10.51083"
+     * example="43.71699,10.51083",
+     * description="The coordinates of the starting point of the hiking route"
      * ),
      * @OA\Property(
      * property="to",
      * type="string",
-     * example="Rifugio"
+     * example="Rifugio",
+     * description="The ending point of the hiking route"
      * ),
      * @OA\Property(
      * property="to:coordinate",
      * type="string",
-     * example="43.71699,10.51083"
+     * example="43.71699,10.51083",
+     * description="The coordinates of the ending point of the hiking route"
      * ),
      * @OA\Property(
      * property="abstract",
      * type="string",
-     * example="1000"
+     * example="1000",
+     * description="The abstract of the hiking route"
      * ),
      * @OA\Property(
      * property="distance",
      * type="string",
-     * example="10"
+     * example="10",
+     * description="The distance of the hiking route"
      * ),
      * @OA\Property(
      * property="duration_forward",
      * type="string",
-     * example="3"
+     * example="3",
+     * description="The forward duration of the hiking route"
      * ),
      * @OA\Property(
      * property="ele:max",
      * type="string",
-     * example="1000"
+     * example="1000",
+     * description="The maximum elevation of the hiking route"
      *  ),
      * @OA\Property(
      * property="ele:min",
      * type="string",
-     * example="500"
+     * example="500",
+     * description="The minimum elevation of the hiking route"
      * ),
      * @OA\Property(
      * property="incline",
      * type="string",
-     * example="15%"
+     * example="15%",
+     * description="The incline of the hiking route"
      * ),
      * @OA\Property(
      * property="issues_status",
      * type="string",
-     * example="ok"
+     * example="ok",
+     * description="The issues status of the hiking route"
      * ),
      * @OA\Property(
      * property="symbol",
      * type="string",
-     * example="Segnaletica standard CAI"
+     * example="Segnaletica standard CAI",
+     * description="The symbol of the hiking route"
      * ),
      * @OA\Property(
      * property="difficulty",
      * type="string",
-     * example="Turistico"
+     * example="Turistico",
+     * description="The difficulty of the hiking route"
      * ),
      * @OA\Property(
      * property="info",
      * type="string",
-     * example="Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche"
+     * example="Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche",
+     * description="The information of the hiking route"
      * ),
      * @OA\Property(
      * property="cai_huts",
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The CAI huts intersecting with the hiking route"
      * )
      * ),
      * @OA\Property(
@@ -556,18 +577,21 @@ class MiturAbruzzoController extends Controller
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The POIs intersecting with the hiking route"
      * )
      * ),
      * @OA\Property(
-     * property="activitiy",
+     * property="activity",
      * type="string",
-     * example="Escursionismo"
+     * example="Escursionismo",
+     * description="The activity of the hiking route"
      * ),
      * @OA\Property(
      * property="map",
      * type="string",
-     * example="https://osm2cai.cai.it/hiking-route/id/9689"
+     * example="https://osm2cai.cai.it/hiking-route/id/9689",
+     * description="The map of the hiking route"
      * )
      * ),
      * @OA\Property(property="geometry", type="object",

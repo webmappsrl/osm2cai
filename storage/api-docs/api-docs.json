@@ -1934,91 +1934,112 @@
                                         "properties": {
                                             "properties": {
                                                 "id": {
+                                                    "description": "The hiking route ID",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "ref": {
+                                                    "description": "The hiking route reference",
                                                     "type": "string",
                                                     "example": "T001"
                                                 },
                                                 "name": {
+                                                    "description": "The hiking route name",
                                                     "type": "string",
                                                     "example": "Sentiero 1"
                                                 },
                                                 "cai_scale": {
+                                                    "description": "The hiking route CAI scale",
                                                     "type": "string",
                                                     "example": "T"
                                                 },
                                                 "rwn_name": {
+                                                    "description": "The hiking route RWN name",
                                                     "type": "string",
                                                     "example": "Sentiero 1"
                                                 },
                                                 "section_id": {
                                                     "type": "array",
                                                     "items": {
+                                                        "description": "The section IDs associated with the hiking route",
                                                         "type": "integer",
                                                         "example": 1
                                                     }
                                                 },
                                                 "from": {
+                                                    "description": "The starting point of the hiking route",
                                                     "type": "string",
                                                     "example": "Rifugio"
                                                 },
                                                 "from:coordinate": {
+                                                    "description": "The coordinates of the starting point of the hiking route",
                                                     "type": "string",
                                                     "example": "43.71699,10.51083"
                                                 },
                                                 "to": {
+                                                    "description": "The ending point of the hiking route",
                                                     "type": "string",
                                                     "example": "Rifugio"
                                                 },
                                                 "to:coordinate": {
+                                                    "description": "The coordinates of the ending point of the hiking route",
                                                     "type": "string",
                                                     "example": "43.71699,10.51083"
                                                 },
                                                 "abstract": {
+                                                    "description": "The abstract of the hiking route",
                                                     "type": "string",
                                                     "example": "1000"
                                                 },
                                                 "distance": {
+                                                    "description": "The distance of the hiking route",
                                                     "type": "string",
                                                     "example": "10"
                                                 },
                                                 "duration_forward": {
+                                                    "description": "The forward duration of the hiking route",
                                                     "type": "string",
                                                     "example": "3"
                                                 },
                                                 "ele:max": {
+                                                    "description": "The maximum elevation of the hiking route",
                                                     "type": "string",
                                                     "example": "1000"
                                                 },
                                                 "ele:min": {
+                                                    "description": "The minimum elevation of the hiking route",
                                                     "type": "string",
                                                     "example": "500"
                                                 },
                                                 "incline": {
+                                                    "description": "The incline of the hiking route",
                                                     "type": "string",
                                                     "example": "15%"
                                                 },
                                                 "issues_status": {
+                                                    "description": "The issues status of the hiking route",
                                                     "type": "string",
                                                     "example": "ok"
                                                 },
                                                 "symbol": {
+                                                    "description": "The symbol of the hiking route",
                                                     "type": "string",
                                                     "example": "Segnaletica standard CAI"
                                                 },
                                                 "difficulty": {
+                                                    "description": "The difficulty of the hiking route",
                                                     "type": "string",
                                                     "example": "Turistico"
                                                 },
                                                 "info": {
+                                                    "description": "The information of the hiking route",
                                                     "type": "string",
                                                     "example": "Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche"
                                                 },
                                                 "cai_huts": {
                                                     "type": "array",
                                                     "items": {
+                                                        "description": "The CAI huts intersecting with the hiking route",
                                                         "type": "integer",
                                                         "example": 1
                                                     }
@@ -2026,15 +2047,18 @@
                                                 "pois": {
                                                     "type": "array",
                                                     "items": {
+                                                        "description": "The POIs intersecting with the hiking route",
                                                         "type": "integer",
                                                         "example": 1
                                                     }
                                                 },
-                                                "activitiy": {
+                                                "activity": {
+                                                    "description": "The activity of the hiking route",
                                                     "type": "string",
                                                     "example": "Escursionismo"
                                                 },
                                                 "map": {
+                                                    "description": "The map of the hiking route",
                                                     "type": "string",
                                                     "example": "https://osm2cai.cai.it/hiking-route/id/9689"
                                                 }
