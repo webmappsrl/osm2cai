@@ -1087,47 +1087,50 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *                    description="The POI ID"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="POI Name"
+     *                     example="POI Name",
+     *                   description="The POI name"
      *                 ),
      *                 @OA\Property(
      *                     property="type",
      *                     type="string",
-     *                     example="POI Type"
+     *                     example="POI Type",
+     *                  description="The POI type"
      *                 ),
      *                 @OA\Property(
      *                     property="comune",
      *                     type="string",
-     *                     example="Comune Name"
+     *                     example="Comune Name",
+     *                 description="The comune name"
      *                 ),
      *                 @OA\Property(
      *                     property="description",
      *                     type="string",
-     *                     example="Description of the POI"
+     *                     example="Description of the POI",
+     *                description="The POI description"
      *                 ),
      *                 @OA\Property(
      *                     property="info",
      *                     type="string",
-     *                     example="Info about the POI"
+     *                     example="Info about the POI",
+     *                description="The POI info"
      *                 ),
      *                 @OA\Property(
      *                     property="difficulty",
      *                     type="string",
-     *                     example="Difficulty of the POI"
+     *                     example="Difficulty of the POI",
+     *               description="The POI difficulty"
      *                 ),
-     *                @OA\Property(
-     *                    property="from",
-     *                  type="string",
-     *                example="From"
-     *            ),
      *           @OA\Property(
      *             property="activity",
      *          type="string",
-     *        example="Activity"
+     *        example="Activity",
+     *     description="The activity of the POI"
      *   ),
      * 
      * @OA\Property(
@@ -1183,7 +1186,6 @@ class MiturAbruzzoController extends Controller
         $properties['description'] = $lorem;
         $properties['info'] = $lorem;
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
-        $properties['from'] = $hikingRoute ? $hikingRoute->from : '';
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
