@@ -1953,9 +1953,12 @@
                                                     "type": "string",
                                                     "example": "Sentiero 1"
                                                 },
-                                                "source:ref": {
-                                                    "type": "string",
-                                                    "example": "123456"
+                                                "section_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
                                                 },
                                                 "from": {
                                                     "type": "string",
@@ -1973,7 +1976,7 @@
                                                     "type": "string",
                                                     "example": "43.71699,10.51083"
                                                 },
-                                                "tdh": {
+                                                "abstract": {
                                                     "type": "string",
                                                     "example": "1000"
                                                 },
@@ -2062,12 +2065,15 @@
                                         "name": "Sentiero 1",
                                         "cai_scale": "T",
                                         "rwn_name": "Sentiero 1",
-                                        "source:ref": "123456",
+                                        "section_id": [
+                                            292,
+                                            393
+                                        ],
                                         "from": "Rifugio",
                                         "from:coordinate": "43.71699,10.51083",
                                         "to": "Rifugio",
                                         "to:coordinate": "43.71699,10.51083",
-                                        "tdh": "1000",
+                                        "abstract": "1000",
                                         "distance": "10",
                                         "duration_forward": "3",
                                         "ele:max": "1000",
