@@ -1,5 +1,13 @@
 # Changelog
 
+## [233.20.0](https://github.com/webmappsrl/osm2cai/compare/v233.19.2...v233.20.0) (2024-04-16)
+
+
+### Features
+
+* updated api doc ([609170b](https://github.com/webmappsrl/osm2cai/commit/609170b20d46d011852ef942a9729dbf5cd1d174))
+* updated api docs ([f1fdbbb](https://github.com/webmappsrl/osm2cai/commit/f1fdbbb8d4cb46628d90fd6c7bbd63a71d354912))
+
 ## [233.19.2](https://github.com/webmappsrl/osm2cai/compare/v233.19.1...v233.19.2) (2024-04-10)
 
 
