@@ -2402,38 +2402,42 @@
                                         "properties": {
                                             "properties": {
                                                 "id": {
+                                                    "description": "The POI ID",
                                                     "type": "integer",
                                                     "example": 1
                                                 },
                                                 "name": {
+                                                    "description": "The POI name",
                                                     "type": "string",
                                                     "example": "POI Name"
                                                 },
                                                 "type": {
+                                                    "description": "The POI type",
                                                     "type": "string",
                                                     "example": "POI Type"
                                                 },
                                                 "comune": {
+                                                    "description": "The comune name",
                                                     "type": "string",
                                                     "example": "Comune Name"
                                                 },
                                                 "description": {
+                                                    "description": "The POI description",
                                                     "type": "string",
                                                     "example": "Description of the POI"
                                                 },
                                                 "info": {
+                                                    "description": "The POI info",
                                                     "type": "string",
                                                     "example": "Info about the POI"
                                                 },
                                                 "difficulty": {
+                                                    "description": "The POI difficulty",
                                                     "type": "string",
                                                     "example": "Difficulty of the POI"
                                                 },
-                                                "from": {
-                                                    "type": "string",
-                                                    "example": "From"
-                                                },
                                                 "activity": {
+                                                    "description": "The activity of the POI",
                                                     "type": "string",
                                                     "example": "Activity"
                                                 },
