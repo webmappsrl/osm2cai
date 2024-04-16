@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.21.1](https://github.com/webmappsrl/osm2cai/compare/v233.21.0...v233.21.1) (2024-04-16)
+
+
+### Bug Fixes
+
+* fixed calculate intersections command ([91ec821](https://github.com/webmappsrl/osm2cai/commit/91ec821c520c0136dfdb20b1fc1ed7308558b40e))
+
 ## [233.21.0](https://github.com/webmappsrl/osm2cai/compare/v233.20.1...v233.21.0) (2024-04-16)
 
 
