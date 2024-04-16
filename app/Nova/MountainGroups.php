@@ -134,6 +134,11 @@ class MountainGroups extends Resource
                     return true;
                 }
             ),
+            (new \App\Nova\Actions\CalculateIntersectionsAction)->canRun(
+                function ($request) {
+                    return true;
+                }
+            ),
         ];
     }
 }
