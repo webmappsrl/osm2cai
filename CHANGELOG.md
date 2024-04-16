@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.21.0](https://github.com/webmappsrl/osm2cai/compare/v233.20.1...v233.21.0) (2024-04-16)
+
+
+### Features
+
+* improved api performance for mountain groups. Added intersections columns to mountain groups table and created nova action and command to calculate intersections ([c55d152](https://github.com/webmappsrl/osm2cai/commit/c55d15234d3af4e9e4eb6387aa8a43e8e0f89a58))
+
 ## [233.20.1](https://github.com/webmappsrl/osm2cai/compare/v233.20.0...v233.20.1) (2024-04-16)
 
 
