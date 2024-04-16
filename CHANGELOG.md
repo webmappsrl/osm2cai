@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.20.1](https://github.com/webmappsrl/osm2cai/compare/v233.20.0...v233.20.1) (2024-04-16)
+
+
+### Bug Fixes
+
+* improved mitur hiking routes api examples ([8f0b7f2](https://github.com/webmappsrl/osm2cai/commit/8f0b7f213add38142bfd344153e2427be804541c))
+
 ## [233.20.0](https://github.com/webmappsrl/osm2cai/compare/v233.19.2...v233.20.0) (2024-04-16)
 
 
