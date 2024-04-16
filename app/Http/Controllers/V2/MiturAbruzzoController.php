@@ -443,7 +443,7 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
      *                 ),
      *                 @OA\Property(
      *                     property="ref",
@@ -466,9 +466,12 @@ class MiturAbruzzoController extends Controller
      *                     example="Sentiero 1"
      *                ),
      *               @OA\Property(
-     *                    property="source:ref",
-     *                   type="string",
-     *                example="123456"
+     *                    property="section_id",
+     *                   type="array",
+     *                 @OA\Items(
+     *                    type="integer",
+     *                 example=1
+     *             )
      *            ),
      *          @OA\Property(
      *            property="from",
@@ -491,7 +494,7 @@ class MiturAbruzzoController extends Controller
      * example="43.71699,10.51083"
      * ),
      * @OA\Property(
-     * property="tdh",
+     * property="abstract",
      * type="string",
      * example="1000"
      * ),
@@ -579,12 +582,12 @@ class MiturAbruzzoController extends Controller
      * "name": "Sentiero 1",
      * "cai_scale": "T",
      * "rwn_name": "Sentiero 1",
-     * "source:ref": "123456",
+     * "section_id": {292,393},
      * "from": "Rifugio",
      * "from:coordinate": "43.71699,10.51083",
      * "to": "Rifugio",
      * "to:coordinate": "43.71699,10.51083",
-     * "tdh": "1000",
+     * "abstract": "1000",
      * "distance": "10",
      * "duration_forward": "3",
      * "ele:max": "1000",
@@ -633,6 +636,10 @@ class MiturAbruzzoController extends Controller
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
+        //get the sections associated with the hiking route
+        $sections = $hikingRoute->sections;
+        $sectionsIds = $sections->pluck('id')->toArray();
+
         //get the difficulty based on cai_scale value
         $difficulty;
 
@@ -675,12 +682,12 @@ class MiturAbruzzoController extends Controller
         $properties['name'] = $hikingRoute->name;
         $properties['cai_scale'] = $hikingRoute->cai_scale;
         $properties['rwn_name'] = $hikingRoute->rwn_name;
-        $properties['source:ref'] = $hikingRoute->source_ref;
+        $properties['section_id'] = $sectionsIds;
         $properties['from'] = $hikingRoute->from;
         $properties['from:coordinate'] = '43.71699,10.51083';
         $properties['to'] = $hikingRoute->to;
         $properties['to:coordinate'] = '43.71699,10.51083';
-        $properties['tdh'] = $hikingRoute->tdh;
+        $properties['abstract'] = $hikingRoute->tdh;
         $properties['distance'] = $hikingRoute->distance;
         $properties['duration_forward'] = $hikingRoute->duration_forward;
         $properties['ele:max'] = $hikingRoute->ele_max;
