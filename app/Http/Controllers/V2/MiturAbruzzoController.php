@@ -205,90 +205,97 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Mountain Group Name"
+     *                     example="Mountain Group Name",
+     *                    description="The mountain group name"
      *                 ),
      *                 @OA\Property(
      *                     property="sections",
      *                     type="array",
      *                     @OA\Items(
      *                         type="integer",
-     *                         example=1
+     *                         example=1,
+     *                        description="The section IDs associated with the mountain group"
      *                     )
      *                 ),
      *                 @OA\Property(
      *                     property="area",
      *                     type="string",
-     *                     example="123"
+     *                     example="123",
+     *                   description="The area of the mountain group"
      *                 ),
      *                 @OA\Property(
      *                     property="ele:min",
      *                    type="string",
-     *                  example="856"
+     *                  example="856",
+     *                description="The minimum elevation of the mountain group"
      *              ),
      *           @OA\Property(
      *              property="ele:max",
      *         type="string",
-     *      example="1785"
+     *      example="1785",
+     *  description="The maximum elevation of the mountain group"
      *  ), 
      * @OA\Property(
      * property="region",
      * type="string",
-     * example="Lazio"
+     * example="Lazio",
+     * description="The region of the mountain group"
      * ),
      * @OA\Property(
      * property="provinces",
      * type="string",
-     * example="Roma"
+     * example="Roma",
+     * description="The provinces of the mountain group"
      * ),
      * @OA\Property(
      * property="municipalities",
      * type="string",
-     * example="Roma"
+     * example="Roma",
+     * description="The municipalities of the mountain group"
      * ),
      * @OA\Property(
      * property="map",
      * type="string",
-     * example="url_mappa"
+     * example="url_mappa",
+     * description="The map of the mountain group"
      * ),
      * @OA\Property(
      * property="description",
      * type="string",
-     * example="Description of the mountain group"
+     * example="Description of the mountain group",
+     * description="The description of the mountain group"
      * ),
      * @OA\Property(
      * property="aggregated_data",
      * type="string",
-     * example="aggregated data"
-     * ),
-     * @OA\Property(
-     * property="tourist_attraction",
-     * type="string",
-     * example="Matera"
+     * example="aggregated data",
+     * description="The aggregated data of the mountain group"
      * ),
      * @OA\Property(
      * property="protected_area",
      * type="string",
-     * example="Parchi Aree protette Natura 2000"
+     * example="Parchi Aree protette Natura 2000",
+     * description="The protected area of the mountain group"
      * ),
      * @OA\Property(
      * property="activity",
      * type="string",
-     * example="Escursionismo, Alpinismo"
+     * example="Escursionismo, Alpinismo",
+     * description="The activity of the mountain group"
      * ),
      * @OA\Property(
      * property="hiking_routes",
-     * type="array",
-     * @OA\Items(
-     * type="integer",
-     * example=1
-     * )
+     * type="object",
+     * example={"1": "2022-12-03 12:34:25", "2": "2023-01-15 09:30:00", "3": "2023-02-20 14:45:10"},
+     * description="The hiking routes intersecting with the mountain group"
      * ),
      * @OA\Property(
      * property="ec_pois",
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The EC POIs intersecting with the mountain group"
      * )
      * ),
      * @OA\Property(
@@ -296,35 +303,40 @@ class MiturAbruzzoController extends Controller
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The CAI huts intersecting with the mountain group"
      * )
      * ),
      * @OA\Property(
      * property="hiking_routes_map",
      * type="string",
-     * example="mappa percorsi"
+     * example="mappa percorsi",
+     * description="The map of the hiking routes"
      * ),
      * @OA\Property(
      * property="disclaimer",
      * type="string",
-     * example="testo disclaimer"
+     * example="testo disclaimer",
+     * description="The disclaimer of the mountain group"
      * ),
      * @OA\Property(
      * property="ec_pois_count",
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The count of EC POIs intersecting with the mountain group"
      * ),
      * @OA\Property(
      * property="cai_huts_count",
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The count of CAI huts intersecting with the mountain group"
      * )
      * ),
      * @OA\Property(property="geometry", type="object",
      * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
      * @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
      * ),
-     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","tourist_attraction":"Matera","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo","hiking_routes":{1},"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
+     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo", "hiking_routes": { "2806": "2024-02-24T03:48:14.000000Z" },"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
      * )
      * ),
      * @OA\Response(
@@ -341,7 +353,7 @@ class MiturAbruzzoController extends Controller
         //get the hiking routes that intersect with the mountain group geometry
         $hikingRoutes = $mountainGroup->getHikingRoutesIntersecting();
         if ($hikingRoutes->count() > 0) {
-            $hikingRoutes = $hikingRoutes->pluck('id')->toArray();
+            $hikingRoutes = $hikingRoutes->pluck('updated_at', 'id')->toArray();
         } else {
             $hikingRoutes = [];
         }
@@ -391,7 +403,6 @@ class MiturAbruzzoController extends Controller
         $properties['map'] = 'url_mappa';
         $properties['description'] = $mountainGroup->description ?? '';
         $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
-        $properties['tourist_attraction'] = 'Matera';
         $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
         $properties['activity'] = 'Escursionismo, Alpinismo';
         $properties['hiking_routes'] = $hikingRoutes;
@@ -443,109 +454,133 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *                    description="The hiking route ID"
      *                 ),
      *                 @OA\Property(
      *                     property="ref",
      *                     type="string",
-     *                     example="T001"
+     *                     example="T001",
+     *                    description="The hiking route reference"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Sentiero 1"
+     *                     example="Sentiero 1",
+     *                   description="The hiking route name"
      *                 ),
      *                 @OA\Property(
      *                     property="cai_scale",
      *                     type="string",
-     *                     example="T"
+     *                     example="T",
+     *                  description="The hiking route CAI scale"
      *                 ),
      *                 @OA\Property(
      *                     property="rwn_name",
      *                     type="string",
-     *                     example="Sentiero 1"
+     *                     example="Sentiero 1",
+     *                 description="The hiking route RWN name"
      *                ),
      *               @OA\Property(
-     *                    property="source:ref",
-     *                   type="string",
-     *                example="123456"
+     *                    property="section_id",
+     *                   type="array",
+     *                 @OA\Items(
+     *                    type="integer",
+     *                 example=1,
+     *                description="The section IDs associated with the hiking route"
+     *             )
      *            ),
      *          @OA\Property(
      *            property="from",
      *        type="string",
-     *   example="Rifugio"
+     *   example="Rifugio",
+     * description="The starting point of the hiking route"
      * ),
      *  @OA\Property(
      *   property="from:coordinate",
      * type="string",
-     * example="43.71699,10.51083"
+     * example="43.71699,10.51083",
+     * description="The coordinates of the starting point of the hiking route"
      * ),
      * @OA\Property(
      * property="to",
      * type="string",
-     * example="Rifugio"
+     * example="Rifugio",
+     * description="The ending point of the hiking route"
      * ),
      * @OA\Property(
      * property="to:coordinate",
      * type="string",
-     * example="43.71699,10.51083"
+     * example="43.71699,10.51083",
+     * description="The coordinates of the ending point of the hiking route"
      * ),
      * @OA\Property(
-     * property="tdh",
+     * property="abstract",
      * type="string",
-     * example="1000"
+     * example="1000",
+     * description="The abstract of the hiking route"
      * ),
      * @OA\Property(
      * property="distance",
      * type="string",
-     * example="10"
+     * example="10",
+     * description="The distance of the hiking route"
      * ),
      * @OA\Property(
      * property="duration_forward",
      * type="string",
-     * example="3"
+     * example="3",
+     * description="The forward duration of the hiking route"
      * ),
      * @OA\Property(
      * property="ele:max",
      * type="string",
-     * example="1000"
+     * example="1000",
+     * description="The maximum elevation of the hiking route"
      *  ),
      * @OA\Property(
      * property="ele:min",
      * type="string",
-     * example="500"
+     * example="500",
+     * description="The minimum elevation of the hiking route"
      * ),
      * @OA\Property(
      * property="incline",
      * type="string",
-     * example="15%"
+     * example="15%",
+     * description="The incline of the hiking route"
      * ),
      * @OA\Property(
      * property="issues_status",
      * type="string",
-     * example="ok"
+     * example="ok",
+     * description="The issues status of the hiking route"
      * ),
      * @OA\Property(
      * property="symbol",
      * type="string",
-     * example="Segnaletica standard CAI"
+     * example="Segnaletica standard CAI",
+     * description="The symbol of the hiking route"
      * ),
      * @OA\Property(
      * property="difficulty",
      * type="string",
-     * example="Turistico"
+     * example="Turistico",
+     * description="The difficulty of the hiking route"
      * ),
      * @OA\Property(
      * property="info",
      * type="string",
-     * example="Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche"
+     * example="Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche",
+     * description="The information of the hiking route"
      * ),
      * @OA\Property(
      * property="cai_huts",
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The CAI huts intersecting with the hiking route"
      * )
      * ),
      * @OA\Property(
@@ -553,18 +588,21 @@ class MiturAbruzzoController extends Controller
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The POIs intersecting with the hiking route"
      * )
      * ),
      * @OA\Property(
-     * property="activitiy",
+     * property="activity",
      * type="string",
-     * example="Escursionismo"
+     * example="Escursionismo",
+     * description="The activity of the hiking route"
      * ),
      * @OA\Property(
      * property="map",
      * type="string",
-     * example="https://osm2cai.cai.it/hiking-route/id/9689"
+     * example="https://osm2cai.cai.it/hiking-route/id/9689",
+     * description="The map of the hiking route"
      * )
      * ),
      * @OA\Property(property="geometry", type="object",
@@ -579,12 +617,12 @@ class MiturAbruzzoController extends Controller
      * "name": "Sentiero 1",
      * "cai_scale": "T",
      * "rwn_name": "Sentiero 1",
-     * "source:ref": "123456",
+     * "section_id": {292,393},
      * "from": "Rifugio",
      * "from:coordinate": "43.71699,10.51083",
      * "to": "Rifugio",
      * "to:coordinate": "43.71699,10.51083",
-     * "tdh": "1000",
+     * "abstract": "1000",
      * "distance": "10",
      * "duration_forward": "3",
      * "ele:max": "1000",
@@ -633,6 +671,10 @@ class MiturAbruzzoController extends Controller
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
+        //get the sections associated with the hiking route
+        $sections = $hikingRoute->sections;
+        $sectionsIds = $sections->pluck('id')->toArray();
+
         //get the difficulty based on cai_scale value
         $difficulty;
 
@@ -675,12 +717,12 @@ class MiturAbruzzoController extends Controller
         $properties['name'] = $hikingRoute->name;
         $properties['cai_scale'] = $hikingRoute->cai_scale;
         $properties['rwn_name'] = $hikingRoute->rwn_name;
-        $properties['source:ref'] = $hikingRoute->source_ref;
+        $properties['section_id'] = $sectionsIds;
         $properties['from'] = $hikingRoute->from;
         $properties['from:coordinate'] = '43.71699,10.51083';
         $properties['to'] = $hikingRoute->to;
         $properties['to:coordinate'] = '43.71699,10.51083';
-        $properties['tdh'] = $hikingRoute->tdh;
+        $properties['abstract'] = $hikingRoute->tdh;
         $properties['distance'] = $hikingRoute->distance;
         $properties['duration_forward'] = $hikingRoute->duration_forward;
         $properties['ele:max'] = $hikingRoute->ele_max;
@@ -739,208 +781,248 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *                    description="The hut ID"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Rifugio"
+     *                     example="Rifugio",
+     *                  description="The hut name"
      *                 ),
      *                 @OA\Property(
      *                     property="second_name",
      *                     type="string",
-     *                     example="Rifugio 2"
+     *                     example="Rifugio 2",
+     *                 description="The second name of the hut"
      *                 ),
      *                 @OA\Property(
      *                     property="type",
      *                     type="string",
-     *                     example="Bivacco"
+     *                     example="Bivacco",
+     *                description="The type of the hut"
      *                 ),
      *                 @OA\Property(
      *                     property="elevation",
      *                     type="integer",
-     *                     example=2000
+     *                     example=2000,
+     *                description="The elevation of the hut"
      *                 ),
      *                 @OA\Property(
      *                     property="mountain_groups",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *               description="The mountain groups associated with the hut"
      *                 ),
      *                 @OA\Property(
      *                     property="type_custodial",
      *                     type="string",
-     *                     example="1"
+     *                     example="1",
+     *               description="The type custodial of the hut"
      *                 ),
      *                 @OA\Property(
      *                    property="company_management_property",
      *                   type="string",
-     *                 example="Montagna srl"
+     *                 example="Cai",
+     *               description="The company management property of the hut"
      *                ),
      *                @OA\Property(
      *                   property="addr:street",
      *                 type="string",
-     *                example="via guglie alte"
+     *                example="via guglie alte",
+     *              description="The street address of the hut"
      *              ),
      *             @OA\Property(
      *               property="addr:housenumber",
      *            type="string",
-     *          example="23"
+     *          example="23",
+     *       description="The house number of the hut"
      *       ),
      *     @OA\Property(
      *      property="addr:postcode",
      *  type="string",
-     * example="54787"
+     * example="54787",
+     * description="The postcode of the hut"
      * ),
      * @OA\Property(
      * property="addr:city",
      * type="string",
-     * example="Alpi"
+     * example="Alpi",
+     * description="The city of the hut"
      * ),
      * @OA\Property(
      * property="ref:vatin",
      * type="string",
-     * example="IT0000000000000"
+     * example="IT0000000000000",
+     * description="The VATIN reference of the hut"
      * ),
      * @OA\Property(
      * property="phone",
      * type="string",
-     * example="+39 000 00000000"
+     * example="+39 000 00000000",
+     * description="The phone number of the hut"
      * ),
      * @OA\Property(
      * property="fax",
      * type="string",
-     * example="+39 000 00000001"
+     * example="+39 000 00000001",
+     * description="The fax number of the hut"
      * ),
      * @OA\Property(
      * property="email",
      * type="string",
-     * example="example@email.com"
+     * example="example@email.com",
+     * description="The email of the hut"
      * ),
      * @OA\Property(
      * property="email_pec",
      * type="string",
-     * example="pec@email.com"
+     * example="pec@email.com",
+     * description="The PEC email of the hut"
      * ),
      * @OA\Property(
      * property="website",
      * type="string",
-     * example="www.sito.it"
+     * example="www.sito.it",
+     * description="The website of the hut"
      * ),
      * @OA\Property(
      * property="facebook_contact",
      * type="string",
-     * example="https://facebook.com/rifugio"
+     * example="https://facebook.com/rifugio",
+     * description="The facebook contact of the hut"
      * ),
      * @OA\Property(
      * property="municipality_geo",
      * type="string",
-     * example="Alagna Valsesia"
+     * example="Alagna Valsesia",
+     * description="The municipality of the hut"
      * ),
      * @OA\Property(
      * property="province_geo",
      * type="string",
-     * example="Lucca"
+     * example="Lucca",
+     * description="The province of the hut"
      * ),
      * @OA\Property(
      * property="site_geo",
      * type="string",
-     * example="Piemonte"
+     * example="Piemonte",
+     * description="The site of the hut"
      * ),
      * @OA\Property(
      * property="source:ref",
      * type="string",
-     * example="123456"
+     * example="123456",
+     * description="The source reference of the hut"
      * ),
      * @OA\Property(
      * property="description",
      * type="string",
-     * example="Description of the hut"
+     * example="Description of the hut",
+     * description="The description of the hut"
      * ),
      * @OA\Property(
      * property="pois",
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The POIs intersecting with the hut"
      * )
      * ),
      * @OA\Property(
      * property="opening",
      * type="string",
-     * example="Opening hours"
+     * example="Opening hours",
+     * description="The opening hours of the hut"
      * ),
      * @OA\Property(
      * property="acqua_in_rifugio_service",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The water in the hut service"
      * ),
      * @OA\Property(
      * property="acqua_calda_service",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The hot water service"
      * ),
      * @OA\Property(
      * property="acqua_esterno_service",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The external water service"
      * ),
      * @OA\Property(
      * property="posti_letto_invernali_service",
      * type="string",
-     * example="12"
+     * example="12",
+     * description="The winter bed places service"
      * ),
      * @OA\Property(
      * property="posti_totali_service",
      * type="string",
-     * example="23"
+     * example="23",
+     * description="The total bed places service"
      * ),
      * @OA\Property(
      * property="ristorante_service",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The restaurant service"
      * ),
      * @OA\Property(
      * property="activities",
      * type="string",
-     * example="Escursionismo/Alpinismo"
+     * example="Escursionismo/Alpinismo",
+     * description="The activities of the hut"
      * ),
      * @OA\Property(
      * property="necessary_equipment",
      * type="string",
-     * example="Normale dotazione Escursionistica / Normale dotazione Alpinistica"
+     * example="Normale dotazione Escursionistica / Normale dotazione Alpinistica",
+     * description="The necessary equipment of the hut"
      * ),
      * @OA\Property(
      * property="rates",
      * type="string",
-     * example="https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf"
+     * example="https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf",
+     * description="The rates of the hut"
      * ),
      * @OA\Property(
      * property="payment_credit_cards",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The payment credit cards service"
      * ),
      * @OA\Property(
      * property="hiking_routes",
      * type="array",
      * @OA\Items(
      * type="integer",
-     * example=1
+     * example=1,
+     * description="The hiking routes intersecting with the hut"
      * )
      * ),
      * @OA\Property(
      * property="accessibilitá_ai_disabili_service",
      * type="string",
-     * example="1"
+     * example="1",
+     * description="The accessibility to disabled service"
      * ),
      * @OA\Property(
      * property="gallery",
      * type="string",
-     * example="https://galleria.it/"
+     * example="https://galleria.it/",
+     * description="The gallery of the hut"
      * ),
      * @OA\Property(
      * property="rule",
      * type="string",
-     * example="https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf"
+     * example="https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf",
+     * description="The rule of the hut"
      * )
      *            ),
      *                @OA\Property(property="geometry", type="object",
@@ -1056,47 +1138,50 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *                    description="The POI ID"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="POI Name"
+     *                     example="POI Name",
+     *                   description="The POI name"
      *                 ),
      *                 @OA\Property(
      *                     property="type",
      *                     type="string",
-     *                     example="POI Type"
+     *                     example="POI Type",
+     *                  description="The POI type"
      *                 ),
      *                 @OA\Property(
      *                     property="comune",
      *                     type="string",
-     *                     example="Comune Name"
+     *                     example="Comune Name",
+     *                 description="The comune name"
      *                 ),
      *                 @OA\Property(
      *                     property="description",
      *                     type="string",
-     *                     example="Description of the POI"
+     *                     example="Description of the POI",
+     *                description="The POI description"
      *                 ),
      *                 @OA\Property(
      *                     property="info",
      *                     type="string",
-     *                     example="Info about the POI"
+     *                     example="Info about the POI",
+     *                description="The POI info"
      *                 ),
      *                 @OA\Property(
      *                     property="difficulty",
      *                     type="string",
-     *                     example="Difficulty of the POI"
+     *                     example="Difficulty of the POI",
+     *               description="The POI difficulty"
      *                 ),
-     *                @OA\Property(
-     *                    property="from",
-     *                  type="string",
-     *                example="From"
-     *            ),
      *           @OA\Property(
      *             property="activity",
      *          type="string",
-     *        example="Activity"
+     *        example="Activity",
+     *     description="The activity of the POI"
      *   ),
      * 
      * @OA\Property(
@@ -1152,7 +1237,6 @@ class MiturAbruzzoController extends Controller
         $properties['description'] = $lorem;
         $properties['info'] = $lorem;
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
-        $properties['from'] = $hikingRoute ? $hikingRoute->from : '';
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
@@ -1198,72 +1282,86 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="id",
      *                     type="integer",
-     *                     example=1
+     *                     example=1,
+     *                   description="The section ID"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
      *                     type="string",
-     *                     example="Section Name"
+     *                     example="Section Name",
+     *                  description="The section name"
      *                 ),
      *                 @OA\Property(
      *                     property="addr:city",
      *                     type="string",
-     *                     example="Rome"
+     *                     example="Rome",
+     *                description="The city of the section"
      *                 ),
      *                   @OA\Property(
      *                     property="addr:housenumber",
      *                     type="string",
-     *                     example="1"
+     *                     example="1",
+     *                description="The house number of the section"
      *                 ),
      *                    @OA\Property(
      *                     property="addr:postcode",
      *                     type="string",
-     *                     example="00100"
+     *                     example="00100",
+     *               description="The postcode of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="addr:street",
      *                     type="string",
-     *                     example="Via Roma"
+     *                     example="Via Roma",
+     *               description="The street address of the section"
      *                 ),
      *                @OA\Property(
      *                    property="provinces",
      *                   type="string",
-     *                  example="MOCKUP > Provincia"
+     *                  example="MOCKUP > Provincia",
+     *                description="The provinces of the section"
      *             ),
      *                  @OA\Property(
      *                     property="source:ref",
      *                     type="string",
-     *                     example="9219007"
+     *                     example="9219007",
+     *               description="The source reference of the section"
      *                 ),
      *                    @OA\Property(
      *                     property="website",
      *                     type="string",
-     *                     example="http://example.com"
+     *                     example="http://example.com",
+     *              description="The website of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="email",
      *                     type="string",
-     *                     example="info@example.com"
+     *                     example="info@example.com",
+     *              description="The email of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="opening_hours",
      *                     type="string",
-     *                     example="Mo-Fr 09:00-17:00"
+     *                     example="Mo-Fr 09:00-17:00",
+     *             description="The opening hours of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="phone",
      *                     type="string",
-     *                     example="+390612345678"
+     *                     example="+390612345678",
+     *             description="The phone number of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="wheelchair",
      *                     type="string",
-     *                     example="yes"
+     *                     example="yes",
+     *            description="The wheelchair accessibility of the section"
      *                 ),
      *                 @OA\Property(
      *                     property="fax",
      *                     type="string",
-     *                     example="+390612345679"
+     *                     example="+390612345679",
+     *           description="The fax number of the section"
      *                 ),
      *             ),
      *             @OA\Property(
@@ -1272,14 +1370,15 @@ class MiturAbruzzoController extends Controller
      *                 @OA\Property(
      *                     property="type",
      *                     type="string",
-     *                     example="Point"
+     *                     example="Point",
+     *                    description="Postgis geometry type: Point, etc."
      *                 ),
      *                 @OA\Property(
      *                     property="coordinates",
      *                     type="array",
      *                     @OA\Items(
      *                         type="number",
-     *                         format="float"
+     *                         format="float",
      *                     ),
      *                     example={"longitude", "latitude"}
      *                 )
