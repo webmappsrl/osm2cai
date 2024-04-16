@@ -350,39 +350,6 @@ class MiturAbruzzoController extends Controller
         //get the mountain group by id
         $mountainGroup = MountainGroups::findOrfail($id);
 
-        //get the hiking routes that intersect with the mountain group geometry
-        $hikingRoutes = $mountainGroup->getHikingRoutesIntersecting();
-        if ($hikingRoutes->count() > 0) {
-            $hikingRoutes = $hikingRoutes->pluck('updated_at', 'id')->toArray();
-        } else {
-            $hikingRoutes = [];
-        }
-
-        //get the huts that intersect with the mountain group geometry
-        $huts = $mountainGroup->getHutsIntersecting();
-        if ($huts->count() > 0) {
-            $huts = $huts->pluck('id')->toArray();
-        } else {
-            $huts = [];
-        }
-
-        //get the pois that intersect with the mountain group geometry
-        $pois = $mountainGroup->getPoisIntersecting();
-        if ($pois->count() > 0) {
-            $pois = $pois->pluck('id')->toArray();
-        } else {
-            $pois = [];
-        }
-
-
-        //get the sections that intersect with the mountain group geometry
-        $sections = $mountainGroup->getSectionsIntersecting();
-        if ($sections->count() > 0) {
-            $sections = $sections->pluck('id')->toArray();
-        } else {
-            $sections = [];
-        }
-
         //decode aggregated_data
         $aggregated_data = json_decode($mountainGroup->aggregated_data, true);
 
@@ -393,7 +360,7 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $mountainGroup->id;
         $properties['name'] = $mountainGroup->name;
-        $properties['sections'] = $sections;
+        $properties['sections'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = '123';
         $properties['ele:min'] = '856';
         $properties['ele:max'] = '1785';
@@ -405,9 +372,9 @@ class MiturAbruzzoController extends Controller
         $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
         $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
         $properties['activity'] = 'Escursionismo, Alpinismo';
-        $properties['hiking_routes'] = $hikingRoutes;
-        $properties['ec_pois'] = $pois;
-        $properties['cai_huts'] = $huts;
+        $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
+        $properties['ec_pois'] = json_decode($mountainGroup->ec_pois_intersecting, true);
+        $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
         $properties['map'] = 'mappa gruppo montuoso';
         $properties['hiking_routes_map'] = 'mappa percorsi';
         $properties['disclaimer'] = 'testo disclaimer';
