@@ -12,24 +12,14 @@ class CalculateIntersectionsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:calculate_intersections {model?} {id?}';
+    protected $signature = 'osm2cai:calculate_intersections {model} {id?}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Calculate intersections between the given model and the other models based on the trait GeoIntersectTrait.';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    protected $description = 'Calculate intersections between the given model and other models based on GeoIntersectTrait.';
 
     /**
      * Execute the console command.
@@ -38,99 +28,95 @@ class CalculateIntersectionsCommand extends Command
      */
     public function handle()
     {
-        $model = $this->argument('model');
+
+        $modelClass = "App\\Models\\{$this->argument('model')}";
         $id = $this->argument('id');
 
-        if ($model) {
-            $model = "App\\Models\\$model";
-            if (!app($model) instanceof \App\Models\MountainGroups) {
-                $this->error("Only model MountainGroups is supported at the moment.");
-                return 1;
-            }
-            if ($id) {
-                $model = $model::find($id);
-                try {
-                    $this->info("Calculating intersections for  $model->id...");
-                    Log::info("Calculating intersections for  $model->id...");
-
-                    $hikingRoutes = $model->getHikingRoutesIntersecting();
-                    $this->info("Hiking routes: " . $hikingRoutes->count());
-                    Log::info("Hiking routes: " . $hikingRoutes->count());
-
-                    $huts = $model->getHutsIntersecting();
-                    $this->info("Huts: " . $huts->count());
-                    Log::info("Huts: " . $huts->count());
-
-                    $sections = $model->getSectionsIntersecting();
-                    $this->info("Sections: " . $sections->count());
-                    Log::info("Sections: " . $sections->count());
-
-                    $ecPois = $model->getPoisIntersecting();
-                    $this->info("EC POIs: " . $ecPois->count());
-                    Log::info("EC POIs: " . $ecPois->count());
-                } catch (\Exception $e) {
-                    $this->error($e->getMessage());
-                    return 1;
-                }
-
-                $hikingRoutesIds = $hikingRoutes->pluck('updated_at', 'id')->toArray();
-                $model->hiking_routes_intersecting = $hikingRoutesIds;
-
-                $hutsIds = $huts->pluck('id')->toArray();
-                $model->huts_intersecting = $hutsIds;
-
-                $sectionsIds = $sections->pluck('id')->toArray();
-                $model->sections_intersecting = $sectionsIds;
-
-                $ecPoisIds = $ecPois->pluck('id')->toArray();
-                $model->ec_pois_intersecting = $ecPoisIds;
-
-                $model->save();
-            } else {
-                foreach ($model::all() as $model) {
-                    $this->info("Calculating intersections for model $model->id...");
-                    Log::info("Calculating intersections for model $model->id...");
-                    $hikingRoutes = $model->getHikingRoutesIntersecting();
-                    $this->info("Hiking routes: " . $hikingRoutes->count());
-                    Log::info("Hiking routes: " . $hikingRoutes->count());
-
-                    $huts = $model->getHutsIntersecting();
-                    $this->info("Huts: " . $huts->count());
-                    Log::info("Huts: " . $huts->count());
-
-                    $sections = $model->getSectionsIntersecting();
-                    $this->info("Sections: " . $sections->count());
-                    Log::info("Sections: " . $sections->count());
-
-                    $ecPois = $model->getPoisIntersecting();
-                    $this->info("EC POIs: " . $ecPois->count());
-                    Log::info("EC POIs: " . $ecPois->count());
-
-                    $hikingRoutesIds = $hikingRoutes->pluck('updated_at', 'id')->toArray();
-                    $model->hiking_routes_intersecting = $hikingRoutesIds;
-
-                    $hutsIds = $huts->pluck('id')->toArray();
-                    $model->huts_intersecting = $hutsIds;
-
-                    $sectionsIds = $sections->pluck('id')->toArray();
-                    $model->sections_intersecting = $sectionsIds;
-
-                    $ecPoisIds = $ecPois->pluck('id')->toArray();
-                    $model->ec_pois_intersecting = $ecPoisIds;
-
-                    $model->save();
-                }
-            }
-
-            $this->info("Intersections calculated successfully.");
-            Log::info("Intersections calculated successfully.");
-
-            return 0;
+        if (!$id) {
+            $models = $modelClass::all();
         } else {
-            $this->error("Model is required.");
-            Log::error("Model is required.");
-
-            return 1;
+            $models = collect([$modelClass::find($id)]);
         }
+
+        $models->each(function ($model) {
+            $this->calculateIntersections($model);
+        });
+
+        $this->info('Calculations completed.');
+
+        return 0;
+    }
+
+    private function calculateIntersections($model)
+    {
+        if (!($model instanceof \App\Models\CaiHuts))
+            $this->calculateHutIntersections($model);
+
+        if (!($model instanceof \App\Models\HikingRoute))
+            $this->calculateHikingRouteIntersections($model);
+
+        if (!($model instanceof \App\Models\Section))
+            $this->calculateSectionIntersections($model);
+
+        if (!($model instanceof \App\Models\EcPoi))
+            $this->calculateEcPoiIntersections($model);
+
+        if (!($model instanceof \App\Models\MountainGroups))
+            $this->calculateMountainGroupIntersections($model);
+
+        if ($model instanceof \App\Models\EcPoi) {
+            $this->calculateComuneIntersecting($model);
+        }
+
+
+        $model->save();
+    }
+
+    private function calculateHutIntersections($model)
+    {
+        $intersectingHuts = $model->getHutsIntersecting();
+        $hutIds = $intersectingHuts->pluck('id')->toArray();
+        $model->huts_intersecting = $hutIds;
+    }
+
+    private function calculateHikingRouteIntersections($model)
+    {
+        if ($model instanceof \App\Models\EcPoi) {
+            $intersectingHikingRoutes = $model->getHikingRoutesInBuffer(1000);
+            $hikingRouteIds = $intersectingHikingRoutes->pluck('updated_at', 'id')->toArray();
+            $model->hiking_routes_in_buffer = $hikingRouteIds;
+        } else {
+            $intersectingHikingRoutes = $model->getHikingRoutesIntersecting();
+            $hikingRouteIds = $intersectingHikingRoutes->pluck('updated_at', 'id')->toArray();
+            $model->hiking_routes_intersecting = $hikingRouteIds;
+        }
+    }
+
+    private function calculateSectionIntersections($model)
+    {
+        $intersectingSections = $model->getSectionsIntersecting();
+        $sectionIds = $intersectingSections->pluck('id')->toArray();
+        $model->sections_intersecting = $sectionIds;
+    }
+
+    private function calculateEcPoiIntersections($model)
+    {
+        $intersectingEcPois = $model->getPoisIntersecting();
+        $ecPoiIds = $intersectingEcPois->pluck('id')->toArray();
+        $model->ec_pois_intersecting = $ecPoiIds;
+    }
+
+    private function calculateMountainGroupIntersections($model)
+    {
+        $intersectingMountainGroups = $model->getMountainGroupsIntersecting();
+        $mountainGroupIds = $intersectingMountainGroups->pluck('id')->toArray();
+        $model->mountain_groups_intersecting = $mountainGroupIds;
+    }
+
+    private function calculateComuneIntersecting($model)
+    {
+        $intersectingMunicipalities = $model->getMunicipalityIntersecting();
+        $comuni = $intersectingMunicipalities->pluck('comune')->implode(',');
+        $model->comuni = $comuni;
     }
 }
