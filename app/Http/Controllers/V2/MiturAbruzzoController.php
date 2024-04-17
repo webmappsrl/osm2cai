@@ -1180,13 +1180,6 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoPoiById($id)
     {
-
-        //check if the result is stored in the cache
-        $cacheKey = 'mitur_abruzzo_poi_' . $id;
-        if (Cache::has($cacheKey)) {
-            return Cache::get($cacheKey);
-        }
-
         $poi = EcPoi::findOrFail($id);
         $lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut nec tincidunt arcu, vel sollicitudin nisi. Fusce a nulla sit amet odio accumsan auctor.
                     Sed ultricies ullamcorper velit, ac faucibus dolor. Nullam in risus neque. Quisque in dolor et est ullamcorper commodo at vitae libero.';
@@ -1215,9 +1208,6 @@ class MiturAbruzzoController extends Controller
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
-
-        //store the result in the cache
-        Cache::put($cacheKey, response()->json($geojson), now()->addMinutes(60));
 
         return response()->json($geojson);
     }
