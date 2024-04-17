@@ -28,7 +28,7 @@ class CaiHuts extends Model
         // });
 
         static::created(function ($caiHut) {
-            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes CaiHuts ' . $caiHut->id);
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes', ['model' => 'CaiHuts', 'id' => $caiHut->id]);
         });
     }
 

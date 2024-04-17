@@ -124,6 +124,9 @@ class SyncNaturalSpringHR extends Command
 
             if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0))
                 Log::info("Hiking route {$hr->id} has changed");
+            else
+                Log::info("Hiking route {$hr->id} has not changed");
+
             $hr->natural_springs = json_encode($nearbySpringIds);
             $hr->has_natural_springs = count($nearbySpringIds) > 0;
 
