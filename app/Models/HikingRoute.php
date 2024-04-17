@@ -107,8 +107,8 @@ class HikingRoute extends Model
                 $hikingRoute->is_syncing = false;
                 return;
             }
-            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
-            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes', ['model' => 'HikingRoute', 'id' => $hikingRoute->id]);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes', ['model' => 'HikingRoute', 'id' => $hikingRoute->id]);
         });
 
         static::created(function ($hikingRoute) {
@@ -116,8 +116,8 @@ class HikingRoute extends Model
                 $hikingRoute->is_syncing = false;
                 return;
             }
-            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes HikingRoute ' . $hikingRoute->id);
-            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes HikingRoute ' . $hikingRoute->id);
+            Artisan::call('osm2cai:add_cai_huts_to_hiking_routes', ['model' => 'HikingRoute', 'id' => $hikingRoute->id]);
+            Artisan::call('osm2cai:add_natural_springs_to_hiking_routes', ['model' => 'HikingRoute', 'id' => $hikingRoute->id]);
         });
     }
 
