@@ -2,6 +2,44 @@
 
 ## [233.28.0](https://github.com/webmappsrl/osm2cai/compare/v233.27.0...v233.28.0) (2024-06-06)
 
+## [233.22.0](https://github.com/webmappsrl/osm2cai/compare/v233.21.1...v233.22.0) (2024-04-17)
+
+### Features
+
+- improved poi mitur api performance ([c70b3d4](https://github.com/webmappsrl/osm2cai/commit/c70b3d408151d7ee7ea6484f79bf1cfaecbbd036))
+
+## [233.21.1](https://github.com/webmappsrl/osm2cai/compare/v233.21.0...v233.21.1) (2024-04-16)
+
+### Bug Fixes
+
+- fixed calculate intersections command ([91ec821](https://github.com/webmappsrl/osm2cai/commit/91ec821c520c0136dfdb20b1fc1ed7308558b40e))
+
+## [233.21.0](https://github.com/webmappsrl/osm2cai/compare/v233.20.1...v233.21.0) (2024-04-16)
+
+### Features
+
+- improved api performance for mountain groups. Added intersections columns to mountain groups table and created nova action and command to calculate intersections ([c55d152](https://github.com/webmappsrl/osm2cai/commit/c55d15234d3af4e9e4eb6387aa8a43e8e0f89a58))
+
+## [233.20.1](https://github.com/webmappsrl/osm2cai/compare/v233.20.0...v233.20.1) (2024-04-16)
+
+### Bug Fixes
+
+- improved mitur hiking routes api examples ([8f0b7f2](https://github.com/webmappsrl/osm2cai/commit/8f0b7f213add38142bfd344153e2427be804541c))
+
+## [233.20.0](https://github.com/webmappsrl/osm2cai/compare/v233.19.2...v233.20.0) (2024-04-16)
+
+### Features
+
+- updated api doc ([609170b](https://github.com/webmappsrl/osm2cai/commit/609170b20d46d011852ef942a9729dbf5cd1d174))
+- updated api docs ([f1fdbbb](https://github.com/webmappsrl/osm2cai/commit/f1fdbbb8d4cb46628d90fd6c7bbd63a71d354912))
+
+## [233.19.2](https://github.com/webmappsrl/osm2cai/compare/v233.19.1...v233.19.2) (2024-04-10)
+
+### Bug Fixes
+
+- fixed import ugc ([8f91d29](https://github.com/webmappsrl/osm2cai/commit/8f91d297f623f59251f77e4b9204123f54b0004f))
+  > > > > > > > 91c406b (release 233.22.0)
+
 ## [233.19.1](https://github.com/webmappsrl/osm2cai/compare/v233.19.0...v233.19.1) (2024-04-03)
 
 ### Bug Fixes
