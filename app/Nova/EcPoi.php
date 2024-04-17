@@ -194,7 +194,12 @@ class EcPoi extends Resource
     public function actions(Request $request)
     {
         return [
-            (new Actions\EcPoisDownloadXlsx)
+            (new Actions\EcPoisDownloadXlsx),
+            (new \App\Nova\Actions\CalculateIntersectionsAction)->canRun(
+                function ($request) {
+                    return true;
+                }
+            ),
         ];
     }
 }
