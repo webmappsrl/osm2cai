@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.22.1](https://github.com/webmappsrl/osm2cai/compare/v233.22.0...v233.22.1) (2024-04-17)
+
+
+### Bug Fixes
+
+* fixed poi api caching ([e302ba5](https://github.com/webmappsrl/osm2cai/commit/e302ba52ca2262fa16a4820dfaa07d12ebebd786))
+
 ## [233.22.0](https://github.com/webmappsrl/osm2cai/compare/v233.21.1...v233.22.0) (2024-04-17)
 
 
