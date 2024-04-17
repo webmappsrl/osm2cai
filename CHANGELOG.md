@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.22.0](https://github.com/webmappsrl/osm2cai/compare/v233.21.1...v233.22.0) (2024-04-17)
+
+
+### Features
+
+* improved poi mitur api performance ([c70b3d4](https://github.com/webmappsrl/osm2cai/commit/c70b3d408151d7ee7ea6484f79bf1cfaecbbd036))
+
 ## [233.21.1](https://github.com/webmappsrl/osm2cai/compare/v233.21.0...v233.21.1) (2024-04-16)
 
 
