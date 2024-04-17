@@ -11,6 +11,7 @@ use App\Models\MountainGroups;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Section;
+use Illuminate\Support\Facades\Cache;
 
 class MiturAbruzzoController extends Controller
 {
@@ -1179,18 +1180,20 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoPoiById($id)
     {
+
+        //check if the result is stored in the cache
+        $cacheKey = 'mitur_abruzzo_poi_' . $id;
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
+
         $poi = EcPoi::findOrFail($id);
         $lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut nec tincidunt arcu, vel sollicitudin nisi. Fusce a nulla sit amet odio accumsan auctor.
                     Sed ultricies ullamcorper velit, ac faucibus dolor. Nullam in risus neque. Quisque in dolor et est ullamcorper commodo at vitae libero.';
 
-        //check if there is an hiking route in a 1km buffer from the poi
-        $hikingRoutes = $poi->getHikingRoutesInBuffer(1000);
-        $hikingRoute = $hikingRoutes->first();
+        $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
+        $hikingRoute = $hikingRoutes ? HikingRoute::find(array_key_first($hikingRoutes)) : null;
 
-        //check the municipality intersecting
-        $municipality = $poi->getMunicipalityIntersecting();
-        //get the comuni from the municipalities and create a string with comma separated values
-        $comuni = $municipality->pluck('comune')->implode(',');
 
         //build the geojson
         $geojson = [];
@@ -1200,18 +1203,21 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $poi->id;
         $properties['name'] = $poi->name;
         $properties['type'] = $poi->getTagsMapping();
-        $properties['comune'] = $comuni;
+        $properties['comune'] = $poi->comuni;
         $properties['description'] = $lorem;
         $properties['info'] = $lorem;
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
         $properties['activity'] = 'Escursionismo';
-        $properties['has_hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
+        $properties['has_hiking_routes'] = $hikingRoutes;
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
 
         $geometry = $poi->getGeometry();
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
+
+        //store the result in the cache
+        Cache::put($cacheKey, response()->json($geojson), now()->addMinutes(60));
 
         return response()->json($geojson);
     }

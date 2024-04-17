@@ -15,7 +15,7 @@ class EcPoi extends Model
 {
     use HasFactory, GeojsonableTrait, GeoIntersectTrait, TagsMappingTrait;
 
-    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id', 'score'];
+    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id', 'score', 'hiking_routes_in_buffer', 'comuni', 'huts_intersecting', 'sections_intersecting', 'mountain_groups_intersecting'];
 
     protected static function booted()
     {
