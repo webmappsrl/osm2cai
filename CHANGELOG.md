@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.22.2](https://github.com/webmappsrl/osm2cai/compare/v233.22.1...v233.22.2) (2024-04-17)
+
+
+### Bug Fixes
+
+* fixed natural springs sync command ([9efc067](https://github.com/webmappsrl/osm2cai/commit/9efc067768b74cc5100306e9ff49231e5514c05d))
+
 ## [233.22.1](https://github.com/webmappsrl/osm2cai/compare/v233.22.0...v233.22.1) (2024-04-17)
 
 
