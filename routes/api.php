@@ -123,6 +123,8 @@ Route::name('api.')->group(function () {
             Route::get('/ugc_tracks/{id}', [ExportController::class, 'ugcTracksSingleFeature'])->name('ugc-tracks-single-feature-export');
             Route::get('/ugc_media/list', [ExportController::class, 'ugcMediasList'])->name('ugc-medias-export');
             Route::get('/ugc_media/{id}', [ExportController::class, 'ugcMediasSingleFeature'])->name('ugc-medias-single-feature-export');
+            Route::get('/areas/list', [ExportController::class, 'areasList'])->name('areas-export');
+            Route::get('/areas/{id}', [ExportController::class, 'areasSingleFeature'])->name('areas-single-feature-export');
         });
     });
 });
