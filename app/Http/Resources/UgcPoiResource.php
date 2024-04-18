@@ -2,11 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\HikingRoute;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class HikingRouteResource extends JsonResource
+class UgcPoiResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +15,7 @@ class HikingRouteResource extends JsonResource
      */
     public function toArray($request)
     {
-        $result = parent::toArray($request);
+        $result =  parent::toArray($request);
 
         $obj = $this->resource
             ->select(
@@ -29,17 +28,7 @@ class HikingRouteResource extends JsonResource
             $result['geometry'] = json_decode($geom, true);
         }
 
-        $osmObj = $this->resource
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry_osm) as geom")
-            )
-            ->first();
-
-        if (!is_null($osmObj)) {
-            $osmGeom = $osmObj->geom;
-            $result['geometry_osm'] = json_decode($osmGeom, true);
-        }
-
+        $result['raw_data'] = json_decode($this->raw_data, true);
 
         return $result;
     }
