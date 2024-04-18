@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use App\Models\NaturalSpring;
 use App\Models\MountainGroups;
 use App\Http\Resources\AreaResource;
+use App\Http\Resources\CaiHutResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\EcPoiResource;
 use App\Http\Resources\SectorResource;
@@ -28,6 +29,7 @@ use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\MountainGroupResource;
 use App\Http\Resources\NaturalSpringResource;
 use App\Http\Resources\HikingRouteResourceCollection;
+use App\Models\CaiHuts;
 
 class ExportController extends Controller
 {
@@ -188,5 +190,17 @@ class ExportController extends Controller
     public function NaturalSpringSingleFeature($id)
     {
         return new NaturalSpringResource(NaturalSpring::find($id));
+    }
+
+    public function HutsList()
+    {
+        return response()->json(CaiHuts::all('id', 'updated_at')->mapWithKeys(function ($hut) {
+            return [$hut->id => $hut->updated_at];
+        }));
+    }
+
+    public function HutsSingleFeature($id)
+    {
+        return new CaiHutResource(CaiHuts::find($id));
     }
 }
