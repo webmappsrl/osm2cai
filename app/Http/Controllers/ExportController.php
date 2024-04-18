@@ -7,7 +7,9 @@ use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\HikingRouteResourceCollection;
+use App\Http\Resources\UgcPoiResource;
 use App\Http\Resources\UserResource;
+use App\Models\UgcPoi;
 
 class ExportController extends Controller
 {
@@ -41,5 +43,17 @@ class ExportController extends Controller
     public function UsersSingleFeature($id)
     {
         return new UserResource(User::find($id));
+    }
+
+    public function UgcPoisList()
+    {
+        return response()->json(UgcPoi::all('id', 'updated_at')->mapWithKeys(function ($ugcPoi) {
+            return [$ugcPoi->id => $ugcPoi->updated_at];
+        }));
+    }
+
+    public function UgcPoisSingleFeature($id)
+    {
+        return new UgcPoiResource(UgcPoi::find($id));
     }
 }

@@ -99,6 +99,7 @@ Route::name('api.')->group(function () {
         Route::get('/ecpois/bb/{bounding_box}/{type}', [EcPoiController::class, 'ecPoisBBox'])->name('v2-ecpois-by-bb');
         Route::get('/ecpois/{hr_osm2cai_id}/{type}', [EcPoiController::class, 'ecPoisByOsm2CaiId'])->name('v2-ecpois-by-osm2caiId');
         Route::get('/ecpois/{hr_osm_id}/{type}', [EcPoiController::class, 'ecPoisByOsmId'])->name('v2-ecpois-by-OsmId');
+
         //mitur_abruzzo
         Route::prefix('mitur_abruzzo')->name('v2-mitur-abruzzo')->group(function () {
             Route::get('/region_list', [MiturAbruzzoController::class, 'miturAbruzzoRegionList'])->name('region-list');
@@ -109,12 +110,15 @@ Route::name('api.')->group(function () {
             Route::get('/poi/{id}', [MiturAbruzzoController::class, 'miturAbruzzoPoiById'])->name('poi-by-id');
             Route::get('/section/{id}', [MiturAbruzzoController::class, 'miturAbruzzoSectionById'])->name('section-by-id');
         });
+
         //Export
         Route::prefix('export')->name('export')->group(function () {
-            Route::get('/hiking-routes/list', [ExportController::class, 'hikingRoutesList'])->name('hiking-routes');
-            Route::get('/hiking-routes/{id}', [ExportController::class, 'hikingRoutesSingleFeature'])->name('hiking-routes-single-feature');
-            Route::get('/users/list', [ExportController::class, 'usersList'])->name('users');
-            Route::get('/users/{id}', [ExportController::class, 'usersSingleFeature'])->name('users-single-feature');
+            Route::get('/hiking-routes/list', [ExportController::class, 'hikingRoutesList'])->name('hiking-routes-export');
+            Route::get('/hiking-routes/{id}', [ExportController::class, 'hikingRoutesSingleFeature'])->name('hiking-routes-single-feature-export');
+            Route::get('/users/list', [ExportController::class, 'usersList'])->name('users-export');
+            Route::get('/users/{id}', [ExportController::class, 'usersSingleFeature'])->name('users-single-feature-export');
+            Route::get('/ugc_pois/list', [ExportController::class, 'ugcPoisList'])->name('ugc-pois-export');
+            Route::get('/ugc_pois/{id}', [ExportController::class, 'ugcPoisSingleFeature'])->name('ugc-pois-single-feature-export');
         });
     });
 });
