@@ -17,6 +17,7 @@ class SectionResource extends JsonResource
     {
         $result = parent::toArray($request);
 
+        //different from other resources because of the geometry field (type geography)
         if ($this->resource->geometry) {
             $geom = DB::select(
                 DB::raw('SELECT ST_AsGeoJSON(geometry) As geom FROM sections WHERE id = :id'),

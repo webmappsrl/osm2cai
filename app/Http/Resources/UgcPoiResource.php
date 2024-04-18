@@ -17,14 +17,12 @@ class UgcPoiResource extends JsonResource
     {
         $result =  parent::toArray($request);
 
-        $obj = $this->resource
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry) as geom")
-            )
-            ->first();
+        if ($this->resource->geometry) {
+            $geom = DB::select(
+                DB::raw('SELECT ST_AsGeoJSON(geometry) As geom FROM ugc_pois WHERE id = :id'),
+                ['id' => $this->resource->id]
+            )[0]->geom;
 
-        if (!is_null($obj)) {
-            $geom = $obj->geom;
             $result['geometry'] = json_decode($geom, true);
         }
 
