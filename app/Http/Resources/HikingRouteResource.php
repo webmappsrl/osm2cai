@@ -18,29 +18,33 @@ class HikingRouteResource extends JsonResource
     {
         $result = parent::toArray($request);
 
-        $obj = $this->resource
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry) as geom")
-            )
-            ->first();
+        if ($this->resource->geometry) {
+            $geom = DB::select(
+                DB::raw('SELECT ST_AsGeoJSON(geometry) As geom FROM hiking_routes WHERE id = :id'),
+                ['id' => $this->resource->id]
+            )[0]->geom;
 
-        if (!is_null($obj)) {
-            $geom = $obj->geom;
             $result['geometry'] = json_decode($geom, true);
         }
 
-        $osmObj = $this->resource
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry_osm) as geom")
-            )
-            ->first();
+        if ($this->resource->geometry_osm) {
+            $geom = DB::select(
+                DB::raw('SELECT ST_AsGeoJSON(geometry_osm) As geom FROM hiking_routes WHERE id = :id'),
+                ['id' => $this->resource->id]
+            )[0]->geom;
 
-        if (!is_null($osmObj)) {
-            $osmGeom = $osmObj->geom;
-            $result['geometry_osm'] = json_decode($osmGeom, true);
+            $result['geometry_osm'] = json_decode($geom, true);
+        }
+        if ($this->resource->geometry_raw_data) {
+            $geom = DB::select(
+                DB::raw('SELECT ST_AsGeoJSON(geometry_raw_data) As geom FROM hiking_routes WHERE id = :id'),
+                ['id' => $this->resource->id]
+            )[0]->geom;
+
+            $result['geometry_raw_data'] = json_decode($geom, true);
         }
 
-
+        $result['natural_springs'] = json_decode($this->resource->natural_springs, true);
         return $result;
     }
 }
