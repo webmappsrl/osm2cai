@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UgcPoi;
+use App\Models\UgcMedia;
 use App\Models\UgcTrack;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UgcPoiResource;
+use App\Http\Resources\UgcMediaResource;
 use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\HikingRouteResourceCollection;
@@ -69,5 +71,17 @@ class ExportController extends Controller
     public function UgcTracksSingleFeature($id)
     {
         return new UgcTrackResource(UgcTrack::find($id));
+    }
+
+    public function UgcMediasList()
+    {
+        return response()->json(UgcMedia::all('id', 'updated_at')->mapWithKeys(function ($media) {
+            return [$media->id => $media->updated_at];
+        }));
+    }
+
+    public function UgcMediasSingleFeature($id)
+    {
+        return new UgcMediaResource(UgcMedia::find($id));
     }
 }
