@@ -6,6 +6,7 @@ use App\Models\Area;
 use App\Models\User;
 use App\Models\Sector;
 use App\Models\UgcPoi;
+use App\Models\Section;
 use App\Models\UgcMedia;
 use App\Models\UgcTrack;
 use App\Models\HikingRoute;
@@ -14,6 +15,7 @@ use App\Http\Resources\AreaResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\SectorResource;
 use App\Http\Resources\UgcPoiResource;
+use App\Http\Resources\SectionResource;
 use App\Http\Resources\UgcMediaResource;
 use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\HikingRouteResource;
@@ -116,5 +118,19 @@ class ExportController extends Controller
     {
 
         return new SectorResource(Sector::find($id));
+    }
+
+    public function SectionsList()
+    {
+
+        return response()->json(Section::all('id', 'updated_at')->mapWithKeys(function ($section) {
+            return [$section->id => $section->updated_at];
+        }));
+    }
+
+    public function SectionsSingleFeature($id)
+    {
+
+        return new SectionResource(Section::find($id));
     }
 }

@@ -127,6 +127,8 @@ Route::name('api.')->group(function () {
             Route::get('/areas/{id}', [ExportController::class, 'areasSingleFeature'])->name('areas-single-feature-export');
             Route::get('/sectors/list', [ExportController::class, 'sectorsList'])->name('sectors-export');
             Route::get('/sectors/{id}', [ExportController::class, 'sectorsSingleFeature'])->name('sectors-single-feature-export');
+            Route::get('/sections/list', [ExportController::class, 'sectionsList'])->name('sections-export');
+            Route::get('/sections/{id}', [ExportController::class, 'sectionsSingleFeature'])->name('sections-single-feature-export');
         });
     });
 });
