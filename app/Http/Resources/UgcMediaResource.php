@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UgcMediaResource extends JsonResource
@@ -14,6 +15,16 @@ class UgcMediaResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $result = parent::toArray($request);
+
+        $obj = $this->resource->select(DB::raw('ST_AsGeoJSON(geometry) As geom'))->first();
+
+        if (!is_null($obj)) {
+            $geom = $obj->geom;
+            $result['geometry'] = json_decode($geom, true);
+        }
+        $result['raw_data'] = json_decode($this->resource->raw_data, true);
+
+        return $result;
     }
 }
