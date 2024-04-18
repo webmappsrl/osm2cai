@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
 use App\Models\User;
 use App\Models\UgcPoi;
 use App\Models\UgcMedia;
 use App\Models\UgcTrack;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
+use App\Http\Resources\AreaResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UgcPoiResource;
 use App\Http\Resources\UgcMediaResource;
@@ -83,5 +85,20 @@ class ExportController extends Controller
     public function UgcMediasSingleFeature($id)
     {
         return new UgcMediaResource(UgcMedia::find($id));
+    }
+
+    public function AreasList()
+    {
+
+        return response()->json(Area::all('id', 'updated_at')->mapWithKeys(function ($area) {
+
+            return [$area->id => $area->updated_at];
+        }));
+    }
+
+    public function AreasSingleFeature($id)
+    {
+
+        return new AreaResource(Area::find($id));
     }
 }
