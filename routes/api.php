@@ -113,6 +113,8 @@ Route::name('api.')->group(function () {
         Route::prefix('export')->name('export')->group(function () {
             Route::get('/hiking-routes/list', [ExportController::class, 'hikingRoutesList'])->name('hiking-routes');
             Route::get('/hiking-routes/{id}', [ExportController::class, 'hikingRoutesSingleFeature'])->name('hiking-routes-single-feature');
+            Route::get('/users/list', [ExportController::class, 'usersList'])->name('users');
+            Route::get('/users/{id}', [ExportController::class, 'usersSingleFeature'])->name('users-single-feature');
         });
     });
 });
