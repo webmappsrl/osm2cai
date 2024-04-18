@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\RegionController;
-use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\AreaController;
-use App\Http\Controllers\EcPoiController;
-use App\Http\Controllers\SectorController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\HikingRouteController;
-use App\Http\Controllers\ItineraryController;
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
-use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
-use App\Http\Controllers\V2\MiturAbruzzoController;
-use App\Http\Resources\HikingRouteTDHResource;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\EcPoiController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\ItineraryController;
+use App\Http\Resources\HikingRouteTDHResource;
+use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\V2\MiturAbruzzoController;
+use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
+use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +108,11 @@ Route::name('api.')->group(function () {
             Route::get('/hut/{id}', [MiturAbruzzoController::class, 'miturAbruzzoHutById'])->name('hut-by-id');
             Route::get('/poi/{id}', [MiturAbruzzoController::class, 'miturAbruzzoPoiById'])->name('poi-by-id');
             Route::get('/section/{id}', [MiturAbruzzoController::class, 'miturAbruzzoSectionById'])->name('section-by-id');
+        });
+        //Export
+        Route::prefix('export')->name('export')->group(function () {
+            Route::get('/hiking-routes/list', [ExportController::class, 'hikingRoutesList'])->name('hiking-routes');
+            Route::get('/hiking-routes/{id}', [ExportController::class, 'hikingRoutesSingleFeature'])->name('hiking-routes-single-feature');
         });
     });
 });
