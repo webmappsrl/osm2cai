@@ -119,6 +119,8 @@ Route::name('api.')->group(function () {
             Route::get('/users/{id}', [ExportController::class, 'usersSingleFeature'])->name('users-single-feature-export');
             Route::get('/ugc_pois/list', [ExportController::class, 'ugcPoisList'])->name('ugc-pois-export');
             Route::get('/ugc_pois/{id}', [ExportController::class, 'ugcPoisSingleFeature'])->name('ugc-pois-single-feature-export');
+            Route::get('/ugc_tracks/list', [ExportController::class, 'ugcTracksList'])->name('ugc-tracks-export');
+            Route::get('/ugc_tracks/{id}', [ExportController::class, 'ugcTracksSingleFeature'])->name('ugc-tracks-single-feature-export');
         });
     });
 });
