@@ -3,13 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UgcPoi;
+use App\Models\UgcTrack;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\UgcPoiResource;
+use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\HikingRouteResourceCollection;
-use App\Http\Resources\UgcPoiResource;
-use App\Http\Resources\UserResource;
-use App\Models\UgcPoi;
 
 class ExportController extends Controller
 {
@@ -55,5 +57,17 @@ class ExportController extends Controller
     public function UgcPoisSingleFeature($id)
     {
         return new UgcPoiResource(UgcPoi::find($id));
+    }
+
+    public function UgcTracksList()
+    {
+        return response()->json(UgcTrack::all('id', 'updated_at')->mapWithKeys(function ($track) {
+            return [$track->id => $track->updated_at];
+        }));
+    }
+
+    public function UgcTracksSingleFeature($id)
+    {
+        return new UgcTrackResource(UgcTrack::find($id));
     }
 }
