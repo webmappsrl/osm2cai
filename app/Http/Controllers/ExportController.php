@@ -9,6 +9,7 @@ use App\Models\UgcPoi;
 use App\Models\Section;
 use App\Models\UgcMedia;
 use App\Models\UgcTrack;
+use App\Models\Itinerary;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Http\Resources\AreaResource;
@@ -18,6 +19,7 @@ use App\Http\Resources\UgcPoiResource;
 use App\Http\Resources\SectionResource;
 use App\Http\Resources\UgcMediaResource;
 use App\Http\Resources\UgcTrackResource;
+use App\Http\Resources\ItineraryResource;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\HikingRouteResourceCollection;
 
@@ -132,5 +134,17 @@ class ExportController extends Controller
     {
 
         return new SectionResource(Section::find($id));
+    }
+
+    public function ItinerariesList()
+    {
+        return response()->json(Itinerary::all('id', 'updated_at')->mapWithKeys(function ($itinerary) {
+            return [$itinerary->id => $itinerary->updated_at];
+        }));
+    }
+
+    public function ItinerariesSingleFeature($id)
+    {
+        return new ItineraryResource(Itinerary::find($id));
     }
 }

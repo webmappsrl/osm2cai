@@ -17,10 +17,12 @@ class UgcTrackResource extends JsonResource
     {
         $result = parent::toArray($request);
 
-        $obj = $this->resource->select(DB::raw('ST_AsGeoJSON(geometry) As geom'))->first();
+        if ($this->resource->geometry) {
+            $geom = DB::select(
+                DB::raw('SELECT ST_AsGeoJSON(geometry) As geom FROM ugc_tracks WHERE id = :id'),
+                ['id' => $this->resource->id]
+            )[0]->geom;
 
-        if (!is_null($obj)) {
-            $geom = $obj->geom;
             $result['geometry'] = json_decode($geom, true);
         }
         $result['raw_data'] = json_decode($this->resource->raw_data, true);
