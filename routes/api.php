@@ -135,6 +135,8 @@ Route::name('api.')->group(function () {
             Route::get('/ec_pois/{id}', [ExportController::class, 'ecPoisSingleFeature'])->name('ec-pois-single-feature-export');
             Route::get('/mountain_groups/list', [ExportController::class, 'mountainGroupsList'])->name('mountain-groups-export');
             Route::get('/mountain_groups/{id}', [ExportController::class, 'mountainGroupsSingleFeature'])->name('mountain-groups-single-feature-export');
+            Route::get('/natural_springs/list', [ExportController::class, 'naturalSpringList'])->name('natural-spring-export');
+            Route::get('/natural_springs/{id}', [ExportController::class, 'naturalSpringSingleFeature'])->name('natural-spring-single-feature-export');
         });
     });
 });

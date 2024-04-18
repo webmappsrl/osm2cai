@@ -13,6 +13,7 @@ use App\Models\UgcTrack;
 use App\Models\Itinerary;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
+use App\Models\NaturalSpring;
 use App\Models\MountainGroups;
 use App\Http\Resources\AreaResource;
 use App\Http\Resources\UserResource;
@@ -25,6 +26,7 @@ use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\ItineraryResource;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\MountainGroupResource;
+use App\Http\Resources\NaturalSpringResource;
 use App\Http\Resources\HikingRouteResourceCollection;
 
 class ExportController extends Controller
@@ -174,5 +176,17 @@ class ExportController extends Controller
     public function MountainGroupsSingleFeature($id)
     {
         return new MountainGroupResource(MountainGroups::find($id));
+    }
+
+    public function NaturalSpringList()
+    {
+        return response()->json(NaturalSpring::all('id', 'updated_at')->mapWithKeys(function ($naturalSpring) {
+            return [$naturalSpring->id => $naturalSpring->updated_at];
+        }));
+    }
+
+    public function NaturalSpringSingleFeature($id)
+    {
+        return new NaturalSpringResource(NaturalSpring::find($id));
     }
 }
