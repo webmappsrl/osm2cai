@@ -1,21 +1,22 @@
 <?php
 
-use App\Http\Controllers\RegionController;
-use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\AreaController;
-use App\Http\Controllers\EcPoiController;
-use App\Http\Controllers\SectorController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\HikingRouteController;
-use App\Http\Controllers\ItineraryController;
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
-use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
-use App\Http\Controllers\V2\MiturAbruzzoController;
-use App\Http\Resources\HikingRouteTDHResource;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\EcPoiController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\RegionController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\SectionController;
+use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\ItineraryController;
+use App\Http\Resources\HikingRouteTDHResource;
+use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\V2\MiturAbruzzoController;
+use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
+use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 
 /*
 |--------------------------------------------------------------------------
@@ -98,6 +99,7 @@ Route::name('api.')->group(function () {
         Route::get('/ecpois/bb/{bounding_box}/{type}', [EcPoiController::class, 'ecPoisBBox'])->name('v2-ecpois-by-bb');
         Route::get('/ecpois/{hr_osm2cai_id}/{type}', [EcPoiController::class, 'ecPoisByOsm2CaiId'])->name('v2-ecpois-by-osm2caiId');
         Route::get('/ecpois/{hr_osm_id}/{type}', [EcPoiController::class, 'ecPoisByOsmId'])->name('v2-ecpois-by-OsmId');
+
         //mitur_abruzzo
         Route::prefix('mitur_abruzzo')->name('v2-mitur-abruzzo')->group(function () {
             Route::get('/region_list', [MiturAbruzzoController::class, 'miturAbruzzoRegionList'])->name('region-list');
@@ -107,6 +109,36 @@ Route::name('api.')->group(function () {
             Route::get('/hut/{id}', [MiturAbruzzoController::class, 'miturAbruzzoHutById'])->name('hut-by-id');
             Route::get('/poi/{id}', [MiturAbruzzoController::class, 'miturAbruzzoPoiById'])->name('poi-by-id');
             Route::get('/section/{id}', [MiturAbruzzoController::class, 'miturAbruzzoSectionById'])->name('section-by-id');
+        });
+
+        //Export
+        Route::prefix('export')->name('export')->group(function () {
+            Route::get('/hiking-routes/list', [ExportController::class, 'hikingRoutesList'])->name('hiking-routes-export');
+            Route::get('/hiking-routes/{id}', [ExportController::class, 'hikingRoutesSingleFeature'])->name('hiking-routes-single-feature-export');
+            Route::get('/users/list', [ExportController::class, 'usersList'])->name('users-export');
+            Route::get('/users/{id}', [ExportController::class, 'usersSingleFeature'])->name('users-single-feature-export');
+            Route::get('/ugc_pois/list', [ExportController::class, 'ugcPoisList'])->name('ugc-pois-export');
+            Route::get('/ugc_pois/{id}', [ExportController::class, 'ugcPoisSingleFeature'])->name('ugc-pois-single-feature-export');
+            Route::get('/ugc_tracks/list', [ExportController::class, 'ugcTracksList'])->name('ugc-tracks-export');
+            Route::get('/ugc_tracks/{id}', [ExportController::class, 'ugcTracksSingleFeature'])->name('ugc-tracks-single-feature-export');
+            Route::get('/ugc_media/list', [ExportController::class, 'ugcMediasList'])->name('ugc-medias-export');
+            Route::get('/ugc_media/{id}', [ExportController::class, 'ugcMediasSingleFeature'])->name('ugc-medias-single-feature-export');
+            Route::get('/areas/list', [ExportController::class, 'areasList'])->name('areas-export');
+            Route::get('/areas/{id}', [ExportController::class, 'areasSingleFeature'])->name('areas-single-feature-export');
+            Route::get('/sectors/list', [ExportController::class, 'sectorsList'])->name('sectors-export');
+            Route::get('/sectors/{id}', [ExportController::class, 'sectorsSingleFeature'])->name('sectors-single-feature-export');
+            Route::get('/sections/list', [ExportController::class, 'sectionsList'])->name('sections-export');
+            Route::get('/sections/{id}', [ExportController::class, 'sectionsSingleFeature'])->name('sections-single-feature-export');
+            Route::get('/itineraries/list', [ExportController::class, 'itinerariesList'])->name('itineraries-export');
+            Route::get('/itineraries/{id}', [ExportController::class, 'itinerariesSingleFeature'])->name('itineraries-single-feature-export');
+            Route::get('/ec_pois/list', [ExportController::class, 'ecPoisList'])->name('ec-pois-export');
+            Route::get('/ec_pois/{id}', [ExportController::class, 'ecPoisSingleFeature'])->name('ec-pois-single-feature-export');
+            Route::get('/mountain_groups/list', [ExportController::class, 'mountainGroupsList'])->name('mountain-groups-export');
+            Route::get('/mountain_groups/{id}', [ExportController::class, 'mountainGroupsSingleFeature'])->name('mountain-groups-single-feature-export');
+            Route::get('/natural_springs/list', [ExportController::class, 'naturalSpringList'])->name('natural-spring-export');
+            Route::get('/natural_springs/{id}', [ExportController::class, 'naturalSpringSingleFeature'])->name('natural-spring-single-feature-export');
+            Route::get('/huts/list', [ExportController::class, 'hutsList'])->name('huts-export');
+            Route::get('/huts/{id}', [ExportController::class, 'hutsSingleFeature'])->name('huts-single-feature-export');
         });
     });
 });
