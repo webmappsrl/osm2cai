@@ -1,5 +1,24 @@
 # Changelog
 
+## [233.23.0](https://github.com/webmappsrl/osm2cai/compare/v233.22.2...v233.23.0) (2024-04-18)
+
+
+### Features
+
+* implemented areas export api ([44f2990](https://github.com/webmappsrl/osm2cai/commit/44f29902eb9cf28d331a7242ca81624f778bb26a))
+* implemented ec pois export api ([743ce23](https://github.com/webmappsrl/osm2cai/commit/743ce2306c05ffea864e21856580f8c9bb364a54))
+* implemented export api for hiking_routes list and single feature ([7567c3d](https://github.com/webmappsrl/osm2cai/commit/7567c3d60b61dec0823b39d683ee0f9cf33f0f31))
+* implemented huts export api ([6598f49](https://github.com/webmappsrl/osm2cai/commit/6598f49188a7c167315b882dfa443190615674de))
+* implemented itineraries export api ([057f760](https://github.com/webmappsrl/osm2cai/commit/057f760f588f71d61832d948f58bfd7b3de7b100))
+* implemented mountain groups export api ([662d549](https://github.com/webmappsrl/osm2cai/commit/662d5492bd9c89006be0c80f65714908de984c6d))
+* implemented natural springs export api ([526cc31](https://github.com/webmappsrl/osm2cai/commit/526cc31ef1fd4b75d2de39de34b429632998e854))
+* implemented sections export api ([0c6cf1a](https://github.com/webmappsrl/osm2cai/commit/0c6cf1a267353aadf316dc47951d4570dd844634))
+* implemented sectors export api ([1300004](https://github.com/webmappsrl/osm2cai/commit/1300004de5dad9d59b8cbea22dd88320d7d0cedb))
+* implemented ugc media export api ([431cbf8](https://github.com/webmappsrl/osm2cai/commit/431cbf8b18c177d69eec9b958218d2d24c1cb340))
+* implemented ugc pois export api ([96b6d35](https://github.com/webmappsrl/osm2cai/commit/96b6d355c97e473230bcd306be4b0f148939b217))
+* implemented ugc track export api ([ea95d16](https://github.com/webmappsrl/osm2cai/commit/ea95d165cf1e3baaf064f1e61b7b5588f514ca42))
+* implemented users export api ([c0afd85](https://github.com/webmappsrl/osm2cai/commit/c0afd858a98ecd10e403c3d41543687d75021ebb))
+
 ## [233.22.2](https://github.com/webmappsrl/osm2cai/compare/v233.22.1...v233.22.2) (2024-04-17)
 
 
