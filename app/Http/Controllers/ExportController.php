@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\User;
+use App\Models\EcPoi;
 use App\Models\Sector;
 use App\Models\UgcPoi;
 use App\Models\Section;
@@ -12,9 +13,10 @@ use App\Models\UgcTrack;
 use App\Models\Itinerary;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
+use App\Models\MountainGroups;
 use App\Http\Resources\AreaResource;
-use App\Http\Resources\EcPoiResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\EcPoiResource;
 use App\Http\Resources\SectorResource;
 use App\Http\Resources\UgcPoiResource;
 use App\Http\Resources\SectionResource;
@@ -22,8 +24,8 @@ use App\Http\Resources\UgcMediaResource;
 use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\ItineraryResource;
 use App\Http\Resources\HikingRouteResource;
+use App\Http\Resources\MountainGroupResource;
 use App\Http\Resources\HikingRouteResourceCollection;
-use App\Models\EcPoi;
 
 class ExportController extends Controller
 {
@@ -160,5 +162,17 @@ class ExportController extends Controller
     public function EcPoisSingleFeature($id)
     {
         return new EcPoiResource(EcPoi::find($id));
+    }
+
+    public function MountainGroupsList()
+    {
+        return response()->json(MountainGroups::all('id', 'updated_at')->mapWithKeys(function ($mountainGroup) {
+            return [$mountainGroup->id => $mountainGroup->updated_at];
+        }));
+    }
+
+    public function MountainGroupsSingleFeature($id)
+    {
+        return new MountainGroupResource(MountainGroups::find($id));
     }
 }
