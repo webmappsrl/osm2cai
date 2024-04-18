@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\User;
+use App\Models\Sector;
 use App\Models\UgcPoi;
 use App\Models\UgcMedia;
 use App\Models\UgcTrack;
@@ -11,6 +12,7 @@ use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Http\Resources\AreaResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\SectorResource;
 use App\Http\Resources\UgcPoiResource;
 use App\Http\Resources\UgcMediaResource;
 use App\Http\Resources\UgcTrackResource;
@@ -100,5 +102,19 @@ class ExportController extends Controller
     {
 
         return new AreaResource(Area::find($id));
+    }
+
+    public function SectorsList()
+    {
+
+        return response()->json(Sector::all('id', 'updated_at')->mapWithKeys(function ($sector) {
+            return [$sector->id => $sector->updated_at];
+        }));
+    }
+
+    public function SectorsSingleFeature($id)
+    {
+
+        return new SectorResource(Sector::find($id));
     }
 }
