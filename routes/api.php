@@ -131,6 +131,8 @@ Route::name('api.')->group(function () {
             Route::get('/sections/{id}', [ExportController::class, 'sectionsSingleFeature'])->name('sections-single-feature-export');
             Route::get('/itineraries/list', [ExportController::class, 'itinerariesList'])->name('itineraries-export');
             Route::get('/itineraries/{id}', [ExportController::class, 'itinerariesSingleFeature'])->name('itineraries-single-feature-export');
+            Route::get('/ec_pois/list', [ExportController::class, 'ecPoisList'])->name('ec-pois-export');
+            Route::get('/ec_pois/{id}', [ExportController::class, 'ecPoisSingleFeature'])->name('ec-pois-single-feature-export');
         });
     });
 });
