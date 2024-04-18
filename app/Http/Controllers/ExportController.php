@@ -13,6 +13,7 @@ use App\Models\Itinerary;
 use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use App\Http\Resources\AreaResource;
+use App\Http\Resources\EcPoiResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\SectorResource;
 use App\Http\Resources\UgcPoiResource;
@@ -22,6 +23,7 @@ use App\Http\Resources\UgcTrackResource;
 use App\Http\Resources\ItineraryResource;
 use App\Http\Resources\HikingRouteResource;
 use App\Http\Resources\HikingRouteResourceCollection;
+use App\Models\EcPoi;
 
 class ExportController extends Controller
 {
@@ -146,5 +148,17 @@ class ExportController extends Controller
     public function ItinerariesSingleFeature($id)
     {
         return new ItineraryResource(Itinerary::find($id));
+    }
+
+    public function EcPoisList()
+    {
+        return response()->json(EcPoi::all('id', 'updated_at')->mapWithKeys(function ($poi) {
+            return [$poi->id => $poi->updated_at];
+        }));
+    }
+
+    public function EcPoisSingleFeature($id)
+    {
+        return new EcPoiResource(EcPoi::find($id));
     }
 }
