@@ -368,7 +368,7 @@ class MiturAbruzzoController extends Controller
         $properties['region'] = 'Lazio';
         $properties['provinces'] = 'Roma';
         $properties['municipalities'] = 'Roma';
-        $properties['map'] = 'url_mappa';
+        $properties['map'] = 'https://www.mappa-gruppo-montuoso.it';
         $properties['description'] = $mountainGroup->description ?? '';
         $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
         $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
@@ -376,8 +376,7 @@ class MiturAbruzzoController extends Controller
         $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
         $properties['ec_pois'] = json_decode($mountainGroup->ec_pois_intersecting, true);
         $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
-        $properties['map'] = 'mappa gruppo montuoso';
-        $properties['hiking_routes_map'] = 'mappa percorsi';
+        $properties['hiking_routes_map'] = 'https://www.mappa-percorsi.it';
         $properties['disclaimer'] = 'testo disclaimer';
         $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
         $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
@@ -633,9 +632,6 @@ class MiturAbruzzoController extends Controller
     {
         $hikingRoute = HikingRoute::findOrfail($id);
 
-        //get the cai_huts intersecting with the hiking route
-        $caiHuts = $hikingRoute->getHutsIntersecting();
-
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
@@ -700,8 +696,8 @@ class MiturAbruzzoController extends Controller
         $properties['symbol'] = 'Segnaletica standard CAI';
         $proprties['difficulty'] = $difficulty;
         $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
-        $properties['cai_huts'] = count($caiHuts) > 0 ? $caiHuts->pluck('id')->toArray() : [];
-        $properties['pois'] = count($pois) > 0 ? $pois->pluck('id')->toArray() : [];
+        $properties['cai_huts'] = json_decode($hikingRoute->cai_huts, true);
+        $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['activitiy'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
 
@@ -1059,7 +1055,7 @@ class MiturAbruzzoController extends Controller
         $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
         $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
         $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
-        $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('id')->toArray() : [];
+        $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('updated_at', 'id')->toArray() : [];
         $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1';
         $properties['gallery'] = $hut->gallery ?? 'https://galleria.it/';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
