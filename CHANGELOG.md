@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.24.2](https://github.com/webmappsrl/osm2cai/compare/v233.24.1...v233.24.2) (2024-04-30)
+
+
+### Bug Fixes
+
+* mock opening hours in mitur huts api ([0932731](https://github.com/webmappsrl/osm2cai/commit/093273109049aa76d7d3d266e89abd6ea58969d8))
+
 ## [233.24.1](https://github.com/webmappsrl/osm2cai/compare/v233.24.0...v233.24.1) (2024-04-30)
 
 
