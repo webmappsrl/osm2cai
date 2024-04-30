@@ -1,5 +1,19 @@
 # Changelog
 
+## [233.24.1](https://github.com/webmappsrl/osm2cai/compare/v233.24.0...v233.24.1) (2024-04-30)
+
+
+### Bug Fixes
+
+* fixed hr id on huts api (was relation id before, now is taking osm2cai id) ([f280bd6](https://github.com/webmappsrl/osm2cai/commit/f280bd6ee31529967f3cfb751a7fb863ac140420))
+* fixed mitur abruzzo apis ([6202699](https://github.com/webmappsrl/osm2cai/commit/62026996942c6cc8f9b26ff93df997ae97186519))
+* fixed section ids key to mitur abruzzo apis ([fc4ba7c](https://github.com/webmappsrl/osm2cai/commit/fc4ba7cf95f63e19b8d53c51c127b43b47f0f9a9))
+
+
+### Miscellaneous Chores
+
+* enhanced mitur abruzzo huts api documentation ([8553eb5](https://github.com/webmappsrl/osm2cai/commit/8553eb597ed560fa03482aabef2e6592cea40f2c))
+
 ## [233.24.0](https://github.com/webmappsrl/osm2cai/compare/v233.23.0...v233.24.0) (2024-04-18)
 
 
