@@ -75,7 +75,7 @@ class CalculateIntersectionsCommand extends Command
     private function calculateHutIntersections($model)
     {
         $intersectingHuts = $model->getHutsIntersecting();
-        $hutIds = $intersectingHuts->pluck('id')->toArray();
+        $hutIds = $intersectingHuts->pluck('updated_at','id')->toArray();
         $model->huts_intersecting = $hutIds;
     }
 
@@ -95,21 +95,21 @@ class CalculateIntersectionsCommand extends Command
     private function calculateSectionIntersections($model)
     {
         $intersectingSections = $model->getSectionsIntersecting();
-        $sectionIds = $intersectingSections->pluck('id')->toArray();
+        $sectionIds = $intersectingSections->pluck('updated_at','id')->toArray();
         $model->sections_intersecting = $sectionIds;
     }
 
     private function calculateEcPoiIntersections($model)
     {
         $intersectingEcPois = $model->getPoisIntersecting();
-        $ecPoiIds = $intersectingEcPois->pluck('id')->toArray();
+        $ecPoiIds = $intersectingEcPois->pluck('updated_at','id')->toArray();
         $model->ec_pois_intersecting = $ecPoiIds;
     }
 
     private function calculateMountainGroupIntersections($model)
     {
         $intersectingMountainGroups = $model->getMountainGroupsIntersecting();
-        $mountainGroupIds = $intersectingMountainGroups->pluck('id')->toArray();
+        $mountainGroupIds = $intersectingMountainGroups->pluck('updated_at','id')->toArray();
         $model->mountain_groups_intersecting = $mountainGroupIds;
     }
 
