@@ -2330,17 +2330,17 @@
                                                     "example": "Opening hours"
                                                 },
                                                 "acqua_in_rifugio_service": {
-                                                    "description": "The water in the hut service",
+                                                    "description": "The water in the hut service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
                                                 "acqua_calda_service": {
-                                                    "description": "The hot water service",
+                                                    "description": "The hot water service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
                                                 "acqua_esterno_service": {
-                                                    "description": "The external water service",
+                                                    "description": "The external water service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
@@ -2355,7 +2355,7 @@
                                                     "example": "23"
                                                 },
                                                 "ristorante_service": {
-                                                    "description": "The restaurant service",
+                                                    "description": "The restaurant service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
@@ -2375,7 +2375,7 @@
                                                     "example": "https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf"
                                                 },
                                                 "payment_credit_cards": {
-                                                    "description": "The payment credit cards service",
+                                                    "description": "The payment credit cards service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
@@ -2388,7 +2388,7 @@
                                                     }
                                                 },
                                                 "accessibilitá_ai_disabili_service": {
-                                                    "description": "The accessibility to disabled service",
+                                                    "description": "The accessibility to disabled service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
                                                 },
