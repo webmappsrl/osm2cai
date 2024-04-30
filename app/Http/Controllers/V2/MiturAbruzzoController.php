@@ -898,7 +898,7 @@ class MiturAbruzzoController extends Controller
      * @OA\Property(
      * property="opening",
      * type="string",
-     * example="Opening hours",
+     * example="Mo-Th 10:00-18:00; Fr-Sa 10:00-19:00",
      * description="The opening hours of the hut"
      * ),
      * @OA\Property(
@@ -1044,7 +1044,7 @@ class MiturAbruzzoController extends Controller
         $properties['source:ref'] = $hut->unico_id;
         $properties['description'] = $hut->description;
         $properties['pois'] = $pois->count() > 0 ? $pois->pluck('id')->toArray() : [];
-        $properties['opening'] = $hut->opening ?? '';
+        $properties['opening'] = $hut->opening ?? "Mo-Th 10:00-18:00; Fr-Sa 10:00-19:00";
         $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1';
         $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1';
         $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '1';
@@ -1371,7 +1371,7 @@ class MiturAbruzzoController extends Controller
         $properties['source:ref'] = $section->cai_code;
         $properties['website'] = $section->website;
         $properties['email'] = $section->email;
-        $properties['opening_hours'] = $section->opening_hours;
+        $properties['opening_hours'] = $section->opening_hours ?? 'Mo-Fr 09:00-17:00';
         $properties['phone'] = $section->phone;
         $properties['wheelchair'] = $section->wheelchair;
         $properties['fax'] = $section->fax;
