@@ -601,7 +601,7 @@ class MiturAbruzzoController extends Controller
      * "info": "Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche",
      * "cai_huts": {1},
      * "pois": {1},
-     * "activitiy": "Escursionismo",
+     * "activity": "Escursionismo",
      * "map": "https://osm2cai.cai.it/hiking-route/id/9689"
      * },
      * "geometry": {
@@ -698,7 +698,7 @@ class MiturAbruzzoController extends Controller
         $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
         $properties['cai_huts'] = json_decode($hikingRoute->cai_huts, true);
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
-        $properties['activitiy'] = 'Escursionismo';
+        $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
 
         $geometry = $hikingRoute->getGeometry();
