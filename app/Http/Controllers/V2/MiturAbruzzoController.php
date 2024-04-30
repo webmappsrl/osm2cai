@@ -361,7 +361,7 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $mountainGroup->id;
         $properties['name'] = $mountainGroup->name;
-        $properties['sections'] = json_decode($mountainGroup->sections_intersecting, true);
+        $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = '123';
         $properties['ele:min'] = '856';
         $properties['ele:max'] = '1785';
@@ -685,7 +685,7 @@ class MiturAbruzzoController extends Controller
         $properties['name'] = $hikingRoute->name;
         $properties['cai_scale'] = $hikingRoute->cai_scale;
         $properties['rwn_name'] = $hikingRoute->rwn_name;
-        $properties['section_id'] = $sectionsIds;
+        $properties['section_ids'] = $sectionsIds;
         $properties['from'] = $hikingRoute->from;
         $properties['from:coordinate'] = '43.71699,10.51083';
         $properties['to'] = $hikingRoute->to;
