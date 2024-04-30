@@ -909,19 +909,19 @@ class MiturAbruzzoController extends Controller
      * property="acqua_in_rifugio_service",
      * type="string",
      * example="1",
-     * description="The water in the hut service"
+     * description="The water in the hut service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="acqua_calda_service",
      * type="string",
      * example="1",
-     * description="The hot water service"
+     * description="The hot water service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="acqua_esterno_service",
      * type="string",
      * example="1",
-     * description="The external water service"
+     * description="The external water service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="posti_letto_invernali_service",
@@ -939,7 +939,7 @@ class MiturAbruzzoController extends Controller
      * property="ristorante_service",
      * type="string",
      * example="1",
-     * description="The restaurant service"
+     * description="The restaurant service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="activities",
@@ -963,7 +963,7 @@ class MiturAbruzzoController extends Controller
      * property="payment_credit_cards",
      * type="string",
      * example="1",
-     * description="The payment credit cards service"
+     * description="The payment credit cards service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="hiking_routes",
@@ -978,7 +978,7 @@ class MiturAbruzzoController extends Controller
      * property="accessibilitá_ai_disabili_service",
      * type="string",
      * example="1",
-     * description="The accessibility to disabled service"
+     * description="The accessibility to disabled service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
      * property="gallery",
@@ -1049,18 +1049,18 @@ class MiturAbruzzoController extends Controller
         $properties['description'] = $hut->description;
         $properties['pois'] = $pois->count() > 0 ? $pois->pluck('id')->toArray() : [];
         $properties['opening'] = $hut->opening ?? '';
-        $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1 (possibilitá 0 o 1)';
-        $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1 (possibilitá 0 o 1)';
-        $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '1 (possibilitá 0 o 1)';
+        $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1';
+        $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1';
+        $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '1';
         $properties['posti_letto_invernali_service'] = $hut->posti_letto_invernali_service ?? '12';
         $properties['posti_totali_service'] = $hut->posti_totali_service ?? '23';
-        $properties['ristorante_service'] = $hut->ristorante_service ?? '1 (possibilitá 0 o 1)';
-        $properties['activities'] = $hut->activities ?? 'Escursionismo/Alpinismo';
+        $properties['ristorante_service'] = $hut->ristorante_service ?? '1';
+        $properties['activity'] = $hut->activities ?? 'Escursionismo,Alpinismo';
         $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
         $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
-        $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1 (possibilitá 0 o 1)';
+        $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
         $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('relation_id')->toArray() : [];
-        $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1 (possibilitá 0 o 1)';
+        $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1';
         $properties['gallery'] = $hut->gallery ?? 'https://galleria.it/';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
         $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
