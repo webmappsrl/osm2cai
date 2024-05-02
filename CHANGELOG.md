@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.24.3](https://github.com/webmappsrl/osm2cai/compare/v233.24.2...v233.24.3) (2024-05-02)
+
+
+### Bug Fixes
+
+* fixed user no match in ugc import from geohub ([301bc92](https://github.com/webmappsrl/osm2cai/commit/301bc92544f15a1d5480fc7249792dfb0aa8b4fe))
+
 ## [233.24.2](https://github.com/webmappsrl/osm2cai/compare/v233.24.1...v233.24.2) (2024-04-30)
 
 
