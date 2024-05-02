@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use App\Models\UgcPoi;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class UserNoMatchUgcPois extends Command
 {
@@ -39,7 +40,7 @@ class UserNoMatchUgcPois extends Command
      */
     public function handle()
     {
-        $noUserUgcPois = UgcPoi::whereNull('user_id')->get();
+        $noUserUgcPois = UgcPoi::whereNull('user_id')->whereNull('user_no_match')->get();
 
         foreach ($noUserUgcPois as $ugcPoi) {
             $url = "https://geohub.webmapp.it/api/ugc/poi/geojson/{$ugcPoi->geohub_id}/osm2cai";
@@ -54,6 +55,7 @@ class UserNoMatchUgcPois extends Command
                 $ugcPoi->user_no_match = $content['properties']['user_email'];
                 $ugcPoi->save();
                 $this->info("Updated user_no_match for ugc poi with geohub_id: {$ugcPoi->geohub_id} with email: {$content['properties']['user_email']}");
+                Log::info("Updated user_no_match for ugc poi with geohub_id: {$ugcPoi->geohub_id} with email: {$content['properties']['user_email']}");
 
                 $this->info("Checking if user exists for email: {$content['properties']['user_email']}");
                 $user = User::where('email', $content['properties']['user_email'])->first();
@@ -62,8 +64,10 @@ class UserNoMatchUgcPois extends Command
                     $ugcPoi->user_no_match = null;
                     $ugcPoi->save();
                     $this->info("User exists for email: {$content['properties']['user_email']}. Updated user_id for ugc poi with geohub_id: {$ugcPoi->geohub_id}");
+                    Log::info("User exists for email: {$content['properties']['user_email']}. Updated user_id for ugc poi with geohub_id: {$ugcPoi->geohub_id}");
                 } else {
                     $this->error("User does not exist for email: {$content['properties']['user_email']}");
+                    Log::error("User does not exist for email: {$content['properties']['user_email']}");
                 }
             }
         }

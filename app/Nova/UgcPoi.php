@@ -205,7 +205,10 @@ class UgcPoi extends Resource
     public function actions(Request $request)
     {
         return [
-            (new \App\Nova\Actions\DownloadUgcCsv())
+            (new \App\Nova\Actions\DownloadUgcCsv()),
+            (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
+                return true;
+            })->standalone()
         ];
     }
 }
