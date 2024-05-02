@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.25.0](https://github.com/webmappsrl/osm2cai/compare/v233.24.3...v233.25.0) (2024-05-02)
+
+
+### Features
+
+* added check user no match command to ugc poi ([003e60a](https://github.com/webmappsrl/osm2cai/commit/003e60ae78f73e30ca731ced98148ed2de70007c))
+
 ## [233.24.3](https://github.com/webmappsrl/osm2cai/compare/v233.24.2...v233.24.3) (2024-05-02)
 
 
