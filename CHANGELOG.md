@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.26.0](https://github.com/webmappsrl/osm2cai/compare/v233.25.0...v233.26.0) (2024-05-07)
+
+
+### Features
+
+* updated export apis for ec pois user association ([7076821](https://github.com/webmappsrl/osm2cai/commit/70768219f71ce57a70052dba271b03fb49cc7df8))
+
 ## [233.25.0](https://github.com/webmappsrl/osm2cai/compare/v233.24.3...v233.25.0) (2024-05-02)
 
 
