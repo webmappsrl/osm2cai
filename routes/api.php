@@ -133,6 +133,7 @@ Route::name('api.')->group(function () {
             Route::get('/itineraries/{id}', [ExportController::class, 'itinerariesSingleFeature'])->name('itineraries-single-feature-export');
             Route::get('/ec_pois/list', [ExportController::class, 'ecPoisList'])->name('ec-pois-export');
             Route::get('/ec_pois/{id}', [ExportController::class, 'ecPoisSingleFeature'])->name('ec-pois-single-feature-export');
+            Route::get('/ec_pois/osmfeatures/{osmfeaturesid}', [ExportController::class, 'ecPoisSingleFeatureByOsmfeaturesId'])->name('ec-pois-single-feature-by-osmfeatures-id-export');
             Route::get('/mountain_groups/list', [ExportController::class, 'mountainGroupsList'])->name('mountain-groups-export');
             Route::get('/mountain_groups/{id}', [ExportController::class, 'mountainGroupsSingleFeature'])->name('mountain-groups-single-feature-export');
             Route::get('/natural_springs/list', [ExportController::class, 'naturalSpringsList'])->name('natural-spring-export');
