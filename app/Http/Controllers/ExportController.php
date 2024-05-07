@@ -477,6 +477,31 @@ class ExportController extends Controller
         /** @var EcPoi $ecPoi */
         $ecPoi = EcPoi::find($id);
 
+        if (is_null($ecPoi)) {
+            abort(404);
+        }
+
+        return new EcPoiResource($ecPoi);
+    }
+
+    /**
+     * Return a single EC POI with its features passing osmfeatures id
+     * 
+     * @param string $osmfeaturesId
+     * 
+     * @return \App\Http\Resources\EcPoiResource
+     */
+    public function ecPoisSingleFeatureByOsmfeaturesId(string $osmfeaturesId): EcPoiResource
+    {
+        $osmtype = substr($osmfeaturesId, 0, 1);
+        $osmId = substr($osmfeaturesId, 1);
+
+        $ecPoi = EcPoi::where('osm_type', $osmtype)->where('osm_id', $osmId)->first();
+
+        if (is_null($ecPoi)) {
+            abort(404);
+        }
+
         return new EcPoiResource($ecPoi);
     }
 }
