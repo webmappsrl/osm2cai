@@ -113,13 +113,23 @@ class MiturAbruzzoController extends Controller
      *                     property="mountain_groups",
      *                     type="object",
      *                     example={"1": "2022-12-03 12:34:25", "2": "2023-01-15 09:30:00", "3": "2023-02-20 14:45:10"}
-     *                 )
+     *                 ),
+     *   @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
+     * 
      *             ),
      *               @OA\Property(property="geometry", type="object",
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
      *                      @OA\Property( property="coordinates", type="object",  description="region coordinates (WGS84)")
      *                 ),
-     *               example={"type":"Feature","properties":{"id":1,"name":"Abruzzo","mountain_groups":{"1":"2022-12-03 12:34:25","2":"2023-01-15 09:30:00","3":"2023-02-20 14:45:10"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *               example={"type":"Feature","properties":{"id":1,"name":"Abruzzo","mountain_groups":{"1":"2022-12-03 12:34:25","2":"2023-01-15 09:30:00","3":"2023-02-20 14:45:10"}, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *        )
      *   ),
      *  @OA\Response(
@@ -161,6 +171,8 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $region->id;
         $properties['name'] = $region->name;
         $properties['mountain_groups'] = $mountainGroups;
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
+
 
         $geojson['properties'] = $properties;
 
@@ -331,13 +343,23 @@ class MiturAbruzzoController extends Controller
      * type="integer",
      * example=1,
      * description="The count of CAI huts intersecting with the mountain group"
-     * )
+     * ),
+     *   @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
+     * 
      * ),
      * @OA\Property(property="geometry", type="object",
      * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
      * @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
      * ),
-     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo", "hiking_routes": { "2806": "2024-02-24T03:48:14.000000Z" },"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
+     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo", "hiking_routes": { "2806": "2024-02-24T03:48:14.000000Z" },"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
      * )
      * ),
      * @OA\Response(
@@ -380,6 +402,8 @@ class MiturAbruzzoController extends Controller
         $properties['disclaimer'] = 'testo disclaimer';
         $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
         $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
+
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $mountainGroup->getGeometry();
@@ -570,7 +594,16 @@ class MiturAbruzzoController extends Controller
      * type="string",
      * example="https://osm2cai.cai.it/hiking-route/id/9689",
      * description="The map of the hiking route"
-     * )
+     * ),
+     *   @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
      * ),
      * @OA\Property(property="geometry", type="object",
      * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiLineString, etc."),
@@ -602,7 +635,8 @@ class MiturAbruzzoController extends Controller
      * "cai_huts": {1},
      * "pois": {1},
      * "activity": "Escursionismo",
-     * "map": "https://osm2cai.cai.it/hiking-route/id/9689"
+     * "map": "https://osm2cai.cai.it/hiking-route/id/9689",
+     * "images": {"https://example.com/image.jpg", "https://example.com/image.jpg"},
      * },
      * "geometry": {
      * "type": "MultiLineString",
@@ -711,6 +745,8 @@ class MiturAbruzzoController extends Controller
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
+
 
         $geometry = $hikingRoute->getGeometry();
 
@@ -998,7 +1034,16 @@ class MiturAbruzzoController extends Controller
      * type="string",
      * example="https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf",
      * description="The rule of the hut"
-     * )
+     * ),
+     *   @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
      *            ),
      *                @OA\Property(property="geometry", type="object",
      *                     @OA\Property( property="type", type="string",  description="Postgis geometry type: Point, etc."),
@@ -1071,6 +1116,9 @@ class MiturAbruzzoController extends Controller
         $properties['gallery'] = $hut->gallery ?? 'https://galleria.it/';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
         $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
+
+
 
         $geometry = $hut->getGeometry();
 
@@ -1171,7 +1219,16 @@ class MiturAbruzzoController extends Controller
      * property="map",
      * type="string",
      * example="https://osm2cai.cai.it/poi/id/{}"
-     * )
+     * ),
+     *   @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
      *           ),
      *               @OA\Property(property="geometry", type="object",
      *                    @OA\Property( property="type", type="string",  description="Postgis geometry type: Point, etc."),
@@ -1210,6 +1267,7 @@ class MiturAbruzzoController extends Controller
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes;
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
 
         $geometry = $poi->getGeometry();
 
@@ -1333,6 +1391,15 @@ class MiturAbruzzoController extends Controller
      *                     example="+390612345679",
      *           description="The fax number of the section"
      *                 ),
+     *  @OA\Property(
+     *                     property="images",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="string",
+     *                         example= "http://example.com/image.jpg",
+     *                        description="The images url of the section"
+     *                     ),
+     *                 ),
      *             ),
      *             @OA\Property(
      *                 property="geometry",
@@ -1386,6 +1453,7 @@ class MiturAbruzzoController extends Controller
         $properties['phone'] = $section->phone;
         $properties['wheelchair'] = $section->wheelchair;
         $properties['fax'] = $section->fax;
+        $properties['images'] = ["https://image1.url", "https://image2.url"];
 
         $geometry = $section->getGeometry();
 
