@@ -1633,6 +1633,14 @@
                                                         "2": "2023-01-15 09:30:00",
                                                         "3": "2023-02-20 14:45:10"
                                                     }
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
@@ -1662,7 +1670,10 @@
                                             "1": "2022-12-03 12:34:25",
                                             "2": "2023-01-15 09:30:00",
                                             "3": "2023-02-20 14:45:10"
-                                        }
+                                        },
+                                        "images": [
+                                            "http://example.com/image.jpg"
+                                        ]
                                     },
                                     "geometry": {
                                         "type": "MultiPolygon",
@@ -1838,6 +1849,14 @@
                                                     "description": "The count of CAI huts intersecting with the mountain group",
                                                     "type": "integer",
                                                     "example": 1
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
@@ -1889,7 +1908,10 @@
                                         "hiking_routes_map": "mappa percorsi",
                                         "disclaimer": "testo disclaimer",
                                         "ec_pois_count": 1,
-                                        "cai_huts_count": 1
+                                        "cai_huts_count": 1,
+                                        "images": [
+                                            "http://example.com/image.jpg"
+                                        ]
                                     },
                                     "geometry": {
                                         "type": "MultiPolygon",
@@ -2077,6 +2099,14 @@
                                                     "description": "The map of the hiking route",
                                                     "type": "string",
                                                     "example": "https://osm2cai.cai.it/hiking-route/id/9689"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
@@ -2136,7 +2166,11 @@
                                             1
                                         ],
                                         "activity": "Escursionismo",
-                                        "map": "https://osm2cai.cai.it/hiking-route/id/9689"
+                                        "map": "https://osm2cai.cai.it/hiking-route/id/9689",
+                                        "images": [
+                                            "https://example.com/image.jpg",
+                                            "https://example.com/image.jpg"
+                                        ]
                                     },
                                     "geometry": {
                                         "type": "MultiLineString",
@@ -2401,6 +2435,14 @@
                                                     "description": "The rule of the hut",
                                                     "type": "string",
                                                     "example": "https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
@@ -2513,6 +2555,14 @@
                                                 "map": {
                                                     "type": "string",
                                                     "example": "https://osm2cai.cai.it/poi/id/{}"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
@@ -2644,6 +2694,14 @@
                                                     "description": "The fax number of the section",
                                                     "type": "string",
                                                     "example": "+390612345679"
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "description": "The images url of the section",
+                                                        "type": "string",
+                                                        "example": "http://example.com/image.jpg"
+                                                    }
                                                 }
                                             },
                                             "type": "object"
