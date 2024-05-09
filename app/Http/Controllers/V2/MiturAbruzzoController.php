@@ -635,9 +635,20 @@ class MiturAbruzzoController extends Controller
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
+        //get the cai huts intersecting with the hiking route
+        $huts = json_decode($hikingRoute->cai_huts);
+        $caiHuts = [];
+        //transform the huts array into an associative array where the key is hut id and value is the hut updated_at
+        foreach ($huts as $hut) {
+            $hutModel = CaiHuts::find($hut);
+            $updated_at = $hutModel->updated_at;
+            $caiHuts[$hut] = $updated_at;
+        }
+
+
         //get the sections associated with the hiking route
         $sections = $hikingRoute->sections;
-        $sectionsIds = $sections->pluck('id')->toArray();
+        $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
 
         //get the difficulty based on cai_scale value
         $difficulty;
@@ -696,7 +707,7 @@ class MiturAbruzzoController extends Controller
         $properties['symbol'] = 'Segnaletica standard CAI';
         $proprties['difficulty'] = $difficulty;
         $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
-        $properties['cai_huts'] = json_decode($hikingRoute->cai_huts, true);
+        $properties['cai_huts'] = $caiHuts;
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
@@ -1043,7 +1054,7 @@ class MiturAbruzzoController extends Controller
         $properties['site_geo'] = $hut->site_geo ?? 'Piemonte';
         $properties['source:ref'] = $hut->unico_id;
         $properties['description'] = $hut->description;
-        $properties['pois'] = $pois->count() > 0 ? $pois->pluck('id')->toArray() : [];
+        $properties['pois'] = $pois->count() > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['opening'] = $hut->opening ?? "Mo-Th 10:00-18:00; Fr-Sa 10:00-19:00";
         $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1';
         $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1';
