@@ -1,5 +1,19 @@
 # Changelog
 
+## [233.27.0](https://github.com/webmappsrl/osm2cai/compare/v233.26.0...v233.27.0) (2024-06-03)
+
+
+### Features
+
+* api mitur abruzzo enhancement ([b906d71](https://github.com/webmappsrl/osm2cai/commit/b906d715da5998d75d417795b47878c9840a1758))
+* updated mitur abruzzo apis ([ddf4ed3](https://github.com/webmappsrl/osm2cai/commit/ddf4ed355d91f0c602fe17d28bbe17cec8a3a583))
+
+
+### Bug Fixes
+
+* fixed abstract in abruzzo api ([27cb398](https://github.com/webmappsrl/osm2cai/commit/27cb398f74c7930cafeb29c84e6c4e29eacbc475))
+* fixed mitur abruzzo apis ([9c0696c](https://github.com/webmappsrl/osm2cai/commit/9c0696cb6fe08e0e3ce40a82f171019c67accacb))
+
 ## [233.26.0](https://github.com/webmappsrl/osm2cai/compare/v233.25.0...v233.26.0) (2024-05-07)
 
 
