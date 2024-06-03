@@ -171,7 +171,7 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $region->id;
         $properties['name'] = $region->name;
         $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
 
 
         $geojson['properties'] = $properties;
@@ -237,13 +237,13 @@ class MiturAbruzzoController extends Controller
      *                   description="The area of the mountain group"
      *                 ),
      *                 @OA\Property(
-     *                     property="ele:min",
+     *                     property="ele_min",
      *                    type="string",
      *                  example="856",
      *                description="The minimum elevation of the mountain group"
      *              ),
      *           @OA\Property(
-     *              property="ele:max",
+     *              property="ele_max",
      *         type="string",
      *      example="1785",
      *  description="The maximum elevation of the mountain group"
@@ -359,7 +359,7 @@ class MiturAbruzzoController extends Controller
      * @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
      * @OA\Property( property="coordinates", type="object",  description="mountain group coordinates (WGS84)")
      * ),
-     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele:min":"856","ele:max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo", "hiking_routes": { "2806": "2024-02-24T03:48:14.000000Z" },"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
+     * example={"type":"Feature","properties":{"id":1,"name":"Mountain Group Name","sections":{1},"area":"123","ele_min":"856","ele_max":"1785","region":"Lazio","provinces":"Roma","municipalities":"Roma","map":"url_mappa","description":"Description of the mountain group","aggregated_data":"aggregated data","protected_area":"Parchi Aree protette Natura 2000","activity":"Escursionismo, Alpinismo", "hiking_routes": { "2806": "2024-02-24T03:48:14.000000Z" },"ec_pois":{1},"cai_huts":{1},"map":"mappa gruppo montuoso","hiking_routes_map":"mappa percorsi","disclaimer":"testo disclaimer","ec_pois_count":1,"cai_huts_count":1, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}       
      * )
      * ),
      * @OA\Response(
@@ -385,8 +385,8 @@ class MiturAbruzzoController extends Controller
         $properties['name'] = $mountainGroup->name;
         $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = '123';
-        $properties['ele:min'] = '856';
-        $properties['ele:max'] = '1785';
+        $properties['ele_min'] = '856';
+        $properties['ele_max'] = '1785';
         $properties['region'] = 'Lazio';
         $properties['provinces'] = 'Roma';
         $properties['municipalities'] = 'Roma';
@@ -402,7 +402,7 @@ class MiturAbruzzoController extends Controller
         $properties['disclaimer'] = 'testo disclaimer';
         $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
         $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4PLLjX", "https://ibb.co/SJ5nVHk"];
 
 
         $geojson['properties'] = $properties;
@@ -524,13 +524,13 @@ class MiturAbruzzoController extends Controller
      * description="The forward duration of the hiking route"
      * ),
      * @OA\Property(
-     * property="ele:max",
+     * property="ele_max",
      * type="string",
      * example="1000",
      * description="The maximum elevation of the hiking route"
      *  ),
      * @OA\Property(
-     * property="ele:min",
+     * property="ele_min",
      * type="string",
      * example="500",
      * description="The minimum elevation of the hiking route"
@@ -625,8 +625,8 @@ class MiturAbruzzoController extends Controller
      * "abstract": {"gpx_url": "https://geohub.webmapp.it/api/ec/track/download/27456.gpx", "cai_scale_string": {"it": "escursionistico", "en": "hiking Trail"}},
      * "distance": "10",
      * "duration_forward": "3",
-     * "ele:max": "1000",
-     * "ele:min": "500",
+     * "ele_max": "1000",
+     * "ele_min": "500",
      * "incline": "15%",
      * "issues_status": "ok",
      * "symbol": "Segnaletica standard CAI",
@@ -673,16 +673,27 @@ class MiturAbruzzoController extends Controller
         $huts = json_decode($hikingRoute->cai_huts);
         $caiHuts = [];
         //transform the huts array into an associative array where the key is hut id and value is the hut updated_at
-        foreach ($huts as $hut) {
-            $hutModel = CaiHuts::find($hut);
-            $updated_at = $hutModel->updated_at;
-            $caiHuts[$hut] = $updated_at;
+        if (!empty($huts)) {
+            foreach ($huts as $hut) {
+                $hutModel = CaiHuts::find($hut);
+                $updated_at = $hutModel->updated_at;
+                $caiHuts[$hut] = $updated_at;
+            }
+        } else {
+            $caiHuts = null;
         }
 
 
         //get the sections associated with the hiking route
         $sections = $hikingRoute->sections;
         $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
+
+        // get the abstract from the hiking route and get only it description
+        $abstract = $hikingRoute->tdh;
+        $abstract['description'] = $abstract['abstract']['it'];
+        $abstract['cai_scale_string'] = $abstract['cai_scale_string']['it'];
+        $abstract['cai_scale_description'] = $abstract['cai_scale_description']['it'];
+        unset($abstract['abstract']);
 
         //get the difficulty based on cai_scale value
         $difficulty;
@@ -731,11 +742,11 @@ class MiturAbruzzoController extends Controller
         $properties['from:coordinate'] = '43.71699,10.51083';
         $properties['to'] = $hikingRoute->to;
         $properties['to:coordinate'] = '43.71699,10.51083';
-        $properties['abstract'] = $hikingRoute->tdh;
+        $properties['abstract'] = $abstract;
         $properties['distance'] = $hikingRoute->distance;
         $properties['duration_forward'] = $hikingRoute->duration_forward;
-        $properties['ele:max'] = $hikingRoute->ele_max;
-        $properties['ele:min'] = $hikingRoute->ele_min;
+        $properties['ele_max'] = $hikingRoute->ele_max;
+        $properties['ele_min'] = $hikingRoute->ele_min;
         $properties['incline'] = '15%';
         $properties['issues_status'] = $hikingRoute->issues_status;
         $properties['symbol'] = 'Segnaletica standard CAI';
@@ -745,7 +756,7 @@ class MiturAbruzzoController extends Controller
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
 
 
         $geometry = $hikingRoute->getGeometry();
@@ -800,12 +811,6 @@ class MiturAbruzzoController extends Controller
      *                     type="string",
      *                     example="Rifugio",
      *                  description="The hut name"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="second_name",
-     *                     type="string",
-     *                     example="Rifugio 2",
-     *                 description="The second name of the hut"
      *                 ),
      *                 @OA\Property(
      *                     property="type",
@@ -1024,12 +1029,6 @@ class MiturAbruzzoController extends Controller
      * description="The accessibility to disabled service. Possible values: 0, 1 where 0 = no and 1 = yes"
      * ),
      * @OA\Property(
-     * property="gallery",
-     * type="string",
-     * example="https://galleria.it/",
-     * description="The gallery of the hut"
-     * ),
-     * @OA\Property(
      * property="rule",
      * type="string",
      * example="https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano.pdf",
@@ -1076,8 +1075,7 @@ class MiturAbruzzoController extends Controller
 
         $properties = [];
         $properties['id'] = $hut->id;
-        $properties['name'] = $hut->name ?? '';
-        $properties['second_name'] = $hut->second_name ?? '';
+        $properties['name'] = $hut->name ?? $hut->second_name ?? '';
         $properties['type'] = 'Bivacco';
         $properties['elevation'] = $hut->elevation ?? '';
         $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
@@ -1113,10 +1111,9 @@ class MiturAbruzzoController extends Controller
         $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
         $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('updated_at', 'id')->toArray() : [];
         $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1';
-        $properties['gallery'] = $hut->gallery ?? 'https://galleria.it/';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
         $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
 
 
 
@@ -1267,7 +1264,7 @@ class MiturAbruzzoController extends Controller
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes;
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
 
         $geometry = $poi->getGeometry();
 
@@ -1453,7 +1450,7 @@ class MiturAbruzzoController extends Controller
         $properties['phone'] = $section->phone;
         $properties['wheelchair'] = $section->wheelchair;
         $properties['fax'] = $section->fax;
-        $properties['images'] = ["https://image1.url", "https://image2.url"];
+        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
 
         $geometry = $section->getGeometry();
 
