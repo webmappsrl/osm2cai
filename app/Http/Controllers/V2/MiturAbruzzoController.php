@@ -622,7 +622,7 @@ class MiturAbruzzoController extends Controller
      * "from:coordinate": "43.71699,10.51083",
      * "to": "Rifugio",
      * "to:coordinate": "43.71699,10.51083",
-     * "abstract": {"gpx_url": "https://geohub.webmapp.it/api/ec/track/download/27456.gpx", "cai_scale_string": {"it": "escursionistico", "en": "hiking Trail"}},
+     * "abstract": {"gpx_url": "https://geohub.webmapp.it/api/ec/track/download/27456.gpx", "cai_scale_string": "escursionistico"},
      * "distance": "10",
      * "duration_forward": "3",
      * "ele_max": "1000",
@@ -690,9 +690,9 @@ class MiturAbruzzoController extends Controller
 
         // get the abstract from the hiking route and get only it description
         $abstract = $hikingRoute->tdh;
-        $abstract['description'] = $abstract['abstract']['it'];
-        $abstract['cai_scale_string'] = $abstract['cai_scale_string']['it'];
-        $abstract['cai_scale_description'] = $abstract['cai_scale_description']['it'];
+        $abstract['description'] = $abstract['abstract']['it'] ?? null;
+        $abstract['cai_scale_string'] = $abstract['cai_scale_string']['it'] ?? null;
+        $abstract['cai_scale_description'] = $abstract['cai_scale_description']['it'] ?? null;
         unset($abstract['abstract']);
 
         //get the difficulty based on cai_scale value
