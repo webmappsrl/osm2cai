@@ -133,6 +133,15 @@ class User extends Resource
 
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
+            Boolean::make(__('Source Validator'), 'is_source_validator')->sortable()->hideWhenCreating(function () {
+                $user = \App\Models\User::getEmulatedUser();
+
+                return !$user->is_administrator && !$user->is_national_referent;
+            })->hideWhenUpdating(function () {
+                $user = \App\Models\User::getEmulatedUser();
+
+                return !$user->is_administrator && !$user->is_national_referent;
+            }),
             BelongsTo::make('Region')->nullable(),
 
             Text::make(__('Provinces'), function () {
