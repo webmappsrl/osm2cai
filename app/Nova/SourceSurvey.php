@@ -2,7 +2,6 @@
 
 namespace App\Nova;
 
-use Wm\MapPoint\MapPoint;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
@@ -158,5 +157,9 @@ class SourceSurvey extends UgcPoi
             (new ValidatedFilter),
             (new WaterFlowValidatedFilter)
         ];
+    }
+    public function authorizeToUpdate(Request $request)
+    {
+        return $request->user()->is_source_validator;
     }
 }
