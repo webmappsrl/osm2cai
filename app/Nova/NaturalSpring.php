@@ -30,7 +30,7 @@ class NaturalSpring extends Resource
 
     public static function label()
     {
-        return 'Acqua Sorgenti';
+        return 'Database';
     }
 
     /**
@@ -42,8 +42,8 @@ class NaturalSpring extends Resource
         'id', 'name'
     ];
 
-    public static string $group = 'Territorio';
-    public static $priority = 10;
+    public static string $group = 'Acqua Sorgente';
+    public static $priority = 2;
 
     /**
      * Get the fields displayed by the resource.
