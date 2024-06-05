@@ -14,7 +14,9 @@ class AddIsSourceValidatorToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_source_validator')->default(false);
+            if (!Schema::hasColumn('users', 'is_source_validator')) {
+                $table->boolean('is_source_validator')->default(false);
+            }
         });
     }
 

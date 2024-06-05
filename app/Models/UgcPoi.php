@@ -67,4 +67,37 @@ class UgcPoi extends Model
             return $feature;
         } else return null;
     }
+
+    /**
+     * Get the natural springs data for nova resource
+     * 
+     * @return array
+     */
+    public function getNaturalSpringsData(): array
+    {
+        $data = [];
+        $rawData = json_decode($this->raw_data, true);
+
+        $volume = $rawData['range_volume'] ?? '0';
+        $volume = preg_replace('/[^0-9,]/', '', $volume);
+        $volume = str_replace(',', '.', $volume);
+        $volume = floatval($volume);
+
+        $time = $rawData['range_time'] ?? '0';
+        $time = preg_replace('/[^0-9,]/', '', $time);
+        $time = str_replace(',', '.', $time);
+        $time = floatval($time);
+
+        $waterFlowRange = ($time > 0 && $volume > 0) ? round(($volume / $time), 3) . ' L/s' : 'N/A';
+        $conductivity = $rawData['conductivity'] ?? 'N/A';
+        $temperature = $rawData['temperature'] ?? 'N/A';
+        $photos = !empty($rawData['storedPhotoKeys']) ? true : false;
+
+        $data['waterFlowRange'] = $waterFlowRange;
+        $data['conductivity'] = $conductivity;
+        $data['temperature'] = $temperature;
+        $data['photos'] = $photos;
+
+        return $data;
+    }
 }
