@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddValidatedToUgcPoisTable extends Migration
+class AddFlowRangeToUgcPoisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,7 @@ class AddValidatedToUgcPoisTable extends Migration
     public function up()
     {
         Schema::table('ugc_pois', function (Blueprint $table) {
-            $table->enum('validated', ['valid', 'invalid', 'not_validated'])->default('not_validated');
-            $table->enum('water_flow_rate_validated', ['valid', 'invalid', 'not_validated'])->default('not_validated');
+            $table->string('flow_rate')->nullable();
         });
     }
 
@@ -27,7 +26,7 @@ class AddValidatedToUgcPoisTable extends Migration
     public function down()
     {
         Schema::table('ugc_pois', function (Blueprint $table) {
-            $table->dropColumn(['validated', 'water_flow_rate_validated']);
+            $table->dropColumn('flow_rate');
         });
     }
 }

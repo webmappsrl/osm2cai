@@ -12,7 +12,7 @@ class UgcPoi extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_range_volume', 'flow_range_fill_time'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_rate_volume', 'flow_rate_fill_time'];
 
     protected static function boot()
     {
@@ -89,7 +89,7 @@ class UgcPoi extends Model
         $time = str_replace(',', '.', $time);
         $time = floatval($time);
 
-        $waterFlowRange = ($time > 0 && $volume > 0) ? round(($volume / ($time * 60)), 4) : 'N/A';
+        $waterFlowRate = ($time > 0 && $volume > 0) ? round(($volume / ($time * 60)), 4) : 'N/A';
         $conductivity = $rawData['conductivity'] ?? 'N/A';
         $temperature = $rawData['temperature'] ?? 'N/A';
 
@@ -103,17 +103,20 @@ class UgcPoi extends Model
             $date = Carbon::parse($date);
         }
 
-        $data['waterFlowRange'] = $waterFlowRange;
         $data['photos'] = $photos;
         $data['date'] = $date;
 
         //populate the table if empty
-        if (!$this->flow_range_volume) {
-            $this->flow_range_volume = $waterFlowRange == 'N/A' ? $waterFlowRange : round($waterFlowRange / $volume, 4);
+
+        if (!$this->flow_rate) {
+            $this->flow_rate = $waterFlowRate;
+        }
+        if (!$this->flow_rate_volume) {
+            $this->flow_rate_volume = $waterFlowRate == 'N/A' ? $waterFlowRate : round($waterFlowRate / $volume, 4);
         }
 
-        if (!$this->flow_range_fill_time) {
-            $this->flow_range_fill_time = $waterFlowRange == 'N/A' ? $waterFlowRange : round($waterFlowRange / $time, 4);
+        if (!$this->flow_rate_fill_time) {
+            $this->flow_rate_fill_time = $waterFlowRate == 'N/A' ? $waterFlowRate : round($waterFlowRate / $time, 4);
         }
 
         if (!$this->conductivity) {

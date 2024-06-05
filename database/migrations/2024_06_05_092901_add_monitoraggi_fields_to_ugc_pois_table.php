@@ -14,8 +14,8 @@ class AddMonitoraggiFieldsToUgcPoisTable extends Migration
     public function up()
     {
         Schema::table('ugc_pois', function (Blueprint $table) {
-            $table->string('flow_range_volume')->nullable();
-            $table->string('flow_range_fill_time')->nullable();
+            $table->string('flow_rate_volume')->nullable();
+            $table->string('flow_rate_fill_time')->nullable();
             $table->string('conductivity')->nullable();
             $table->string('temperature')->nullable();
         });
@@ -29,7 +29,7 @@ class AddMonitoraggiFieldsToUgcPoisTable extends Migration
     public function down()
     {
         Schema::table('ugc_pois', function (Blueprint $table) {
-            $table->dropColumn(['flow_range_volume', 'flow_range_fill_time', 'conductivity', 'temperature']);
+            $table->dropColumn(['flow_rate_volume', 'flow_rate_fill_time', 'conductivity', 'temperature']);
         });
     }
 }

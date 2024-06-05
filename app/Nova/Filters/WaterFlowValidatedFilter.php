@@ -19,6 +19,6 @@ class WaterFlowValidatedFilter extends ValidatedFilter
      */
     public function apply(Request $request, $query, $value)
     {
-        return $query->where('water_flow_range_validated', $value);
+        return $query->where('water_flow_rate_validated', $value);
     }
 }

@@ -70,19 +70,17 @@ class SourceSurvey extends UgcPoi
             Date::make('Monitoring Date', function () use ($dedicatedData) {
                 return $dedicatedData['date']->format('d-m-Y');
             }),
-            Text::make('Flow Rate L/s', function () use ($dedicatedData) {
-                return $dedicatedData['waterFlowRange'];
-            }),
-            Text::make('Flow Rate/Volume', 'flow_range_volume')->hideFromIndex(),
-            Text::make('Flow Rate/Fill Time', 'flow_range_fill_time')->hideFromIndex(),
-            Text::make('Conductivity', 'conductivity'),
+            Text::make('Flow Rate L/s', 'flow_rate'),
+            Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
+            Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
+            Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature', 'temperature'),
             Boolean::make('Photos', function () use ($dedicatedData) {
                 return $dedicatedData['photos'];
             })->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
-            Select::make('Water Flow Range Validated', 'water_flow_range_validated')
+            Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
@@ -137,13 +135,13 @@ class SourceSurvey extends UgcPoi
     public function modifiablesFields()
     {
         return [
-            Text::make('Flow Rate/Volume', 'flow_range_volume'),
-            Text::make('Flow Rate/Fill Time', 'flow_range_fill_time'),
+            Text::make('Flow Rate/Volume', 'flow_rate_volume'),
+            Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time'),
             Text::make('Conductivity', 'conductivity'),
             Text::make('Temperature', 'temperature'),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
-            Select::make('Water Flow Range Validated', 'water_flow_range_validated')
+            Select::make('Water Flow Range Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             Textarea::make('Notes', 'note'),
         ];
