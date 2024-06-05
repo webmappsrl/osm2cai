@@ -69,22 +69,14 @@ class SourceSurvey extends UgcPoi
         $dedicatedFields = [
             Date::make('Monitoring Date', function () use ($dedicatedData) {
                 return $dedicatedData['date']->format('d-m-Y');
-            })->sortable(),
-            Text::make('Flow Rate', function () use ($dedicatedData) {
+            }),
+            Text::make('Flow Rate L/s', function () use ($dedicatedData) {
                 return $dedicatedData['waterFlowRange'];
             }),
-            Text::make('Portata/Volume', function () use ($dedicatedData) {
-                return $dedicatedData['rangeVolume'];
-            })->hideFromIndex(),
-            Text::make('Portata/Tempo di riempimento', function () use ($dedicatedData) {
-                return $dedicatedData['rangeTime'];
-            })->hideFromIndex(),
-            Text::make('Conductivity', function () use ($dedicatedData) {
-                return $dedicatedData['conductivity'];
-            }),
-            Text::make('Temperature', function () use ($dedicatedData) {
-                return $dedicatedData['temperature'];
-            }),
+            Text::make('Flow Rate/Volume', 'flow_range_volume')->hideFromIndex(),
+            Text::make('Flow Rate/Fill Time', 'flow_range_fill_time')->hideFromIndex(),
+            Text::make('Conductivity', 'conductivity'),
+            Text::make('Temperature', 'temperature'),
             Boolean::make('Photos', function () use ($dedicatedData) {
                 return $dedicatedData['photos'];
             })->hideFromDetail(),
@@ -100,7 +92,6 @@ class SourceSurvey extends UgcPoi
                 'maxZoom' => 17,
                 'defaultZoom' => 13
             ])->hideFromIndex(),
-            Textarea::make('Notes', 'note')->hideFromIndex(),
             Text::make('Gallery', function () {
                 //get the ugc_media related to the resource
                 $medias = $this->ugc_media()->get();
@@ -114,9 +105,48 @@ class SourceSurvey extends UgcPoi
                 return $html;
             })->asHtml()
                 ->onlyOnDetail(),
+            Textarea::make('Notes', 'note')->hideFromIndex(),
         ];
 
         return array_merge($fields, $dedicatedFields);
+    }
+
+    public function fieldsForUpdate()
+    {
+        $readonlyFields = $this->readonlyFields();
+        $modifiablesFields = $this->modifiablesFields();
+        return array_merge($readonlyFields, $modifiablesFields);
+    }
+
+    public function readonlyFields()
+    {
+        $dedicatedData = $this->getNaturalSpringsData();
+        return [
+            Text::make('ID', 'id')->hideFromIndex()->readonly(),
+            Text::make('User', 'user')->resolveUsing(function ($user) {
+                return $user->name ?? $this->user_no_match;
+            })->readonly(),
+            Text::make('Monitoring Date')->resolveUsing(function ($date) use ($dedicatedData) {
+                return $dedicatedData['date']->format('d-m-Y');
+            })->readonly(),
+            Text::make('Flow Rate')->resolveUsing(function ($waterFlowRange) use ($dedicatedData) {
+                return $dedicatedData['waterFlowRange'];
+            })->readonly(),
+        ];
+    }
+    public function modifiablesFields()
+    {
+        return [
+            Text::make('Flow Rate/Volume', 'flow_range_volume'),
+            Text::make('Flow Rate/Fill Time', 'flow_range_fill_time'),
+            Text::make('Conductivity', 'conductivity'),
+            Text::make('Temperature', 'temperature'),
+            Select::make('Validated', 'validated')
+                ->options(UgcValidatedStatus::cases()),
+            Select::make('Water Flow Range Validated', 'water_flow_range_validated')
+                ->options(UgcWaterFlowValidatedStatus::cases()),
+            Textarea::make('Notes', 'note'),
+        ];
     }
 
     public function filters(Request $request)

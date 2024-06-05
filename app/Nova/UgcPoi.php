@@ -88,7 +88,10 @@ class UgcPoi extends Resource
     {
         $allFields = [
             ID::make(__('ID'), 'id')
-                ->sortable(),
+                ->sortable()
+                ->readonly()
+                ->showOnCreating()
+                ->showOnUpdating(),
             Text::make('Form ID', function () {
                 $rawData = json_decode($this->raw_data, true);
                 return $this->form_id ?? $rawData['id'] ?? null;

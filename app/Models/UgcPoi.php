@@ -12,7 +12,7 @@ class UgcPoi extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_range_volume', 'flow_range_fill_time'];
 
     protected static function boot()
     {
@@ -89,10 +89,10 @@ class UgcPoi extends Model
         $time = str_replace(',', '.', $time);
         $time = floatval($time);
 
-        $waterFlowRange = ($time > 0 && $volume > 0) ? round(($volume / $time), 3) . ' L/s' : 'N/A';
+        $waterFlowRange = ($time > 0 && $volume > 0) ? round(($volume / ($time * 60)), 4) : 'N/A';
         $conductivity = $rawData['conductivity'] ?? 'N/A';
         $temperature = $rawData['temperature'] ?? 'N/A';
-        //add centigrade to temperature if not existent
+
         if (strpos($temperature, '°') === false && $temperature !== 'N/A') {
             $temperature .= '°';
         }
@@ -104,12 +104,27 @@ class UgcPoi extends Model
         }
 
         $data['waterFlowRange'] = $waterFlowRange;
-        $data['conductivity'] = $conductivity;
-        $data['temperature'] = $temperature;
         $data['photos'] = $photos;
         $data['date'] = $date;
-        $data['rangeVolume'] = $waterFlowRange . ' (' . $volume . ' L)';
-        $data['rangeTime'] = $waterFlowRange . ' (' . $time . ' min)';
+
+        //populate the table if empty
+        if (!$this->flow_range_volume) {
+            $this->flow_range_volume = $waterFlowRange == 'N/A' ? $waterFlowRange : round($waterFlowRange / $volume, 4);
+        }
+
+        if (!$this->flow_range_fill_time) {
+            $this->flow_range_fill_time = $waterFlowRange == 'N/A' ? $waterFlowRange : round($waterFlowRange / $time, 4);
+        }
+
+        if (!$this->conductivity) {
+            $this->conductivity = $conductivity;
+        }
+
+        if (!$this->temperature) {
+            $this->temperature = $temperature;
+        }
+
+        $this->save();
 
         return $data;
     }
