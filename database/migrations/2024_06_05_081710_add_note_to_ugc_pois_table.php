@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsSourceValidatorToUsersTable extends Migration
+class AddNoteToUgcPoisTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddIsSourceValidatorToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_source_validator')->default(false);
+        Schema::table('ugc_pois', function (Blueprint $table) {
+            $table->string('note', 1000)->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddIsSourceValidatorToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('is_source_validator');
+        Schema::table('ugc_pois', function (Blueprint $table) {
+            $table->dropColumn('note');
         });
     }
 }

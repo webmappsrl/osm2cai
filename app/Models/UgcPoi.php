@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use app\Traits\GeojsonableTrait;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -91,12 +92,24 @@ class UgcPoi extends Model
         $waterFlowRange = ($time > 0 && $volume > 0) ? round(($volume / $time), 3) . ' L/s' : 'N/A';
         $conductivity = $rawData['conductivity'] ?? 'N/A';
         $temperature = $rawData['temperature'] ?? 'N/A';
+        //add centigrade to temperature if not existent
+        if (strpos($temperature, '°') === false && $temperature !== 'N/A') {
+            $temperature .= '°';
+        }
         $photos = !empty($rawData['storedPhotoKeys']) ? true : false;
+        $date = $rawData['date'] ?? 'N/A';
+
+        if ($date !== 'N/A') {
+            $date = Carbon::parse($date);
+        }
 
         $data['waterFlowRange'] = $waterFlowRange;
         $data['conductivity'] = $conductivity;
         $data['temperature'] = $temperature;
         $data['photos'] = $photos;
+        $data['date'] = $date;
+        $data['rangeVolume'] = $waterFlowRange . ' (' . $volume . ' L)';
+        $data['rangeTime'] = $waterFlowRange . ' (' . $time . ' min)';
 
         return $data;
     }

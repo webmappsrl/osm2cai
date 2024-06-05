@@ -2,16 +2,20 @@
 
 namespace App\Nova;
 
+use Wm\MapPoint\MapPoint;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Boolean;
 use App\Enums\UgcValidatedStatus;
+use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\ValidatedFilter;
 use App\Enums\UgcWaterFlowValidatedStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\WaterFlowValidatedFilter;
+use Laravel\Nova\Fields\Textarea;
 
 class SourceSurvey extends UgcPoi
 {
@@ -27,7 +31,7 @@ class SourceSurvey extends UgcPoi
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->where('form_id', 'water');
+        $query =  $query->where('form_id', 'water');
     }
 
     public function authorizedToView(Request $request)
@@ -55,7 +59,7 @@ class SourceSurvey extends UgcPoi
      *
      * @var array
      */
-    protected static $activeFields = ['ID', 'User', 'Updated At'];
+    protected static $activeFields = ['ID', 'User'];
 
     public function fields(Request $request)
     {
@@ -63,9 +67,18 @@ class SourceSurvey extends UgcPoi
         $fields = parent::fields($request);
 
         $dedicatedFields = [
+            Date::make('Monitoring Date', function () use ($dedicatedData) {
+                return $dedicatedData['date']->format('d-m-Y');
+            })->sortable(),
             Text::make('Flow Rate', function () use ($dedicatedData) {
                 return $dedicatedData['waterFlowRange'];
             }),
+            Text::make('Portata/Volume', function () use ($dedicatedData) {
+                return $dedicatedData['rangeVolume'];
+            })->hideFromIndex(),
+            Text::make('Portata/Tempo di riempimento', function () use ($dedicatedData) {
+                return $dedicatedData['rangeTime'];
+            })->hideFromIndex(),
             Text::make('Conductivity', function () use ($dedicatedData) {
                 return $dedicatedData['conductivity'];
             }),
@@ -74,11 +87,33 @@ class SourceSurvey extends UgcPoi
             }),
             Boolean::make('Photos', function () use ($dedicatedData) {
                 return $dedicatedData['photos'];
-            }),
+            })->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Range Validated', 'water_flow_range_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
+            MapPointNova3::make('geometry')->withMeta([
+                'center' => [42, 10],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'minZoom' => 8,
+                'maxZoom' => 17,
+                'defaultZoom' => 13
+            ])->hideFromIndex(),
+            Textarea::make('Notes', 'note')->hideFromIndex(),
+            Text::make('Gallery', function () {
+                //get the ugc_media related to the resource
+                $medias = $this->ugc_media()->get();
+                $html = '<div style="display: flex; justyfy-content: space-between">';
+                foreach ($medias as $media) {
+                    $html .=
+                        "<a href='{$media->relative_url}' target='_blank'><img src='{$media->relative_url}' style='width: 60px; margin-right: 5px; height: 60px; border: 1px solid #ccc; border-radius: 40%; padding: 2px;' alt='Thumbnail'></a>";
+                }
+                $html .= '</div>';
+
+                return $html;
+            })->asHtml()
+                ->onlyOnDetail(),
         ];
 
         return array_merge($fields, $dedicatedFields);
