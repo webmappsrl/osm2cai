@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\UgcPoi;
 use Illuminate\Http\Request;
-use App\Http\Resources\SourceSurveyCollection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\SourceSurveyCollection;
 
 class SourceSurveyController extends Controller
 {
     public function overlayGeojson()
     {
-        $sourceSurveys = UgcPoi::where('form_id', 'water')->get();
+        $sourceSurveys = UgcPoi::where('form_id', 'water')->where('validated', 'valid')->get();
 
         $output = [
             'type' => 'FeatureCollection',
@@ -42,7 +43,9 @@ class SourceSurveyController extends Controller
                     'popup' => [
                         'html' => $htmlString
                     ]
-                ]
+                ],
+                'geometry' => json_decode(DB::select("select st_asGeojson(geometry) as geom from ugc_pois where id=$sourceSurvey->id;")[0]->geom, true),
+
             ];
         }
 
