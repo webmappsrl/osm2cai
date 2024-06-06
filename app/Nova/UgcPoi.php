@@ -66,23 +66,32 @@ class UgcPoi extends Resource
 
     public static function indexQuery(NovaRequest $request, $query)
     {
-
         if (Auth::user()->getTerritorialRole() === 'regional' || Auth::user()->getTerritorialRole() === 'local') {
             return $query->where('user_id', Auth::user()->id);
         }
     }
 
     /**
+     * Array of fields to activate.
+     *
+     * @var array
+     */
+    protected static $activeFields = [];
+
+    /**
      * Get the fields displayed by the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function fields(Request $request)
     {
-        return [
+        $allFields = [
             ID::make(__('ID'), 'id')
-                ->sortable(),
+                ->sortable()
+                ->readonly()
+                ->showOnCreating()
+                ->showOnUpdating(),
             Text::make('Form ID', function () {
                 $rawData = json_decode($this->raw_data, true);
                 return $this->form_id ?? $rawData['id'] ?? null;
@@ -109,11 +118,8 @@ class UgcPoi extends Resource
                 ->onlyOnDetail(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Taxonomy wheres', function () {
-                //split the string by ','
                 $array = explode(',', $this->taxonomy_wheres);
-                //get only the first value of the array
                 $result = $array[0];
-                //add ... if the array has more than one element
                 if (count($array) > 1) {
                     $result .= '[...]';
                 }
@@ -137,7 +143,7 @@ class UgcPoi extends Resource
                 unset($jsonRawData['date']);
                 unset($jsonRawData['nominatim']);
                 $rawData = json_encode($jsonRawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return  $rawData;
+                return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Device data'), function ($model) {
                 $jsonRawData = json_decode($model->raw_data, true);
@@ -146,24 +152,32 @@ class UgcPoi extends Resource
                 $jsonData['city'] = $jsonRawData['city'] ?? null;
                 $jsonData['date'] = $jsonRawData['date'] ?? null;
                 $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return  $rawData;
+                return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Nominatim'), function ($model) {
                 $jsonData = json_decode($model->raw_data, true)['nominatim'];
                 $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return  $rawData;
+                return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Raw data'), function ($model) {
                 $rawData = json_encode(json_decode($model->raw_data, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return  $rawData;
+                return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
         ];
+
+        if (empty(static::$activeFields)) {
+            return $allFields;
+        }
+
+        return array_filter($allFields, function ($field) {
+            return in_array($field->name, static::$activeFields);
+        });
     }
 
     /**
      * Get the cards available for the request.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function cards(Request $request)
@@ -174,7 +188,7 @@ class UgcPoi extends Resource
     /**
      * Get the filters available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function filters(Request $request)
@@ -188,7 +202,7 @@ class UgcPoi extends Resource
     /**
      * Get the lenses available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function lenses(Request $request)
@@ -199,7 +213,7 @@ class UgcPoi extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function actions(Request $request)

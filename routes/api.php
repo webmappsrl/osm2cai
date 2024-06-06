@@ -14,6 +14,7 @@ use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Resources\HikingRouteTDHResource;
 use App\Http\Controllers\HikingRouteController;
+use App\Http\Controllers\SourceSurveyController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
@@ -99,6 +100,7 @@ Route::name('api.')->group(function () {
         Route::get('/ecpois/bb/{bounding_box}/{type}', [EcPoiController::class, 'ecPoisBBox'])->name('v2-ecpois-by-bb');
         Route::get('/ecpois/{hr_osm2cai_id}/{type}', [EcPoiController::class, 'ecPoisByOsm2CaiId'])->name('v2-ecpois-by-osm2caiId');
         Route::get('/ecpois/{hr_osm_id}/{type}', [EcPoiController::class, 'ecPoisByOsmId'])->name('v2-ecpois-by-OsmId');
+        Route::get('/source_survey/overlay.geojson', [SourceSurveyController::class, 'overlayGeoJson'])->name('v2-source-survey-overlay-geojson');
 
         //mitur_abruzzo
         Route::prefix('mitur_abruzzo')->name('v2-mitur-abruzzo')->group(function () {
