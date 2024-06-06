@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.28.0](https://github.com/webmappsrl/osm2cai/compare/v233.27.0...v233.28.0) (2024-06-06)
+
+
+### Features
+
+* added source survey nova resource oc:3431 ([1487c73](https://github.com/webmappsrl/osm2cai/commit/1487c73d8b4d494946cca5c6965f41a0a1a9bce2))
+
 ## [233.27.0](https://github.com/webmappsrl/osm2cai/compare/v233.26.0...v233.27.0) (2024-06-03)
 
 
