@@ -11,7 +11,7 @@ class SourceSurveyController extends Controller
 {
     public function overlayGeojson()
     {
-        $sourceSurveys = UgcPoi::where('form_id', 'water')->where('validated', 'valid')->get();
+        $sourceSurveys = UgcPoi::where('form_id', 'water')->get();
 
         $output = [
             'type' => 'FeatureCollection',
@@ -27,12 +27,14 @@ class SourceSurveyController extends Controller
             $flowRate = str_replace(',', '.', $sourceSurvey->flow_rate);
             $conductivity = str_replace(',', '.', $sourceSurvey->conductivity) . ' microS/cm';
 
-            $htmlString = "<div style='font-size: 1.1em; line-height: 1.4em;'>
-                   <strong>Data del monitoraggio:</strong> <span style='white-space: pre-wrap;'>$date,</span><br>
-                   <strong>Portata:</strong> <span style='white-space: pre-wrap;'>$flowRate,</span><br>
-                   <strong>Temperatura:</strong> <span style='white-space: pre-wrap;'>$sourceSurvey->temperature,</span><br>
-                   <strong>Conducibilitá elettrica:</strong> <span style='white-space: pre-wrap;'>$conductivity,</span><br>
-               </div>";
+            $htmlString = <<<HTML
+    <div style='font-size: 1.1em; line-height: 1.4em;'>
+        <strong>Data del monitoraggio:</strong> <span style='white-space: pre-wrap;'>$date,</span><br>
+        <strong>Portata:</strong> <span style='white-space: pre-wrap;'>$flowRate,</span><br>
+        <strong>Temperatura:</strong> <span style='white-space: pre-wrap;'>$sourceSurvey->temperature,</span><br>
+        <strong>Conducibilitá elettrica:</strong> <span style='white-space: pre-wrap;'>$conductivity,</span><br>
+    </div>
+    HTML;
             $output['features'][] = [
                 'type' => 'Feature',
                 'properties' => [
