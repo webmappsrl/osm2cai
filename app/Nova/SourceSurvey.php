@@ -93,12 +93,19 @@ class SourceSurvey extends UgcPoi
             Text::make('Gallery', function () {
                 //get the ugc_media related to the resource
                 $medias = $this->ugc_media()->get();
-                $html = '<div style="display: flex; justyfy-content: space-between">';
+                $html = <<<HTML
+                        <div style="display: flex; justify-content: start;">
+                        HTML;
                 foreach ($medias as $media) {
-                    $html .=
-                        "<a href='{$media->relative_url}' target='_blank'><img src='{$media->relative_url}' style='width: 60px; margin-right: 5px; height: 60px; border: 1px solid #ccc; border-radius: 40%; padding: 2px;' alt='Thumbnail'></a>";
+                    $html .= <<<HTML
+                <a href="{$media->relative_url}" target="_blank">
+                    <img src="{$media->relative_url}" style="width: 60px; margin-right: 5px; height: 60px; border: 1px solid #ccc; border-radius: 40%; padding: 2px;" alt="Thumbnail">
+                </a>
+                HTML;
                 }
-                $html .= '</div>';
+                $html .= <<<HTML
+                </div>
+                HTML;
 
                 return $html;
             })->asHtml()
@@ -127,9 +134,7 @@ class SourceSurvey extends UgcPoi
             Text::make('Monitoring Date')->resolveUsing(function ($date) use ($dedicatedData) {
                 return $dedicatedData['date']->format('d-m-Y');
             })->readonly(),
-            Text::make('Flow Rate')->resolveUsing(function ($waterFlowRange) use ($dedicatedData) {
-                return $dedicatedData['waterFlowRange'];
-            })->readonly(),
+            Text::make('Flow Rate', 'flow_rate')->readonly(),
         ];
     }
     public function modifiablesFields()
