@@ -171,7 +171,7 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $region->id;
         $properties['name'] = $region->name;
         $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
 
         $geojson['properties'] = $properties;
@@ -402,7 +402,7 @@ class MiturAbruzzoController extends Controller
         $properties['disclaimer'] = 'testo disclaimer';
         $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
         $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
-        $properties['images'] = ["https://ibb.co/r4PLLjX", "https://ibb.co/SJ5nVHk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
 
         $geojson['properties'] = $properties;
@@ -689,11 +689,8 @@ class MiturAbruzzoController extends Controller
         $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
 
         // get the abstract from the hiking route and get only it description
-        $abstract = $hikingRoute->tdh;
-        $abstract['description'] = $abstract['abstract']['it'] ?? null;
-        $abstract['cai_scale_string'] = $abstract['cai_scale_string']['it'] ?? null;
-        $abstract['cai_scale_description'] = $abstract['cai_scale_description']['it'] ?? null;
-        unset($abstract['abstract']);
+        $abstract = [];
+        $abstract['description'] = $hikingRoute->tdh['abstract']['it'] ?? null;
 
         //get the difficulty based on cai_scale value
         $difficulty;
@@ -756,7 +753,7 @@ class MiturAbruzzoController extends Controller
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
-        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
 
         $geometry = $hikingRoute->getGeometry();
@@ -1075,7 +1072,7 @@ class MiturAbruzzoController extends Controller
 
         $properties = [];
         $properties['id'] = $hut->id;
-        $properties['name'] = $hut->name ?? $hut->second_name ?? '';
+        $properties['name'] = $hut->second_name ?? $hut->name ?? '';
         $properties['type'] = 'Bivacco';
         $properties['elevation'] = $hut->elevation ?? '';
         $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
@@ -1113,7 +1110,7 @@ class MiturAbruzzoController extends Controller
         $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
         $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
-        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
 
 
@@ -1264,7 +1261,7 @@ class MiturAbruzzoController extends Controller
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes;
         $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
-        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
         $geometry = $poi->getGeometry();
 
@@ -1450,7 +1447,7 @@ class MiturAbruzzoController extends Controller
         $properties['phone'] = $section->phone;
         $properties['wheelchair'] = $section->wheelchair;
         $properties['fax'] = $section->fax;
-        $properties['images'] = ["https://ibb.co/r4plljx", "https://ibb.co/sj5nvhk"];
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
         $geometry = $section->getGeometry();
 
