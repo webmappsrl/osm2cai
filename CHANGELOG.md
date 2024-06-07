@@ -2,54 +2,6 @@
 
 ## [233.28.0](https://github.com/webmappsrl/osm2cai/compare/v233.27.0...v233.28.0) (2024-06-06)
 
-## [233.22.0](https://github.com/webmappsrl/osm2cai/compare/v233.21.1...v233.22.0) (2024-04-17)
-
-### Features
-
-- improved poi mitur api performance ([c70b3d4](https://github.com/webmappsrl/osm2cai/commit/c70b3d408151d7ee7ea6484f79bf1cfaecbbd036))
-
-## [233.21.1](https://github.com/webmappsrl/osm2cai/compare/v233.21.0...v233.21.1) (2024-04-16)
-
-### Bug Fixes
-
-- fixed calculate intersections command ([91ec821](https://github.com/webmappsrl/osm2cai/commit/91ec821c520c0136dfdb20b1fc1ed7308558b40e))
-
-## [233.21.0](https://github.com/webmappsrl/osm2cai/compare/v233.20.1...v233.21.0) (2024-04-16)
-
-### Features
-
-- improved api performance for mountain groups. Added intersections columns to mountain groups table and created nova action and command to calculate intersections ([c55d152](https://github.com/webmappsrl/osm2cai/commit/c55d15234d3af4e9e4eb6387aa8a43e8e0f89a58))
-
-## [233.20.1](https://github.com/webmappsrl/osm2cai/compare/v233.20.0...v233.20.1) (2024-04-16)
-
-### Bug Fixes
-
-- improved mitur hiking routes api examples ([8f0b7f2](https://github.com/webmappsrl/osm2cai/commit/8f0b7f213add38142bfd344153e2427be804541c))
-
-## [233.20.0](https://github.com/webmappsrl/osm2cai/compare/v233.19.2...v233.20.0) (2024-04-16)
-
-### Features
-
-- updated api doc ([609170b](https://github.com/webmappsrl/osm2cai/commit/609170b20d46d011852ef942a9729dbf5cd1d174))
-- updated api docs ([f1fdbbb](https://github.com/webmappsrl/osm2cai/commit/f1fdbbb8d4cb46628d90fd6c7bbd63a71d354912))
-
-## [233.19.2](https://github.com/webmappsrl/osm2cai/compare/v233.19.1...v233.19.2) (2024-04-10)
-
-### Bug Fixes
-
-- fixed import ugc ([8f91d29](https://github.com/webmappsrl/osm2cai/commit/8f91d297f623f59251f77e4b9204123f54b0004f))
-  > > > > > > > 91c406b (release 233.22.0)
-
-## [233.19.1](https://github.com/webmappsrl/osm2cai/compare/v233.19.0...v233.19.1) (2024-04-03)
-
-### Bug Fixes
-
-- fixed ec pois xlsx ([407b25b](https://github.com/webmappsrl/osm2cai/commit/407b25b2d45ed4838d79621013942ff39ff158cc))
-
-## [233.19.0](https://github.com/webmappsrl/osm2cai/compare/v233.18.0...v233.19.0) (2024-04-02)
-
-> > > > > > > 7872ae3 (release 233.19.1)
-
 ### Features
 
 - added source survey nova resource oc:3431 ([1487c73](https://github.com/webmappsrl/osm2cai/commit/1487c73d8b4d494946cca5c6965f41a0a1a9bce2))
@@ -92,15 +44,66 @@
 
 ## [233.24.1](https://github.com/webmappsrl/osm2cai/compare/v233.24.0...v233.24.1) (2024-04-30)
 
+### Features
+
+* added source survey nova resource oc:3431 ([1487c73](https://github.com/webmappsrl/osm2cai/commit/1487c73d8b4d494946cca5c6965f41a0a1a9bce2))
+
+## [233.27.0](https://github.com/webmappsrl/osm2cai/compare/v233.26.0...v233.27.0) (2024-06-03)
+
+
+### Features
+
+* api mitur abruzzo enhancement ([b906d71](https://github.com/webmappsrl/osm2cai/commit/b906d715da5998d75d417795b47878c9840a1758))
+* updated mitur abruzzo apis ([ddf4ed3](https://github.com/webmappsrl/osm2cai/commit/ddf4ed355d91f0c602fe17d28bbe17cec8a3a583))
+
+
 ### Bug Fixes
 
-- fixed hr id on huts api (was relation id before, now is taking osm2cai id) ([f280bd6](https://github.com/webmappsrl/osm2cai/commit/f280bd6ee31529967f3cfb751a7fb863ac140420))
-- fixed mitur abruzzo apis ([6202699](https://github.com/webmappsrl/osm2cai/commit/62026996942c6cc8f9b26ff93df997ae97186519))
-- fixed section ids key to mitur abruzzo apis ([fc4ba7c](https://github.com/webmappsrl/osm2cai/commit/fc4ba7cf95f63e19b8d53c51c127b43b47f0f9a9))
+* fixed abstract in abruzzo api ([27cb398](https://github.com/webmappsrl/osm2cai/commit/27cb398f74c7930cafeb29c84e6c4e29eacbc475))
+* fixed mitur abruzzo apis ([9c0696c](https://github.com/webmappsrl/osm2cai/commit/9c0696cb6fe08e0e3ce40a82f171019c67accacb))
+
+## [233.26.0](https://github.com/webmappsrl/osm2cai/compare/v233.25.0...v233.26.0) (2024-05-07)
+
+
+### Features
+
+* updated export apis for ec pois user association ([7076821](https://github.com/webmappsrl/osm2cai/commit/70768219f71ce57a70052dba271b03fb49cc7df8))
+
+## [233.25.0](https://github.com/webmappsrl/osm2cai/compare/v233.24.3...v233.25.0) (2024-05-02)
+
+
+### Features
+
+* added check user no match command to ugc poi ([003e60a](https://github.com/webmappsrl/osm2cai/commit/003e60ae78f73e30ca731ced98148ed2de70007c))
+
+## [233.24.3](https://github.com/webmappsrl/osm2cai/compare/v233.24.2...v233.24.3) (2024-05-02)
+
+
+### Bug Fixes
+
+* fixed user no match in ugc import from geohub ([301bc92](https://github.com/webmappsrl/osm2cai/commit/301bc92544f15a1d5480fc7249792dfb0aa8b4fe))
+
+## [233.24.2](https://github.com/webmappsrl/osm2cai/compare/v233.24.1...v233.24.2) (2024-04-30)
+
+
+### Bug Fixes
+
+* mock opening hours in mitur huts api ([0932731](https://github.com/webmappsrl/osm2cai/commit/093273109049aa76d7d3d266e89abd6ea58969d8))
+
+## [233.24.1](https://github.com/webmappsrl/osm2cai/compare/v233.24.0...v233.24.1) (2024-04-30)
+
+
+### Bug Fixes
+
+* fixed hr id on huts api (was relation id before, now is taking osm2cai id) ([f280bd6](https://github.com/webmappsrl/osm2cai/commit/f280bd6ee31529967f3cfb751a7fb863ac140420))
+* fixed mitur abruzzo apis ([6202699](https://github.com/webmappsrl/osm2cai/commit/62026996942c6cc8f9b26ff93df997ae97186519))
+* fixed section ids key to mitur abruzzo apis ([fc4ba7c](https://github.com/webmappsrl/osm2cai/commit/fc4ba7cf95f63e19b8d53c51c127b43b47f0f9a9))
+
 
 ### Miscellaneous Chores
 
-- enhanced mitur abruzzo huts api documentation ([8553eb5](https://github.com/webmappsrl/osm2cai/commit/8553eb597ed560fa03482aabef2e6592cea40f2c))
+* enhanced mitur abruzzo huts api documentation ([8553eb5](https://github.com/webmappsrl/osm2cai/commit/8553eb597ed560fa03482aabef2e6592cea40f2c))
+* 
 
 ## [233.24.0](https://github.com/webmappsrl/osm2cai/compare/v233.23.0...v233.24.0) (2024-04-18)
 

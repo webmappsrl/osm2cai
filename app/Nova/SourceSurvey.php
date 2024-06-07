@@ -158,8 +158,10 @@ class SourceSurvey extends UgcPoi
             (new WaterFlowValidatedFilter)
         ];
     }
+  
     public function authorizeToUpdate(Request $request)
     {
         return $request->user()->is_source_validator;
     }
+
 }
