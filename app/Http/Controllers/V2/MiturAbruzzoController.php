@@ -689,8 +689,7 @@ class MiturAbruzzoController extends Controller
         $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
 
         // get the abstract from the hiking route and get only it description
-        $abstract = [];
-        $abstract['description'] = $hikingRoute->tdh['abstract']['it'] ?? null;
+        $abstract = $hikingRoute->tdh['abstract']['it'] ?? null;
 
         //get the difficulty based on cai_scale value
         $difficulty;
