@@ -1,5 +1,26 @@
 # Changelog
 
+## [233.29.0](https://github.com/webmappsrl/osm2cai/compare/v233.28.0...v233.29.0) (2024-06-07)
+
+
+### Features
+
+* added source survey nova resource oc:3431 ([3cda15d](https://github.com/webmappsrl/osm2cai/commit/3cda15db2ba569e1572f234ffc37dcde6b4e8632))
+* added source survey nova resource oc:3431 ([3db4f25](https://github.com/webmappsrl/osm2cai/commit/3db4f25c690fb565cb09fe37bd9845e0973bf4e6))
+
+
+### Bug Fixes
+
+* abstract mitur abruzzo api ([8400b0a](https://github.com/webmappsrl/osm2cai/commit/8400b0a9f212ce7592636781d0ff6df1e61147e7))
+* added geometry and validation to overlay geojson ([9a8771e](https://github.com/webmappsrl/osm2cai/commit/9a8771e259f54df70bc817a5fa54c02b9fbfda64))
+* added geometry and validation to overlay geojson ([e57452e](https://github.com/webmappsrl/osm2cai/commit/e57452eeca4a2e73fefcb33f6648ff59c89ec195))
+
+
+### Miscellaneous Chores
+
+* enhanced mitur abruzzo apis ([b0d45c2](https://github.com/webmappsrl/osm2cai/commit/b0d45c2bc0dff6469a8b03740069637988b5f060))
+* enhanced mitur abruzzo apis ([d9f1f77](https://github.com/webmappsrl/osm2cai/commit/d9f1f772d28aa8db96b8a7b5410c694e53ff4906))
+
 ## [233.28.0](https://github.com/webmappsrl/osm2cai/compare/v233.27.0...v233.28.0) (2024-06-06)
 
 ### Features
