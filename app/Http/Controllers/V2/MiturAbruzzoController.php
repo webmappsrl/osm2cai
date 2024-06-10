@@ -169,7 +169,7 @@ class MiturAbruzzoController extends Controller
 
         $properties = [];
         $properties['id'] = $region->id;
-        $properties['name'] = $region->name;
+        $properties['name'] = $region->name ?? 'Nome della Regione';
         $properties['mountain_groups'] = $mountainGroups;
         $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
@@ -382,7 +382,7 @@ class MiturAbruzzoController extends Controller
 
         $properties = [];
         $properties['id'] = $mountainGroup->id;
-        $properties['name'] = $mountainGroup->name;
+        $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
         $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = '123';
         $properties['ele_min'] = '856';
@@ -680,7 +680,7 @@ class MiturAbruzzoController extends Controller
                 $caiHuts[$hut] = $updated_at;
             }
         } else {
-            $caiHuts = null;
+            $caiHuts = [];
         }
 
 
@@ -689,7 +689,7 @@ class MiturAbruzzoController extends Controller
         $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
 
         // get the abstract from the hiking route and get only it description
-        $abstract = $hikingRoute->tdh['abstract']['it'] ?? null;
+        $abstract = $hikingRoute->tdh['abstract']['it'] ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
         //get the difficulty based on cai_scale value
         $difficulty;
@@ -730,19 +730,19 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $hikingRoute->id;
         $properties['ref'] = $hikingRoute->ref;
-        $properties['name'] = $hikingRoute->name;
-        $properties['cai_scale'] = $hikingRoute->cai_scale;
-        $properties['rwn_name'] = $hikingRoute->rwn_name;
-        $properties['section_ids'] = $sectionsIds;
-        $properties['from'] = $hikingRoute->from;
+        $properties['name'] = $hikingRoute->name ?? 'Nome del Sentiero';
+        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
+        $properties['rwn_name'] = $hikingRoute->rwn_name ?? '';
+        $properties['section_ids'] = $sectionsIds ?? [];
+        $properties['from'] = $hikingRoute->from ?? '';
         $properties['from:coordinate'] = '43.71699,10.51083';
-        $properties['to'] = $hikingRoute->to;
+        $properties['to'] = $hikingRoute->to ?? '';
         $properties['to:coordinate'] = '43.71699,10.51083';
         $properties['abstract'] = $abstract;
-        $properties['distance'] = $hikingRoute->distance;
-        $properties['duration_forward'] = $hikingRoute->duration_forward;
-        $properties['ele_max'] = $hikingRoute->ele_max;
-        $properties['ele_min'] = $hikingRoute->ele_min;
+        $properties['distance'] = $hikingRoute->distance ?? 100;
+        $properties['duration_forward'] = $hikingRoute->duration_forward ?? 100;
+        $properties['ele_max'] = $hikingRoute->ele_max ?? 100;
+        $properties['ele_min'] = $hikingRoute->ele_min ?? 100;
         $properties['incline'] = '15%';
         $properties['issues_status'] = $hikingRoute->issues_status;
         $properties['symbol'] = 'Segnaletica standard CAI';
@@ -1092,7 +1092,7 @@ class MiturAbruzzoController extends Controller
         $properties['province_geo'] = $hut->province_geo ?? 'Lucca';
         $properties['site_geo'] = $hut->site_geo ?? 'Piemonte';
         $properties['source:ref'] = $hut->unico_id;
-        $properties['description'] = $hut->description;
+        $properties['description'] = $hut->description ?? '';
         $properties['pois'] = $pois->count() > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['opening'] = $hut->opening ?? "Mo-Th 10:00-18:00; Fr-Sa 10:00-19:00";
         $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1';
@@ -1253,7 +1253,7 @@ class MiturAbruzzoController extends Controller
         $properties['id'] = $poi->id;
         $properties['name'] = $poi->name;
         $properties['type'] = $poi->getTagsMapping();
-        $properties['comune'] = $poi->comuni;
+        $properties['comune'] = $poi->comuni ?? '';
         $properties['description'] = $lorem;
         $properties['info'] = $lorem;
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
@@ -1434,18 +1434,18 @@ class MiturAbruzzoController extends Controller
         $properties = [];
         $properties['id'] = $section->id;
         $properties['name'] = $section->name;
-        $properties['addr:city'] = $section->addr_city;
-        $properties['addr:housenumber'] = $section->addr_housenumber;
-        $properties['addr:postcode'] = $section->addr_postcode;
-        $properties['addr:street'] = $section->addr_street;
+        $properties['addr:city'] = $section->addr_city ?? '';
+        $properties['addr:housenumber'] = $section->addr_housenumber ?? '';
+        $properties['addr:postcode'] = $section->addr_postcode ?? '';
+        $properties['addr:street'] = $section->addr_street ?? '';
         $properties['provinces'] = 'MOCKUP > Provincia';
         $properties['source:ref'] = $section->cai_code;
-        $properties['website'] = $section->website;
-        $properties['email'] = $section->email;
+        $properties['website'] = $section->website ?? 'www.sito.it';
+        $properties['email'] = $section->email ?? 'info@example.com';
         $properties['opening_hours'] = $section->opening_hours ?? 'Mo-Fr 09:00-17:00';
-        $properties['phone'] = $section->phone;
-        $properties['wheelchair'] = $section->wheelchair;
-        $properties['fax'] = $section->fax;
+        $properties['phone'] = $section->phone ?? '+391234567890';
+        $properties['wheelchair'] = $section->wheelchair ?? '';
+        $properties['fax'] = $section->fax ?? '+391234567890';
         $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
 
         $geometry = $section->getGeometry();
