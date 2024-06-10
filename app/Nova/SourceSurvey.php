@@ -73,7 +73,7 @@ class SourceSurvey extends UgcPoi
             Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
-            Text::make('Temperature', 'temperature'),
+            Text::make('Temperature °C', 'temperature'),
             Boolean::make('Photos', function () use ($dedicatedData) {
                 return $dedicatedData['photos'];
             })->hideFromDetail(),
@@ -133,16 +133,16 @@ class SourceSurvey extends UgcPoi
             Text::make('Monitoring Date')->resolveUsing(function ($date) use ($dedicatedData) {
                 return $dedicatedData['date']->format('d-m-Y');
             })->readonly(),
-            Text::make('Flow Rate', 'flow_rate')->readonly(),
         ];
     }
     public function modifiablesFields()
     {
         return [
+            Text::make('Flow Rate L/s', 'flow_rate'),
             Text::make('Flow Rate/Volume', 'flow_rate_volume'),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time'),
-            Text::make('Conductivity', 'conductivity'),
-            Text::make('Temperature', 'temperature'),
+            Text::make('Conductivity microS/cm', 'conductivity'),
+            Text::make('Temperature °C', 'temperature'),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Range Validated', 'water_flow_rate_validated')
@@ -158,10 +158,9 @@ class SourceSurvey extends UgcPoi
             (new WaterFlowValidatedFilter)
         ];
     }
-  
+
     public function authorizeToUpdate(Request $request)
     {
         return $request->user()->is_source_validator;
     }
-
 }
