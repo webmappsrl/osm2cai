@@ -1,5 +1,29 @@
 # Changelog
 
+## [233.30.0](https://github.com/webmappsrl/osm2cai/compare/v233.29.0...v233.30.0) (2024-06-13)
+
+
+### Features
+
+* added has_photo boolean column to ugc_pois table ([755ad64](https://github.com/webmappsrl/osm2cai/commit/755ad64889fee4fe2daf5df960e145d5f950dd26))
+* added has_photo boolean column to ugc_pois table ([ccdfd8e](https://github.com/webmappsrl/osm2cai/commit/ccdfd8ed4475ab8e49bdbf45887dddf5c82b7e1d))
+
+
+### Bug Fixes
+
+* fixed source survey edit nova ([71f463c](https://github.com/webmappsrl/osm2cai/commit/71f463c2aacf8926cae14b006b8e5649b7c68a63))
+* fixed source survey edit nova ([9d6b821](https://github.com/webmappsrl/osm2cai/commit/9d6b821af3ae47f32299d8d9da22266ba5d1f728))
+
+
+### Miscellaneous Chores
+
+* enhanced computing source surveys data process ([9283ce8](https://github.com/webmappsrl/osm2cai/commit/9283ce84d0556baf1300d9032baa98042c032b40))
+* enhanced computing source surveys data process ([3c4d46a](https://github.com/webmappsrl/osm2cai/commit/3c4d46a47fde9f96e2d5607b15ee2f9aa4502ad3))
+* mitur abruzzo api enhancement ([cab1609](https://github.com/webmappsrl/osm2cai/commit/cab1609ab9e06ce1382856483f4a248136ce3ec6))
+* mitur abruzzo api enhancement ([9bb773b](https://github.com/webmappsrl/osm2cai/commit/9bb773b6fcb392a50b0a87f9d907c66783efebf3))
+* updated authorizations for source surveys nova resource ([dff382e](https://github.com/webmappsrl/osm2cai/commit/dff382e5e5e074829cc5ed58b6652ef5c234b235))
+* updated authorizations for source surveys nova resource ([92e8eca](https://github.com/webmappsrl/osm2cai/commit/92e8eca56c5ba934a2477be9af057aa31f444826))
+
 ## [233.29.0](https://github.com/webmappsrl/osm2cai/compare/v233.28.0...v233.29.0) (2024-06-07)
 
 
