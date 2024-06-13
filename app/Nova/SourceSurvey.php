@@ -33,24 +33,20 @@ class SourceSurvey extends UgcPoi
         $query =  $query->where('form_id', 'water');
     }
 
-    public function authorizedToView(Request $request)
-    {
-        return $request->user()->is_source_validator;
-    }
-
-    public function authorizeToViewAny(Request $request)
-    {
-        return $request->user()->is_source_validator;
-    }
 
     public function authorizedToUpdate(Request $request)
     {
         return $request->user()->is_source_validator;
     }
 
-    public static function availableForNavigation(Request $request)
+    public function authorizeToUpdate(Request $request)
     {
         return $request->user()->is_source_validator;
+    }
+
+    public function authorizedToDelete(Request $request)
+    {
+        return false;
     }
 
     /**
@@ -62,21 +58,17 @@ class SourceSurvey extends UgcPoi
 
     public function fields(Request $request)
     {
-        $dedicatedData = $this->getNaturalSpringsData();
         $fields = parent::fields($request);
 
         $dedicatedFields = [
-            Date::make('Monitoring Date', function () use ($dedicatedData) {
-                return $dedicatedData['date']->format('d-m-Y');
-            }),
+            Date::make('Monitoring Date', 'updated_at')
+                ->sortable(), //same data as raw_data['date']
             Text::make('Flow Rate L/s', 'flow_rate'),
             Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
-            Boolean::make('Photos', function () use ($dedicatedData) {
-                return $dedicatedData['photos'];
-            })->hideFromDetail(),
+            Boolean::make('Photos', 'has_photo')->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
@@ -157,10 +149,5 @@ class SourceSurvey extends UgcPoi
             (new ValidatedFilter),
             (new WaterFlowValidatedFilter)
         ];
-    }
-
-    public function authorizeToUpdate(Request $request)
-    {
-        return $request->user()->is_source_validator;
     }
 }
