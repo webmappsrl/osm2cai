@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.30.1](https://github.com/webmappsrl/osm2cai/compare/v233.30.0...v233.30.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* bug fix in edit mode source survey ([3fed8b7](https://github.com/webmappsrl/osm2cai/commit/3fed8b7312eaf9a7f4d4d0ece55cdfa66077af49))
+
 ## [233.30.0](https://github.com/webmappsrl/osm2cai/compare/v233.29.0...v233.30.0) (2024-06-13)
 
 
