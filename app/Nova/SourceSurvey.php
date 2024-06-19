@@ -116,15 +116,13 @@ class SourceSurvey extends UgcPoi
 
     public function readonlyFields()
     {
-        $dedicatedData = $this->getNaturalSpringsData();
         return [
             Text::make('ID', 'id')->hideFromIndex()->readonly(),
             Text::make('User', 'user')->resolveUsing(function ($user) {
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
-            Text::make('Monitoring Date')->resolveUsing(function ($date) use ($dedicatedData) {
-                return $dedicatedData['date']->format('d-m-Y');
-            })->readonly(),
+            Date::make('Monitoring Date', 'updated_at')
+                ->sortable()->readonly() //same data as raw_data['date']
         ];
     }
     public function modifiablesFields()
