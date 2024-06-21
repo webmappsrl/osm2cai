@@ -41,7 +41,6 @@ class computeSourceSurveyDataCommand extends Command
     {
 
         foreach (UgcPoi::where('form_id', 'water')->get() as $sourceSurvey) {
-            $data = [];
             $rawData = json_decode($sourceSurvey->raw_data, true);
 
             $volume = $rawData['range_volume'] ?? '0';
@@ -69,8 +68,8 @@ class computeSourceSurveyDataCommand extends Command
             }
 
             $sourceSurvey->flow_rate = $waterFlowRate;
-            $sourceSurvey->flow_rate_volume = $waterFlowRate == 'N/A' ? $waterFlowRate : round($waterFlowRate / $volume, 4);
-            $sourceSurvey->flow_rate_fill_time = $waterFlowRate == 'N/A' ? $waterFlowRate : round($waterFlowRate / $time, 4);
+            $sourceSurvey->flow_rate_volume = $volume;
+            $sourceSurvey->flow_rate_fill_time = $time;
             $sourceSurvey->conductivity = $conductivity;
             $sourceSurvey->temperature = $temperature;
             $sourceSurvey->has_photo = $photos;
