@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.30.3](https://github.com/webmappsrl/osm2cai/compare/v233.30.2...v233.30.3) (2024-06-21)
+
+
+### Bug Fixes
+
+* flow rate calculated only when water flow rate is validated ([db70c1a](https://github.com/webmappsrl/osm2cai/commit/db70c1a5ed9d0beae26028763fd18d52982e0867))
+
 ## [233.30.2](https://github.com/webmappsrl/osm2cai/compare/v233.30.1...v233.30.2) (2024-06-21)
 
 
