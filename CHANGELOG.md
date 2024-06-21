@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.30.2](https://github.com/webmappsrl/osm2cai/compare/v233.30.1...v233.30.2) (2024-06-21)
+
+
+### Bug Fixes
+
+* fixed volume and time calculation for source surveys ([fc2f958](https://github.com/webmappsrl/osm2cai/commit/fc2f958e613396194671fbebab12bcb05ce1da21))
+
 ## [233.30.1](https://github.com/webmappsrl/osm2cai/compare/v233.30.0...v233.30.1) (2024-06-19)
 
 
