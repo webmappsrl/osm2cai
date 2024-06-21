@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\UgcWaterFlowValidatedStatus;
 use App\Models\UgcPoi;
 use Illuminate\Support\Carbon;
 use Illuminate\Console\Command;
@@ -53,7 +54,7 @@ class computeSourceSurveyDataCommand extends Command
             $time = str_replace(',', '.', $time);
             $time = floatval($time);
 
-            $waterFlowRate = ($time > 0 && $volume > 0) ? round(($volume / $time), 3) : 'N/A';
+            $waterFlowRate = $sourceSurvey->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid ? round(($volume / $time), 3) : 'N/A';
             $conductivity = $rawData['conductivity'] ?? 'N/A';
             $temperature = $rawData['temperature'] ?? 'N/A';
 
@@ -68,8 +69,8 @@ class computeSourceSurveyDataCommand extends Command
             }
 
             $sourceSurvey->flow_rate = $waterFlowRate;
-            $sourceSurvey->flow_rate_volume = $volume;
-            $sourceSurvey->flow_rate_fill_time = $time;
+            $sourceSurvey->flow_rate_volume = $rawData['range_volume'] ?? 'N/A';
+            $sourceSurvey->flow_rate_fill_time = $rawData['range_time'] ?? 'N/A';
             $sourceSurvey->conductivity = $conductivity;
             $sourceSurvey->temperature = $temperature;
             $sourceSurvey->has_photo = $photos;
