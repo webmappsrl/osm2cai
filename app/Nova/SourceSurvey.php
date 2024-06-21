@@ -65,12 +65,21 @@ class SourceSurvey extends UgcPoi
                 ->sortable(), //same data as raw_data['date']
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
                 if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
-                    //clean the data to get only the numeric value es "1 litro should be 1 and 2,3 litri should be 2,3"
+                    // Estrai i valori numerici e sostituisci la virgola con un punto
                     $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
                     $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
-                    return round($volume / $time, 3);
+
+                    $volume = str_replace(',', '.', $volume);
+                    $time = str_replace(',', '.', $time);
+
+                    if (is_numeric($volume) && is_numeric($time) && $time != 0) {
+                        return round($volume / $time, 3);
+                    } else {
+                        return null;
+                    }
                 }
             }),
+
             Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
