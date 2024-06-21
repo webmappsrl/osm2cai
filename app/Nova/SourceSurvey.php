@@ -63,7 +63,14 @@ class SourceSurvey extends UgcPoi
         $dedicatedFields = [
             Date::make('Monitoring Date', 'updated_at')
                 ->sortable(), //same data as raw_data['date']
-            Text::make('Flow Rate L/s', 'flow_rate'),
+            Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
+                if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
+                    //clean the data to get only the numeric value es "1 litro should be 1 and 2,3 litri should be 2,3"
+                    $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
+                    $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
+                    return round($volume / $time, 3);
+                }
+            }),
             Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
@@ -135,7 +142,7 @@ class SourceSurvey extends UgcPoi
             Text::make('Temperature °C', 'temperature'),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
-            Select::make('Water Flow Range Validated', 'water_flow_rate_validated')
+            Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             Textarea::make('Notes', 'note'),
         ];
