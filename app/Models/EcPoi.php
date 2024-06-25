@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class EcPoi extends Model
 {
@@ -93,16 +94,23 @@ class EcPoi extends Model
     {
         if (!isset($data['properties'])) {
             throw new \Exception('Properties data not found');
+            Log::error('Properties data not found');
         }
         $properties = $data['properties'];
 
+        Log::info('Updating score with osmfeatures data');
         //update ecpoi score with osmfeatures data if exists
         if (isset($properties['score'])) {
             $this->score = $properties['score'];
             $this->save();
+        } else {
+            Log::info('Score not found in osmfeatures data');
         }
 
+        Log::info("Enriching osmfeatures_data for $this->name");
         $this->osmfeatures_data = json_encode($properties);
         $this->save();
+
+        Log::info("Osmfeatures_data for $this->name Enriched successfully");
     }
 }
