@@ -92,8 +92,8 @@ class EnrichFromOsmfeaturesCommand extends Command
                 $this->info("Not found $osmfeaturesApi. Skipping");
                 continue;
             }
-            Log::info("Dispatching job for $osmType$osmId");
-            $this->info("Dispatching job for $osmType$osmId");
+            Log::info("Dispatching job for $osmfeaturesApi");
+            $this->info("Dispatching job for $osmfeaturesApi");
             EnrichFromOsmfeaturesJob::dispatch($model, $osmfeaturesData);
         }
         Log::info("Enrichment completed for feature $feature");
