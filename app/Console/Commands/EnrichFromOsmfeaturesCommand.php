@@ -88,8 +88,8 @@ class EnrichFromOsmfeaturesCommand extends Command
             }
             //if there is a message property the feature is not found.
             if (isset($osmfeaturesData['message'])) { //TODO make json message consistent in osmfeatures api (for example: "message": "Not found")
-                Log::warning("Not found. Skipping $osmType$osmId");
-                $this->info("Not found. Skipping $osmType$osmId");
+                Log::warning("Not found $osmfeaturesApi. Skipping");
+                $this->info("Not found $osmfeaturesApi. Skipping");
                 continue;
             }
             Log::info("Dispatching job for $osmType$osmId");
