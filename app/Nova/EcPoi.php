@@ -44,7 +44,7 @@ class EcPoi extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name'
+        'id', 'name', 'osm_id',
     ];
 
     public static string $group = 'Territorio';
