@@ -16,7 +16,7 @@ class EnrichFromOsmfeaturesCommand extends Command
      *
      * @var string
      */
-    protected $signature = "osm2cai:enrich-from-osmfeatures {osmfeature=places : The feature to retrieve from osmfeatures API.}.";
+    protected $signature = "osm2cai:enrich-from-osmfeatures {osmfeature=places : The feature to retrieve from osmfeatures API. Available features are: places, poles, admin-areas and hiking-routes.}.";
 
     /**
      * The console command description.
