@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.30.5](https://github.com/webmappsrl/osm2cai/compare/v233.30.4...v233.30.5) (2024-06-27)
+
+
+### Bug Fixes
+
+* fixed is active water source ([1139a88](https://github.com/webmappsrl/osm2cai/commit/1139a88330b7a597d78e42c37d291d8b08c6f0f5))
+
 ## [233.30.4](https://github.com/webmappsrl/osm2cai/compare/v233.30.3...v233.30.4) (2024-06-27)
 
 
