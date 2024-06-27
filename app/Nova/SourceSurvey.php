@@ -85,7 +85,6 @@ class SourceSurvey extends UgcPoi
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
             Boolean::make('Photos', 'has_photo')->hideFromDetail(),
-            Boolean::make('Is Active', 'is_water_source_active'),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
@@ -154,7 +153,6 @@ class SourceSurvey extends UgcPoi
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
-            Boolean::make('Is Active', 'is_water_source_active'),
             Textarea::make('Notes', 'note'),
         ];
     }
