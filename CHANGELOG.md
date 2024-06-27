@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.30.4](https://github.com/webmappsrl/osm2cai/compare/v233.30.3...v233.30.4) (2024-06-27)
+
+
+### Bug Fixes
+
+* fixed acquasorgente overlays api ([c7643ac](https://github.com/webmappsrl/osm2cai/commit/c7643acec73f321b1c07b14eef3545564a8ea4f5))
+
 ## [233.30.3](https://github.com/webmappsrl/osm2cai/compare/v233.30.2...v233.30.3) (2024-06-21)
 
 
