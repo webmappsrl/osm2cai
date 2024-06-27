@@ -40,18 +40,22 @@ class SourceSurveyController extends Controller
             } else {
                 $conductivity = 'N/A';
             }
-            switch ($sourceSurvey->is_water_source_active) {
-                case true:
-                    $isActive = 'SI';
-                    break;
 
-                case false:
-                    $isActive = 'NO';
-                    break;
+            if (isset($rawData['active'])) {
 
-                default:
-                    $isActive = 'N/A';
-                    break;
+                switch ($rawData['active']) {
+                    case 'yes':
+                        $isActive = 'SI';
+                        break;
+                    case 'no':
+                        $isActive = 'NO';
+                        break;
+                    default:
+                        $isActive = 'N/A';
+                        break;
+                }
+            } else {
+                $isActive = 'N/A';
             }
 
             $htmlString = <<<HTML
