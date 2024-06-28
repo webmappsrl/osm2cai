@@ -141,42 +141,13 @@ class MiturAbruzzoController extends Controller
     public function miturAbruzzoRegionById($id)
     {
 
-        $region = Region::findOrfail($id);
+        $region = Region::find($id);
+        if (!$region) {
+            return response()->json(['message' => 'Region not found'], 404);
+        }
+        $data = json_decode($region->cached_mitur_api_data, true);
 
-        //get the mountain groups for the region
-        $mountainGroups = $region->mountainGroups;
-        //format the date
-        $mountainGroups = $mountainGroups->mapWithKeys(function ($mountainGroup) {
-            $formattedDate = $mountainGroup->updated_at ? $mountainGroup->updated_at->toIso8601String() : null;
-
-            return [$mountainGroup->id => $formattedDate];
-        });
-
-        //get the region geometry
-        $geom_s = $region
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry) as geom")
-            )
-            ->first()
-            ->geom;
-        $geom = json_decode($geom_s, TRUE);
-
-        //build the geojson
-        $geojson = [];
-        $geojson['type'] = 'Feature';
-        $geojson['properties'] = [];
-        $geojson['geometry'] = $geom;
-
-        $properties = [];
-        $properties['id'] = $region->id;
-        $properties['name'] = $region->name ?? 'Nome della Regione';
-        $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
-
-
-        $geojson['properties'] = $properties;
-
-        return response()->json($geojson);
+        return response()->json($data);
     }
 
 
