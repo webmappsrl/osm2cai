@@ -62,6 +62,7 @@ class EnrichFromOsmfeaturesCommand extends Command
                 return 0;
             case 'admin-areas':
                 $osmfeaturesBaseApi .= 'admin-areas';
+                $model = Region::class;
                 $this->enrichRegions();
                 return 0;
             case 'poles':
