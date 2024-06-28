@@ -10,6 +10,7 @@ use App\Traits\CsvableModelTrait;
 use App\Traits\OwnableModelTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Region extends TerritorialUnit
@@ -17,7 +18,7 @@ class Region extends TerritorialUnit
     use HasFactory, SallableTrait, OwnableModelTrait, CsvableModelTrait;
 
     protected $fillable = [
-        'num_expected', 'name', 'code', 'geometry', 'updated_at', 'created_at', 'aggregated_data'
+        'num_expected', 'name', 'code', 'geometry', 'updated_at', 'created_at', 'aggregated_data', 'osmfeatures_id', 'osmfeatures_data', 'cached_mitur_api_data'
     ];
 
     public function provinces()
@@ -165,5 +166,30 @@ class Region extends TerritorialUnit
     {
         $userModelId = $user->region ? $user->region->id : 0;
         return $query->where('id', $userModelId);
+    }
+
+    /**
+     * Define the enrichment from OSM features
+     * 
+     * @param array $data
+     * 
+     * @throws \Exception
+     * 
+     * @return void
+     */
+    public function enrichFromOsmfeatures(array $data): void
+    {
+        if (!isset($data['properties'])) {
+            throw new \Exception('Properties data not found');
+            Log::error('Properties data not found');
+        }
+        $properties = $data['properties'];
+
+        Log::info("Enriching osmfeatures_data for $this->name");
+        $this->osmfeatures_data = json_encode($properties);
+        $this->osmfeatures_id = $properties['osm_type'] . $properties['osm_id'];
+        $this->save();
+
+        Log::info("Osmfeatures_data for $this->name Enriched successfully");
     }
 }

@@ -1755,12 +1755,12 @@
                                                     "type": "string",
                                                     "example": "123"
                                                 },
-                                                "ele:min": {
+                                                "ele_min": {
                                                     "description": "The minimum elevation of the mountain group",
                                                     "type": "string",
                                                     "example": "856"
                                                 },
-                                                "ele:max": {
+                                                "ele_max": {
                                                     "description": "The maximum elevation of the mountain group",
                                                     "type": "string",
                                                     "example": "1785"
@@ -1886,8 +1886,8 @@
                                             1
                                         ],
                                         "area": "123",
-                                        "ele:min": "856",
-                                        "ele:max": "1785",
+                                        "ele_min": "856",
+                                        "ele_max": "1785",
                                         "region": "Lazio",
                                         "provinces": "Roma",
                                         "municipalities": "Roma",
@@ -2039,12 +2039,12 @@
                                                     "type": "string",
                                                     "example": "3"
                                                 },
-                                                "ele:max": {
+                                                "ele_max": {
                                                     "description": "The maximum elevation of the hiking route",
                                                     "type": "string",
                                                     "example": "1000"
                                                 },
-                                                "ele:min": {
+                                                "ele_min": {
                                                     "description": "The minimum elevation of the hiking route",
                                                     "type": "string",
                                                     "example": "500"
@@ -2145,15 +2145,12 @@
                                         "to:coordinate": "43.71699,10.51083",
                                         "abstract": {
                                             "gpx_url": "https://geohub.webmapp.it/api/ec/track/download/27456.gpx",
-                                            "cai_scale_string": {
-                                                "it": "escursionistico",
-                                                "en": "hiking Trail"
-                                            }
+                                            "cai_scale_string": "escursionistico"
                                         },
                                         "distance": "10",
                                         "duration_forward": "3",
-                                        "ele:max": "1000",
-                                        "ele:min": "500",
+                                        "ele_max": "1000",
+                                        "ele_min": "500",
                                         "incline": "15%",
                                         "issues_status": "ok",
                                         "symbol": "Segnaletica standard CAI",
@@ -2239,11 +2236,6 @@
                                                     "description": "The hut name",
                                                     "type": "string",
                                                     "example": "Rifugio"
-                                                },
-                                                "second_name": {
-                                                    "description": "The second name of the hut",
-                                                    "type": "string",
-                                                    "example": "Rifugio 2"
                                                 },
                                                 "type": {
                                                     "description": "The type of the hut",
@@ -2425,11 +2417,6 @@
                                                     "description": "The accessibility to disabled service. Possible values: 0, 1 where 0 = no and 1 = yes",
                                                     "type": "string",
                                                     "example": "1"
-                                                },
-                                                "gallery": {
-                                                    "description": "The gallery of the hut",
-                                                    "type": "string",
-                                                    "example": "https://galleria.it/"
                                                 },
                                                 "rule": {
                                                     "description": "The rule of the hut",
