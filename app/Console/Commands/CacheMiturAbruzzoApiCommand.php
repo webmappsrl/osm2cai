@@ -25,7 +25,7 @@ class CacheMiturAbruzzoApiCommand extends Command
      *
      * @var string
      */
-  
+
     protected $description = 'Store MITUR Abruzzo API data in the database';
 
     protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name e.g. Region, EcPoi, HikingRoute}';
@@ -175,4 +175,3 @@ class CacheMiturAbruzzoApiCommand extends Command
         return $images;
     }
 }
-
