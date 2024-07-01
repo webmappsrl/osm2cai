@@ -62,7 +62,6 @@ class EnrichFromOsmfeaturesCommand extends Command
                 return 0;
             case 'admin-areas':
                 $osmfeaturesBaseApi .= 'admin-areas';
-                $model = Region::class;
                 $this->enrichRegions();
                 return 0;
             case 'poles':
@@ -77,46 +76,6 @@ class EnrichFromOsmfeaturesCommand extends Command
                 Log::error("The provided feature is not available. Available features are: places, poles, admin-areas and hiking-routes.");
                 return 1;
         }
-        $allModels = $model::all();
-        foreach ($allModels as $model) {
-            $osmId = $model->osm_id;
-            if (is_null($osmId)) {
-                $this->info("No osm id for the model $model->name. Skipping");
-                Log::info("No osm id for the model $model->name. Skipping");
-                continue;
-            }
-            $osmType = $model->osm_type;
-            if (is_null($osmType)) {
-                $this->info("No osm type for the model $model->name. Skipping");
-                Log::info("No osm type for the model $model->name. Skipping");
-                continue;
-            }
-            $osmfeaturesApi = $osmfeaturesBaseApi . '/' . $osmType . $osmId;
-            Log::info("Enriching $poi->name $osmType$osmId");
-            try {
-                $osmfeaturesData = Http::get($osmfeaturesApi)->json();
-            } catch (\Exception $e) {
-                Log::error($e->getMessage());
-                $this->info("Response not successful. Skipping $osmType $osmId");
-                continue;
-            }
-            if (!$osmfeaturesData) {
-                Log::warning("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
-                $this->info("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
-                continue;
-            }
-
-            //if there is a message property the feature is not found.
-            if (isset($osmfeaturesData['message'])) { //TODO make json message consistent in osmfeatures api (for example: "message": "Not found")
-                Log::warning("Not found $osmfeaturesApi. Skipping");
-                $this->info("Not found $osmfeaturesApi. Skipping");
-                continue;
-            }
-            Log::info("Dispatching job for $osmfeaturesApi");
-            $this->info("Dispatching job for $osmfeaturesApi");
-            EnrichFromOsmfeaturesJob::dispatch($poi, $osmfeaturesData);
-        }
-        Log::info("Enrichment completed for feature $feature");
     }
 
 
