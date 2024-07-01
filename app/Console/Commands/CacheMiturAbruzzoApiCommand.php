@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use Nette\Utils\Json;
+use App\Models\HikingRoute;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 
 class CacheMiturAbruzzoApiCommand extends Command
@@ -23,7 +26,7 @@ class CacheMiturAbruzzoApiCommand extends Command
      */
     protected $description = 'Perform an API call to the MITUR Abruzzo API and store the response in the database';
 
-    protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name}';
+    protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name e.g. Region, EcPoi, HikingRoute}';
 
     /**
      * Create a new command instance.
@@ -51,7 +54,8 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
                     break;
-                default:
+                case 'App\Models\EcPoi':
+                    $this->cacheEcPoiApiData($model);
                     break;
             }
         }
@@ -62,13 +66,8 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
-        $images = [];
-        foreach ($osmfeaturesData['images'] as $image) {
-            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
-            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
-                $images[] = $image['source_url'];
-            }
-        }
+        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -104,8 +103,73 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $geojson['properties'] = $properties;
 
-        //save the geojson in the database
+        //save the geojson in the database so it can be served by the mitur api
         $region->cached_mitur_api_data = json_encode($geojson);
         $region->save();
+    }
+
+    protected function cacheEcPoiApiData($poi)
+    {
+        if (!$poi->osmfeatures_data) {
+            $this->info("No osmfeatures data for poi $poi->name");
+            Log::info("No osmfeatures data for poi $poi->name");
+            $osmfeaturesData = [];
+        } else {
+            $osmfeaturesData = json_decode($poi->osmfeatures_data, true);
+            if ($osmfeaturesData['enrichments']) {
+                $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
+            } else {
+                Log::info("No osmfeatures data for poi $poi->name");
+                $this->info("No osmfeatures data for poi $poi->name");
+                $osmfeaturesData = [];
+            }
+        }
+
+        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+
+        $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
+        $hikingRoute = $hikingRoutes ? HikingRoute::find(array_key_first($hikingRoutes)) : null;
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $poi->id;
+        $properties['name'] = $osmfeaturesData['name'] ?? $poi->name;
+        $properties['type'] = $poi->getTagsMapping();
+        $properties['comune'] = $poi->comuni ?? '';
+        $properties['description'] = $osmfeaturesData['description']['it'] ?? "lorem ipsum";
+        $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "lorem ipsum";
+        $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
+        $properties['activity'] = 'Escursionismo';
+        $properties['has_hiking_routes'] = $hikingRoutes;
+        $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
+        $properties['images'] = $images ?? [];
+
+        $geometry = $poi->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        //save the geojson in the database so it can be served by the mitur api
+        $poi->cached_mitur_api_data = json_encode($geojson);
+        $poi->save();
+    }
+
+    protected function getImagesFromOsmfeaturesData($osmfeaturesData)
+    {
+        $images = [];
+        if (!isset($osmfeaturesData['images'])) {
+            return $images;
+        }
+        foreach ($osmfeaturesData['images'] as $image) {
+            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
+            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
+                $images[] = $image['source_url'];
+            }
+        }
+
+        return $images;
     }
 }
