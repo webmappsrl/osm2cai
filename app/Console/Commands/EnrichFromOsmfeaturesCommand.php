@@ -54,16 +54,17 @@ class EnrichFromOsmfeaturesCommand extends Command
         $feature = $this->argument('osmfeature');
         Log::info("Starting enrichment for feature $feature");
         $osmfeaturesBaseApi = "https://osmfeatures.maphub.it/api/v1/features/";
+        $notFoundPois = [];
 
         switch ($feature) {
             case 'places':
                 $osmfeaturesBaseApi .= 'places';
-                $this->enrichPois();
-                return 0;
+                $this->enrichPois($osmfeaturesBaseApi, $notFoundPois);
+                break;
             case 'admin-areas':
                 $osmfeaturesBaseApi .= 'admin-areas';
-                $this->enrichRegions();
-                return 0;
+                $this->enrichRegions($osmfeaturesBaseApi, $notFoundPois);
+                break;
             case 'poles':
                 $osmfeaturesBaseApi .= 'poles';
                 break;
@@ -76,12 +77,17 @@ class EnrichFromOsmfeaturesCommand extends Command
                 Log::error("The provided feature is not available. Available features are: places, poles, admin-areas and hiking-routes.");
                 return 1;
         }
+
+        if (!empty($notFoundPois)) {
+            Log::warning('The following POIs were not found or could not be enriched: ' . implode(', ', $notFoundPois));
+        }
+
+        return 0;
     }
 
-
-    protected function enrichRegions()
+    protected function enrichRegions($url, &$notFoundPois)
     {
-        //hardcoded 21 osmfeatures id for regions
+        // Hardcoded 21 osmfeatures id for regions
         $osmfeaturesIds = [
             'R42004',
             'R53060',
@@ -105,72 +111,89 @@ class EnrichFromOsmfeaturesCommand extends Command
             'R45757',
             'R45155',
         ];
+
+        $regions = Region::all(); // Only 20 records
+
         foreach ($osmfeaturesIds as $osmfeaturesId) {
-            $osmfeaturesApi = "https://osmfeatures.maphub.it/api/v1/features/admin-areas/" . $osmfeaturesId;
+            $osmfeaturesApi = $url . '/' . $osmfeaturesId;
             Log::info("Enriching region $osmfeaturesId");
             $osmfeaturesData = Http::get($osmfeaturesApi)->json();
+
             if ($osmfeaturesData['properties']['name'] == 'Sardigna/Sardegna') {
                 $osmfeaturesData['properties']['name'] = 'Sardegna';
             }
+
             if ($osmfeaturesData['properties']['name'] == 'Trentino-Alto Adige/Südtirol') {
                 $osmfeaturesData['properties']['name'] = 'Trentino-Alto Adige';
             }
+
             if ($osmfeaturesData['properties']['name'] == "Valle d'Aosta / Vallée d'Aoste") {
                 $osmfeaturesData['properties']['name'] = "Valle Aosta";
             }
+
             $osmfeaturesName = strtolower(str_replace(['-', ' '], '', $osmfeaturesData['properties']['name']));
-            $regions = Region::all(); //only 20 records
+            $found = false;
+
             foreach ($regions as $region) {
                 $regionName = strtolower(str_replace(['-', ' '], '', $region->name));
                 if ($regionName === $osmfeaturesName) {
                     EnrichFromOsmfeaturesJob::dispatch($region, $osmfeaturesData);
+                    $found = true;
                     break;
                 }
+            }
+
+            if (!$found) {
+                $notFoundPois[] = $osmfeaturesId;
             }
         }
     }
 
-    protected function enrichPois()
+    protected function enrichPois(string $url, &$notFoundPois)
     {
         $pois = EcPoi::all();
         foreach ($pois as $poi) {
             $osmId = $poi->osm_id;
             if (is_null($osmId)) {
-                $this->info("No osm id for the poi $poi->name. Skipping");
-                Log::info("No osm id for the poi $poi->name. Skipping");
+                $this->info("No osm id for the poi $poi->name with id $poi->id. Skipping");
+                Log::info("No osm id for the poi $poi->name with id $poi->id. Skipping");
+                $notFoundPois[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             $osmType = $poi->osm_type;
             if (is_null($osmType)) {
-                $this->info("No osm type for the poi $poi->name. Skipping");
-                Log::info("No osm type for the poi $poi->name. Skipping");
+                $this->info("No osm type for the poi $poi->name with id $poi->id. Skipping");
+                Log::info("No osm type for the poi $poi->name with id $poi->id. Skipping");
+                $notFoundPois[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
-            $osmfeaturesApi = $osmfeaturesBaseApi . '/' . $osmType . $osmId;
+            $osmfeaturesApi = $url . '/' . $osmType . $osmId;
             Log::info("Enriching $poi->name $osmType$osmId");
             try {
                 $osmfeaturesData = Http::get($osmfeaturesApi)->json();
             } catch (\Exception $e) {
                 Log::error($e->getMessage());
                 $this->info("Response not successful. Skipping $osmType $osmId");
+                $notFoundPois[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             if (!$osmfeaturesData) {
                 Log::warning("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
                 $this->info("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
+                $notFoundPois[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
 
-            //if there is a message property the feature is not found.
-            if (isset($osmfeaturesData['message'])) { //TODO make json message consistent in osmfeatures api (for example: "message": "Not found")
+            // If there is a message property the feature is not found.
+            if (isset($osmfeaturesData['message'])) { // TODO: make json message consistent in osmfeatures api (for example: "message": "Not found")
                 Log::warning("Not found $osmfeaturesApi. Skipping");
                 $this->info("Not found $osmfeaturesApi. Skipping");
+                $notFoundPois[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             Log::info("Dispatching job for $osmfeaturesApi");
             $this->info("Dispatching job for $osmfeaturesApi");
             EnrichFromOsmfeaturesJob::dispatch($poi, $osmfeaturesData);
         }
-        Log::info("Enrichment completed for feature $feature");
     }
 }
