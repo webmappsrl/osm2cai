@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +67,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
-
         $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
 
         //get the mountain groups for the region
