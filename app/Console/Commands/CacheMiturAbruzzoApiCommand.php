@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,7 @@ class CacheMiturAbruzzoApiCommand extends Command
      *
      * @var string
      */
+  
     protected $description = 'Store MITUR Abruzzo API data in the database';
 
     protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name e.g. Region, EcPoi, HikingRoute}';
@@ -66,6 +68,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
+
         $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
 
         //get the mountain groups for the region
@@ -172,3 +175,4 @@ class CacheMiturAbruzzoApiCommand extends Command
         return $images;
     }
 }
+
