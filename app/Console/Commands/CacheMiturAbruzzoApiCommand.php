@@ -62,6 +62,13 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
+        $images = [];
+        foreach ($osmfeaturesData['images'] as $image) {
+            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
+            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
+                $images[] = $image['source_url'];
+            }
+        }
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -89,8 +96,10 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $region->id;
         $properties['name'] = $region->name ?? 'Nome della Regione';
+        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? 'Abstract della Regione';
+        $properties['description'] = $osmfeaturesData['description']['it'] ?? 'Descrizione della Regione';
         $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = $osmfeaturesData['images'] ?? [];
+        $properties['images'] = $images ?? [];
 
 
         $geojson['properties'] = $properties;
