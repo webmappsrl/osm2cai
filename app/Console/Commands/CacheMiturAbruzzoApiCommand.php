@@ -24,9 +24,10 @@ class CacheMiturAbruzzoApiCommand extends Command
      *
      * @var string
      */
+
     protected $description = 'Store MITUR Abruzzo API data in the database';
 
-    protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name}';
+    protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name e.g. Region, EcPoi, HikingRoute}';
 
     /**
      * Create a new command instance.
@@ -54,7 +55,8 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
                     break;
-                default:
+                case 'App\Models\EcPoi':
+                    $this->cacheEcPoiApiData($model);
                     break;
             }
         }
@@ -65,13 +67,9 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
-        $images = [];
-        foreach ($osmfeaturesData['images'] as $image) {
-            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
-            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
-                $images[] = $image['source_url'];
-            }
-        }
+
+        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -106,7 +104,7 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $geojson['properties'] = $properties;
 
-        //save the geojson in the database
+        //save the geojson in the database so it can be served by the mitur api
         $region->cached_mitur_api_data = json_encode($geojson);
         $region->save();
     }
@@ -175,4 +173,6 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         return $images;
     }
+
 }
+
