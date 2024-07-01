@@ -77,22 +77,18 @@ class EnrichFromOsmfeaturesCommand extends Command
                 Log::error("The provided feature is not available. Available features are: places, poles, admin-areas and hiking-routes.");
                 return 1;
         }
-    }
-
-    protected function enrichPois()
-    {
-        $pois = EcPoi::all();
-        foreach ($pois as $poi) {
-            $osmId = $poi->osm_id;
+        $allModels = $model::all();
+        foreach ($allModels as $model) {
+            $osmId = $model->osm_id;
             if (is_null($osmId)) {
-                $this->info("No osm id for the poi $poi->name. Skipping");
-                Log::info("No osm id for the poi $poi->name. Skipping");
+                $this->info("No osm id for the model $model->name. Skipping");
+                Log::info("No osm id for the model $model->name. Skipping");
                 continue;
             }
-            $osmType = $poi->osm_type;
+            $osmType = $model->osm_type;
             if (is_null($osmType)) {
-                $this->info("No osm type for the poi $poi->name. Skipping");
-                Log::info("No osm type for the poi $poi->name. Skipping");
+                $this->info("No osm type for the model $model->name. Skipping");
+                Log::info("No osm type for the model $model->name. Skipping");
                 continue;
             }
             $osmfeaturesApi = $osmfeaturesBaseApi . '/' . $osmType . $osmId;
