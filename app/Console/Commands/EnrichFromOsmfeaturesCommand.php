@@ -80,7 +80,17 @@ class EnrichFromOsmfeaturesCommand extends Command
         $allModels = $model::all();
         foreach ($allModels as $model) {
             $osmId = $model->osm_id;
+            if (is_null($osmId)) {
+                $this->info("No osm id for the model $model->name. Skipping");
+                Log::info("No osm id for the model $model->name. Skipping");
+                continue;
+            }
             $osmType = $model->osm_type;
+            if (is_null($osmType)) {
+                $this->info("No osm type for the model $model->name. Skipping");
+                Log::info("No osm type for the model $model->name. Skipping");
+                continue;
+            }
             $osmfeaturesApi = $osmfeaturesBaseApi . '/' . $osmType . $osmId;
             Log::info("Enriching $model->name $osmType$osmId");
             try {
@@ -90,6 +100,12 @@ class EnrichFromOsmfeaturesCommand extends Command
                 $this->info("Response not successful. Skipping $osmType $osmId");
                 continue;
             }
+            if (!$osmfeaturesData) {
+                Log::warning("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
+                $this->info("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
+                continue;
+            }
+
             //if there is a message property the feature is not found.
             if (isset($osmfeaturesData['message'])) { //TODO make json message consistent in osmfeatures api (for example: "message": "Not found")
                 Log::warning("Not found $osmfeaturesApi. Skipping");
