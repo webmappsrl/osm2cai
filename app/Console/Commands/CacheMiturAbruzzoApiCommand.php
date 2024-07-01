@@ -54,7 +54,8 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
                     break;
-                default:
+                case 'App\Models\EcPoi':
+                    $this->cacheEcPoiApiData($model);
                     break;
             }
         }
