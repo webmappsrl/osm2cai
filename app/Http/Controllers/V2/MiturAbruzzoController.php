@@ -1208,37 +1208,13 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoPoiById($id)
     {
-        $poi = EcPoi::findOrFail($id);
-        $lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut nec tincidunt arcu, vel sollicitudin nisi. Fusce a nulla sit amet odio accumsan auctor.
-                    Sed ultricies ullamcorper velit, ac faucibus dolor. Nullam in risus neque. Quisque in dolor et est ullamcorper commodo at vitae libero.';
+        $poi = EcPoi::find($id);
+        if (!$poi) {
+            return response()->json(['message' => 'poi not found'], 404);
+        }
+        $data = json_decode($poi->cached_mitur_api_data, true);
 
-        $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
-        $hikingRoute = $hikingRoutes ? HikingRoute::find(array_key_first($hikingRoutes)) : null;
-
-
-        //build the geojson
-        $geojson = [];
-        $geojson['type'] = 'Feature';
-
-        $properties = [];
-        $properties['id'] = $poi->id;
-        $properties['name'] = $poi->name;
-        $properties['type'] = $poi->getTagsMapping();
-        $properties['comune'] = $poi->comuni ?? '';
-        $properties['description'] = $lorem;
-        $properties['info'] = $lorem;
-        $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
-        $properties['activity'] = 'Escursionismo';
-        $properties['has_hiking_routes'] = $hikingRoutes;
-        $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
-
-        $geometry = $poi->getGeometry();
-
-        $geojson['properties'] = $properties;
-        $geojson['geometry'] = $geometry;
-
-        return response()->json($geojson);
+        return response()->json($data);
     }
 
     /**
