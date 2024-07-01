@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Nette\Utils\Json;
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\PoiMapController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 
 class CacheMiturAbruzzoApiCommand extends Command
@@ -24,7 +24,7 @@ class CacheMiturAbruzzoApiCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Perform an API call to the MITUR Abruzzo API and store the response in the database';
+    protected $description = 'Store MITUR Abruzzo API data in the database';
 
     protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name e.g. Region, EcPoi, HikingRoute}';
 
@@ -100,7 +100,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['mountain_groups'] = $mountainGroups;
         $properties['images'] = $images ?? [];
 
-
         $geojson['properties'] = $properties;
 
         //save the geojson in the database so it can be served by the mitur api
@@ -139,12 +138,12 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['name'] = $osmfeaturesData['name'] ?? $poi->name;
         $properties['type'] = $poi->getTagsMapping();
         $properties['comune'] = $poi->comuni ?? '';
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? "lorem ipsum";
-        $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "lorem ipsum";
+        $properties['description'] = $osmfeaturesData['description']['it'] ?? "";
+        $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "";
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
         $properties['activity'] = 'Escursionismo';
         $properties['has_hiking_routes'] = $hikingRoutes;
-        $properties['map'] = 'https://osm2cai.cai.it/poi/id/{}';
+        $properties['map'] = route('poi-map', ['id' => $poi->id]);
         $properties['images'] = $images ?? [];
 
         $geometry = $poi->getGeometry();
