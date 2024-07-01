@@ -16,6 +16,9 @@ trait TagsMappingTrait
 
         $tags = json_decode($this->tags, true);
 
+        if (!is_array($tags)) {
+            return $result;
+        }
         foreach ($tags as $key => $value) {
             if (array_key_exists($key, $mapping)) {
                 if (array_key_exists($value, $mapping[$key])) {

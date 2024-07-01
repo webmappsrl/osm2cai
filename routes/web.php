@@ -9,6 +9,7 @@ use App\Http\Controllers\CasLoginController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\HikingRouteLoscarponeExportController;
+use App\Http\Controllers\PoiMapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,3 +83,5 @@ Route::get('/sync-to-regions', function () {
         ], 500);
     }
 })->name('sync-to-regions');
+
+Route::get('/poi/map/{id}', [PoiMapController::class, 'poiMap'])->name('poi-map');
