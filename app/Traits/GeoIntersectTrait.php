@@ -157,7 +157,7 @@ trait GeoIntersectTrait
      * @return array
      */
 
-    public function getGeometry(): array
+    public function getGeometry(): ?array
     {
         $model = $this;
         $geometryQuery = 'SELECT ST_AsGeoJSON(geometry) as geom FROM ' . $model->getTable() . ' WHERE id = ' . $model->id;

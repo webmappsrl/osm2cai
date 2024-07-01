@@ -16,7 +16,7 @@ class EcPoi extends Model
 {
     use HasFactory, GeojsonableTrait, GeoIntersectTrait, TagsMappingTrait;
 
-    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id', 'score', 'hiking_routes_in_buffer', 'comuni', 'huts_intersecting', 'sections_intersecting', 'mountain_groups_intersecting, osmfeatures_data'];
+    protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id', 'score', 'hiking_routes_in_buffer', 'comuni', 'huts_intersecting', 'sections_intersecting', 'mountain_groups_intersecting, osmfeatures_data', 'osmfeatures_id', 'cached_mitur_api_data'];
 
     protected static function booted()
     {
@@ -106,6 +106,7 @@ class EcPoi extends Model
         } else {
             Log::info('Score not found in osmfeatures data');
         }
+        $this->osmfeatures_id = $properties['osm_type'] . $properties['osm_id'];
 
         Log::info("Enriching osmfeatures_data for $this->name");
         $this->osmfeatures_data = json_encode($properties);
