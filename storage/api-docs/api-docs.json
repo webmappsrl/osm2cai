@@ -1626,6 +1626,14 @@
                                                     "type": "string",
                                                     "example": "Region Name"
                                                 },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Region Description"
+                                                },
+                                                "abstract": {
+                                                    "type": "string",
+                                                    "example": "Region abstract"
+                                                },
                                                 "mountain_groups": {
                                                     "type": "object",
                                                     "example": {
@@ -1666,6 +1674,8 @@
                                     "properties": {
                                         "id": 1,
                                         "name": "Abruzzo",
+                                        "description": "Abruzzo description",
+                                        "abstract": "Abruzzo abstract",
                                         "mountain_groups": {
                                             "1": "2022-12-03 12:34:25",
                                             "2": "2023-01-15 09:30:00",

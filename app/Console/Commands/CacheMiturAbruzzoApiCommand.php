@@ -65,7 +65,7 @@ class CacheMiturAbruzzoApiCommand extends Command
     {
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
-        $osmfeaturesData = json_decode($osmfeaturesData['enrichment']['data'], true);
+        $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
         $images = [];
         foreach ($osmfeaturesData['images'] as $image) {
             // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
@@ -99,9 +99,9 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $properties = [];
         $properties['id'] = $region->id;
-        $properties['name'] = $region->name ?? 'Nome della Regione';
-        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? 'Abstract della Regione';
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? 'Descrizione della Regione';
+        $properties['name'] = $region->name ?? '';
+        $properties['description'] = $osmfeaturesData['description']['it'] ?? '';
+        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? '';
         $properties['mountain_groups'] = $mountainGroups;
         $properties['images'] = $images ?? [];
 

@@ -109,6 +109,16 @@ class MiturAbruzzoController extends Controller
      *                     type="string",
      *                     example="Region Name"
      *                 ),
+     *  @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     example="Region Description"
+     *                 ),
+     *  @OA\Property(
+     *                     property="abstract",
+     *                     type="string",
+     *                     example="Region abstract"
+     *                 ),
      *               @OA\Property(
      *                     property="mountain_groups",
      *                     type="object",
@@ -129,7 +139,7 @@ class MiturAbruzzoController extends Controller
      *                      @OA\Property( property="type", type="string",  description="Postgis geometry type: MultiPolygon, etc."),
      *                      @OA\Property( property="coordinates", type="object",  description="region coordinates (WGS84)")
      *                 ),
-     *               example={"type":"Feature","properties":{"id":1,"name":"Abruzzo","mountain_groups":{"1":"2022-12-03 12:34:25","2":"2023-01-15 09:30:00","3":"2023-02-20 14:45:10"}, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
+     *               example={"type":"Feature","properties":{"id":1,"name":"Abruzzo", "description":"Abruzzo description","abstract":"Abruzzo abstract","mountain_groups":{"1":"2022-12-03 12:34:25","2":"2023-01-15 09:30:00","3":"2023-02-20 14:45:10"}, "images":{"http://example.com/image.jpg"}},"geometry":{"type":"MultiPolygon","coordinates":{{{10.4495294,43.7615252},{10.4495998,43.7615566}}}}}
      *        )
      *   ),
      *  @OA\Response(
