@@ -65,10 +65,17 @@ class SourceSurvey extends UgcPoi
                 ->sortable(), //same data as raw_data['date']
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
                 if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
-                    // Estrai i valori numerici e sostituisci la virgola con un punto
-                    $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
-                    $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
-
+                    //extract values and replace comma with dot. if dot is found, do not replace. the fina result should be a float value with point
+                    if (strpos($this->flow_rate_volume, '.') !== false) {
+                        $volume = $this->flow_rate_volume;
+                    } else {
+                        $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
+                    }
+                    if (strpos($this->flow_rate_fill_time, '.') !== false) {
+                        $time = $this->flow_rate_fill_time;
+                    } else {
+                        $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
+                    }
                     $volume = str_replace(',', '.', $volume);
                     $time = str_replace(',', '.', $time);
 
@@ -84,7 +91,7 @@ class SourceSurvey extends UgcPoi
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
-            Boolean::make('Photos', 'has_photo')->hideFromDetail(),
+            Boolean::make('Photos', 'has_photos')->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
@@ -138,13 +145,12 @@ class SourceSurvey extends UgcPoi
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
             Date::make('Monitoring Date', 'updated_at')
-                ->sortable()->readonly() //same data as raw_data['date']
+                ->sortable()->readonly(), //same data as raw_data['date']
         ];
     }
     public function modifiablesFields()
     {
         return [
-            Text::make('Flow Rate L/s', 'flow_rate'),
             Text::make('Flow Rate/Volume', 'flow_rate_volume'),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time'),
             Text::make('Conductivity microS/cm', 'conductivity'),

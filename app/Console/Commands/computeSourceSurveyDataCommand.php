@@ -61,7 +61,7 @@ class computeSourceSurveyDataCommand extends Command
             if (strpos($temperature, '°') === false && $temperature !== 'N/A') {
                 $temperature .= '°';
             }
-            $photos = !empty($rawData['storedPhotoKeys']) ? true : false;
+            $photos = count($sourceSurvey->ugc_media) > 0;
             $date = $rawData['date'] ?? 'N/A';
 
             if ($date !== 'N/A') {
