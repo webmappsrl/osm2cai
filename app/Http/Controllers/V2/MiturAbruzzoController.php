@@ -1380,36 +1380,12 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoSectionById($id)
     {
+        $section = Section::find($id);
+        if (!$section) {
+            return response()->json(['message' => 'section not found'], 404);
+        }
+        $data = json_decode($section->cached_mitur_api_data, true);
 
-
-        $section = Section::findOrFail($id);
-
-        //build the geojson
-        $geojson = [];
-        $geojson['type'] = 'Feature';
-
-        $properties = [];
-        $properties['id'] = $section->id;
-        $properties['name'] = $section->name;
-        $properties['addr:city'] = $section->addr_city ?? '';
-        $properties['addr:housenumber'] = $section->addr_housenumber ?? '';
-        $properties['addr:postcode'] = $section->addr_postcode ?? '';
-        $properties['addr:street'] = $section->addr_street ?? '';
-        $properties['provinces'] = 'MOCKUP > Provincia';
-        $properties['source:ref'] = $section->cai_code;
-        $properties['website'] = $section->website ?? 'www.sito.it';
-        $properties['email'] = $section->email ?? 'info@example.com';
-        $properties['opening_hours'] = $section->opening_hours ?? 'Mo-Fr 09:00-17:00';
-        $properties['phone'] = $section->phone ?? '+391234567890';
-        $properties['wheelchair'] = $section->wheelchair ?? '';
-        $properties['fax'] = $section->fax ?? '+391234567890';
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
-
-        $geometry = $section->getGeometry();
-
-        $geojson['properties'] = $properties;
-        $geojson['geometry'] = $geometry;
-
-        return response()->json($geojson);
+        return response()->json($data);
     }
 }
