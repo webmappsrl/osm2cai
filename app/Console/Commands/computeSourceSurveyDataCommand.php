@@ -54,7 +54,7 @@ class computeSourceSurveyDataCommand extends Command
             $time = str_replace(',', '.', $time);
             $time = floatval($time);
 
-            $waterFlowRate = $sourceSurvey->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid ? round(($volume / $time), 3) : 'N/A';
+            $waterFlowRate = $sourceSurvey->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid  && $time > 0 ? round(($volume / $time), 3) : 'N/A';
             $conductivity = $rawData['conductivity'] ?? 'N/A';
             $temperature = $rawData['temperature'] ?? 'N/A';
 
