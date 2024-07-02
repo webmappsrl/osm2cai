@@ -46,10 +46,11 @@ class CacheMiturAbruzzoApiCommand extends Command
     public function handle()
     {
         ini_set('memory_limit', '2048M');
+        Log::info("Start caching API data for model {$this->argument('model')}");
         $modelClass = App::make("App\\Models\\{$this->argument('model')}");
         $allModels = $modelClass::all();
         foreach ($allModels as $model) {
-
+            Log::info("Processing model with id {$model->id}");
             switch (get_class($modelClass)) {
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
@@ -57,22 +58,21 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\EcPoi':
                     $this->cacheEcPoiApiData($model);
                     break;
+                case 'App\Models\Section':
+                    $this->cacheSectionApiData($model);
+                    break;
             }
         }
+        Log::info("Finished caching API data for model {$this->argument('model')}");
     }
 
     protected function cacheRegionApiData($region)
     {
+        Log::info("Start caching region $region->name");
         //get osmfeatures data
         $osmfeaturesData = json_decode($region->osmfeatures_data, true);
         $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
-        $images = [];
-        foreach ($osmfeaturesData['images'] as $image) {
-            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
-            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
-                $images[] = $image['source_url'];
-            }
-        }
+        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -108,12 +108,15 @@ class CacheMiturAbruzzoApiCommand extends Command
         $geojson['properties'] = $properties;
 
         //save the geojson in the database
+        Log::info("Saving cached API data for region $region->name");
         $region->cached_mitur_api_data = json_encode($geojson);
         $region->save();
+        Log::info("Finished caching region $region->name");
     }
 
     protected function cacheEcPoiApiData($poi)
     {
+        Log::info("Start caching poi $poi->name");
         if (!$poi->osmfeatures_data) {
             $this->info("No osmfeatures data for poi $poi->name");
             Log::info("No osmfeatures data for poi $poi->name");
@@ -159,10 +162,76 @@ class CacheMiturAbruzzoApiCommand extends Command
         //save the geojson in the database so it can be served by the mitur api
         $poi->cached_mitur_api_data = json_encode($geojson);
         $poi->save();
+
+        Log::info("End caching poi $poi->name");
+    }
+
+    protected function cacheSectionApiData($section)
+    {
+        Log::info("Start caching section $section->name");
+
+        $queryForProvinces = 'SELECT 
+        p.id AS province_id, 
+        p.name AS province_name, 
+        s.id AS section_id, 
+        s.name AS section_name
+    FROM 
+        sections s
+    JOIN 
+        provinces p 
+    ON 
+        ST_Intersects(ST_Transform(p.geometry, 4326), s.geometry::geometry)';
+
+        $provinces = DB::select($queryForProvinces);
+        //get the province names
+
+        $provincesNames = [];
+        foreach ($provinces as $province) {
+            $provincesNames[] = $province->province_name;
+        }
+        //delete double provinces
+
+        $provincesNames = array_unique($provincesNames);
+
+        //implode the provinces
+        $provincesNames = implode(', ', $provincesNames);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $section->id;
+        $properties['name'] = $section->name;
+        $properties['addr:city'] = $section->addr_city ?? '';
+        $properties['addr:housenumber'] = $section->addr_housenumber ?? '';
+        $properties['addr:postcode'] = $section->addr_postcode ?? '';
+        $properties['addr:street'] = $section->addr_street ?? '';
+        $properties['provinces'] = $provincesNames;
+        $properties['source:ref'] = $section->cai_code;
+        $properties['website'] = $section->website ?? '';
+        $properties['email'] = $section->email ?? '';
+        $properties['opening_hours'] = $section->opening_hours ?? '';
+        $properties['phone'] = $section->phone ?? '';
+        $properties['wheelchair'] = $section->wheelchair ?? '';
+        $properties['fax'] = $section->fax ?? '';
+        $properties['images'] = [];
+
+        $geometry = $section->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        //save the geojson in the database so it can be served by the mitur api
+        $section->cached_mitur_api_data = json_encode($geojson);
+        $section->save();
+
+        Log::info("End caching section $section->name");
     }
 
     protected function getImagesFromOsmfeaturesData($osmfeaturesData)
     {
+        Log::info("Start getting images from osmfeatures data");
         $images = [];
         if (!isset($osmfeaturesData['images'])) {
             return $images;
@@ -174,6 +243,7 @@ class CacheMiturAbruzzoApiCommand extends Command
             }
         }
 
+        Log::info("End getting images from osmfeatures data");
         return $images;
     }
 }
