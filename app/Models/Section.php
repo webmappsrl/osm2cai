@@ -34,6 +34,7 @@ class Section extends Model
         'opening_hours',
         'wheelchair',
         'fax',
+        'cached_mitur_api_data'
     ];
 
     public function region()
