@@ -61,6 +61,9 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\Section':
                     $this->cacheSectionApiData($model);
                     break;
+                case 'App\Models\MountainGroups':
+                    $this->cacheMountainGroupApiData($model);
+                    break;
             }
         }
         Log::info("Finished caching API data for model {$this->argument('model')}");
@@ -228,6 +231,67 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         Log::info("End caching section $section->name");
     }
+
+    protected function cacheMountainGroupApiData($mountainGroup)
+    {
+
+        //decode aggregated_data
+        $aggregated_data = json_decode($mountainGroup->aggregated_data, true);
+
+        $regions = DB::table('regions')
+            ->select('name')
+            ->whereRaw('ST_Intersects(geometry, ?)', [$mountainGroup->geometry])
+            ->pluck('name')
+            ->toArray();
+
+        $provinces = DB::table('provinces')
+            ->select('name')
+            ->whereRaw('ST_Intersects(geometry, ?)', [$mountainGroup->geometry])
+            ->pluck('name')
+            ->toArray();
+
+        $municipalities = DB::table('municipality_boundaries')
+            ->select('comune')
+            ->whereRaw('ST_Intersects(geom, ?)', [$mountainGroup->geometry])
+            ->pluck('comune')
+            ->toArray();
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $mountainGroup->id;
+        $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
+        $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
+        $properties['area'] = $mountainGroup->getArea() . ' km²';
+        $properties['ele_min'] = '856';
+        $properties['ele_max'] = '1785';
+        $properties['region'] = implode(', ', $regions);
+        $properties['provinces'] = implode(', ', $provinces);
+        $properties['municipalities'] = implode(', ', $municipalities);
+        $properties['map'] = 'https://www.mappa-gruppo-montuoso.it';
+        $properties['description'] = $mountainGroup->description ?? '';
+        $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
+        $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
+        $properties['activity'] = 'Escursionismo';
+        $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
+        $properties['ec_pois'] = json_decode($mountainGroup->ec_pois_intersecting, true);
+        $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
+        $properties['hiking_routes_map'] = 'https://www.mappa-percorsi.it';
+        $properties['disclaimer'] = 'L’escursionismo e, più in generale, l’attività all’aria aperta, è una attività potenzialmente rischiosa: prima di avventurarti in una escursione assicurati di avere le conoscenze e le competenze per farlo. Se non sei sicuro rivolgiti agli esperti locali che ti possono aiutare, suggerire e supportare nella pianificazione e nello svolgimento delle tue attività. I dati non possono garantire completamente la percorribilità senza rischi dei percorsi: potrebbero essersi verificati cambiamenti, anche importanti, dall’ultima verifica effettuata del percorso stesso. E’ fondamentale quindi che chi si appresta a svolgere attività valuti attentamente l’opportunità di proseguire in base ai suggerimenti e ai consigli contenuti, in base alla propria esperienza, alle condizioni metereologiche (anche dei giorni precedenti) e di una valutazione effettuata sul campo all’inizio dello svolgimento della attività. Il Club Alpino Italiano non fornisce garanzie sulla sicurezza dei luoghi descritti, e non si assume alcuna responsabilità per eventuali danni causati dallo svolgimento delle attività descritte.';
+        $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
+        $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
+        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
+
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $mountainGroup->getGeometry();
+
+        $mountainGroup->cached_mitur_api_data = json_encode($geojson);
+        $mountainGroup->save();
+    }
+
 
     protected function getImagesFromOsmfeaturesData($osmfeaturesData)
     {
