@@ -68,11 +68,22 @@ class computeSourceSurveyDataCommand extends Command
                 $date = Carbon::parse($date);
             }
 
-            $sourceSurvey->flow_rate = $waterFlowRate;
-            $sourceSurvey->flow_rate_volume = $rawData['range_volume'] ?? 'N/A';
-            $sourceSurvey->flow_rate_fill_time = $rawData['range_time'] ?? 'N/A';
-            $sourceSurvey->conductivity = $conductivity;
-            $sourceSurvey->temperature = $temperature;
+            // Only update columns if they are empty or null
+            if (empty($sourceSurvey->flow_rate) || is_null($sourceSurvey->flow_rate)) {
+                $sourceSurvey->flow_rate = $waterFlowRate;
+            }
+            if (empty($sourceSurvey->flow_rate_volume) || is_null($sourceSurvey->flow_rate_volume)) {
+                $sourceSurvey->flow_rate_volume = $rawData['range_volume'] ?? 'N/A';
+            }
+            if (empty($sourceSurvey->flow_rate_fill_time) || is_null($sourceSurvey->flow_rate_fill_time)) {
+                $sourceSurvey->flow_rate_fill_time = $rawData['range_time'] ?? 'N/A';
+            }
+            if (empty($sourceSurvey->conductivity) || is_null($sourceSurvey->conductivity)) {
+                $sourceSurvey->conductivity = $conductivity;
+            }
+            if (empty($sourceSurvey->temperature) || is_null($sourceSurvey->temperature)) {
+                $sourceSurvey->temperature = $temperature;
+            }
             $sourceSurvey->has_photo = $photos;
 
             $sourceSurvey->save();
