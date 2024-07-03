@@ -265,8 +265,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
         $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = $mountainGroup->getArea() . ' km²';
-        $properties['ele_min'] = '856';
-        $properties['ele_max'] = '1785';
         $properties['region'] = implode(', ', $regions);
         $properties['provinces'] = implode(', ', $provinces);
         $properties['municipalities'] = implode(', ', $municipalities);
@@ -282,7 +280,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['disclaimer'] = 'L’escursionismo e, più in generale, l’attività all’aria aperta, è una attività potenzialmente rischiosa: prima di avventurarti in una escursione assicurati di avere le conoscenze e le competenze per farlo. Se non sei sicuro rivolgiti agli esperti locali che ti possono aiutare, suggerire e supportare nella pianificazione e nello svolgimento delle tue attività. I dati non possono garantire completamente la percorribilità senza rischi dei percorsi: potrebbero essersi verificati cambiamenti, anche importanti, dall’ultima verifica effettuata del percorso stesso. E’ fondamentale quindi che chi si appresta a svolgere attività valuti attentamente l’opportunità di proseguire in base ai suggerimenti e ai consigli contenuti, in base alla propria esperienza, alle condizioni metereologiche (anche dei giorni precedenti) e di una valutazione effettuata sul campo all’inizio dello svolgimento della attività. Il Club Alpino Italiano non fornisce garanzie sulla sicurezza dei luoghi descritti, e non si assume alcuna responsabilità per eventuali danni causati dallo svolgimento delle attività descritte.';
         $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
         $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
+        $properties['images'] = [];
 
 
         $geojson['properties'] = $properties;
