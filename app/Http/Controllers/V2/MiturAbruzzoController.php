@@ -352,7 +352,7 @@ class MiturAbruzzoController extends Controller
     public function miturAbruzzoMountainGroupById($id)
     {
 
-        $mountainGroup = MountainGroup::find($id);
+        $mountainGroup = MountainGroups::find($id);
         if (!$mountainGroup) {
             return response()->json(['message' => 'Mountain group not found'], 404);
         }
