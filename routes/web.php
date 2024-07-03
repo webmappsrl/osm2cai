@@ -9,7 +9,7 @@ use App\Http\Controllers\CasLoginController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\HikingRouteLoscarponeExportController;
-use App\Http\Controllers\PoiMapController;
+use App\Http\Controllers\MiturAbruzzoMapsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,4 +84,6 @@ Route::get('/sync-to-regions', function () {
     }
 })->name('sync-to-regions');
 
-Route::get('/poi/map/{id}', [PoiMapController::class, 'poiMap'])->name('poi-map');
+Route::get('/poi/map/{id}', [MiturAbruzzoMapsController::class, 'poiMap'])->name('poi-map');
+Route::get('/mountain-groups/map/{id}', [MiturAbruzzoMapsController::class, 'mountainGroupsMap'])->name('mountain-groups-map');
+Route::get('/hiking-routes/map/{id}', [MiturAbruzzoMapsController::class, 'hikingRoutesMap'])->name('hiking-routes-map');

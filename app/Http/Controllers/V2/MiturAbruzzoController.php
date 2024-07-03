@@ -351,45 +351,15 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoMountainGroupById($id)
     {
-        //get the mountain group by id
-        $mountainGroup = MountainGroups::findOrfail($id);
 
-        //decode aggregated_data
-        $aggregated_data = json_decode($mountainGroup->aggregated_data, true);
+        $mountainGroup = MountainGroups::find($id);
+        if (!$mountainGroup) {
+            return response()->json(['message' => 'Mountain group not found'], 404);
+        }
 
-        //build the geojson
-        $geojson = [];
-        $geojson['type'] = 'Feature';
+        $data = json_decode($mountainGroup->cached_mitur_api_data, true);
 
-        $properties = [];
-        $properties['id'] = $mountainGroup->id;
-        $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
-        $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
-        $properties['area'] = '123';
-        $properties['ele_min'] = '856';
-        $properties['ele_max'] = '1785';
-        $properties['region'] = 'Lazio';
-        $properties['provinces'] = 'Roma';
-        $properties['municipalities'] = 'Roma';
-        $properties['map'] = 'https://www.mappa-gruppo-montuoso.it';
-        $properties['description'] = $mountainGroup->description ?? '';
-        $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
-        $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
-        $properties['activity'] = 'Escursionismo, Alpinismo';
-        $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
-        $properties['ec_pois'] = json_decode($mountainGroup->ec_pois_intersecting, true);
-        $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
-        $properties['hiking_routes_map'] = 'https://www.mappa-percorsi.it';
-        $properties['disclaimer'] = 'testo disclaimer';
-        $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
-        $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
-
-
-        $geojson['properties'] = $properties;
-        $geojson['geometry'] = $mountainGroup->getGeometry();
-
-        return response()->json($geojson);
+        return response()->json($data);
     }
 
 
