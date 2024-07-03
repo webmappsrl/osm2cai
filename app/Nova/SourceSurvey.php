@@ -170,4 +170,21 @@ class SourceSurvey extends UgcPoi
             (new WaterFlowValidatedFilter)
         ];
     }
+
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new \App\Nova\Actions\DownloadSourceSurveyCsv()),
+            (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
+                return true;
+            })->standalone()
+        ];
+    }
 }
