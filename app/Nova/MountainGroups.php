@@ -71,16 +71,16 @@ class MountainGroups extends Resource
             BelongsToMany::make('Regioni', 'regions', Region::class)
                 ->searchable(),
             Text::make('POI Generico', function () use ($aggregatedData) {
-                return $aggregatedData->ec_pois_count;
+                return $aggregatedData ? $aggregatedData->ec_pois_count : 'N/A';
             })->sortable(),
             Text::make('POI Rifugio', function () use ($aggregatedData) {
-                return $aggregatedData->cai_huts_count;
+                return $aggregatedData ? $aggregatedData->cai_huts_count : 'N/A';
             })->sortable(),
             Text::make('Percorsi POI Totali', function () use ($aggregatedData) {
-                return $aggregatedData->poi_total;
+                return $aggregatedData ? $aggregatedData->poi_total : 'N/A';
             })->sortable(),
             Text::make('Attivitá o Esperienze', function () use ($aggregatedData) {
-                return $aggregatedData->sections_count;
+                return $aggregatedData ? $aggregatedData->sections_count : 'N/A';
             })->sortable(),
         ];
     }
