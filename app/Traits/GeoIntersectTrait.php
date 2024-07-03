@@ -166,4 +166,22 @@ trait GeoIntersectTrait
 
         return json_decode($geom, true);
     }
+
+    /**
+     * Get the area of the given model (only for polygons and multipolygons)
+     * 
+     * @return float
+     * 
+     */
+    public function getArea(): ?float
+    {
+        $model = $this;
+        $table = $model->getTable();
+        $id = $model->id;
+
+        $areaQuery = 'SELECT ST_Area(ST_Transform(geometry::geometry, 3857)) as area FROM ' . $table . ' WHERE id = :id';
+        $area = DB::select($areaQuery, ['id' => $id])[0]->area / 1000000;
+
+        return round($area, 4);
+    }
 }
