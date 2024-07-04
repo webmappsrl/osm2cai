@@ -35,6 +35,7 @@ class SourceSurveysExport implements FromCollection, WithHeadings
                 'temperature' => $model->temperature ?? '/',
                 'conductivity' => $model->conductivity ?? '/',
                 'photo' => count($model->ugc_media()->get()) > 0 ? 'yes' : 'no',
+                'notes' => $model->note ?? '/',
             ];
         });
     }
@@ -43,7 +44,7 @@ class SourceSurveysExport implements FromCollection, WithHeadings
     {
         return [
             'Osm2cai_id', 'Operator', 'Monitoring date', 'URL osm2cai', 'Lon', 'Lat', 'Ele', 'Name', 'Active',
-            'Range Time', 'Range Volume', 'Range L/s', 'Temperature °C', 'Conductivity MicroS/cm', 'Photo'
+            'Range Time', 'Range Volume', 'Range L/s', 'Temperature °C', 'Conductivity MicroS/cm', 'Photo', 'Notes',
         ];
     }
 }
