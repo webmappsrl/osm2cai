@@ -6,15 +6,16 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
+use Illuminate\Support\Carbon;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Boolean;
 use App\Enums\UgcValidatedStatus;
+use Laravel\Nova\Fields\Textarea;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\ValidatedFilter;
 use App\Enums\UgcWaterFlowValidatedStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\WaterFlowValidatedFilter;
-use Laravel\Nova\Fields\Textarea;
 
 class SourceSurvey extends UgcPoi
 {
@@ -58,11 +59,13 @@ class SourceSurvey extends UgcPoi
 
     public function fields(Request $request)
     {
+        $rawData = json_decode($this->raw_data, true);
         $fields = parent::fields($request);
 
         $dedicatedFields = [
-            Date::make('Monitoring Date', 'updated_at')
-                ->sortable(), //same data as raw_data['date']
+            Date::make('Monitoring Date', function () use ($rawData) {
+                return $rawData['date'];
+            })->sortable(),
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
                 if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
                     //extract values and replace comma with dot. if dot is found, do not replace. the fina result should be a float value with point
@@ -144,7 +147,9 @@ class SourceSurvey extends UgcPoi
             Text::make('User', 'user')->resolveUsing(function ($user) {
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
-            Date::make('Monitoring Date', 'updated_at')
+            Date::make('Monitoring Date', function () {
+                return $rawData['date'];
+            })
                 ->sortable()->readonly(), //same data as raw_data['date']
         ];
     }
