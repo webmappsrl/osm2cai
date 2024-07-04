@@ -86,4 +86,4 @@ Route::get('/sync-to-regions', function () {
 
 Route::get('/poi/map/{id}', [MiturAbruzzoMapsController::class, 'poiMap'])->name('poi-map');
 Route::get('/mountain-groups/map/{id}', [MiturAbruzzoMapsController::class, 'mountainGroupsMap'])->name('mountain-groups-map');
-Route::get('/hiking-routes/map/{id}', [MiturAbruzzoMapsController::class, 'hikingRoutesMap'])->name('hiking-routes-map');
+Route::get('/cai-huts/map/{id}', [MiturAbruzzoMapsController::class, 'caiHutsMap'])->name('cai-huts-map');
