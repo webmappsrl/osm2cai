@@ -67,29 +67,8 @@ class SourceSurvey extends UgcPoi
                 return $rawData['date'];
             })->sortable(),
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
-                if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
-                    //extract values and replace comma with dot. if dot is found, do not replace. the fina result should be a float value with point
-                    if (strpos($this->flow_rate_volume, '.') !== false) {
-                        $volume = $this->flow_rate_volume;
-                    } else {
-                        $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
-                    }
-                    if (strpos($this->flow_rate_fill_time, '.') !== false) {
-                        $time = $this->flow_rate_fill_time;
-                    } else {
-                        $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
-                    }
-                    $volume = str_replace(',', '.', $volume);
-                    $time = str_replace(',', '.', $time);
-
-                    if (is_numeric($volume) && is_numeric($time) && $time != 0) {
-                        return round($volume / $time, 3);
-                    } else {
-                        return null;
-                    }
-                }
+                return $this->calculateFlowRate();
             }),
-
             Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
@@ -142,15 +121,16 @@ class SourceSurvey extends UgcPoi
 
     public function readonlyFields()
     {
+        $rawData = json_decode($this->raw_data, true);
         return [
             Text::make('ID', 'id')->hideFromIndex()->readonly(),
             Text::make('User', 'user')->resolveUsing(function ($user) {
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
-            Date::make('Monitoring Date', function () {
+            Date::make('Monitoring Date', function () use ($rawData) {
                 return $rawData['date'];
             })
-                ->sortable()->readonly(), //same data as raw_data['date']
+                ->sortable()->readonly(),
         ];
     }
     public function modifiablesFields()
