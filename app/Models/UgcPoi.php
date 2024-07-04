@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use app\Traits\GeojsonableTrait;
 use Carbon\Carbon;
+use app\Traits\GeojsonableTrait;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\UgcWaterFlowValidatedStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -67,5 +68,38 @@ class UgcPoi extends Model
 
             return $feature;
         } else return null;
+    }
+
+    public function calculateFlowRate()
+    {
+        if ($this->water_flow_rate_validated === UgcWaterFlowValidatedStatus::Valid) {
+            //extract values and replace comma with dot. if dot is found, do not replace. the fina result should be a float value with point
+            if (strpos($this->flow_rate_volume, '.') !== false) {
+                $volume = $this->flow_rate_volume;
+            } else {
+                $volume = preg_replace('/[^0-9,]/', '', $this->flow_rate_volume);
+            }
+            if (strpos($this->flow_rate_fill_time, '.') !== false) {
+                $time = $this->flow_rate_fill_time;
+            } else {
+                $time = preg_replace('/[^0-9,]/', '', $this->flow_rate_fill_time);
+            }
+            $volume = str_replace(',', '.', $volume);
+            $time = str_replace(',', '.', $time);
+
+            if (is_numeric($volume) && is_numeric($time) && $time != 0) {
+                $this->flow_rate = round($volume / $time, 3);
+                $this->save();
+            } else {
+                $this->flow_rate = 'N/A';
+                $this->save();
+            }
+
+            return $this->flow_rate;
+        } else {
+            $this->flow_rate = 'N/A';
+            $this->save();
+            return $this->flow_rate;
+        }
     }
 }
