@@ -69,9 +69,81 @@ class CacheMiturAbruzzoApiCommand extends Command
                 case 'App\Models\HikingRoute':
                     $this->cacheHikingRouteApiData($model);
                     break;
+                case 'App\Models\CaiHuts':
+                    $this->cacheCaiHutsApiData($model);
+                    break;
             }
         }
         Log::info("Finished caching API data for model {$this->argument('model')}");
+    }
+
+    protected function cacheCaiHutsApiData($hut)
+    {
+        //get the mountain groups for the hut based on the geometry intersection
+        $mountainGroups = $hut->getMountainGroupsIntersecting()->first();
+
+        //get the pois in a 1km buffer from the hut
+        $pois = $hut->getPoisInBuffer(1000);
+
+        //get the hiking routes in a 1km buffer from the hut
+        $hikingRoutes = $hut->getHikingRoutesInBuffer(1000);
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $hut->id;
+        $properties['name'] = $hut->second_name ?? $hut->name ?? '';
+        $properties['type'] = explode(' ', $hut->second_name)[0] ?? '';
+        $properties['elevation'] = $hut->elevation ?? '';
+        $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
+        $properties['type_custodial'] = $hut->type_custodial ?? '';
+        $properties['company_management_property'] = $hut->company_management_property ?? '';
+        $properties['addr:street'] = $hut->addr_street ?? '';
+        $properties['addr:housenumber'] = $hut->addr_housenumber ?? '';
+        $properties['addr:postcode'] = $hut->addr_postcode ?? '';
+        $properties['addr:city'] = $hut->addr_city ?? '';
+        $properties['ref:vatin'] = $hut->ref_vatin ?? '';
+        $properties['phone'] = $hut->phone ?? '';
+        $properties['fax'] = $hut->fax ?? '';
+        $properties['email'] = $hut->email ?? '';
+        $properties['email_pec'] = $hut->email_pec ?? '';
+        $properties['website'] = $hut->website ?? '';
+        $properties['facebook_contact'] = $hut->facebook_contact ?? '';
+        $properties['municipality_geo'] = $hut->municipality_geo ?? '';
+        $properties['province_geo'] = $hut->province_geo ?? '';
+        $properties['site_geo'] = $hut->site_geo ?? '';
+        $properties['source:ref'] = $hut->unico_id;
+        $properties['description'] = $hut->description ?? '';
+        $properties['pois'] = $pois->count() > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
+        $properties['opening'] = $hut->opening ?? "";
+        $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '';
+        $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '';
+        $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '';
+        $properties['posti_letto_invernali_service'] = $hut->posti_letto_invernali_service ?? '';
+        $properties['posti_totali_service'] = $hut->posti_totali_service ?? '';
+        $properties['ristorante_service'] = $hut->ristorante_service ?? '';
+        $properties['activity'] = $hut->activities ?? 'Escursionismo,Alpinismo';
+        $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
+        $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
+        $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
+        $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('updated_at', 'id')->toArray() : [];
+        $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '';
+        $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
+        $properties['map'] = route('cai-huts-map', ['id' => $hut->id]);
+        $properties['images'] = [];
+
+        $geometry = $hut->getGeometry();
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        $hut->cached_mitur_api_data = json_encode($geojson);
+        $hut->save();
+
+        Log::info("End caching hut $hut->id");
+        $this->info("End caching hut $hut->id");
     }
 
     protected function cacheRegionApiData($region)

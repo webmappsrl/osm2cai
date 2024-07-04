@@ -903,71 +903,14 @@ class MiturAbruzzoController extends Controller
      */
     public function miturAbruzzoHutById($id)
     {
-        $hut = CaiHuts::findOrFail($id);
+        $hut = CaiHuts::find($id);
+        if (!$hut) {
+            return response()->json(['message' => 'Mountain group not found'], 404);
+        }
 
-        //get the mountain groups for the hut based on the geometry intersection
-        $mountainGroups = $hut->getMountainGroupsIntersecting()->first();
+        $data = json_decode($hut->cached_mitur_api_data, true);
 
-        //get the pois in a 1km buffer from the hut
-        $pois = $hut->getPoisInBuffer(1000);
-
-        //get the hiking routes in a 1km buffer from the hut
-        $hikingRoutes = $hut->getHikingRoutesInBuffer(1000);
-
-        //build the geojson
-        $geojson = [];
-        $geojson['type'] = 'Feature';
-
-        $properties = [];
-        $properties['id'] = $hut->id;
-        $properties['name'] = $hut->second_name ?? $hut->name ?? '';
-        $properties['type'] = 'Bivacco';
-        $properties['elevation'] = $hut->elevation ?? '';
-        $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
-        $properties['type_custodial'] = $hut->type_custodial ?? '1';
-        $properties['company_management_property'] = $hut->company_management_property ?? 'Montagna srl';
-        $properties['addr:street'] = $hut->addr_street ?? 'via guglie alte';
-        $properties['addr:housenumber'] = $hut->addr_housenumber ?? '23';
-        $properties['addr:postcode'] = $hut->addr_postcode ?? '54787';
-        $properties['addr:city'] = $hut->addr_city ?? 'Alpi';
-        $properties['ref:vatin'] = $hut->ref_vatin ?? 'IT0000000000000';
-        $properties['phone'] = $hut->phone ?? '+39 000 00000000';
-        $properties['fax'] = $hut->fax ?? '+39 000 00000001';
-        $properties['email'] = $hut->email ?? 'info@email.com';
-        $properties['email_pec'] = $hut->email_pec ?? 'info@pec.com';
-        $properties['website'] = $hut->website ?? 'www.sito.it';
-        $properties['facebook_contact'] = $hut->facebook_contact ?? 'https://facebook.com/rifugio';
-        $properties['municipality_geo'] = $hut->municipality_geo ?? 'Alagna Valsesia';
-        $properties['province_geo'] = $hut->province_geo ?? 'Lucca';
-        $properties['site_geo'] = $hut->site_geo ?? 'Piemonte';
-        $properties['source:ref'] = $hut->unico_id;
-        $properties['description'] = $hut->description ?? '';
-        $properties['pois'] = $pois->count() > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
-        $properties['opening'] = $hut->opening ?? "Mo-Th 10:00-18:00; Fr-Sa 10:00-19:00";
-        $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '1';
-        $properties['acqua_calda_service'] = $hut->acqua_calda_service ?? '1';
-        $properties['acqua_esterno_service'] = $hut->acqua_esterno_service ?? '1';
-        $properties['posti_letto_invernali_service'] = $hut->posti_letto_invernali_service ?? '12';
-        $properties['posti_totali_service'] = $hut->posti_totali_service ?? '23';
-        $properties['ristorante_service'] = $hut->ristorante_service ?? '1';
-        $properties['activity'] = $hut->activities ?? 'Escursionismo,Alpinismo';
-        $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
-        $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
-        $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
-        $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('updated_at', 'id')->toArray() : [];
-        $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '1';
-        $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
-        $properties['map'] = $hut->map ?? 'https://www.mappa-rifugio.it';
-        $properties['images'] = ["https://geohub.webmapp.it/storage/ec_media/35934.jpg", "https://ecmedia.s3.eu-central-1.amazonaws.com/EcMedia/Resize/108x137/35933_108x137.jpg"];
-
-
-
-        $geometry = $hut->getGeometry();
-
-        $geojson['properties'] = $properties;
-        $geojson['geometry'] = $geometry;
-
-        return response()->json($geojson);
+        return response()->json($data);
     }
 
     /**
