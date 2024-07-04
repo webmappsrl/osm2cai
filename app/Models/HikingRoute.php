@@ -2,20 +2,21 @@
 
 namespace App\Models;
 
+use GeoJson\Geometry\Polygon;
+use App\Traits\GeojsonableTrait;
+use Imumz\LeafletMap\LeafletMap;
 use App\Services\GeometryService;
 use App\Traits\GeoIntersectTrait;
-use App\Traits\GeojsonableTrait;
 use App\Traits\OwnableModelTrait;
-use GeoJson\Geometry\Polygon;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Imumz\LeafletMap\LeafletMap;
+use Symm\Gisconverter\Gisconverter;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 use phpDocumentor\Reflection\Types\Boolean;
 use Symm\Gisconverter\Exceptions\InvalidText;
-use Symm\Gisconverter\Gisconverter;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class HikingRoute
@@ -1130,6 +1131,54 @@ EOF;
         return $info;
     }
 
+    public function getTechInfoFromDem(): array
+    {
+        $info = [
+            'gpx_url' => url('/api/v2/hiking-routes/' . $this->id . '.gpx'),
+            'distance' => 'Unknown',
+            'ascent' => 'Unknown',
+            'descent' => 'Unknown',
+            'duration_forward' => 'Unknown',
+            'duration_backward' => 'Unknown',
+            'ele_from' => 'Unknown',
+            'ele_to' => 'Unknown',
+            'ele_max' => 'Unknown',
+            'ele_min' => 'Unknown',
+        ];
+
+        $data = $this->getTrackGeometryGeojson();
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->post(
+            'https://dem.maphub.it/api/v1/track', //TODO inserire a configurazione(vedi geohub)
+            // rtrim(config('services.dem.host'), '/') . rtrim(config('services.dem.3d_data_api'), '/'),
+            $data
+        );
+
+        if ($response->successful()) {
+            // Request was successful, handle the response data here
+            $info = $response->json()['properties'];
+            $info['duration_forward'] = $info['duration_forward_hiking'];
+            unset($info['duration_forward_hiking']);
+            $info['duration_backward'] = $info['duration_backward_hiking'];
+            unset($info['duration_backward_hiking']);
+            unset($info['duration_forward_bike']);
+            unset($info['duration_backward_bike']);
+        } else {
+            // Request failed, handle the error here
+            $errorCode = $response->status();
+            $errorBody = $response->body();
+            Log::error($this->ecTrack->id . "UpdateEcTrack3DDemJob: FAILED: Error {$errorCode}: {$errorBody}");
+        }
+
+        return $info;
+    }
+
+    public function getGpx(): array
+    {
+        return [];
+    }
+
     public function h2m($strHourMinute)
     {
         $strHourMinute = preg_replace('/[^0-9:]/', '', $strHourMinute);
@@ -1230,10 +1279,9 @@ EOF;
 
         $fromInfo = $this->getFromInfo();
         $toInfo = $this->getToInfo();
-        $techInfo = $this->getTechInfoFromGeohub();
+        $techInfo = $this->getTechInfoFromDem();
 
         $tdh = [
-            'gpx_url' => $techInfo['gpx_url'],
             'cai_scale_string' => $this->getCaiScaleString(),
             'cai_scale_description' => $this->getCaiScaleDescription(),
             'from' => $fromInfo['from'],

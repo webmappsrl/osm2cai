@@ -12,7 +12,7 @@ class AddTdhFieldsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:tdh';
+    protected $signature = 'osm2cai:tdh {id?}';
 
     /**
      * The console command description.
@@ -38,12 +38,22 @@ class AddTdhFieldsCommand extends Command
      */
     public function handle()
     {
-        $hrs = HikingRoute::where('osm2cai_status',4)->get();
+        ini_set('memory_limit', '-1');
+        if ($this->argument('id')) {
+            $hrs = HikingRoute::where('id', $this->argument('id'))->get();
+        } else {
+            $hrs = HikingRoute::whereIn('osm2cai_status', [3, 4])->get();
+        }
+
+        if (!$hrs) {
+            $this->info("No Hiking Routes found");
+            return 0;
+        }
         $tot = $hrs->count();
         $count = 1;
         foreach ($hrs as $hr) {
             $this->info("($count/$tot) Processing Hiking route $hr->id ");
-            $hr->tdh=$hr->computeTdh();
+            $hr->tdh = $hr->computeTdh();
             $hr->save();
             $count++;
         }
