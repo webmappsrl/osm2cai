@@ -18,14 +18,24 @@ trait GeoIntersectTrait
      * 
      * @return Collection
      */
-    public function getHikingRoutesIntersecting(): Collection
+    public function getHikingRoutesIntersecting($osm2caiStatus = null): Collection
     {
         $model = $this;
 
-        $intersectingHikingRouteIds = DB::table('hiking_routes')
-            ->select('id')
-            ->whereRaw("ST_Intersects(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
-            ->pluck('id');
+        if (is_null($osm2caiStatus)) {
+
+            $intersectingHikingRouteIds = DB::table('hiking_routes')
+                ->select('id')
+                ->whereRaw("ST_Intersects(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
+                ->pluck('id');
+        } else {
+
+            $intersectingHikingRouteIds = DB::table('hiking_routes')
+                ->select('id')
+                ->where('osm2cai_status', $osm2caiStatus)
+                ->whereRaw("ST_Intersects(geometry, (SELECT geometry FROM " . $model->getTable() . " WHERE id = ?))", [$model->id])
+                ->pluck('id');
+        }
 
 
         return HikingRoute::whereIn('id', $intersectingHikingRouteIds)->get();
