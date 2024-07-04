@@ -17,7 +17,7 @@ class MiturAbruzzoMapsController extends Controller
         return redirect('https://26.app.geohub.webmapp.it/#/map');
     }
 
-    public static function hikingRoutesMap($id)
+    public static function caiHutsMap($id)
     {
         return redirect('https://26.app.geohub.webmapp.it/#/map');
     }
