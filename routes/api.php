@@ -143,5 +143,6 @@ Route::name('api.')->group(function () {
             Route::get('/huts/list', [ExportController::class, 'hutsList'])->name('huts-export');
             Route::get('/huts/{id}', [ExportController::class, 'hutsSingleFeature'])->name('huts-single-feature-export');
         });
+        Route::get('hiking-routes/{id}.gpx', [HikingRouteController::class, 'hikingRouteGpx'])->name('hiking-routes-gpx');
     });
 });

@@ -31,4 +31,10 @@ class HikingRouteController extends Controller
             'hikingRoute' => $hikingRoute
         ]);
     }
+
+    public function hikingRouteGpx(int $id)
+    {
+        $hikingRoute = HikingRoute::findOrFail($id);
+        return response($hikingRoute->getGpx(), 200, ['Content-type' => 'application/gpx+xml']);
+    }
 }

@@ -40,6 +40,17 @@ trait GeojsonableTrait
             return null;
     }
 
+    public function getTrackGeometryGeojson(): ?array
+    {
+        $feature = $this->getEmptyGeojson();
+        if (isset($feature["properties"])) {
+            $feature["properties"]["id"] = $this->id;
+            return $feature;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Calculate the geojson of a model with only the geometry
      *
