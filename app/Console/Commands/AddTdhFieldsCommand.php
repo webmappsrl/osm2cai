@@ -42,7 +42,7 @@ class AddTdhFieldsCommand extends Command
         if ($this->argument('id')) {
             $hrs = HikingRoute::where('id', $this->argument('id'))->get();
         } else {
-            $hrs = HikingRoute::whereIn('osm2cai_status', [3, 4])->get();
+            $hrs = HikingRoute::where('osm2cai_status', 4)->get();
         }
 
         if (!$hrs) {
