@@ -1765,16 +1765,6 @@
                                                     "type": "string",
                                                     "example": "123"
                                                 },
-                                                "ele_min": {
-                                                    "description": "The minimum elevation of the mountain group",
-                                                    "type": "string",
-                                                    "example": "856"
-                                                },
-                                                "ele_max": {
-                                                    "description": "The maximum elevation of the mountain group",
-                                                    "type": "string",
-                                                    "example": "1785"
-                                                },
                                                 "region": {
                                                     "description": "The region of the mountain group",
                                                     "type": "string",
@@ -1896,8 +1886,6 @@
                                             1
                                         ],
                                         "area": "123",
-                                        "ele_min": "856",
-                                        "ele_max": "1785",
                                         "region": "Lazio",
                                         "provinces": "Roma",
                                         "municipalities": "Roma",
