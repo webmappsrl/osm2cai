@@ -1168,7 +1168,7 @@ EOF;
             // Request failed, handle the error here
             $errorCode = $response->status();
             $errorBody = $response->body();
-            Log::error($this->ecTrack->id . "UpdateEcTrack3DDemJob: FAILED: Error {$errorCode}: {$errorBody}");
+            Log::error($this->id . "UpdateEcTrack3DDemJob: FAILED: Error {$errorCode}: {$errorBody}");
         }
 
         return $info;
