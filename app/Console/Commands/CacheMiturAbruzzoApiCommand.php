@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CaiHuts;
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $allModels = $modelClass::all();
         foreach ($allModels as $model) {
             Log::info("Processing model with id {$model->id}");
+            $this->info("Processing model with id {$model->id}");
             switch (get_class($modelClass)) {
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
@@ -63,6 +65,9 @@ class CacheMiturAbruzzoApiCommand extends Command
                     break;
                 case 'App\Models\MountainGroups':
                     $this->cacheMountainGroupApiData($model);
+                    break;
+                case 'App\Models\HikingRoute':
+                    $this->cacheHikingRouteApiData($model);
                     break;
             }
         }
@@ -230,6 +235,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $section->save();
 
         Log::info("End caching section $section->name");
+        $this->info("End caching section $section->name");
     }
 
     protected function cacheMountainGroupApiData($mountainGroup)
@@ -288,6 +294,114 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $mountainGroup->cached_mitur_api_data = json_encode($geojson);
         $mountainGroup->save();
+
+        Log::info("End caching mountain group $mountainGroup->name");
+        $this->info("End caching mountain group $mountainGroup->name");
+    }
+
+    protected function cacheHikingRouteApiData($hikingRoute)
+    {
+        //get the pois intersecting with the hiking route
+        $pois = $hikingRoute->getPoisIntersecting();
+
+        $geometry = $hikingRoute->getGeometry();
+
+
+        $fromPoint =  !is_null($geometry) ? implode(',', $geometry['coordinates'][0][0]) : '';
+        $toPoint = !is_null($geometry) ? implode(',', $geometry['coordinates'][0][count($geometry['coordinates'][0]) - 1]) : '';
+
+        //get the cai huts intersecting with the hiking route
+        $huts = json_decode($hikingRoute->cai_huts);
+        $caiHuts = [];
+        //transform the huts array into an associative array where the key is hut id and value is the hut updated_at
+        if (!empty($huts)) {
+            foreach ($huts as $hut) {
+                $hutModel = CaiHuts::find($hut);
+                $updated_at = $hutModel->updated_at;
+                $caiHuts[$hut] = $updated_at;
+            }
+        } else {
+            $caiHuts = [];
+        }
+
+
+        //get the sections associated with the hiking route
+        $sections = $hikingRoute->sections;
+        $sectionsIds = $sections->pluck('updated_at', 'id')->toArray();
+
+        // get the abstract from the hiking route and get only it description
+        $abstract = $hikingRoute->tdh['abstract']['it'] ?? '';
+
+        //get the difficulty based on cai_scale value
+        $difficulty;
+
+        switch ($hikingRoute->cai_scale) {
+            case 'T':
+                $difficulty = 'Turistico';
+                break;
+            case 'E':
+                $difficulty = 'Escursionistico';
+                break;
+            case 'EE':
+                $difficulty = 'Escursionistico per Esperti';
+                break;
+            case 'EEA':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:F':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:D':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:MD':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            case 'EEA:E':
+                $difficulty = 'Escursionistco per Esperti con Attrezzatura';
+                break;
+            default:
+                $difficulty = 'Non definito';
+        }
+
+        //build the geojson
+        $geojson = [];
+        $geojson['type'] = 'Feature';
+
+        $properties = [];
+        $properties['id'] = $hikingRoute->id;
+        $properties['ref'] = $hikingRoute->ref;
+        $properties['name'] = $hikingRoute->name ?? 'Nome del Sentiero';
+        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
+        $properties['rwn_name'] = $hikingRoute->rwn_name ?? '';
+        $properties['section_ids'] = $sectionsIds ?? [];
+        $properties['from'] = $hikingRoute->from ?? '';
+        $properties['from:coordinate'] = $fromPoint;
+        $properties['to'] = $hikingRoute->to ?? '';
+        $properties['to:coordinate'] = $toPoint;
+        $properties['abstract'] = $abstract;
+        $properties['distance'] = $hikingRoute->distance ?? 100;
+        $properties['duration_forward'] = $hikingRoute->duration_forward ?? 100;
+        $properties['ele_max'] = $hikingRoute->ele_max ?? 100;
+        $properties['ele_min'] = $hikingRoute->ele_min ?? 100;
+        $properties['issues_status'] = $hikingRoute->issues_status;
+        $properties['symbol'] = 'Segnaletica standard CAI';
+        $proprties['difficulty'] = $difficulty;
+        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['cai_huts'] = $caiHuts;
+        $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
+        $properties['activity'] = 'Escursionismo';
+        $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
+        $properties['images'] = [];
+
+        $geojson['properties'] = $properties;
+        $geojson['geometry'] = $geometry;
+
+        $hikingRoute->cached_mitur_api_data = json_encode($geojson);
+        $hikingRoute->save();
+
+        Log::info("End caching data for hiking route " . $hikingRoute->id);
+        $this->info("End caching data for hiking route " . $hikingRoute->id);
     }
 
 
