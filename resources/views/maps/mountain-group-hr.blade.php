@@ -53,9 +53,11 @@
 
 <body>
     <h1>{{ $mountainGroup->name }}</h1>
-    <div class="description">
-        <p>{{ $mountainGroup->description }}</p>
-    </div>
+    @if ($mountainGroup->description)
+        <div class="description">
+            <p>{{ $mountainGroup->description }}</p>
+        </div>
+    @endif
     <div id="map-container">
         <div id="map"></div>
     </div>
