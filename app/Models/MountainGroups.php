@@ -12,7 +12,10 @@ class MountainGroups extends Model
 {
     use HasFactory,  GeojsonableTrait, GeoIntersectTrait;
 
-    protected $fillable = ['name', 'description', 'updated_at', 'geometry', 'hiking_routes_intersecting', 'huts_intersecting', 'sections_intersecting', 'ec_pois_intersecting', 'cached_mitur_api_data'];
+    protected $fillable = [
+        'name', 'description', 'updated_at', 'geometry', 'hiking_routes_intersecting', 'huts_intersecting', 'sections_intersecting', 'ec_pois_intersecting', 'cached_mitur_api_data', 'elevation_min', 'elevation_max',
+        'elevation_avg', 'elevation_stdev', 'slope_min', 'slope_max', 'slope_avg', 'slope_stdev'
+    ];
 
     public function regions()
     {
