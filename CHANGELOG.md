@@ -1,5 +1,40 @@
 # Changelog
 
+## [233.31.0](https://github.com/webmappsrl/osm2cai/compare/v233.30.5...v233.31.0) (2024-07-05)
+
+
+### Features
+
+* added area stats fields ([e4ec8a9](https://github.com/webmappsrl/osm2cai/commit/e4ec8a99397ac99b67fde4b78a5181c2455d121e))
+* added description and abstract to region api data caching. Added filter for images files in the command ([eab055c](https://github.com/webmappsrl/osm2cai/commit/eab055cdf4c2bde965aa2905e6baeda928731559))
+* added description and abstract to region api data caching. Added filter for images files in the command ([51aa5b7](https://github.com/webmappsrl/osm2cai/commit/51aa5b76c67ae838d4c30660cf803cb7bfe8a612))
+* added enrich pois from osmfeatures ([4203d0d](https://github.com/webmappsrl/osm2cai/commit/4203d0d156817de3710f3c1090f33e7661f729b9))
+* added enrich pois from osmfeatures ([96cb861](https://github.com/webmappsrl/osm2cai/commit/96cb861b1058b097243fc8f65656a08bc8c0def9))
+* added enrich pois from osmfeatures ([59a4c71](https://github.com/webmappsrl/osm2cai/commit/59a4c7134aff4f77ed76083b362d2e226b5a3958))
+* added enrich pois from osmfeatures ([76c666d](https://github.com/webmappsrl/osm2cai/commit/76c666dc7dbff2369a43b36a243da75aef59d725))
+* added mountain groups hr map ([2f8e49c](https://github.com/webmappsrl/osm2cai/commit/2f8e49c2c420983dbad6e4c5844d508201c30fa4))
+* added mountain groups map ([6207fa3](https://github.com/webmappsrl/osm2cai/commit/6207fa3d8bb63b4110e4ab559a2b9402f1feea7e))
+* added poi map ([43e6e58](https://github.com/webmappsrl/osm2cai/commit/43e6e5801ee899f872b2d888a85d8b64f02598f6))
+* cai-hut map ([df651b6](https://github.com/webmappsrl/osm2cai/commit/df651b61edb6173a5d06940f9f5f3dd8540ba5e8))
+* implemented api data caching for ec pois ([06a2fb0](https://github.com/webmappsrl/osm2cai/commit/06a2fb001c5b2d378eca4e74c5af32002e9592e1))
+
+
+### Bug Fixes
+
+* added name to cai hut point ([7ea22dc](https://github.com/webmappsrl/osm2cai/commit/7ea22dcbdd7d32199eb72901b79e388ee33fc81e))
+* minor bug fixes ([9186abd](https://github.com/webmappsrl/osm2cai/commit/9186abd0033457a5b68abe7f523b9834dc0f6a8e))
+* minor bug fixes ([ecac246](https://github.com/webmappsrl/osm2cai/commit/ecac24610b696c1da6b1ec495a9284a34f68e80f))
+* updated cache command to include new fields for mountain groups api data caching ([0ad8979](https://github.com/webmappsrl/osm2cai/commit/0ad897906bcb2cd4cc0d78574d49b0069756374f))
+* updated osm2caistatus parameter for mountain grous api ([895b7f4](https://github.com/webmappsrl/osm2cai/commit/895b7f46efd6d5fe22f50a134eb93976fe3f9d18))
+
+
+### Miscellaneous Chores
+
+* refactored tdh command with dem.maphub ([652cf10](https://github.com/webmappsrl/osm2cai/commit/652cf10e3b305610da5fd86d1d1a881cc6c06d87))
+* updated api documentation ([2f7f716](https://github.com/webmappsrl/osm2cai/commit/2f7f716585c88c0640577f2374acc91647891dfd))
+* updated map controller ([94f4d51](https://github.com/webmappsrl/osm2cai/commit/94f4d51954a5774bacaf78cc9092d001f0f4c9d1))
+* updated map routes ([3841e73](https://github.com/webmappsrl/osm2cai/commit/3841e73242a59b71a2b91af86d823742f48a7b24))
+
 ## [233.30.5](https://github.com/webmappsrl/osm2cai/compare/v233.30.4...v233.30.5) (2024-06-27)
 
 
