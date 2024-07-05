@@ -49,17 +49,11 @@ trait GeometryFeatureTrait
             ->geom;
 
         if (isset($geom)) {
-            try {
-                return Gisconverter::geojsonToGpx($geom);
-            } catch (\Exception $e) {
-                $geometry = json_decode($geom, true);
-                if ($geometry['type'] === 'MultiLineString') {
-                    return $this->convertMultiLineStringToGPX($geometry);
-                } else {
-                    // Gestisci altri tipi di geometria se necessario
-                    return null;
-                }
+            $geometry = json_decode($geom, true);
+            if ($geometry['type'] === 'MultiLineString') {
+                return $this->convertMultiLineStringToGPX($geometry);
             }
+            return Gisconverter::geojsonToGpx($geom);
         } else {
             return null;
         }
