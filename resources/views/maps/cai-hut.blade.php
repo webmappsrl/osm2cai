@@ -53,9 +53,11 @@
 
 <body>
     <h1>{{ $caiHut->name }}</h1>
-    <div class="description">
-        <p>{{ $caiHut->description }}</p>
-    </div>
+    @if ($caiHut->description)
+        <div class="description">
+            <p>{{ $caiHut->description }}</p>
+        </div>
+    @endif
     <div id="map-container">
         <div id="map"></div>
     </div>
