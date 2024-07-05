@@ -45,15 +45,17 @@ class MiturAbruzzoMapsController extends Controller
     {
         $caiHut = CaiHuts::findOrFail($id);
 
-        $geometry = DB::select("SELECT ST_AsGeoJSON(geometry) as geom FROM cai_huts WHERE id = ?", [$id]);
+        $geometry = DB::select("SELECT ST_AsText(geometry) AS geometry FROM cai_huts WHERE id = ?", [$id]);
         if (!$geometry) {
             return redirect('https://26.app.geohub.webmapp.it/#/map');
         }
-        $geometry = json_decode($geometry[0]->geom, true);
+        $geometry = str_replace(['POINT(', ')'], '', $geometry[0]->geometry);
+        list($longitude, $latitude) = explode(' ', $geometry);
 
         return view('maps.cai-hut', [
             'caiHut' => $caiHut,
-            'geometry' => $geometry,
+            'latitude' => $latitude,
+            'longitude' => $longitude
         ]);
     }
 
