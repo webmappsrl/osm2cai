@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\EcPoi;
+use App\Models\CaiHuts;
 use Illuminate\Http\Request;
 use App\Models\MountainGroups;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,18 @@ class MiturAbruzzoMapsController extends Controller
 
     public static function caiHutsMap($id)
     {
-        return redirect('https://26.app.geohub.webmapp.it/#/map');
+        $caiHut = CaiHuts::findOrFail($id);
+
+        $geometry = DB::select("SELECT ST_AsGeoJSON(geometry) as geom FROM cai_huts WHERE id = ?", [$id]);
+        if (!$geometry) {
+            return redirect('https://26.app.geohub.webmapp.it/#/map');
+        }
+        $geometry = json_decode($geometry[0]->geom, true);
+
+        return view('maps.cai-hut', [
+            'caiHut' => $caiHut,
+            'geometry' => $geometry,
+        ]);
     }
 
 
