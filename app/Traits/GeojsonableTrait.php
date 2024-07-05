@@ -5,9 +5,6 @@ namespace App\Traits;
 use Exception;
 use App\Services\GeometryService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Symm\Gisconverter\Gisconverter;
-use Symm\Gisconverter\Exceptions\InvalidText;
 
 trait GeojsonableTrait
 {
