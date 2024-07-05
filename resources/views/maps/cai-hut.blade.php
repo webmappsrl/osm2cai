@@ -65,21 +65,15 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var map = L.map('map').setView([{{ $geometry['coordinates'][1] }}, {{ $geometry['coordinates'][0] }}],
-                12);
+            var map = L.map('map').setView([{{ $latitude }}, {{ $longitude }}], 13);
 
             L.tileLayer('https://api.webmapp.it/tiles/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            var geojsonFeature = {!! json_encode($geometry) !!}; // Questo è ora una stringa JSON
-
-            L.geoJSON(geojsonFeature, {
-                pointToLayer: function(feature, latlng) {
-                    return L.marker(latlng);
-                }
-            }).addTo(map);
-
+            L.marker([{{ $latitude }}, {{ $longitude }}]).addTo(map)
+                .bindPopup('<b>{{ $caiHut->name }}</b><br>{{ $caiHut->description }}')
+                .openPopup();
         });
     </script>
 </body>
