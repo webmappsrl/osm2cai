@@ -5,17 +5,14 @@ namespace App\Models;
 use GeoJson\Geometry\Polygon;
 use App\Traits\GeojsonableTrait;
 use Imumz\LeafletMap\LeafletMap;
-use App\Services\GeometryService;
 use App\Traits\GeoIntersectTrait;
+use App\Traits\GeometryFeatureTrait;
 use App\Traits\OwnableModelTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Symm\Gisconverter\Gisconverter;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
-use phpDocumentor\Reflection\Types\Boolean;
-use Symm\Gisconverter\Exceptions\InvalidText;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
@@ -29,7 +26,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  */
 class HikingRoute extends Model
 {
-    use HasFactory, GeojsonableTrait, OwnableModelTrait, GeoIntersectTrait;
+    use HasFactory, GeojsonableTrait, OwnableModelTrait, GeoIntersectTrait, GeometryFeatureTrait;
 
     public $is_syncing = false;
 
@@ -1172,11 +1169,6 @@ EOF;
         }
 
         return $info;
-    }
-
-    public function getGpx(): array
-    {
-        return [];
     }
 
     public function h2m($strHourMinute)
