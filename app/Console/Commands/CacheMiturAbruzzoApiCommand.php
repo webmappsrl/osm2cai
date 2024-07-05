@@ -343,6 +343,14 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
         $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['area'] = $mountainGroup->getArea() . ' km²';
+        $properties['ele_min'] = $mountainGroup->elevation_min ?? '';
+        $properties['ele_max'] = $mountainGroup->elevation_max ?? '';
+        $properties['ele_avg'] = $mountainGroup->elevation_avg ?? '';
+        $properties['ele_stdev'] = $mountainGroup->elevation_stdev ?? '';
+        $properties['slope_min'] = $mountainGroup->slope_min ?? '';
+        $properties['slope_max'] = $mountainGroup->slope_max ?? '';
+        $properties['slope_avg'] = $mountainGroup->slope_avg ?? '';
+        $properties['slope_stdev'] = $mountainGroup->slope_stdev;
         $properties['region'] = implode(', ', $regions);
         $properties['provinces'] = implode(', ', $provinces);
         $properties['municipalities'] = implode(', ', $municipalities);
