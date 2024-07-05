@@ -217,6 +217,54 @@ class MiturAbruzzoController extends Controller
      *                     example="123",
      *                   description="The area of the mountain group"
      *                 ),
+     *  @OA\Property(
+     *                     property="ele_min",
+     *                     type="integer",
+     *                     example= 123,
+     *                   description= "The minimum elevation of the mountain group"
+     *                 ),
+     *  @OA\Property(
+     *                     property="ele_max",
+     *                     type=integer,
+     *                     example=456,
+     *                   description="The maximum elevation of the mountain group"
+     *                 ),
+     *    @OA\Property(
+     *                     property="ele_avg",
+     *                     type=integer,
+     *                     example=322,
+     *                   description="The average elevation of the mountain group"
+     *                 ),
+     *     @OA\Property(
+     *                     property="ele_stdev",
+     *                     type=integer,
+     *                     example=212,
+     *                   description="The standard deviation  of the mountain group's elevation"
+     *                 ),
+     *     @OA\Property(
+     *                     property="slope_min",
+     *                     type=integer,
+     *                     example=10,
+     *                   description="The minimum slope of the mountain group"
+     *                 ),
+     *  @OA\Property(
+     *                     property="slope_max",
+     *                     type=integer,
+     *                     example=100,
+     *                   description="The maximum slope of the mountain group"
+     *                 ),
+     *  @OA\Property(
+     *                     property="slope_avg",
+     *                     type=integer,
+     *                     example=50,
+     *                   description="The average slope of the mountain group"
+     *                 ),
+     *  @OA\Property(
+     *                     property="slope_stdev",
+     *                     type=integer,
+     *                     example=20,
+     *                   description="The standard deviation of the mountain group's slope"
+     *                 ),
      * @OA\Property(
      * property="region",
      * type="string",
