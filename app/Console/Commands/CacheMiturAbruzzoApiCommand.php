@@ -18,7 +18,7 @@ class CacheMiturAbruzzoApiCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:cache-mitur-abruzzo-api {model=Region : The model name}';
+    protected $signature = 'osm2cai:cache-mitur-abruzzo-api {model=Region : The model name} {id? : The model id}';
 
     /**
      * The console command description.
@@ -49,7 +49,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         ini_set('memory_limit', '2048M');
         Log::info("Start caching API data for model {$this->argument('model')}");
         $modelClass = App::make("App\\Models\\{$this->argument('model')}");
-        $allModels = $modelClass::all();
+        $allModels = $this->argument('id') ? [$modelClass::find($this->argument('id'))] : $modelClass::all();
         foreach ($allModels as $model) {
             Log::info("Processing model with id {$model->id}");
             $this->info("Processing model with id {$model->id}");
