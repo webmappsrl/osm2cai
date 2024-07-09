@@ -29,6 +29,23 @@ class CacheMiturApi extends Action
         foreach ($models as $model) {
             Artisan::call("osm2cai:cache-mitur-abruzzo-api $modelClass {$model->id}");
         }
+
+        //sanitize class name
+        if ($modelClass == 'HikingRoute') {
+            $modelClass = 'hiking_route';
+        }
+        if ($modelClass == 'MountainGroups') {
+            $modelClass = 'mountain_group';
+        }
+        if ($modelClass == 'CaiHuts') {
+            $modelClass = 'hut';
+        }
+        if ($modelClass == 'EcPoi') {
+            $modelClass = 'poi';
+        }
+        $miturApi = url('/api/v2/mitur_abruzzo/' . strtolower($modelClass) . '/' . $model->id);
+
+        return Action::redirect($miturApi);
     }
 
     /**

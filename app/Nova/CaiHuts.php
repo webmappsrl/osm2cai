@@ -4,10 +4,11 @@ namespace App\Nova;
 
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\CacheMiturApi;
 use Wm\MapPointNova3\MapPointNova3;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -121,6 +122,12 @@ class CaiHuts extends Resource
      */
     public function actions(Request $request)
     {
-        return [];
+        return [
+            (new CacheMiturApi())->canSee(function ($request) {
+                return $request->user()->is_administrator;
+            })->canRun(function ($request) {
+                return $request->user()->is_administrator;
+            }),
+        ];
     }
 }

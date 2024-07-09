@@ -11,6 +11,7 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\CacheMiturApi;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\EcPoiTypeFilter;
 use App\Nova\Filters\EcPoiRegionFilter;
@@ -200,6 +201,11 @@ class EcPoi extends Resource
                     return true;
                 }
             ),
+            (new CacheMiturApi())->canSee(function ($request) {
+                return $request->user()->is_administrator;
+            })->canRun(function ($request) {
+                return $request->user()->is_administrator;
+            }),
         ];
     }
 }

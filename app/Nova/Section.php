@@ -12,15 +12,17 @@ use App\Services\CacheService;
 use Laravel\Nova\Fields\HasMany;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\CacheMiturApi;
 use Illuminate\Support\Facades\Auth;
 use App\Nova\Actions\DownloadGeojson;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Actions\DownloadRoutesCsv;
+use App\Models\Section as ModelsSection;
 use App\Nova\Filters\SectionRegionFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Models\HikingRoute as ModelsHikingRoute;
-use App\Models\Section as ModelsSection;
+use App\Nova\Actions\CalculateIntersectionsAction;
 
 class Section extends Resource
 {
@@ -337,6 +339,11 @@ class Section extends Resource
                         return true;
                     }
                 ),
+            (new CacheMiturApi())->canSee(function ($request) {
+                return $request->user()->is_administrator;
+            })->canRun(function ($request) {
+                return $request->user()->is_administrator;
+            }),
         ];
     }
 
