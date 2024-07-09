@@ -86,7 +86,7 @@ class CalculateIntersectionsCommand extends Command
             $hikingRouteIds = $intersectingHikingRoutes->pluck('updated_at', 'id')->toArray();
             $model->hiking_routes_in_buffer = $hikingRouteIds;
         } else {
-            $intersectingHikingRoutes = $model->getHikingRoutesIntersecting();
+            $intersectingHikingRoutes = $model->getHikingRoutesIntersecting(4);
             $hikingRouteIds = $intersectingHikingRoutes->pluck('updated_at', 'id')->toArray();
             $model->hiking_routes_intersecting = $hikingRouteIds;
         }
@@ -108,7 +108,7 @@ class CalculateIntersectionsCommand extends Command
 
     private function calculateMountainGroupIntersections($model)
     {
-        $intersectingMountainGroups = $model->getMountainGroupsIntersecting(4);
+        $intersectingMountainGroups = $model->getMountainGroupsIntersecting();
         $mountainGroupIds = $intersectingMountainGroups->pluck('updated_at', 'id')->toArray();
         $model->mountain_groups_intersecting = $mountainGroupIds;
     }
