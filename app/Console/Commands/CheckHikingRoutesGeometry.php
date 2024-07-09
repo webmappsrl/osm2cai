@@ -39,11 +39,19 @@ class CheckHikingRoutesGeometry extends Command
      */
     public function handle()
     {
-        HikingRoute::all()->map( function($hr) {
-            $this->info("Checking {$hr->name} (id:{$hr->id})");
-            $hr->geometry_check = $hr->hasCorrectGeometry();
-            $hr->save();
-        } );
+        ini_set('memory_limit', '-1');
+        HikingRoute::all()->each(function ($hr) {
+            $this->info("Checking {$hr->name} (id: {$hr->id})");
+            $newGeometryCheck = $hr->hasCorrectGeometry();
+
+            if ($hr->geometry_check !== $newGeometryCheck) {
+                $hr->geometry_check = $newGeometryCheck;
+                $hr->save();
+                $this->info("Updated geometry_check for {$hr->name} (id: {$hr->id})");
+            } else {
+                $this->info("No change needed for {$hr->name} (id: {$hr->id})");
+            }
+        });
 
         return 0;
     }
