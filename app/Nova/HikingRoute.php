@@ -30,6 +30,7 @@ use App\Nova\Filters\IssueStatusFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Nova\Filters\GeometrySyncFilter;
 use AddRegionFavoriteToHikingRoutesTable;
+use App\Console\Commands\CalculateIntersectionsCommand;
 use App\Nova\Lenses\HikingRoutesStatusLens;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Actions\PercorsoFavoritoAction;
@@ -55,6 +56,8 @@ use App\Nova\Filters\RegionFavoriteHikingRouteFilter;
 use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 use App\Nova\Actions\ToggleRegionFavoriteHikingRouteAction;
 use App\Nova\Actions\AddRegionFavoritePublicationDateToHikingRouteAction;
+use App\Nova\Actions\CacheMiturApi;
+use App\Nova\Actions\CalculateIntersectionsAction;
 use App\Nova\Filters\HikingRoutesSectionFilter;
 use App\Nova\Filters\SDAFilter;
 use Suenerds\NovaSearchableBelongsToFilter\NovaSearchableBelongsToFilter;
@@ -730,6 +733,13 @@ class HikingRoute extends Resource
                         return true;
                     }
                 ),
+            (new CacheMiturApi())
+                ->canSee(function ($request) {
+                    return $request->user()->is_administrator;
+                })->canRun(function ($request) {
+                    return $request->user()->is_administrator;
+                }),
+
             // (new ToggleRegionFavoriteHikingRouteAction())
             //     ->onlyOnDetail('true')
             //     ->confirmText($this->region_favorite ? 'Sei sicuro di voler togliere il percorso dai favoriti della Regione?' : 'Sei sicuro di voler aggiungere il percorso ai favoriti della Regione?')

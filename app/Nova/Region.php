@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Number;
 use App\Nova\Actions\DownloadKml;
+use App\Nova\Actions\CacheMiturApi;
+use App\Nova\Actions\CalculateIntersectionsAction;
 use App\Nova\Actions\DownloadShape;
 use App\Nova\Actions\DownloadGeojson;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Actions\DownloadRoutesCsv;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Actions\DownloadRegionRoutesKml;
 use App\Nova\Actions\DownloadRegionRoutesShape;
 use App\Nova\Actions\DownloadRegionRoutesGeojson;
@@ -63,7 +65,7 @@ class Region extends Resource
             return $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
 
-        return $query->ownedBy( auth()->user() );
+        return $query->ownedBy(auth()->user());
     }
 
     /**
@@ -183,7 +185,12 @@ class Region extends Resource
             }),
             (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
-            })
+            }),
+            (new CacheMiturApi())->canSee(function ($request) {
+                return $request->user()->is_administrator;
+            })->canRun(function ($request) {
+                return $request->user()->is_administrator;
+            }),
 
         ];
     }
