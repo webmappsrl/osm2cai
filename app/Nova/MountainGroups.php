@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\CacheMiturApi;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Imumz\LeafletMap\LeafletMap;
@@ -139,6 +140,12 @@ class MountainGroups extends Resource
                     return true;
                 }
             ),
+
+            (new CacheMiturApi())->canRun(
+                function ($request) {
+                    return true;
+                }
+            )
         ];
     }
 }
