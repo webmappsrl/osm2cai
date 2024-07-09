@@ -386,14 +386,20 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $geometry = $hikingRoute->getGeometry();
 
-        if (is_null($geometry)) {
-            Log::info("No geometry for hiking route $hikingRoute->name");
-            $this->info("No geometry for hiking route $hikingRoute->name");
+        if (!is_null($geometry) && isset($geometry['coordinates'][0]) && is_array($geometry['coordinates'][0])) {
+            $firstCoordinate = $geometry['coordinates'][0][0] ?? null;
+            $lastCoordinate = $geometry['coordinates'][0][count($geometry['coordinates'][0]) - 1] ?? null;
+
+            if (is_array($firstCoordinate) && is_array($lastCoordinate)) {
+                $fromPoint = implode(',', $firstCoordinate);
+                $toPoint = implode(',', $lastCoordinate);
+            } else {
+                $fromPoint = '';
+                $toPoint = '';
+            }
+        } else {
             $fromPoint = '';
             $toPoint = '';
-        } else {
-            $fromPoint =  !is_null($geometry) ? implode(',', $geometry['coordinates'][0][0]) : '';
-            $toPoint = !is_null($geometry) ? implode(',', $geometry['coordinates'][0][count($geometry['coordinates'][0]) - 1]) : '';
         }
 
         //get the cai huts intersecting with the hiking route
