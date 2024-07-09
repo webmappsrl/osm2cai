@@ -27,7 +27,6 @@ class CacheMiturAbruzzoApiCommand extends Command
      */
     protected $description = 'Store MITUR Abruzzo API data in the database';
 
-    protected $usage = 'osm2cai:cache-mitur-abruzzo-api {model=Region? : The model name}';
 
     /**
      * Create a new command instance.
@@ -48,11 +47,17 @@ class CacheMiturAbruzzoApiCommand extends Command
     {
         ini_set('memory_limit', '2048M');
         Log::info("Start caching API data for model {$this->argument('model')}");
+
         $modelClass = App::make("App\\Models\\{$this->argument('model')}");
-        $allModels = $this->argument('id') ? [$modelClass::find($this->argument('id'))] : $modelClass::all();
-        foreach ($allModels as $model) {
-            Log::info("Processing model with id {$model->id}");
-            $this->info("Processing model with id {$model->id}");
+        $allModels = $this->argument('id')
+            ? [$modelClass::find($this->argument('id'))]
+            : (class_basename($modelClass) === 'HikingRoute'
+                ? $modelClass::where('osm2cai_status', 4)->get() //get only SDA 4
+                : $modelClass::all());
+
+        $this->withProgressBar($allModels, function ($model) use ($modelClass) {
+            $className = class_basename($modelClass);
+            Log::info("Processing model of class {$className} with id {$model->id}");
             switch (get_class($modelClass)) {
                 case 'App\Models\Region':
                     $this->cacheRegionApiData($model);
@@ -73,7 +78,8 @@ class CacheMiturAbruzzoApiCommand extends Command
                     $this->cacheCaiHutsApiData($model);
                     break;
             }
-        }
+        });
+
         Log::info("Finished caching API data for model {$this->argument('model')}");
     }
 
@@ -143,7 +149,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $hut->save();
 
         Log::info("End caching hut $hut->id");
-        $this->info("End caching hut $hut->id");
     }
 
     protected function cacheRegionApiData($region)
@@ -198,7 +203,6 @@ class CacheMiturAbruzzoApiCommand extends Command
     {
         Log::info("Start caching poi $poi->name");
         if (!$poi->osmfeatures_data) {
-            $this->info("No osmfeatures data for poi $poi->name");
             Log::info("No osmfeatures data for poi $poi->name");
             $osmfeaturesData = [];
         } else {
@@ -207,7 +211,6 @@ class CacheMiturAbruzzoApiCommand extends Command
                 $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
             } else {
                 Log::info("No osmfeatures data for poi $poi->name");
-                $this->info("No osmfeatures data for poi $poi->name");
                 $osmfeaturesData = [];
             }
         }
@@ -307,7 +310,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $section->save();
 
         Log::info("End caching section $section->name");
-        $this->info("End caching section $section->name");
     }
 
     protected function cacheMountainGroupApiData($mountainGroup)
@@ -376,11 +378,15 @@ class CacheMiturAbruzzoApiCommand extends Command
         $mountainGroup->save();
 
         Log::info("End caching mountain group $mountainGroup->name");
-        $this->info("End caching mountain group $mountainGroup->name");
     }
 
     protected function cacheHikingRouteApiData($hikingRoute)
     {
+
+        if ($hikingRoute->osm2cai_status != 4) {
+            Log::info("Skip caching hiking route $hikingRoute->name: status $hikingRoute->osm2cai_status");
+            return;
+        }
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
@@ -492,7 +498,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $hikingRoute->save();
 
         Log::info("End caching data for hiking route " . $hikingRoute->id);
-        $this->info("End caching data for hiking route " . $hikingRoute->id);
     }
 
 
