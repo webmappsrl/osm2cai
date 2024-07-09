@@ -3,6 +3,7 @@
 namespace App\Nova;
 
 use App\Nova\Actions\CacheMiturApi;
+use App\Nova\Actions\CalculateIntersectionsAction;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Imumz\LeafletMap\LeafletMap;
@@ -136,6 +137,11 @@ class MountainGroups extends Resource
                 }
             ),
             (new CacheMiturApi())->canSee(function ($request) {
+                return $request->user()->is_administrator;
+            })->canRun(function ($request) {
+                return $request->user()->is_administrator;
+            }),
+            (new CalculateIntersectionsAction)->canSee(function ($request) {
                 return $request->user()->is_administrator;
             })->canRun(function ($request) {
                 return $request->user()->is_administrator;
