@@ -1171,6 +1171,7 @@ EOF;
             unset($info['duration_backward_hiking']);
             unset($info['duration_forward_bike']);
             unset($info['duration_backward_bike']);
+            $info['gpx_url'] = url('/api/v2/hiking-routes/' . $this->id . '.gpx');
         } else {
             // Request failed, handle the error here
             $errorCode = $response->status();
@@ -1307,6 +1308,7 @@ EOF;
             'ele_to' => $techInfo['ele_to'],
             'ele_max' => $techInfo['ele_max'],
             'ele_min' => $techInfo['ele_min'],
+            'gpx_url' => $techInfo['gpx_url'],
         ];
 
         return $tdh;
