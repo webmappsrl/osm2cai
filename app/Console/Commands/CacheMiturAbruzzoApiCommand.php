@@ -390,6 +390,8 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get the pois intersecting with the hiking route
         $pois = $hikingRoute->getPoisIntersecting();
 
+        $tdh = $hikingRoute->tdh;
+
         $geometry = $hikingRoute->getGeometry();
 
         if (!is_null($geometry) && isset($geometry['coordinates'][0]) && is_array($geometry['coordinates'][0])) {
@@ -478,9 +480,15 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['to:coordinate'] = $toPoint;
         $properties['abstract'] = $abstract;
         $properties['distance'] = $hikingRoute->distance ?? 100;
-        $properties['duration_forward'] = $hikingRoute->duration_forward ?? 100;
-        $properties['ele_max'] = $hikingRoute->ele_max ?? 100;
-        $properties['ele_min'] = $hikingRoute->ele_min ?? 100;
+        $properties['duration_forward'] = $tdh['duration_forward'] ?? '';
+        $properties['duration_backward'] = $tdh['duration_backward'] ?? '';
+        $properties['ele_max'] = $tdh['ele_max'] ?? '';
+        $properties['ele_min'] = $tdh['ele_min'] ?? '';
+        $properties['ele_from'] = $tdh['ele_from'] ?? '';
+        $properties['ele_to'] = $tdh['ele_to'] ?? '';
+        $properties['ascent'] = $tdh['ascent'] ?? '';
+        $properties['descent'] = $tdh['descent'] ?? '';
+        $properties['gpx_url'] = $tdh['gpx_url'] ?? '';
         $properties['issues_status'] = $hikingRoute->issues_status;
         $properties['symbol'] = 'Segnaletica standard CAI';
         $proprties['difficulty'] = $difficulty;
