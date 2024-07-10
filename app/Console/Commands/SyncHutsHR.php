@@ -90,12 +90,12 @@ class SyncHutsHR extends Command
             sort($nearbyHutsIds);
 
 
-            if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0))
+            if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0)) {
                 $hr->cai_huts = json_encode($nearbyHutsIds);
-            $hr->has_cai_huts = count($nearbyHutsIds) > 0;
-
-            $hr->is_syncing = true;
-            $hr->save();
+                $hr->has_cai_huts = count($nearbyHutsIds) > 0;
+                $hr->is_syncing = true;
+                $hr->save();
+            }
         } else {
             $models = DB::table('hiking_routes')
                 ->select(['id', 'cai_huts', 'has_cai_huts', 'geometry'])
@@ -128,12 +128,12 @@ class SyncHutsHR extends Command
                 sort($nearbyHutsIds);
 
 
-                if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0))
+                if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0)) {
                     $hr->cai_huts = json_encode($nearbyHutsIds);
-                $hr->has_cai_huts = count($nearbyHutsIds) > 0;
-
-                $hr->is_syncing = true;
-                $hr->save();
+                    $hr->has_cai_huts = count($nearbyHutsIds) > 0;
+                    $hr->is_syncing = true;
+                    $hr->save();
+                }
             }
         }
     }
