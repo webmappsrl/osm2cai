@@ -12,7 +12,7 @@ class AssociateToMoutainGroups extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:associate-to-mountain-groups';
+    protected $signature = 'osm2cai:associate-to-mountain-groups {id?}';
 
     /**
      * The console command description.
@@ -45,7 +45,11 @@ class AssociateToMoutainGroups extends Command
             'sections_count' => 'sections'
         ];
 
-        $mountainGroups = DB::table('mountain_groups')->get();
+        if ($this->argument('id')) {
+            $mountainGroups = DB::table('mountain_groups')->where('id', $this->argument('id'))->get();
+        } else {
+            $mountainGroups = DB::table('mountain_groups')->get();
+        }
 
         foreach ($mountainGroups as $mountainGroup) {
             $aggregatedData = [];
