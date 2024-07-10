@@ -53,8 +53,13 @@ class AddTdhFieldsCommand extends Command
         $count = 1;
         foreach ($hrs as $hr) {
             $this->info("($count/$tot) Processing Hiking route $hr->id ");
-            $hr->tdh = $hr->computeTdh();
-            $hr->save();
+            $newTdh = $hr->computeTdh();
+            if ($hr->tdh !== $newTdh) {
+                $hr->tdh = $newTdh;
+                $hr->save();
+                $count++;
+            }
+            $this->info("($count/$tot) Hiking route $hr->id processed");
             $count++;
         }
     }
