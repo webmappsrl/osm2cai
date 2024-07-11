@@ -341,21 +341,20 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['id'] = $mountainGroup->id;
         $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
         $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
-        $properties['area'] = $mountainGroup->getArea() . ' km²';
+        $properties['area'] = $mountainGroup->getArea();
         $properties['ele_min'] = $mountainGroup->elevation_min ?? '';
         $properties['ele_max'] = $mountainGroup->elevation_max ?? '';
         $properties['ele_avg'] = $mountainGroup->elevation_avg ?? '';
-        $properties['ele_stdev'] = $mountainGroup->elevation_stdev ?? '';
+        $properties['ele_stdev'] = $mountainGroup->elevation_stddev ?? '';
         $properties['slope_min'] = $mountainGroup->slope_min ?? '';
         $properties['slope_max'] = $mountainGroup->slope_max ?? '';
         $properties['slope_avg'] = $mountainGroup->slope_avg ?? '';
-        $properties['slope_stdev'] = $mountainGroup->slope_stdev;
+        $properties['slope_stdev'] = $mountainGroup->slope_stddev;
         $properties['region'] = implode(', ', $regions);
         $properties['provinces'] = implode(', ', $provinces);
         $properties['municipalities'] = implode(', ', $municipalities);
         $properties['map'] = route('mountain-groups-map', ['id' => $mountainGroup->id]);
         $properties['description'] = $mountainGroup->description ?? '';
-        $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
         $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
         $properties['activity'] = 'Escursionismo';
         $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
@@ -363,8 +362,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
         $properties['hiking_routes_map'] = route('mountain-groups-hr-map', ['id' => $mountainGroup->id]);
         $properties['disclaimer'] = 'L’escursionismo e, più in generale, l’attività all’aria aperta, è una attività potenzialmente rischiosa: prima di avventurarti in una escursione assicurati di avere le conoscenze e le competenze per farlo. Se non sei sicuro rivolgiti agli esperti locali che ti possono aiutare, suggerire e supportare nella pianificazione e nello svolgimento delle tue attività. I dati non possono garantire completamente la percorribilità senza rischi dei percorsi: potrebbero essersi verificati cambiamenti, anche importanti, dall’ultima verifica effettuata del percorso stesso. E’ fondamentale quindi che chi si appresta a svolgere attività valuti attentamente l’opportunità di proseguire in base ai suggerimenti e ai consigli contenuti, in base alla propria esperienza, alle condizioni metereologiche (anche dei giorni precedenti) e di una valutazione effettuata sul campo all’inizio dello svolgimento della attività. Il Club Alpino Italiano non fornisce garanzie sulla sicurezza dei luoghi descritti, e non si assume alcuna responsabilità per eventuali danni causati dallo svolgimento delle attività descritte.';
-        $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
-        $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
         $properties['images'] = [];
 
 
