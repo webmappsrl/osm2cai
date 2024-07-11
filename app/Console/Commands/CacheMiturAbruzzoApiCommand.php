@@ -349,7 +349,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['slope_min'] = $mountainGroup->slope_min ?? '';
         $properties['slope_max'] = $mountainGroup->slope_max ?? '';
         $properties['slope_avg'] = $mountainGroup->slope_avg ?? '';
-        $properties['slope_stdev'] = $mountainGroup->slope_stddev;
+        $properties['slope_stdev'] = $mountainGroup->slope_stddev ?? '';
         $properties['region'] = implode(', ', $regions);
         $properties['provinces'] = implode(', ', $provinces);
         $properties['municipalities'] = implode(', ', $municipalities);
@@ -414,8 +414,6 @@ class CacheMiturAbruzzoApiCommand extends Command
                 $updated_at = $hutModel->updated_at;
                 $caiHuts[$hut] = $updated_at;
             }
-        } else {
-            $caiHuts = [];
         }
 
         //get the sections associated with the hiking route
@@ -464,15 +462,16 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $hikingRoute->id;
         $properties['ref'] = $hikingRoute->ref;
-        $properties['name'] = $hikingRoute->name ?? 'Nome del Sentiero';
-        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
-        $properties['rwn_name'] = $hikingRoute->rwn_name ?? '';
-        $properties['section_ids'] = $sectionsIds ?? [];
-        $properties['from'] = $hikingRoute->from ?? '';
-        $properties['from:coordinate'] = $fromPoint;
-        $properties['to'] = $hikingRoute->to ?? '';
-        $properties['to:coordinate'] = $toPoint;
+        $properties['name'] = $hikingRoute->name ?? '';
         $properties['abstract'] = $abstract;
+        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['activity'] = 'Escursionismo';
+        $properties['symbol'] = 'Segnaletica standard CAI';
+        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
+        $properties['from'] = $hikingRoute->from ?? '';
+        $properties['to'] = $hikingRoute->to ?? '';
+        $properties['from:coordinate'] = $fromPoint;
+        $properties['to:coordinate'] = $toPoint;
         $properties['distance'] = $hikingRoute->distance ?? 100;
         $properties['duration_forward'] = $tdh['duration_forward'] ?? '';
         $properties['duration_backward'] = $tdh['duration_backward'] ?? '';
@@ -482,22 +481,23 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['ele_to'] = $tdh['ele_to'] ?? '';
         $properties['ascent'] = $tdh['ascent'] ?? '';
         $properties['descent'] = $tdh['descent'] ?? '';
-        $properties['gpx_url'] = $tdh['gpx_url'] ?? '';
+        $properties['difficulty'] = $difficulty;
         $properties['issues_status'] = $hikingRoute->issues_status;
-        $properties['symbol'] = 'Segnaletica standard CAI';
-        $proprties['difficulty'] = $difficulty;
-        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['section_ids'] = $sectionsIds ?? [];
         $properties['cai_huts'] = $caiHuts;
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
-        $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
+        $properties['gpx_url'] = $tdh['gpx_url'] ?? '';
         $properties['images'] = [];
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
 
-        $hikingRoute->cached_mitur_api_data = json_encode($geojson);
-        $hikingRoute->save();
+        //save only when the data is different. Otherwise the hiking route event observer will be triggered to an infinite loop (on save) [App/Models/HikingRoute.php line 100]
+        if ($hikingRoute->cached_mitur_api_data != json_encode($geojson)) {
+            $hikingRoute->cached_mitur_api_data = json_encode($geojson);
+            $hikingRoute->save();
+        }
 
         Log::info("End caching data for hiking route " . $hikingRoute->id);
     }
