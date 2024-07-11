@@ -185,10 +185,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $region->id;
         $properties['name'] = $region->name ?? '';
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? '';
-        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? '';
         $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = $images ?? [];
 
         $geojson['properties'] = $properties;
 
