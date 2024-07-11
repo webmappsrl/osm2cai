@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Artisan;
 
 class MiturAbruzzoMountainGroupByIdApiV2Test extends TestCase
 {
@@ -29,6 +30,8 @@ class MiturAbruzzoMountainGroupByIdApiV2Test extends TestCase
             'name' => 'Mountain group Test',
             'geometry' => $res[0]->geom
         ]);
+
+        Artisan::call('osm2cai:cache-mitur-abruzzo-api', ['model' => 'MountainGroups', 'id' => $this->mountainGroup->id]);
     }
 
     /**
@@ -75,10 +78,29 @@ class MiturAbruzzoMountainGroupByIdApiV2Test extends TestCase
                 'properties' => [
                     'id',
                     'name',
+                    'description',
+                    'activity',
+                    'disclaimer',
+                    'area',
+                    'ele_min',
+                    'ele_max',
+                    'ele_avg',
+                    'ele_stddev',
+                    'slope_min',
+                    'slope_max',
+                    'slope_avg',
+                    'slope_stddev',
+                    'region',
+                    'provinces',
+                    'municipalities',
+                    'protected_area',
+                    'section_ids',
                     'hiking_routes',
-                    'huts',
-                    'pois',
-                    'sections'
+                    'ec_pois',
+                    'cai_huts',
+                    'map',
+                    'hiking_routes_map',
+                    'images',
                 ],
                 'geometry',
             ]);
