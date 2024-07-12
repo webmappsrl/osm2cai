@@ -180,10 +180,10 @@ trait GeoIntersectTrait
     /**
      * Get the area of the given model (only for polygons and multipolygons)
      * 
-     * @return float
+     * @return int
      * 
      */
-    public function getArea(): ?float
+    public function getArea(): ?int
     {
         $model = $this;
         $table = $model->getTable();
@@ -192,6 +192,6 @@ trait GeoIntersectTrait
         $areaQuery = 'SELECT ST_Area(ST_Transform(geometry::geometry, 3857)) as area FROM ' . $table . ' WHERE id = :id';
         $area = DB::select($areaQuery, ['id' => $id])[0]->area / 1000000;
 
-        return round($area, 4);
+        return (int)round($area);
     }
 }

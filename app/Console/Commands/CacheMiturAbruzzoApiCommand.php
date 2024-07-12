@@ -154,10 +154,10 @@ class CacheMiturAbruzzoApiCommand extends Command
     protected function cacheRegionApiData($region)
     {
         Log::info("Start caching region $region->name");
-        //get osmfeatures data
-        $osmfeaturesData = json_decode($region->osmfeatures_data, true);
-        $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
-        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+        //get osmfeatures data ( no more needed )
+        // $osmfeaturesData = json_decode($region->osmfeatures_data, true);
+        // $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
+        // $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -185,10 +185,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $region->id;
         $properties['name'] = $region->name ?? '';
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? '';
-        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? '';
         $properties['mountain_groups'] = $mountainGroups;
-        $properties['images'] = $images ?? [];
 
         $geojson['properties'] = $properties;
 
@@ -343,31 +340,28 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $mountainGroup->id;
         $properties['name'] = $mountainGroup->name ?? 'Nome del gruppo Montuoso';
-        $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
-        $properties['area'] = $mountainGroup->getArea() . ' km²';
+        $properties['description'] = $mountainGroup->description ?? '';
+        $properties['activity'] = 'Escursionismo';
+        $properties['disclaimer'] = 'L’escursionismo e, più in generale, l’attività all’aria aperta, è una attività potenzialmente rischiosa: prima di avventurarti in una escursione assicurati di avere le conoscenze e le competenze per farlo. Se non sei sicuro rivolgiti agli esperti locali che ti possono aiutare, suggerire e supportare nella pianificazione e nello svolgimento delle tue attività. I dati non possono garantire completamente la percorribilità senza rischi dei percorsi: potrebbero essersi verificati cambiamenti, anche importanti, dall’ultima verifica effettuata del percorso stesso. E’ fondamentale quindi che chi si appresta a svolgere attività valuti attentamente l’opportunità di proseguire in base ai suggerimenti e ai consigli contenuti, in base alla propria esperienza, alle condizioni metereologiche (anche dei giorni precedenti) e di una valutazione effettuata sul campo all’inizio dello svolgimento della attività. Il Club Alpino Italiano non fornisce garanzie sulla sicurezza dei luoghi descritti, e non si assume alcuna responsabilità per eventuali danni causati dallo svolgimento delle attività descritte.';
+        $properties['area'] = $mountainGroup->getArea();
         $properties['ele_min'] = $mountainGroup->elevation_min ?? '';
         $properties['ele_max'] = $mountainGroup->elevation_max ?? '';
         $properties['ele_avg'] = $mountainGroup->elevation_avg ?? '';
-        $properties['ele_stdev'] = $mountainGroup->elevation_stdev ?? '';
+        $properties['ele_stddev'] = $mountainGroup->elevation_stddev ?? '';
         $properties['slope_min'] = $mountainGroup->slope_min ?? '';
         $properties['slope_max'] = $mountainGroup->slope_max ?? '';
         $properties['slope_avg'] = $mountainGroup->slope_avg ?? '';
-        $properties['slope_stdev'] = $mountainGroup->slope_stdev;
+        $properties['slope_stddev'] = $mountainGroup->slope_stddev ?? '';
         $properties['region'] = implode(', ', $regions);
         $properties['provinces'] = implode(', ', $provinces);
         $properties['municipalities'] = implode(', ', $municipalities);
-        $properties['map'] = route('mountain-groups-map', ['id' => $mountainGroup->id]);
-        $properties['description'] = $mountainGroup->description ?? '';
-        $properties['aggregated_data'] = $mountainGroup->aggregated_data ?? '';
         $properties['protected_area'] = 'Parchi Aree protette Natura 2000';
-        $properties['activity'] = 'Escursionismo';
+        $properties['section_ids'] = json_decode($mountainGroup->sections_intersecting, true);
         $properties['hiking_routes'] = json_decode($mountainGroup->hiking_routes_intersecting, true);
         $properties['ec_pois'] = json_decode($mountainGroup->ec_pois_intersecting, true);
         $properties['cai_huts'] = json_decode($mountainGroup->huts_intersecting, true);
+        $properties['map'] = route('mountain-groups-map', ['id' => $mountainGroup->id]);
         $properties['hiking_routes_map'] = route('mountain-groups-hr-map', ['id' => $mountainGroup->id]);
-        $properties['disclaimer'] = 'L’escursionismo e, più in generale, l’attività all’aria aperta, è una attività potenzialmente rischiosa: prima di avventurarti in una escursione assicurati di avere le conoscenze e le competenze per farlo. Se non sei sicuro rivolgiti agli esperti locali che ti possono aiutare, suggerire e supportare nella pianificazione e nello svolgimento delle tue attività. I dati non possono garantire completamente la percorribilità senza rischi dei percorsi: potrebbero essersi verificati cambiamenti, anche importanti, dall’ultima verifica effettuata del percorso stesso. E’ fondamentale quindi che chi si appresta a svolgere attività valuti attentamente l’opportunità di proseguire in base ai suggerimenti e ai consigli contenuti, in base alla propria esperienza, alle condizioni metereologiche (anche dei giorni precedenti) e di una valutazione effettuata sul campo all’inizio dello svolgimento della attività. Il Club Alpino Italiano non fornisce garanzie sulla sicurezza dei luoghi descritti, e non si assume alcuna responsabilità per eventuali danni causati dallo svolgimento delle attività descritte.';
-        $properties['ec_pois_count'] = $aggregated_data['ec_pois_count'] ?? 0;
-        $properties['cai_huts_count'] = $aggregated_data['cai_huts_count'] ?? 0;
         $properties['images'] = [];
 
 
@@ -420,8 +414,6 @@ class CacheMiturAbruzzoApiCommand extends Command
                 $updated_at = $hutModel->updated_at;
                 $caiHuts[$hut] = $updated_at;
             }
-        } else {
-            $caiHuts = [];
         }
 
         //get the sections associated with the hiking route
@@ -470,15 +462,16 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $hikingRoute->id;
         $properties['ref'] = $hikingRoute->ref;
-        $properties['name'] = $hikingRoute->name ?? 'Nome del Sentiero';
-        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
-        $properties['rwn_name'] = $hikingRoute->rwn_name ?? '';
-        $properties['section_ids'] = $sectionsIds ?? [];
-        $properties['from'] = $hikingRoute->from ?? '';
-        $properties['from:coordinate'] = $fromPoint;
-        $properties['to'] = $hikingRoute->to ?? '';
-        $properties['to:coordinate'] = $toPoint;
+        $properties['name'] = $hikingRoute->name ?? '';
         $properties['abstract'] = $abstract;
+        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['activity'] = 'Escursionismo';
+        $properties['symbol'] = 'Segnaletica standard CAI';
+        $properties['cai_scale'] = $hikingRoute->cai_scale ?? '';
+        $properties['from'] = $hikingRoute->from ?? '';
+        $properties['to'] = $hikingRoute->to ?? '';
+        $properties['from:coordinate'] = $fromPoint;
+        $properties['to:coordinate'] = $toPoint;
         $properties['distance'] = $hikingRoute->distance ?? 100;
         $properties['duration_forward'] = $tdh['duration_forward'] ?? '';
         $properties['duration_backward'] = $tdh['duration_backward'] ?? '';
@@ -488,22 +481,23 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['ele_to'] = $tdh['ele_to'] ?? '';
         $properties['ascent'] = $tdh['ascent'] ?? '';
         $properties['descent'] = $tdh['descent'] ?? '';
-        $properties['gpx_url'] = $tdh['gpx_url'] ?? '';
+        $properties['difficulty'] = $difficulty;
         $properties['issues_status'] = $hikingRoute->issues_status;
-        $properties['symbol'] = 'Segnaletica standard CAI';
-        $proprties['difficulty'] = $difficulty;
-        $properties['info'] = 'Sezioni del Club Alpino Italiano, Guide Alpine o Guide Ambientali Escursionistiche';
+        $properties['section_ids'] = $sectionsIds ?? [];
         $properties['cai_huts'] = $caiHuts;
         $properties['pois'] = count($pois) > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
-        $properties['activity'] = 'Escursionismo';
         $properties['map'] = route('hiking-route-public-page', ['id' => $hikingRoute->id]);
+        $properties['gpx_url'] = $tdh['gpx_url'] ?? '';
         $properties['images'] = [];
 
         $geojson['properties'] = $properties;
         $geojson['geometry'] = $geometry;
 
-        $hikingRoute->cached_mitur_api_data = json_encode($geojson);
-        $hikingRoute->save();
+        //save only when the data is different. Otherwise the hiking route event observer will be triggered to an infinite loop (on save) [App/Models/HikingRoute.php line 100]
+        if ($hikingRoute->cached_mitur_api_data != json_encode($geojson)) {
+            $hikingRoute->cached_mitur_api_data = json_encode($geojson);
+            $hikingRoute->save();
+        }
 
         Log::info("End caching data for hiking route " . $hikingRoute->id);
     }

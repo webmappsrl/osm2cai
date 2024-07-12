@@ -95,7 +95,14 @@ class SyncNaturalSpringHR extends Command
     protected function syncHikingRoutes($buffer)
     {
         if ($this->argument('id')) {
-            $model = \App\Models\HikingRoute::where('id', $this->argument('id'))->first();
+            $models = collect(DB::table('hiking_routes')->select(['id', 'cai_huts', 'has_cai_huts', 'geometry'])->where('id', $this->argument('id'))->get());
+        } else {
+            $models = DB::table('hiking_routes')
+                ->select(['id', 'natural_springs', 'has_natural_springs', 'geometry'])
+                ->get();
+        }
+
+        foreach ($models as $model) {
             Log::info("Hiking route {$model->id}");
             if (!$model->geometry) {
                 Log::warning("Hiking route {$model->id} has no geometry");
@@ -122,50 +129,8 @@ class SyncNaturalSpringHR extends Command
             sort($nearbySpringIds);
 
 
-            if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0))
+            if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0)) {
                 Log::info("Hiking route {$hr->id} has changed");
-            else
-                Log::info("Hiking route {$hr->id} has not changed");
-
-            $hr->natural_springs = json_encode($nearbySpringIds);
-            $hr->has_natural_springs = count($nearbySpringIds) > 0;
-
-            $hr->is_syncing = true;
-            $hr->save();
-        } else {
-            $models = DB::table('hiking_routes')
-                ->select(['id', 'natural_springs', 'has_natural_springs', 'geometry'])
-                ->get();
-
-            foreach ($models as $model) {
-                Log::info("Hiking route {$model->id}");
-                if (!$model->geometry) {
-                    Log::warning("Hiking route {$model->id} has no geometry");
-                    return;
-                }
-                $nearbySpringIds = DB::select(DB::raw("SELECT natural_springs.id 
-                                        FROM natural_springs, hiking_routes 
-                                        WHERE hiking_routes.id = :routeId 
-                                        AND ST_DWithin(ST_SetSRID(hiking_routes.geometry, 4326)::geography, natural_springs.geometry, :buffer)"), [
-                    'routeId' => $model->id,
-                    'buffer' => $buffer
-                ]);
-
-                $nearbySpringIds = array_map(function ($spring) {
-                    return $spring->id;
-                }, $nearbySpringIds);
-
-                $hr = HikingRoute::find($model->id);
-                Log::info("Hiking route {$hr->id} has " . count($nearbySpringIds) . " nearby springs");
-
-
-                $currentSprings = json_decode($hr->natural_springs, true) ?: [];
-                sort($currentSprings);
-                sort($nearbySpringIds);
-
-
-                if ($currentSprings !== $nearbySpringIds || $hr->has_natural_springs !== (count($nearbySpringIds) > 0))
-                    Log::info("Hiking route {$hr->id} has changed");
                 $hr->natural_springs = json_encode($nearbySpringIds);
                 $hr->has_natural_springs = count($nearbySpringIds) > 0;
 
