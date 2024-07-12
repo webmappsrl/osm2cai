@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Artisan;
 
 class MiturAbruzzoRegionByIdApiV2Test extends TestCase
 {
@@ -31,6 +32,8 @@ class MiturAbruzzoRegionByIdApiV2Test extends TestCase
             'code' => '1',
             'num_expected' => 1
         ]);
+
+        Artisan::call('osm2cai:cache-mitur-abruzzo-api', ['model' => 'Region', 'id' => $this->region->id]);
     }
 
     /**

@@ -554,7 +554,7 @@ class HikingRoute extends Resource
                 $statoDiAccatastamento .= "<h5 class=\"font-light\">Validatore: {$hr->validator->name} ({$hr->validator->email})</h5>";
 
             $osm = "https://www.openstreetmap.org/relation/" . $hr->relation_id;
-            $wmt = "https://hiking.waymarkedtrails.org/#route?id= " . $hr->relation_id;
+            $wmt = "https://hiking.waymarkedtrails.org/#route?id=" . $hr->relation_id;
             $analyzer = "https://ra.osmsurround.org/analyzeRelation?relationId=" . $hr->relation_id . "&noCache=true&_noCache=on";
             return [
                 (new TextCard())

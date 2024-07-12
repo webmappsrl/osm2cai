@@ -66,7 +66,13 @@ class SyncHutsHR extends Command
     protected function syncHikingRoutes($buffer)
     {
         if ($this->argument('id')) {
-            $model = \App\Models\HikingRoute::where('id', $this->argument('id'))->first();
+            $models = collect(DB::table('hiking_routes')->select(['id', 'cai_huts', 'has_cai_huts', 'geometry'])->where('id', $this->argument('id'))->get());
+        } else {
+            $models = DB::table('hiking_routes')
+                ->select(['id', 'cai_huts', 'has_cai_huts', 'geometry'])
+                ->get();
+        }
+        foreach ($models as $model) {
             if (!$model->geometry) {
                 Log::warning("Hiking route {$model->id} has no geometry");
                 return;
@@ -79,9 +85,12 @@ class SyncHutsHR extends Command
                 'buffer' => $buffer
             ]);
 
-            $nearbyHutsIds = array_map(function ($hut) {
-                return $hut->id;
-            }, $nearbyHutsIds);
+            $nearbyHutsIds = array_map(
+                function ($hut) {
+                    return $hut->id;
+                },
+                $nearbyHutsIds
+            );
 
             $hr = HikingRoute::find($model->id);
 
@@ -89,51 +98,12 @@ class SyncHutsHR extends Command
             sort($currentHuts);
             sort($nearbyHutsIds);
 
-
+            //only save if there is a change so the event observer in the hiking route model will not be triggered [app\Models\HikingRoute line 100]
             if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0)) {
                 $hr->cai_huts = json_encode($nearbyHutsIds);
                 $hr->has_cai_huts = count($nearbyHutsIds) > 0;
                 $hr->is_syncing = true;
                 $hr->save();
-            }
-        } else {
-            $models = DB::table('hiking_routes')
-                ->select(['id', 'cai_huts', 'has_cai_huts', 'geometry'])
-                ->get();
-
-            foreach ($models as $model) {
-                if (!$model->geometry) {
-                    Log::warning("Hiking route {$model->id} has no geometry");
-                    return;
-                }
-                $nearbyHutsIds = DB::select(DB::raw("SELECT cai_huts.id 
-                                    FROM cai_huts, hiking_routes 
-                                    WHERE hiking_routes.id = :routeId 
-                                    AND ST_DWithin(ST_SetSRID(hiking_routes.geometry, 4326)::geography, cai_huts.geometry, :buffer)"), [
-                    'routeId' => $model->id,
-                    'buffer' => $buffer
-                ]);
-
-                $nearbyHutsIds = array_map(
-                    function ($hut) {
-                        return $hut->id;
-                    },
-                    $nearbyHutsIds
-                );
-
-                $hr = HikingRoute::find($model->id);
-
-                $currentHuts = json_decode($hr->cai_huts, true) ?: [];
-                sort($currentHuts);
-                sort($nearbyHutsIds);
-
-
-                if ($currentHuts !== $nearbyHutsIds || $hr->has_cai_huts !== (count($nearbyHutsIds) > 0)) {
-                    $hr->cai_huts = json_encode($nearbyHutsIds);
-                    $hr->has_cai_huts = count($nearbyHutsIds) > 0;
-                    $hr->is_syncing = true;
-                    $hr->save();
-                }
             }
         }
     }
