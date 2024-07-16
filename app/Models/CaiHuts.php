@@ -18,7 +18,7 @@ class CaiHuts extends Model
     geometry', 'region_id', 'addr_city', 'addr_street', 'addr_housenumber',
         'addr_postcode', 'website', 'phone', 'email', 'fax', 'ref_vatin', 'email_pec',
         'facebook_contact', 'municipality_geo', 'province_geo', 'site_geo', 'type',
-        'type_custodial', 'company_management_property', 'cached_mitur_api_data'
+        'type_custodial', 'company_management_property', 'cached_mitur_api_data', 'osmfeatures_id',
     ];
 
     protected static function booted()
