@@ -43,11 +43,12 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
 
     private function reconcileHut($hut, int $distance = 1000)
     {
-
+        $this->logger->info('Reconciling hut ' . $hut->id);
+        $this->info('Reconciling hut ' . $hut->id);
         //get coordinates for the hut
         try {
             $coordinates = DB::table('cai_huts')
-                ->select(DB::raw('ST_X(geom::geometry) AS longitude, ST_Y(geom::geometry) AS latitude'))
+                ->select(DB::raw('ST_X(geometry::geometry) AS longitude, ST_Y(geometry::geometry) AS latitude'))
                 ->where('id', $hut->id)
                 ->first();
         } catch (\Exception $e) {
@@ -66,21 +67,21 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
         try {
             $response = Http::get('https://osmfeatures.maphub.it/api/v1/features/places/' . $coordinates->longitude . '/' . $coordinates->latitude . '/' . $distance);
         } catch (\Exception $e) {
-            $this->logger->warning('API request failed for hut ' . $hut->id . '. Error: ' . $e->getMessage());
-            $this->info('API request failed for hut ' . $hut->id . '. Error: ' . $e->getMessage());
+            $this->logger->warning('API request failed for hut ' . $hut->name . ' with id ' . $hut->id . '. Error: ' . $e->getMessage());
+            $this->info('API request failed for hut ' . $hut->name . ' with id ' . $hut->id . '. Error: ' . $e->getMessage());
             return;
         }
 
         if ($response->failed()) {
-            $this->logger->warning('API request failed for hut ' . $hut->id);
-            $this->info('API request failed for hut ' . $hut->id);
+            $this->logger->warning('API request failed for hut ' . $hut->name . ' with id ' . $hut->id);
+            $this->info('API request failed for hut ' . $hut->name . ' with id ' . $hut->id);
             return;
         }
 
         //if the response is empty try to increase distance
         if ($response->json() === []) {
-            $this->logger->warning('API response is empty for hut ' . $hut->id . '. increasing distance');
-            $this->info('API response is empty for hut ' . $hut->id . '. increasing distance');
+            $this->logger->warning('API response is empty for hut ' . $hut->name . ' with id ' . $hut->id . '. increasing distance');
+            $this->info('API response is empty for hut ' . $hut->name . ' with id ' . $hut->id . '. increasing distance');
             $distance = $distance * 2;
             $this->reconcileHut($hut, $distance);
             return;
@@ -106,20 +107,14 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
 
         //get the nearest place
         if (count($matchingPlaces) > 0) {
-            $this->logger->info('getting nearest place...');
-            $this->info('getting nearest place...');
-            $smallestDistance = PHP_INT_MAX;
-            $matchingPlace = null;
-            foreach ($matchingPlaces as $place) {
-                if ($place['distance'] < $smallestDistance) {
-                    $smallestDistance = $place['distance'];
-                    $matchingPlace = $place;
-                }
-            }
+            $this->logger->info('Getting nearest place...');
+            $this->info('Getting nearest place...');
+            //OSMFEATURES API (EXAMPLE :https://osmfeatures.maphub.it/api/v1/features/places/10.494953/46.179482/1000) already ordered by distance so the first result is the nearest
+            $matchingPlace = $matchingPlaces[0];
 
-            $this->logger->info('nearest place: ' . $matchingPlace['osmfeatures_id']);
-            $this->info('nearest place: ' . $matchingPlace['osmfeatures_id']);
-
+            $this->logger->info('nearest place: https://osmfeatures.maphub.it/api/v1/features/places/' . $matchingPlace['osmfeatures_id']);
+            $this->info('nearest place: https://osmfeatures.maphub.it/api/v1/features/places/' . $matchingPlace['osmfeatures_id']);
+            //update the hut with the osmfeatures_id
             if ($matchingPlace) {
                 DB::table('cai_huts')->where('id', $hut->id)->update([
                     'osmfeatures_id' => $matchingPlace['osmfeatures_id']
