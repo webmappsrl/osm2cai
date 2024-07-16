@@ -510,10 +510,26 @@ class CacheMiturAbruzzoApiCommand extends Command
         if (!isset($osmfeaturesData['images'])) {
             return $images;
         }
-        foreach ($osmfeaturesData['images'] as $image) {
-            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
-            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
-                $images[] = $image['source_url'];
+
+        $imageSections = ['wikipedia_images', 'wikidata_images', 'wikimedia_images'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
+
+        foreach ($imageSections as $section) {
+            if (isset($osmfeaturesData['images'][$section])) {
+                $imageData = $osmfeaturesData['images'][$section];
+
+                if ($section == 'wikimedia_images') {
+                    //can be more than one image
+                    foreach ($imageData as $image) {
+                        if (isset($image['source_url']) && in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), $allowedExtensions)) {
+                            $images[] = $image['source_url'];
+                        }
+                    }
+                }
+
+                if (isset($imageData['source_url']) && in_array(pathinfo($imageData['source_url'], PATHINFO_EXTENSION), $allowedExtensions)) {
+                    $images[] = $imageData['source_url'];
+                }
             }
         }
 
