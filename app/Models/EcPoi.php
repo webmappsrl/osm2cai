@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Region;
+use App\Traits\EnrichmentFromOsmfeaturesTrait;
 use App\Traits\GeojsonableTrait;
 use App\Traits\TagsMappingTrait;
 use App\Traits\GeoIntersectTrait;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class EcPoi extends Model
 {
-    use HasFactory, GeojsonableTrait, GeoIntersectTrait, TagsMappingTrait;
+    use HasFactory, GeojsonableTrait, GeoIntersectTrait, TagsMappingTrait, EnrichmentFromOsmfeaturesTrait;
 
     protected $fillable = ['name', 'description', 'geometry', 'user_id', 'tags', 'type', 'osm_id', 'osm_type', 'region_id', 'score', 'hiking_routes_in_buffer', 'comuni', 'huts_intersecting', 'sections_intersecting', 'mountain_groups_intersecting, osmfeatures_data', 'osmfeatures_id', 'cached_mitur_api_data'];
 
@@ -79,39 +80,5 @@ class EcPoi extends Model
         }
 
         return $stars;
-    }
-
-    /**
-     * Define the enrichment from OSM features
-     * 
-     * @param array $data
-     * 
-     * @throws \Exception
-     * 
-     * @return void
-     */
-    public function enrichFromOsmfeatures(array $data): void
-    {
-        if (!isset($data['properties'])) {
-            throw new \Exception('Properties data not found');
-            Log::error('Properties data not found');
-        }
-        $properties = $data['properties'];
-
-        Log::info('Updating score with osmfeatures data');
-        //update ecpoi score with osmfeatures data if exists
-        if (isset($properties['score'])) {
-            $this->score = $properties['score'];
-            $this->save();
-        } else {
-            Log::info('Score not found in osmfeatures data');
-        }
-        $this->osmfeatures_id = $properties['osm_type'] . $properties['osm_id'];
-
-        Log::info("Enriching osmfeatures_data for $this->name");
-        $this->osmfeatures_data = json_encode($properties);
-        $this->save();
-
-        Log::info("Osmfeatures_data for $this->name Enriched successfully");
     }
 }
