@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\WikiImageType;
 use App\Models\CaiHuts;
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
@@ -510,10 +511,25 @@ class CacheMiturAbruzzoApiCommand extends Command
         if (!isset($osmfeaturesData['images'])) {
             return $images;
         }
-        foreach ($osmfeaturesData['images'] as $image) {
-            // add only $image['source_url'] with extension jpg, jpeg, png, bmp, gif, webp, svg (to avoid other files)
-            if (in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg'])) {
-                $images[] = $image['source_url'];
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
+
+        foreach (WikiImageType::cases() as $imageType) {
+            if (isset($osmfeaturesData['images'][$imageType])) {
+                $imageData = $osmfeaturesData['images'][$imageType];
+
+                if ($imageType == 'wikimedia_images') {
+                    //can be more than one image
+                    foreach ($imageData as $image) {
+                        if (isset($image['source_url']) && in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), $allowedExtensions)) {
+                            $images[] = $image['source_url'];
+                        }
+                    }
+                }
+
+                if (isset($imageData['source_url']) && in_array(pathinfo($imageData['source_url'], PATHINFO_EXTENSION), $allowedExtensions)) {
+                    $images[] = $imageData['source_url'];
+                }
             }
         }
 
