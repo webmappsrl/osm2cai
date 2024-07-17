@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PoiMapController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
+use Illuminate\Database\Eloquent\Model;
 
 class CacheMiturAbruzzoApiCommand extends Command
 {
@@ -95,6 +96,12 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get the hiking routes in a 1km buffer from the hut
         $hikingRoutes = $hut->getHikingRoutesInBuffer(1000);
 
+        //get osmfeatures data
+        $osmfeaturesData = $this->extractOsmfeaturesData($hut);
+
+        //get images from Osmfeatures
+        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+
         //build the geojson
         $geojson = [];
         $geojson['type'] = 'Feature';
@@ -103,6 +110,8 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['id'] = $hut->id;
         $properties['name'] = $hut->second_name ?? $hut->name ?? '';
         $properties['type'] = explode(' ', $hut->second_name)[0] ?? '';
+        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? '';
+        $properties['description'] = $osmfeaturesData['description']['it'] ?? '';
         $properties['elevation'] = $hut->elevation ?? '';
         $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
         $properties['type_custodial'] = $hut->type_custodial ?? '';
@@ -122,7 +131,6 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['province_geo'] = $hut->province_geo ?? '';
         $properties['site_geo'] = $hut->site_geo ?? '';
         $properties['source:ref'] = $hut->unico_id;
-        $properties['description'] = $hut->description ?? '';
         $properties['pois'] = $pois->count() > 0 ? $pois->pluck('updated_at', 'id')->toArray() : [];
         $properties['opening'] = $hut->opening ?? "";
         $properties['acqua_in_rifugio_service'] = $hut->acqua_in_rifugio_serviced ?? '';
@@ -139,7 +147,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '';
         $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
         $properties['map'] = route('cai-huts-map', ['id' => $hut->id]);
-        $properties['images'] = [];
+        $properties['images'] = $images ?? [];
 
         $geometry = $hut->getGeometry();
 
@@ -155,10 +163,7 @@ class CacheMiturAbruzzoApiCommand extends Command
     protected function cacheRegionApiData($region)
     {
         Log::info("Start caching region $region->name");
-        //get osmfeatures data ( no more needed )
-        // $osmfeaturesData = json_decode($region->osmfeatures_data, true);
-        // $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
-        // $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+
         //get the mountain groups for the region
         $mountainGroups = $region->mountainGroups;
         //format the date
@@ -200,18 +205,7 @@ class CacheMiturAbruzzoApiCommand extends Command
     protected function cacheEcPoiApiData($poi)
     {
         Log::info("Start caching poi $poi->name");
-        if (!$poi->osmfeatures_data) {
-            Log::info("No osmfeatures data for poi $poi->name");
-            $osmfeaturesData = [];
-        } else {
-            $osmfeaturesData = json_decode($poi->osmfeatures_data, true);
-            if ($osmfeaturesData['enrichments']) {
-                $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
-            } else {
-                Log::info("No osmfeatures data for poi $poi->name");
-                $osmfeaturesData = [];
-            }
-        }
+        $osmfeaturesData = $this->extractOsmfeaturesData($poi);
 
         $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
 
@@ -251,17 +245,19 @@ class CacheMiturAbruzzoApiCommand extends Command
     {
         Log::info("Start caching section $section->name");
 
-        $queryForProvinces = 'SELECT 
-        p.id AS province_id, 
-        p.name AS province_name, 
-        s.id AS section_id, 
-        s.name AS section_name
-    FROM 
-        sections s
-    JOIN 
-        provinces p 
-    ON 
-        ST_Intersects(ST_Transform(p.geometry, 4326), s.geometry::geometry)';
+        $queryForProvinces = <<<SQL
+SELECT 
+    p.id AS province_id, 
+    p.name AS province_name, 
+    s.id AS section_id, 
+    s.name AS section_name
+FROM 
+    sections s
+JOIN 
+    provinces p 
+ON 
+    ST_Intersects(ST_Transform(p.geometry, 4326), s.geometry::geometry)
+SQL;
 
         $provinces = DB::select($queryForProvinces);
         //get the province names
@@ -312,10 +308,6 @@ class CacheMiturAbruzzoApiCommand extends Command
 
     protected function cacheMountainGroupApiData($mountainGroup)
     {
-
-        //decode aggregated_data
-        $aggregated_data = json_decode($mountainGroup->aggregated_data, true);
-
         $regions = DB::table('regions')
             ->select('name')
             ->whereRaw('ST_Intersects(geometry, ?)', [$mountainGroup->geometry])
@@ -503,6 +495,25 @@ class CacheMiturAbruzzoApiCommand extends Command
         Log::info("End caching data for hiking route " . $hikingRoute->id);
     }
 
+
+    protected function extractOsmfeaturesData(Model $model): array
+    {
+        $modelClass = get_class($model);
+        if (!$model->osmfeatures_data) {
+            Log::info("No osmfeatures data for $modelClass $model->name");
+            $osmfeaturesData = [];
+        } else {
+            $osmfeaturesData = json_decode($model->osmfeatures_data, true);
+            if ($osmfeaturesData['enrichments']) {
+                $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
+            } else {
+                Log::info("No osmfeatures data for $modelClass  $model->name");
+                $osmfeaturesData = [];
+            }
+        }
+
+        return $osmfeaturesData;
+    }
 
     protected function getImagesFromOsmfeaturesData($osmfeaturesData)
     {
