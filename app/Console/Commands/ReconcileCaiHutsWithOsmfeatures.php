@@ -28,6 +28,7 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
      * @var array
      */
     protected $notReconciledHuts = [];
+    protected $huts = [];
 
     public function __construct()
     {
@@ -43,9 +44,9 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
     public function handle(): int
     {
         $id = $this->argument('id');
-        $huts = $this->getHuts($id);
+        $this->huts = $this->getHuts($id);
 
-        foreach ($huts as $hut) {
+        foreach ($this->huts as $hut) {
             $this->reconcileHut($hut);
         }
 
@@ -74,13 +75,11 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
 
         $coordinates = $this->getCoordinates($hut);
         if (!$coordinates) {
-            $this->logError($hut, 'Unable to fetch coordinates.');
             return;
         }
 
-        $response = $this->fetchOsmFeatures($coordinates, $distance);
+        $response = $this->fetchOsmFeatures($coordinates, $distance, $hut);
         if ($response === null || $response->failed()) {
-            $this->logError($hut, 'API request failed.');
             return;
         }
 
@@ -112,6 +111,7 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
                 ->first();
         } catch (\Exception $e) {
             $this->logger->warning($e->getMessage());
+            $this->logError($hut, 'Unable to fetch coordinates.');
             return null;
         }
     }
@@ -127,6 +127,7 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
             return Http::get("https://osmfeatures.maphub.it/api/v1/features/places/{$coordinates->longitude}/{$coordinates->latitude}/{$distance}");
         } catch (\Exception $e) {
             $this->logger->warning('API request failed. Error: ' . $e->getMessage());
+            $this->logError($hut, 'API request failed.');
             return null;
         }
     }

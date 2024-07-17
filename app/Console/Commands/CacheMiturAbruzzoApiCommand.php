@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\WikiImageType;
 use App\Models\CaiHuts;
 use App\Models\HikingRoute;
 use Illuminate\Console\Command;
@@ -511,14 +512,13 @@ class CacheMiturAbruzzoApiCommand extends Command
             return $images;
         }
 
-        $imageSections = ['wikipedia_images', 'wikidata_images', 'wikimedia_images'];
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
 
-        foreach ($imageSections as $section) {
-            if (isset($osmfeaturesData['images'][$section])) {
-                $imageData = $osmfeaturesData['images'][$section];
+        foreach (WikiImageType::cases() as $imageType) {
+            if (isset($osmfeaturesData['images'][$imageType])) {
+                $imageData = $osmfeaturesData['images'][$imageType];
 
-                if ($section == 'wikimedia_images') {
+                if ($imageType == 'wikimedia_images') {
                     //can be more than one image
                     foreach ($imageData as $image) {
                         if (isset($image['source_url']) && in_array(pathinfo($image['source_url'], PATHINFO_EXTENSION), $allowedExtensions)) {
