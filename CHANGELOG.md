@@ -1,5 +1,14 @@
 # Changelog
 
+## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-07-17)
+
+
+### Features
+
+* add_gpx_api_to_hiking_route  oc:3591 ([9e9ddb6](https://github.com/webmappsrl/osm2cai/commit/9e9ddb6965074b4d78bd8cb0f47aa889f1da8d8d))
+* added tdh computing and api caching to hr events observer OC:3608 ([e0c075d](https://github.com/webmappsrl/osm2cai/commit/e0c075d097035e7579e33ecd994e6a598e04de2c))
+* cai huts reconciliation OC:3629 ([#121](https://github.com/webmappsrl/osm2cai/issues/121)) ([3ca2a14](https://github.com/webmappsrl/osm2cai/commit/3ca2a148f7c5a53e71fd68951e132b99439f46eb))
+
 ## [233.31.0](https://github.com/webmappsrl/osm2cai/compare/v233.30.5...v233.31.0) (2024-07-05)
 
 
