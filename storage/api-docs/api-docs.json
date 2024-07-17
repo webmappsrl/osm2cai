@@ -1765,6 +1765,46 @@
                                                     "type": "string",
                                                     "example": "123"
                                                 },
+                                                "ele_min": {
+                                                    "description": "The minimum elevation of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 123
+                                                },
+                                                "ele_max": {
+                                                    "description": "The maximum elevation of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 456
+                                                },
+                                                "ele_avg": {
+                                                    "description": "The average elevation of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 322
+                                                },
+                                                "ele_stdev": {
+                                                    "description": "The standard deviation  of the mountain group's elevation",
+                                                    "type": "integer",
+                                                    "example": 212
+                                                },
+                                                "slope_min": {
+                                                    "description": "The minimum slope of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "slope_max": {
+                                                    "description": "The maximum slope of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "slope_avg": {
+                                                    "description": "The average slope of the mountain group",
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "slope_stdev": {
+                                                    "description": "The standard deviation of the mountain group's slope",
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
                                                 "region": {
                                                     "description": "The region of the mountain group",
                                                     "type": "string",
