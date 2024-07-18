@@ -37,7 +37,17 @@ class EnrichFromOsmfeaturesJob implements ShouldQueue
     public function handle()
     {
         try {
-            $this->model->enrichFromOsmfeatures($this->osmfeaturesData);
+            switch ($this->model) {
+                case $this->model instanceof \App\Models\CaiHuts:
+                    $this->model->enrich($this->osmfeaturesData, ['osmfeatures_data']);
+                    break;
+                case $this->model instanceof \App\Models\EcPoi:
+                    $this->model->enrich($this->osmfeaturesData, []); //empty array means enrich all (osmfeatures_id, osmfeatures_data and score)
+                    break;
+                case $this->model instanceof \App\Models\Region:
+                    $this->model->enrich($this->osmfeaturesData, ['osmfeatures_id', 'osmfeatures_data']);
+                    break;
+            }
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             throw new \Exception($e->getMessage());
