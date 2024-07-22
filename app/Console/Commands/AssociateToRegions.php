@@ -81,6 +81,9 @@ class AssociateToRegions extends Command
                     case 'ec_pois':
                         $this->associateEcPoisToRegion($region);
                         break;
+                    case 'huts':
+                        $this->associateHutsToRegion($region);
+                        break;
                     case 'all':
                         $this->associateAllToRegion($region);
                         break;
