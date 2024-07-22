@@ -113,8 +113,10 @@ class AssociateToRegions extends Command
             return;
         }
 
+        $this->output->progressStart(count($mountainGroups));
+
         foreach ($mountainGroups as $mountainGroup) {
-            //first delete all duplicated records for the current mountain group and region
+            //delete the record if there are more than one
             while (count(DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->where('region_id', $region->id)->get()) > 1) {
                 DB::table('mountain_groups_region')
                     ->where('mountain_group_id', $mountainGroup->id)
@@ -122,8 +124,8 @@ class AssociateToRegions extends Command
                     ->limit(1)
                     ->delete();
             }
-            //then insert the record if it does not exist
 
+            //insert the record
             if (DB::table('mountain_groups_region')->where('mountain_group_id', $mountainGroup->id)->count() < 1) {
                 DB::table(('mountain_groups_region'))
                     ->insert([
@@ -131,7 +133,11 @@ class AssociateToRegions extends Command
                         'region_id' => $region->id
                     ]);
             }
+
+            $this->output->progressAdvance();
         }
+
+        $this->output->progressFinish();
     }
 
     protected function associateEcPoisToRegion($region)
@@ -149,11 +155,17 @@ class AssociateToRegions extends Command
             return;
         }
 
+        $this->output->progressStart(count($poisToUpdate));
+
         foreach ($poisToUpdate as $poi) {
             DB::table('ec_pois')
                 ->where('id', $poi->id)
                 ->update(['region_id' => $region->id]);
+
+            $this->output->progressAdvance();
         }
+
+        $this->output->progressFinish();
     }
 
     protected function associateHutsToRegion($region)
@@ -171,11 +183,17 @@ class AssociateToRegions extends Command
             return;
         }
 
+        $this->output->progressStart(count($hutsToUpdate));
+
         foreach ($hutsToUpdate as $hut) {
             DB::table('cai_huts')
                 ->where('id', $hut->id)
                 ->update(['region_id' => $region->id]);
+
+            $this->output->progressAdvance();
         }
+
+        $this->output->progressFinish();
     }
 
     protected function associateAllToRegion($region)
