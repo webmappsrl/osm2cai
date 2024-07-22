@@ -142,7 +142,7 @@ class ReconcileCaiHutsWithOsmfeatures extends Command
         foreach ($places as $place) {
             if (($place['class'] === 'tourism' && $place['subclass'] === 'alpine_hut') ||
                 ($place['class'] === 'amenity' && $place['subclass'] === 'shelter') ||
-                $place['class'] === 'tourism' && $place['subclass'] === 'wilderness_hut'
+                ($place['class'] === 'tourism' && $place['subclass'] === 'wilderness_hut')
             ) {
                 $matchingPlaces[] = $place;
             }
