@@ -157,10 +157,10 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['ristorante_service'] = $hut->ristorante_service ?? '';
         $properties['activity'] = $hut->activities ?? 'Escursionismo,Alpinismo';
         $properties['necessary_equipment'] = $hut->necessary_equipment ?? 'Normale dotazione Escursionistica / Normale dotazione Alpinistica';
-        $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2022/12/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
+        $properties['rates'] = $hut->rates ?? 'https://www.cai.it/wp-content/uploads/2024/07/23-2022-Circolare-Tariffario-rifugi-2023_signed.pdf';
         $properties['payment_credit_cards'] = $hut->payment_credit_cards ?? '1';
         $properties['accessibilitá_ai_disabili_service'] = $hut->acessibilitá_ai_disabili_service ?? '';
-        $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2020/12/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
+        $properties['rule'] = $hut->rule ?? 'https://www.cai.it/wp-content/uploads/2024/07/Regolamento-strutture-ricettive-del-Club-Alpino-Italiano-20201.pdf';
 
         $properties['hiking_routes'] = $hikingRoutes->count() > 0 ? $hikingRoutes->pluck('updated_at', 'id')->toArray() : [];
         $properties['mountain_groups'] = $mountainGroups ? $mountainGroups->id : '';
