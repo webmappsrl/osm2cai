@@ -19,7 +19,7 @@ class EnrichFromOsmfeaturesCommand extends Command
      *
      * @var string
      */
-    protected $signature = "osm2cai:enrich-from-osmfeatures {osmfeature=places : The feature to retrieve from osmfeatures API. Available features are: places, poles, admin-areas and hiking-routes.}.";
+    protected $signature = "osm2cai:enrich-from-osmfeatures {osmfeature=places : The feature to retrieve from osmfeatures API. Available features are: places, poles, admin-areas and hiking-routes.} {--score=0  : The score to filter the data to be enriched.}.";
 
     /**
      * The console command description.
@@ -155,17 +155,26 @@ class EnrichFromOsmfeaturesCommand extends Command
 
     protected function enrichPois(string $url, &$notFound)
     {
-        $pois = EcPoi::all();
+        $notFoundCounter = 0;
+        $notFoundLogFile = storage_path('logs/osmfeatures_not_found.log');
+
+        $pois = $this->option('score') ? EcPoi::where('score', '>', $this->option('score'))->get() : EcPoi::all();
+        $totalPois = $pois->count();
+        $processedCounter = 0;
+
         foreach ($pois as $poi) {
+            $processedCounter++;
             $osmId = $poi->osm_id;
             if (is_null($osmId)) {
                 $this->logInfo("No osm id for the poi $poi->name with id $poi->id. Skipping");
+                $notFoundCounter++;
                 $notFound[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             $osmType = $poi->osm_type;
             if (is_null($osmType)) {
                 $this->logInfo("No osm type for the poi $poi->name with id $poi->id. Skipping");
+                $notFoundCounter++;
                 $notFound[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
@@ -176,11 +185,13 @@ class EnrichFromOsmfeaturesCommand extends Command
             } catch (\Exception $e) {
                 $this->logError($e->getMessage());
                 $this->logInfo("Response not successful. Skipping $poi->osmfeatures_id");
+                $notFoundCounter++;
                 $notFound[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             if (!$osmfeaturesData) {
                 $this->logWarning("Response not successful, please check $osmfeaturesApi. Skipping $osmType $osmId");
+                $notFoundCounter++;
                 $notFound[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
@@ -188,13 +199,21 @@ class EnrichFromOsmfeaturesCommand extends Command
             // If there is a message property the feature is not found.
             if (isset($osmfeaturesData['message'])) { // TODO: make json message consistent in osmfeatures api (for example: "message": "Not found")
                 $this->logWarning("Not found $osmfeaturesApi. Skipping");
+                $notFoundCounter++;
                 $notFound[] = $poi->name . ' (ID: ' . $poi->id . ')';
                 continue;
             }
             $this->logInfo("Dispatching job for $osmfeaturesApi");
             EnrichFromOsmfeaturesJob::dispatch($poi, $osmfeaturesData);
+
+            // Update counter and print to terminal
+            $this->logInfo("Processed $processedCounter/$totalPois");
         }
+
+        $this->logWarning("$notFoundCounter not found");
+        file_put_contents($notFoundLogFile, implode("\n", $notFound), FILE_APPEND);
     }
+
 
     protected function enrichCaiHuts(string $url, &$notFound)
     {
