@@ -12,7 +12,7 @@ class CalculateIntersectionsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:calculate_intersections {model : The model to calculate intersections for} {id? : The ID of the model to calculate intersections for}';
+    protected $signature = 'osm2cai:calculate_intersections {model=MountainGroups : The model to calculate intersections for (works only with MountainGroups and EcPoi for now)} {id? : The ID of the model to calculate intersections for. If not provided, all models will be calculated.}';
 
     /**
      * The console command description.
@@ -28,7 +28,7 @@ class CalculateIntersectionsCommand extends Command
      */
     public function handle()
     {
-
+        ini_set('memory_limit', '-1');
         $modelClass = "App\\Models\\{$this->argument('model')}";
         $id = $this->argument('id');
 
