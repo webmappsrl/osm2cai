@@ -269,6 +269,15 @@ class CacheMiturAbruzzoApiCommand extends Command
         Log::info("Start caching poi $poi->name");
         $osmfeaturesData = $this->extractOsmfeaturesData($poi);
 
+        $type = '';
+
+        if (isset($osmfeaturesData['class'])) {
+            $type = $osmfeaturesData['class'];
+        }
+        if (isset($osmfeaturesData['subclass'])) {
+            $type .=  '/' . $osmfeaturesData['subclass'];
+        }
+
         $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
 
         $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
@@ -281,7 +290,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $poi->id;
         $properties['name'] = $osmfeaturesData['name'] ?? $poi->name;
-        //TODO: verificare $properties['type'] = $poi->getTagsMapping();
+        $properties['type'] = $type ?? '';
         $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "";
         $properties['description'] = $osmfeaturesData['description']['it'] ?? "";
         $properties['map'] = route('poi-map', ['id' => $poi->id]);
