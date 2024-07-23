@@ -281,7 +281,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties = [];
         $properties['id'] = $poi->id;
         $properties['name'] = $osmfeaturesData['name'] ?? $poi->name;
-        $properties['type'] = $poi->getTagsMapping();
+        //TODO: verificare $properties['type'] = $poi->getTagsMapping();
         $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "";
         $properties['description'] = $osmfeaturesData['description']['it'] ?? "";
         $properties['map'] = route('poi-map', ['id' => $poi->id]);
