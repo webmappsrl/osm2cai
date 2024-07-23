@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\PoiMapController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
 class CacheMiturAbruzzoApiCommand extends Command
 {
@@ -87,22 +88,35 @@ class CacheMiturAbruzzoApiCommand extends Command
 
     protected function cacheCaiHutsApiData($hut)
     {
+        Log::info("Start caching hut $hut->id");
+
         //get the mountain groups for the hut based on the geometry intersection
+        Log::info("Getting mountain groups for hut $hut->id");
         $mountainGroups = $hut->getMountainGroupsIntersecting()->first();
+        Log::info("Mountain groups for hut $hut->id: " . ($mountainGroups ? $mountainGroups->id : 'null'));
 
         //get the pois in a 1km buffer from the hut
+        Log::info("Getting pois in buffer for hut $hut->id");
         $pois = $hut->getPoisInBuffer(1000);
+        Log::info("Pois for hut $hut->id: " . $pois->count());
 
         //get the hiking routes in a 1km buffer from the hut
+        Log::info("Getting hiking routes in buffer for hut $hut->id");
         $hikingRoutes = $hut->getHikingRoutesInBuffer(1000);
+        Log::info("Hiking routes for hut $hut->id: " . $hikingRoutes->count());
 
         //get osmfeatures data
+        Log::info("Getting osmfeatures data for hut $hut->id");
         $osmfeaturesData = $this->extractOsmfeaturesData($hut);
+        Log::info("Osmfeatures data for hut $hut->id: " . ($osmfeaturesData ? 'found' : 'not found'));
 
         //get images from Osmfeatures
+        Log::info("Getting images from osmfeatures for hut $hut->id");
         $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+        Log::info("Images for hut $hut->id: " . ($images ? count($images) : 0));
 
         //build the geojson
+        Log::info("Building geojson for hut $hut->id");
         $geojson = [];
         $geojson['type'] = 'Feature';
 
@@ -149,6 +163,51 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['map'] = route('cai-huts-map', ['id' => $hut->id]);
         $properties['images'] = $images ?? [];
 
+        // Check if hut has osmfeatures_id, if not, add abstract and images manually
+        if ($properties['abstract'] == '') {
+            $regionName = $hut->region ? $hut->region->name : '';
+            $elevation = $hut->elevation ?? '';
+
+            //build abstract
+            $properties['abstract'] = "Il {$hut->second_name} è una struttura gestita dal Club Alpino Italiano";
+
+            if ($elevation) {
+                $properties['abstract'] .= " situata a quota {$elevation} mslm";
+            }
+
+            if ($regionName) {
+                $properties['abstract'] .= ", nella regione {$regionName}";
+            }
+
+            $properties['abstract'] .= ".";
+        }
+
+
+        if ($properties['images'] == []) {
+            // Perform API call to rifugi.cai.it to get image
+            Log::info("Performing rifugi API call for hut $hut->id");
+            $shelterResponse = Http::get("https://rifugi.cai.it/api/v1/shelters?attributes%5Bid%5D={$hut->unico_id}");
+            if ($shelterResponse && isset($shelterResponse['data'][0]['id_cai'])) {
+                $idCai = $shelterResponse['data'][0]['id_cai'];
+                $shelterDetailsResponse = Http::get("https://rifugi.cai.it/api/v1/shelters/{$idCai}");
+                if ($shelterDetailsResponse && !empty($shelterDetailsResponse['media'])) {
+                    foreach ($shelterDetailsResponse['media'] as $image) {
+                        $images[] = $image['original_url'];
+                    }
+                    if (count($images) < 1) {
+                        Log::info("No images found for hut $hut->id in rifugi API https://rifugi.cai.it/api/v1/shelters/{$idCai}");
+                    }
+                    $properties['images'] = $images;
+                    Log::info("Retrieved images from rifugi api for hut $hut->id");
+                }
+            }
+        }
+
+        // check if there are duplicated images
+        if (count($properties['images']) > 0) {
+            $properties['images'] = array_unique($properties['images']);
+        }
+
         $geometry = $hut->getGeometry();
 
         $geojson['properties'] = $properties;
@@ -157,8 +216,9 @@ class CacheMiturAbruzzoApiCommand extends Command
         $hut->cached_mitur_api_data = json_encode($geojson);
         $hut->save();
 
-        Log::info("End caching hut $hut->id");
+        Log::info("Successfully cached hut data for $hut->name");
     }
+
 
     protected function cacheRegionApiData($region)
     {
