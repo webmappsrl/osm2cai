@@ -12,7 +12,7 @@ class CalculateIntersectionsCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:calculate_intersections {model} {id?}';
+    protected $signature = 'osm2cai:calculate_intersections {model : The model to calculate intersections for} {id? : The ID of the model to calculate intersections for}';
 
     /**
      * The console command description.
@@ -37,12 +37,16 @@ class CalculateIntersectionsCommand extends Command
         } else {
             $models = collect([$modelClass::find($id)]);
         }
+        $this->output->progressStart($models->count());
 
         $models->each(function ($model) {
             $this->calculateIntersections($model);
+            $this->output->progressAdvance();
         });
 
         $this->info('Calculations completed.');
+
+        $this->output->progressFinish();
 
         return 0;
     }
