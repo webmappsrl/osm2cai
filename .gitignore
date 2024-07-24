@@ -18,5 +18,5 @@ yarn-error.log
 /storage/api-docs
 dump.sql
 docker/volumes
-
+local/
 public/
