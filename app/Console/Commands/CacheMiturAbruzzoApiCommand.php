@@ -598,9 +598,10 @@ SQL;
         $images = [];
         if (!isset($osmfeaturesData['images'])) {
             return $images;
-        }
-
+        
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
+        //extend the allowed extension adding uppercased versions
+        $allowedExtensions = array_merge($allowedExtensions, array_map('strtoupper', $allowedExtensions));
 
         foreach (WikiImageType::cases() as $imageType) {
             if (isset($osmfeaturesData['images'][$imageType])) {
