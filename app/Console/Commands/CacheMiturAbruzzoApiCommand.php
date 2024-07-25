@@ -282,8 +282,14 @@ class CacheMiturAbruzzoApiCommand extends Command
 
         $images = $this->getImagesFromOsmfeaturesData($enrichmentsData);
 
-        $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
-        $hikingRoute = $hikingRoutes ? HikingRoute::find(array_key_first($hikingRoutes)) : null;
+        //get only hiking routes in a 1000m buffer with osm2cai status 4
+        $hikingRouteIds = DB::table('hiking_routes')
+            ->select('id', 'updated_at')
+            ->where('osm2cai_status', 4)
+            ->whereRaw("ST_DWithin(geometry, (SELECT geometry FROM " . $poi->getTable() . " WHERE id = ?), ?)", [$poi->id, 1000])
+            ->pluck('updated_at', 'id');
+        $hikingRoute = HikingRoute::whereIn('id', array_keys($hikingRouteIds->toArray()))->first();
+
 
         //build the geojson
         $geojson = [];
@@ -300,7 +306,7 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['comune'] = $poi->comuni ?? '';
         $properties['difficulty'] = $hikingRoute ? $hikingRoute->cai_scale : '';
         $properties['activity'] = 'Escursionismo';
-        $properties['has_hiking_routes'] = $hikingRoutes;
+        $properties['has_hiking_routes'] = $hikingRouteIds ?? [];
 
         $geometry = $poi->getGeometry();
 
