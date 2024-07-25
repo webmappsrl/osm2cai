@@ -108,11 +108,12 @@ class CacheMiturAbruzzoApiCommand extends Command
         //get osmfeatures data
         Log::info("Getting osmfeatures data for hut $hut->id");
         $osmfeaturesData = $this->extractOsmfeaturesData($hut);
+        $enrichmentsData = $this->extractEnrichmentsData($osmfeaturesData);
         Log::info("Osmfeatures data for hut $hut->id: " . ($osmfeaturesData ? 'found' : 'not found'));
 
         //get images from Osmfeatures
         Log::info("Getting images from osmfeatures for hut $hut->id");
-        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+        $images = $this->getImagesFromOsmfeaturesData($enrichmentsData);
         Log::info("Images for hut $hut->id: " . ($images ? count($images) : 0));
 
         //build the geojson
@@ -124,8 +125,8 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['id'] = $hut->id;
         $properties['name'] = $hut->second_name ?? $hut->name ?? '';
         $properties['type'] = explode(' ', $hut->second_name)[0] ?? '';
-        $properties['abstract'] = $osmfeaturesData['abstract']['it'] ?? '';
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? '';
+        $properties['abstract'] = $enrichmentsData['abstract']['it'] ?? '';
+        $properties['description'] = $enrichmentsData['description']['it'] ?? '';
         $properties['map'] = route('cai-huts-map', ['id' => $hut->id]);
         $properties['images'] = $images ?? [];
 
@@ -268,6 +269,7 @@ class CacheMiturAbruzzoApiCommand extends Command
     {
         Log::info("Start caching poi $poi->name");
         $osmfeaturesData = $this->extractOsmfeaturesData($poi);
+        $enrichmentsData = $this->extractEnrichmentsData($osmfeaturesData);
 
         $type = '';
 
@@ -278,7 +280,7 @@ class CacheMiturAbruzzoApiCommand extends Command
             $type .=  '/' . $osmfeaturesData['subclass'];
         }
 
-        $images = $this->getImagesFromOsmfeaturesData($osmfeaturesData);
+        $images = $this->getImagesFromOsmfeaturesData($enrichmentsData);
 
         $hikingRoutes = json_decode($poi->hiking_routes_in_buffer, true);
         $hikingRoute = $hikingRoutes ? HikingRoute::find(array_key_first($hikingRoutes)) : null;
@@ -291,8 +293,8 @@ class CacheMiturAbruzzoApiCommand extends Command
         $properties['id'] = $poi->id;
         $properties['name'] = $osmfeaturesData['name'] ?? $poi->name;
         $properties['type'] = $type ?? '';
-        $properties['info'] = $osmfeaturesData['abstract']['it'] ?? "";
-        $properties['description'] = $osmfeaturesData['description']['it'] ?? "";
+        $properties['info'] = $enrichmentsData['abstract']['it'] ?? "";
+        $properties['description'] = $enrichmentsData['description']['it'] ?? "";
         $properties['map'] = route('poi-map', ['id' => $poi->id]);
         $properties['images'] = $images ?? [];
         $properties['comune'] = $poi->comuni ?? '';
@@ -572,8 +574,7 @@ SQL;
         Log::info("End caching data for hiking route " . $hikingRoute->id);
     }
 
-
-    protected function extractOsmfeaturesData(Model $model): array
+    protected function extractOsmfeaturesData(Model $model)
     {
         $modelClass = get_class($model);
         if (!$model->osmfeatures_data) {
@@ -581,22 +582,21 @@ SQL;
             $osmfeaturesData = [];
         } else {
             $osmfeaturesData = json_decode($model->osmfeatures_data, true);
-            if ($osmfeaturesData['enrichments']) {
-                $osmfeaturesData = $osmfeaturesData['enrichments']['data'];
-            } else {
-                Log::info("No osmfeatures data for $modelClass  $model->name");
-                $osmfeaturesData = [];
-            }
         }
 
         return $osmfeaturesData;
     }
 
-    protected function getImagesFromOsmfeaturesData($osmfeaturesData)
+    protected function extractEnrichmentsData(array $osmfeaturesData): array
+    {
+        return $osmfeaturesData['enrichments']['data'] ?? [];
+    }
+
+    protected function getImagesFromOsmfeaturesData($enrichmentsData)
     {
         Log::info("Start getting images from osmfeatures data");
         $images = [];
-        if (!isset($osmfeaturesData['images'])) {
+        if (!isset($enrichmentsData['images'])) {
             return $images;
         }
 
@@ -605,8 +605,8 @@ SQL;
         $allowedExtensions = array_merge($allowedExtensions, array_map('strtoupper', $allowedExtensions));
 
         foreach (WikiImageType::cases() as $imageType) {
-            if (isset($osmfeaturesData['images'][$imageType])) {
-                $imageData = $osmfeaturesData['images'][$imageType];
+            if (isset($enrichmentsData['images'][$imageType])) {
+                $imageData = $enrichmentsData['images'][$imageType];
 
                 if ($imageType == 'wikimedia_images') {
                     //can be more than one image
