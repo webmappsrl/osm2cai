@@ -6,6 +6,8 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select;
+use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Textarea;
@@ -43,7 +45,9 @@ class UgcPoi extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name', 'user_no_match'
+        'id',
+        'name',
+        'user_no_match'
     ];
 
     /**
@@ -92,6 +96,17 @@ class UgcPoi extends Resource
                 ->readonly()
                 ->showOnCreating()
                 ->showOnUpdating(),
+            Text::make('User', function () {
+                if ($this->user_id) {
+                    return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . '</a>';
+                } else {
+                    return $this->user_no_match;
+                }
+            })->asHtml(),
+            Select::make('Validated', 'validated')
+                ->options(UgcValidatedStatus::cases()),
+            Text::make('App ID', 'app_id')
+                ->onlyOnDetail(),
             Text::make('Form ID', function () {
                 $rawData = json_decode($this->raw_data, true);
                 return $this->form_id ?? $rawData['id'] ?? null;
@@ -107,13 +122,6 @@ class UgcPoi extends Resource
             Text::make('Nome', 'name')
                 ->sortable(),
             Textarea::make('Descrizione', 'description'),
-            Text::make('User', function () {
-                if ($this->user_id) {
-                    return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . '</a>';
-                } else {
-                    return $this->user_no_match;
-                }
-            })->asHtml(),
             Text::make('User No Match', 'user_no_match')
                 ->onlyOnDetail(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
