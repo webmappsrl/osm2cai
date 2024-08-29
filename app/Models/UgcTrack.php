@@ -12,7 +12,7 @@ class UgcTrack extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'metadata'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'metadata', 'app_id'];
 
     public function ugc_media(): BelongsToMany
     {
