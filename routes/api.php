@@ -144,5 +144,13 @@ Route::name('api.')->group(function () {
             Route::get('/huts/{id}', [ExportController::class, 'hutsSingleFeature'])->name('huts-single-feature-export');
         });
         Route::get('hiking-routes/{id}.gpx', [HikingRouteController::class, 'hikingRouteGpx'])->name('hiking-routes-gpx');
+
+        //acquasorgente
+        Route::prefix('source_survey')->name('source-survey')->group(function () {
+            Route::get('/survey.geojson', [SourceSurveyController::class, 'surveyGeoJson'])->name('survey-geojson');
+            Route::get('/survey.gpx', [SourceSurveyController::class, 'surveyGpx'])->name('survey-gpx');
+            Route::get('/survey.kml', [SourceSurveyController::class, 'surveyKml'])->name('survey-kml');
+            Route::get('/survey.shp', [SourceSurveyController::class, 'surveyShapefile'])->name('survey-shapefile');
+        });
     });
 });
