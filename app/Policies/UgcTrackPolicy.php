@@ -18,7 +18,7 @@ class UgcTrackPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class UgcTrackPolicy
      */
     public function view(User $user, UgcTrack $ugcTrack)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
@@ -53,7 +53,7 @@ class UgcTrackPolicy
      */
     public function update(User $user, UgcTrack $ugcTrack)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -65,7 +65,10 @@ class UgcTrackPolicy
      */
     public function delete(User $user, UgcTrack $ugcTrack)
     {
-        return true;
+        if ($user->is_administrator) {
+            return true;
+        }
+        return $user->id === $ugcTrack->user_id;
     }
 
     /**
