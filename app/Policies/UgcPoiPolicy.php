@@ -19,7 +19,7 @@ class UgcPoiPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
@@ -31,7 +31,7 @@ class UgcPoiPolicy
      */
     public function view(User $user, UgcPoi $ugcPoi)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
@@ -54,7 +54,10 @@ class UgcPoiPolicy
      */
     public function update(User $user, UgcPoi $ugcPoi)
     {
-        return true;
+        if ($user->is_administrator) {
+            return true;
+        }
+        return $user->id === $ugcPoi->user_id && $ugcPoi->validated != 'valid';
     }
 
     /**
@@ -66,7 +69,10 @@ class UgcPoiPolicy
      */
     public function delete(User $user, UgcPoi $ugcPoi)
     {
-        return true;
+        if ($user->is_administrator) {
+            return true;
+        }
+        return $user->id === $ugcPoi->user_id && $ugcPoi->validated != 'valid';
     }
 
     /**
