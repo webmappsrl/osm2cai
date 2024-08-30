@@ -18,7 +18,7 @@ class UgcTrackPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
@@ -30,7 +30,7 @@ class UgcTrackPolicy
      */
     public function view(User $user, UgcTrack $ugcTrack)
     {
-        return $user->getTerritorialRole() !== 'unknown';
+        return true;
     }
 
     /**
