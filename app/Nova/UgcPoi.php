@@ -14,7 +14,10 @@ use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
 use Illuminate\Support\Facades\Auth;
+use App\Nova\Filters\UgcFormIdFilter;
+use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
+use App\Nova\Filters\UgcUserNoMatchFilter;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class UgcPoi extends Resource
@@ -66,13 +69,6 @@ class UgcPoi extends Resource
         $label = 'Poi';
 
         return __($label);
-    }
-
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        if (Auth::user()->getTerritorialRole() === 'regional' || Auth::user()->getTerritorialRole() === 'local') {
-            return $query->where('user_id', Auth::user()->id);
-        }
     }
 
     /**
@@ -202,8 +198,9 @@ class UgcPoi extends Resource
     public function filters(Request $request)
     {
         return [
-            (new \App\Nova\Filters\UgcFormIdFilter()),
-            (new \App\Nova\Filters\UgcUserNoMatchFilter()),
+            (new RelatedUGCFilter()),
+            (new UgcFormIdFilter()),
+            (new UgcUserNoMatchFilter()),
         ];
     }
 

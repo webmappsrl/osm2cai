@@ -10,6 +10,7 @@ use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
@@ -44,7 +45,8 @@ class UgcTrack extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name',
+        'id',
+        'name',
     ];
 
     public static string $group = 'Rilievi';
@@ -55,14 +57,6 @@ class UgcTrack extends Resource
         $label = 'Track';
 
         return __($label);
-    }
-
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-
-        if (Auth::user()->getTerritorialRole() === 'regional' || Auth::user()->getTerritorialRole() === 'local') {
-            return $query->where('user_id', Auth::user()->id);
-        }
     }
 
     /**
@@ -133,7 +127,9 @@ class UgcTrack extends Resource
      */
     public function filters(Request $request)
     {
-        return [];
+        return [
+            (new RelatedUGCFilter()),
+        ];
     }
 
     /**
