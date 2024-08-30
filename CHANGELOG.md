@@ -1,5 +1,34 @@
 # Changelog
 
+## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-08-30)
+
+
+### Features
+
+* add_gpx_api_to_hiking_route  oc:3591 ([9e9ddb6](https://github.com/webmappsrl/osm2cai/commit/9e9ddb6965074b4d78bd8cb0f47aa889f1da8d8d))
+* added source_surveys endpoints to api v2 ([#125](https://github.com/webmappsrl/osm2cai/issues/125)) ([30f3447](https://github.com/webmappsrl/osm2cai/commit/30f344709098ebab35b61d5cd06e8d942390dbf2))
+* added tdh computing and api caching to hr events observer OC:3608 ([e0c075d](https://github.com/webmappsrl/osm2cai/commit/e0c075d097035e7579e33ecd994e6a598e04de2c))
+* cai huts reconciliation OC:3629 ([#121](https://github.com/webmappsrl/osm2cai/issues/121)) ([3ca2a14](https://github.com/webmappsrl/osm2cai/commit/3ca2a148f7c5a53e71fd68951e132b99439f46eb))
+* cai_huts_sync_with_osmfeatures OC:3632 ([#122](https://github.com/webmappsrl/osm2cai/issues/122)) ([226c6b7](https://github.com/webmappsrl/osm2cai/commit/226c6b71c738180c39e97508179b16c16ba9115f))
+* improve sync ugc from geohub OC:3868 ([#124](https://github.com/webmappsrl/osm2cai/issues/124)) ([dc934da](https://github.com/webmappsrl/osm2cai/commit/dc934daef2edd4798a7989ccbe3fb98726e2e085))
+* updated mitur api caching for cai huts to get images from rifugi api ([5ba510e](https://github.com/webmappsrl/osm2cai/commit/5ba510e9aca61ec80a2025ca8cffd79a74fa9c05))
+
+
+### Bug Fixes
+
+* fixed cai huts links in mitur api ([c0edbc0](https://github.com/webmappsrl/osm2cai/commit/c0edbc0eca1800c465de485fb323f2b8f742b401))
+* fixed ec pois type in mitur abruzzo api ([1ec798b](https://github.com/webmappsrl/osm2cai/commit/1ec798b261eabdd4d3ba8b02cd2e304062a7928a))
+* fixed images caching to include uppercase version ([547a147](https://github.com/webmappsrl/osm2cai/commit/547a1472250a65bca8eb4bdef688b238d6edf7a7))
+* get ec pois's hiking routes in buffer only for osm2cai_status 4 ([b8753df](https://github.com/webmappsrl/osm2cai/commit/b8753df083d1fc235db83b4dc6a4774919bc0c7a))
+
+
+### Miscellaneous Chores
+
+* added progress bar to calculate intersections command ([8a2486a](https://github.com/webmappsrl/osm2cai/commit/8a2486a9e68c8cc7dee22fd666f0447bbf2d82e4))
+* changed mitur api properties order ([cfbb108](https://github.com/webmappsrl/osm2cai/commit/cfbb1083731c634114e009d42dbb26fba8badce2))
+* updated enrich from osmfeatures command to accept --score option ([55d6408](https://github.com/webmappsrl/osm2cai/commit/55d640809400f4012f75379dea3169125ce6b902))
+* updated type key in ec_pois mitur api ([3660494](https://github.com/webmappsrl/osm2cai/commit/36604945c3777945eacf2e2a501d57ec246bdbb2))
+
 ## [233.31.0](https://github.com/webmappsrl/osm2cai/compare/v233.30.5...v233.31.0) (2024-07-05)
 
 
