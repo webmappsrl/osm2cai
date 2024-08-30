@@ -1,5 +1,12 @@
 # Changelog
 
+## [233.33.0](https://github.com/webmappsrl/osm2cai/compare/v233.32.0...v233.33.0) (2024-08-30)
+
+
+### Features
+
+* update survey policies OC:3873 ([#126](https://github.com/webmappsrl/osm2cai/issues/126)) ([88637b8](https://github.com/webmappsrl/osm2cai/commit/88637b8f2f267ee3d179c01638fdb86cf6364ab0))
+
 ## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-08-30)
 
 
