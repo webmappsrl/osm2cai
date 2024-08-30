@@ -118,8 +118,6 @@ class UgcPoi extends Resource
             Text::make('Nome', 'name')
                 ->sortable(),
             Textarea::make('Descrizione', 'description'),
-            Text::make('User No Match', 'user_no_match')
-                ->onlyOnDetail(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Taxonomy wheres', function () {
                 $array = explode(',', $this->taxonomy_wheres);

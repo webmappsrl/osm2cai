@@ -55,7 +55,7 @@ class UgcMediaPolicy
      */
     public function update(User $user, UgcMedia $ugcMedia)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -67,7 +67,10 @@ class UgcMediaPolicy
      */
     public function delete(User $user, UgcMedia $ugcMedia)
     {
-        return true;
+        if ($user->is_administrator) {
+            return true;
+        }
+        return $user->id === $ugcMedia->user_id;
     }
 
     /**

@@ -82,7 +82,15 @@ class UgcTrack extends Resource
                 ->searchable()
                 ->sortable(),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
-            Text::make('Tassonomie Where', 'taxonomy_wheres'),
+            Text::make('Tassonomie Where', function ($model) {
+                $wheres = $model->taxonomy_wheres;
+                $words = explode(' ', $wheres);
+                $lines = array_chunk($words, 3);
+                $formattedWheres = implode('<br>', array_map(function ($line) {
+                    return implode(' ', $line);
+                }, $lines));
+                return $formattedWheres;
+            })->asHtml(),
             Code::Make(__('metadata'), 'metadata')->language('json')->rules('nullable', 'json')->help(
                 'metadata of track'
             )->onlyOnDetail(),
