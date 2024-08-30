@@ -12,7 +12,7 @@ class UgcMedia extends Model
 {
     use HasFactory, GeojsonableTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'relative_url'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'relative_url', 'app_id'];
 
     public function ugc_pois(): BelongsToMany
     {

@@ -55,7 +55,7 @@ class SourceSurvey extends UgcPoi
      *
      * @var array
      */
-    protected static $activeFields = ['ID', 'User'];
+    protected static $activeFields = ['ID', 'User', 'Validated'];
 
     public function fields(Request $request)
     {
@@ -74,8 +74,6 @@ class SourceSurvey extends UgcPoi
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
             Boolean::make('Photos', 'has_photo')->hideFromDetail(),
-            Select::make('Validated', 'validated')
-                ->options(UgcValidatedStatus::cases()),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             MapPointNova3::make('geometry')->withMeta([

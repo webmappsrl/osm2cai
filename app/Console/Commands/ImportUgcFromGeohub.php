@@ -17,7 +17,7 @@ class ImportUgcFromGeohub extends Command
      *
      * @var string
      */
-    protected $signature = 'osm2cai:sync-ugc';
+    protected $signature = 'osm2cai:sync-ugc {app_id?}';
 
     /**
      * The console command description.
@@ -36,6 +36,20 @@ class ImportUgcFromGeohub extends Command
         parent::__construct();
     }
 
+    private $baseApiUrl = "https://geohub.webmapp.it/api/ugc/";
+    private $apps = [
+        20 => 'it.webmapp.sicai',
+        26 => 'it.webmapp.osm2cai',
+        58 => 'it.webmapp.acquasorgente'
+    ];
+    private $types = ['poi', 'track', 'media'];
+    private $createdElements = [
+        'poi' => 0,
+        'track' => 0,
+        'media' => 0
+    ];
+    private $updatedElements = [];
+
     /**
      * Execute the console command.
      *
@@ -43,53 +57,117 @@ class ImportUgcFromGeohub extends Command
      */
     public function handle()
     {
-        try {
-            $endPoints = [
-                'poi' => 'https://geohub.webmapp.it/api/ugc/poi/geojson/it.webmapp.osm2cai/list',
-                'track' => 'https://geohub.webmapp.it/api/ugc/track/geojson/it.webmapp.osm2cai/list',
-                'media' => 'https://geohub.webmapp.it/api/ugc/media/geojson/it.webmapp.osm2cai/list'
-            ];
+        $appId = $this->argument('app_id');
+        $createdElements = [
+            'poi' => 0,
+            'track' => 0,
+            'media' => 0
+        ];
+        $updatedElements = [];
+        if ($appId) {
+            $this->syncApp($appId);
+        } else {
+            $this->syncAllApps();
+        }
 
-            $createdElements = [
-                'poi' => 0,
-                'track' => 0,
-                'media' => 0
-            ];
+        $this->updateFormIds();
+        Log::channel('import-ugc')->info("Sync completato.");
+        $this->info("Sync completato.");
 
-            $updatedElements = [];
+        return ['createdElements' => $this->createdElements, 'updatedElements' => $this->updatedElements];
+    }
 
-            foreach ($endPoints as $type => $endPoint) {
-                $this->info("Starting sync for $type from $endPoint");
-                $list = json_decode($this->get_content($endPoint), true);
+    private function syncAllApps()
+    {
+        foreach ($this->apps as $appId => $appName) {
+            $this->syncApp($appId);
+        }
+    }
 
-                foreach ($list as $id => $updated_at) {
-                    $this->info('Checking ' . $type . ' with id ' . $id);
-                    $model = $this->getModel($type, $id);
-                    $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
-                    if ($model->wasRecentlyCreated) {
-                        $createdElements[$type]++;
-                        $this->info("Created new $type with id $id");
-                    }
+    private function syncApp($appId)
+    {
+        Log::channel('import-ugc')->info("Avvio sync per l'app con ID $appId");
+        $this->info("Avvio sync per l'app con ID $appId");
+        $appName = $this->apps[$appId] ?? null;
 
-                    if ($model->updated_at < $updated_at || $model->wasRecentlyCreated) {
-                        $this->syncRecord($model, $geoJson, $id);
-                        if ($model->updated_at < $updated_at) {
-                            $updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
-                            $this->info("Updated $type with id $id");
-                        }
-                    }
-                }
+        if (!$appName) {
+            Log::channel('import-ugc')->error("ID app non valido: $appId");
+            $this->error("ID app non valido: $appId");
+            return;
+        }
+
+        foreach ($this->types as $type) {
+            $endpoint = "{$this->baseApiUrl}{$type}/geojson/{$appName}/list";
+            $this->syncType($type, $endpoint, $appId);
+        }
+    }
+
+    private function syncType($type, $endpoint, $appId)
+    {
+        Log::channel('import-ugc')->info("Effettuando il sync per $type da $endpoint");
+        $list = json_decode($this->get_content($endpoint), true);
+        if (empty($list)) {
+            Log::channel('import-ugc')->info("Nessun elemento da sincronizzare per $type da $endpoint");
+            $this->info("Nessun elemento da sincronizzare per $type da $endpoint");
+            return;
+        }
+        //get the most recent updated_at from the list
+        $mostRecentUpdatedAt = max(array_values($list));
+
+        //get the most recent updated_at from the database in the ugc column $type
+        $mostRecentUpdatedAtDb = $type == 'poi' ? UgcPoi::max('updated_at') : ($type == 'track' ? UgcTrack::max('updated_at') : UgcMedia::max('updated_at'));
+
+        if ($mostRecentUpdatedAtDb > $mostRecentUpdatedAt) {
+            Log::channel('import-ugc')->info("Il database é aggiornato per $type");
+            $this->info("Il database é aggiornato per $type");
+            return;
+        }
+
+        foreach ($list as $id => $updated_at) {
+            $this->syncElement($type, $id, $updated_at, $appId);
+        }
+    }
+
+    private function get_content($url)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+        $data = curl_exec($ch);
+        if ($data === false) {
+            Log::channel('import-ugc')->error("Failed to fetch content from URL: $url");
+            $this->error("Failed to fetch content from URL: $url");
+            throw new \Exception("Failed to fetch content from URL: $url");
+        }
+        curl_close($ch);
+        return $data;
+    }
+
+    private function syncElement($type, $id, $updated_at, $appId)
+    {
+        Log::channel('import-ugc')->info("Controllo $type con geohub id $id");
+        $this->info("Controllo $type con geohub id $id");
+        $model = $this->getModel($type, $id);
+        $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
+
+        // Aggiungiamo questa condizione per aggiornare sempre l'app_id
+        $needsUpdate = $model->wasRecentlyCreated ||
+            $model->updated_at < $updated_at ||
+            $model->app_id !== 'geohub_' . $appId;
+
+        if ($needsUpdate) {
+            $this->syncRecord($model, $geoJson, $id, $appId, $type);
+            if ($model->wasRecentlyCreated) {
+                $this->createdElements[$type]++;
+                $this->info("Creato nuovo $type con id $id");
+                Log::channel('import-ugc')->info("Creato nuovo $type con id $id");
+            } else {
+                $this->updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
+                $this->info("Aggiornato $type con geohub id $id");
+                Log::channel('import-ugc')->info("Aggiornato $type con geohub id $id");
             }
-            //populate the form_id column in the ugc_poi table
-            $ugcPois = DB::table('ugc_pois')->whereNull('form_id')->get();
-            foreach ($ugcPois as $ugcPoi) {
-                $rawData = json_decode($ugcPoi->raw_data, true);
-                DB::table('ugc_pois')->where('id', $ugcPoi->id)->update(['form_id' => $rawData['id'] ?? null]);
-            }
-            $this->info("Finished sync. Created: " . implode(', ', $createdElements) . ", Updated: " . count($updatedElements));
-        } catch (\Exception $e) {
-            $this->error("An error occurred: " . $e->getMessage());
         }
     }
 
@@ -103,56 +181,73 @@ class ImportUgcFromGeohub extends Command
     {
         $geoJson = json_decode($this->get_content($url), true);
         if ($geoJson === null) {
-            throw new \Exception("Failed to fetch GeoJSON from URL: $url");
+            Log::channel('import-ugc')->error("Errore nel fetch del GeoJSON da $url");
+            $this->error("Errore nel fetch del GeoJSON da $url");
+            throw new \Exception("Errore nel fetch del GeoJSON da $url");
         }
         return $geoJson;
     }
 
-    private function syncRecord($model, $geoJson, $id)
+    private function syncRecord($model, $geoJson, $id, $appId, $type)
     {
-        $user = User::where('email', $geoJson['properties']['user_email'])->first();
-        $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
-        $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
+        Log::channel('import-ugc')->info("Aggiornamento $type con id $id");
+        $this->info("Aggiornamento $type con id $id");
 
         $data = [
             'name' => $geoJson['properties']['name'],
-            'geometry' => $geometry,
             'raw_data' => $geoJson['properties']['raw_data'],
             'updated_at' => $geoJson['properties']['updated_at'],
             'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'],
+            'app_id' => 'geohub_' . $appId,
         ];
 
-        //if the model is a poi get the id from the raw_data and fill the form_id column with the value
+        $user = User::where('email', $geoJson['properties']['user_email'])->first();
+        $geometry = isset($geoJson['geometry']) && $geoJson['geometry'] != null ? DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')') : null;
+        $geometry = $geometry ? DB::raw('ST_Transform(' . $geometry . ', 4326)') : null;
+
+        if ($geometry) {
+            $data['geometry'] = $geometry;
+        }
+
         if ($model instanceof UgcPoi) {
             $rawData = json_decode($geoJson['properties']['raw_data'], true);
             $data['form_id'] = $rawData['id'] ?? null;
         }
 
-        if ($user != null) {
+        if ($user) {
             $data['user_id'] = $user->id;
         } else {
-            Log::channel('missingUsers')->info('User with email ' . $geoJson['properties']['user_email'] . ' not found');
+            Log::channel('missingUsers')->info('Utente con email ' . $geoJson['properties']['user_email'] . ' non trovato');
             $data['user_no_match'] = $geoJson['properties']['user_email'];
         }
+
         if ($model instanceof UgcMedia) {
-            $data['relative_url'] = $geoJson['url'];
+            $data['relative_url'] = $geoJson['properties']['url'] ?? null;
+            $poisGeohubIds = $geoJson['properties']['ugc_pois'] ?? [];
+            $tracksGeohubIds = $geoJson['properties']['ugc_tracks'] ?? [];
+
+            if (!empty($poisGeohubIds)) {
+                $poisIds = UgcPoi::whereIn('geohub_id', $poisGeohubIds)->pluck('id')->toArray();
+                $model->ugc_pois()->sync($poisIds);
+            }
+            if (!empty($tracksGeohubIds)) {
+                $tracksIds = UgcTrack::whereIn('geohub_id', $tracksGeohubIds)->pluck('id')->toArray();
+                $model->ugc_tracks()->sync($tracksIds);
+            }
         }
 
         $model->update($data);
         $model->save();
+        Log::channel('import-ugc')->info("Aggiornamento completato");
+        $this->info("Aggiornamento completato");
     }
 
-    private function get_content($url)
+    private function updateFormIds()
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
-        $data = curl_exec($ch);
-        if ($data === false) {
-            throw new \Exception("Failed to fetch content from URL: $url");
+        $ugcPois = DB::table('ugc_pois')->whereNull('form_id')->get();
+        foreach ($ugcPois as $ugcPoi) {
+            $rawData = json_decode($ugcPoi->raw_data, true);
+            DB::table('ugc_pois')->where('id', $ugcPoi->id)->update(['form_id' => $rawData['id'] ?? null]);
         }
-        curl_close($ch);
-        return $data;
     }
 }

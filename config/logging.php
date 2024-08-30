@@ -65,6 +65,11 @@ return [
             'path' => storage_path('logs/cai-huts-reconciliations.log'),
             'level' => 'info',
         ],
+        'import-ugc' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/import-ugc.log'),
+            'level' => 'info',
+        ],
 
         'slack' => [
             'driver' => 'slack',
