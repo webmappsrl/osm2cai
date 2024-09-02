@@ -2,12 +2,17 @@
 
 namespace App\Traits;
 
+use DKulyk\Nova\Tabs;
+use App\Models\UgcPoi;
+use App\Models\UgcTrack;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
 trait WmNovaFieldsTrait
 {
     /**
-     * Generate Nova fields based on a JSON schema or a provnameed schema array.
+     * Generate Nova fields based on a JSON schema or a provided schema array.
      *
      * @param string|null $name The name of the column where the form JSON is stored. Default is null.
      * @param array|null $formSchema The optional schema for fields.
@@ -19,56 +24,46 @@ trait WmNovaFieldsTrait
         // Ensure Laravel Nova is installed
         $this->ensureNovaIsInstalled();
 
-        $fields = [];
+        if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
+            return [];
+        }
 
-        if ($columnName && Schema::hasColumn($this->getTable(), $columnName)) {
-            // Fetch the JSON data from the column
-            $column = $this->$columnName ?? '';
-            if (!is_array($column)) {
-                $formData = json_decode($column, true) ?? [];
-            } else {
-                $formData = $column;
+        if (strpos($this->app_id, 'osm2cai') !== false) {
+            return [];
+        }
+
+        $appId = strpos($this->app_id, 'geohub_') !== false
+            ? substr($this->app_id, strpos($this->app_id, 'geohub_') + strlen('geohub_'))
+            : $this->app_id;
+
+        $geohubAppConfig = 'https://geohub.webmapp.it/api/app/webmapp/' . $appId . '/config.json';
+        $config = Cache::remember('geohub_app_config_' . $appId, now()->addHour(), function () use ($geohubAppConfig) {
+            $response = Http::get($geohubAppConfig);
+            return $response->json();
+        });
+        $acquisitionForm = $this->getAcquisitionForm($config);
+
+        $fields = [];
+        foreach ($acquisitionForm as $formSection) {
+            if ($this->form_id != $formSection['id']) {
+                continue;
             }
-            if (is_null($formSchema) || empty($formSchema)) {
-                // If no form schema is provided, use the form data directly
-                foreach ($formData as $key => $value) {
-                    // Create a dummy schema based on existing form data
-                    $fieldSchema = [
-                        'name' => $key,
-                        'type' => is_numeric($value) ? 'number' : 'text',
-                        'value' => $value
-                    ];
-                    $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
-                    if ($novaField) {
-                        $fields[] = $novaField;
-                    }
+            $tabsLabel = $formSection['label']['it'] ?? $formSection['label']['ït'] ?? $formSection['label']['en'];
+            foreach ($formSection['fields'] as $fieldSchema) {
+                if (in_array($fieldSchema['name'], ['title', 'description'])) {
+                    continue;
                 }
-            } else {
-                // Initialize the fields with data from the JSON column
-                foreach ($formSchema as $fieldSchema) {
-                    $label = $fieldSchema['label'];
-                    $value = $formData[$label] ?? $fieldSchema['value'] ?? null;
-                    $fieldSchema['value'] = $value; // Set the value from form data or default
-                    $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
-                    if ($novaField) {
-                        $fields[] = $novaField;
-                    }
-                }
-            }
-        } elseif ($formSchema) {
-            // Use the provnameed form schema
-            foreach ($formSchema as $fieldSchema) {
-                $novaField = $this->createFieldFromSchema($fieldSchema);
+                $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
                 if ($novaField) {
                     $fields[] = $novaField;
                 }
             }
-        } else {
-            throw new \Exception('Either form JSON column name or form schema must be provnameed. Please check your database or
-provnamee a form schema.');
         }
 
-        return $fields;
+        $tabs = new Tabs($tabsLabel, [
+            ' ' => $fields
+        ]);
+        return $tabs;
     }
 
     /**
@@ -80,40 +75,40 @@ provnamee a form schema.');
      */
     protected function createFieldFromSchema(array $fieldSchema, $columnName = null)
     {
-        // Ensure Laravel Nova is installed
-        $this->ensureNovaIsInstalled();
-
         $key = $fieldSchema['name'] ?? null;
-        $value = $fieldSchema['value'] ?? null;
         $fieldType = $fieldSchema['type'] ?? 'text';
-        $label = $fieldSchema['label'] ?? ucwords(str_replace('_', ' ', $key));
-        $rules = [];
-        $formData = is_array($this->$columnName) ? $this->$columnName : json_decode($this->$columnName, true);
-
-        if (isset($fieldSchema['rules'])) {
-            foreach ($fieldSchema['rules'] as $rule) {
-                if ($rule['name'] === 'required') {
-                    $rules[] = 'required';
-                } elseif ($rule['name'] === 'email') {
-                    $rules[] = 'email';
-                } elseif ($rule['name'] === 'minLength' && isset($rule['value'])) {
-                    $rules[] = 'min:' . $rule['value'];
-                }
-            }
+        $label = $fieldSchema['label']['it'] ?? $fieldSchema['label']['ït'] ?? $fieldSchema['label']['en'];
+        $rules = $this->defineRules($fieldSchema);
+        if ($fieldSchema['required']) {
+            $rules[] = 'required';
         }
 
         $field = null;
 
-
         if ($fieldType === 'number') {
             $field = \Laravel\Nova\Fields\Number::make(__($label), "$columnName->$key")
-                ->rules($rules);
+                ->rules($rules)
+                ->hideFromIndex();
         } elseif ($fieldType === 'password') {
             $field = \Laravel\Nova\Fields\Password::make(__($label), "$columnName->$key")
-                ->rules($rules);
+                ->rules($rules)
+                ->hideFromIndex();
+        } elseif ($fieldType === 'select') {
+            $options = [];
+            if (isset($fieldSchema['values'])) {
+                foreach ($fieldSchema['values'] as $option) {
+                    $options[$option['value']] = $option['label']['it'];
+                }
+            }
+            $field = \Laravel\Nova\Fields\Select::make(__($label), "$columnName->$key")
+                ->options($options)
+                ->rules($rules)
+                ->displayUsingLabels()
+                ->hideFromIndex();
         } else {
             $field = \Laravel\Nova\Fields\Text::make(__($label), "$columnName->$key")
-                ->rules($rules);
+                ->rules($rules)
+                ->hideFromIndex();
         }
 
         return $field;
@@ -129,5 +124,48 @@ provnamee a form schema.');
         if (!class_exists('Laravel\Nova\Fields\Field')) {
             throw new \Exception('Laravel Nova is not installed. Please install Laravel Nova to use this feature.');
         }
+    }
+
+    /**
+     * Define the rules for the nova fields
+     * 
+     * @param array $fieldSchema
+     * @return array
+     */
+    protected function defineRules(array $fieldSchema)
+    {
+        $rules = [];
+        if (isset($fieldSchema['rules'])) {
+            foreach ($fieldSchema['rules'] as $rule) {
+                if ($rule['name'] === 'required') {
+                    $rules[] = 'required';
+                } elseif ($rule['name'] === 'email') {
+                    $rules[] = 'email';
+                } elseif ($rule['name'] === 'minLength' && isset($rule['value'])) {
+                    $rules[] = 'min:' . $rule['value'];
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get the acquisition form from the config based on the ugc type
+     * 
+     * @param array $config
+     * @return array
+     */
+    protected function getAcquisitionForm(array $config)
+    {
+        $acquisitionForm = [];
+
+        if ($this instanceof UgcPoi) {
+            $acquisitionForm = $config['APP']['poi_acquisition_form'] ?? [];
+        } elseif ($this instanceof UgcTrack) {
+            $acquisitionForm = $config['APP']['track_acquisition_form'] ?? [];
+        }
+
+        return $acquisitionForm;
     }
 }
