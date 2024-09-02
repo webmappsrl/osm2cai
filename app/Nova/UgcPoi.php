@@ -116,8 +116,22 @@ class UgcPoi extends Resource
             Text::make('Geohub ID', 'geohub_id')
                 ->onlyOnDetail(),
             Text::make('Nome', 'name')
-                ->sortable(),
-            Textarea::make('Descrizione', 'description'),
+                ->sortable()
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $model->{$attribute} = $request->{$requestAttribute};
+                    $rawData = json_decode($model->raw_data, true);
+                    $rawData['name'] = $request->{$requestAttribute};
+                    $model->raw_data = json_encode($rawData);
+                    $model->save();
+                }),
+            Textarea::make('Descrizione', 'description')
+                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $model->{$attribute} = $request->{$requestAttribute};
+                    $rawData = json_decode($model->raw_data, true);
+                    $rawData['description'] = $request->{$requestAttribute};
+                    $model->raw_data = json_encode($rawData);
+                    $model->save();
+                }),
             BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Taxonomy wheres', function () {
                 $array = explode(',', $this->taxonomy_wheres);
@@ -127,8 +141,6 @@ class UgcPoi extends Resource
                 }
                 return $result;
             })->onlyOnIndex(),
-            Text::make('Taxonomy wheres', 'taxonomy_wheres')
-                ->hideFromIndex(),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
