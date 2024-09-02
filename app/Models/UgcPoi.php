@@ -16,6 +16,10 @@ class UgcPoi extends Model
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_rate_volume', 'flow_rate_fill_time', 'has_photo', 'app_id'];
 
+    protected $casts = [
+        'raw_data' => 'array',
+    ];
+
     protected static function boot()
     {
         parent::boot();
