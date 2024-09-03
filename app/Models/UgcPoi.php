@@ -7,6 +7,7 @@ use app\Traits\GeojsonableTrait;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\UgcWaterFlowValidatedStatus;
 use App\Traits\WmNovaFieldsTrait;
+use Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -29,6 +30,12 @@ class UgcPoi extends Model
             $model->form_id = $rawData['id'] ?? null;
             $model->save();
         });
+    }
+
+    //getter for the name attribute
+    public function getNameAttribute()
+    {
+        return $this->raw_data['title'] ?? null;
     }
 
     public function user()

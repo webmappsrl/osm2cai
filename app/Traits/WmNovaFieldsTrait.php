@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 
+const GEOHUB_API_URL = 'https://geohub.webmapp.it/api/app/webmapp/';
+
 trait WmNovaFieldsTrait
 {
     /**
@@ -36,7 +38,7 @@ trait WmNovaFieldsTrait
             ? substr($this->app_id, strpos($this->app_id, 'geohub_') + strlen('geohub_'))
             : $this->app_id;
 
-        $geohubAppConfig = 'https://geohub.webmapp.it/api/app/webmapp/' . $appId . '/config.json';
+        $geohubAppConfig = GEOHUB_API_URL . $appId . '/config.json';
         $config = Cache::remember('geohub_app_config_' . $appId, now()->addHour(), function () use ($geohubAppConfig) {
             $response = Http::get($geohubAppConfig);
             return $response->json();
@@ -48,11 +50,8 @@ trait WmNovaFieldsTrait
             if ($this->form_id != $formSection['id']) {
                 continue;
             }
-            $tabsLabel = $formSection['label']['it'] ?? $formSection['label']['ït'] ?? $formSection['label']['en'];
+            $tabsLabel = $this->getTabsLabel($formSection);
             foreach ($formSection['fields'] as $fieldSchema) {
-                if (in_array($fieldSchema['name'], ['title', 'description'])) {
-                    continue;
-                }
                 $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
                 if ($novaField) {
                     $fields[] = $novaField;
@@ -167,5 +166,16 @@ trait WmNovaFieldsTrait
         }
 
         return $acquisitionForm;
+    }
+
+    /**
+     * Get the tabs label from the form section
+     * 
+     * @param array $formSection
+     * @return string
+     */
+    protected function getTabsLabel(array $formSection)
+    {
+        return $formSection['label']['it'] ?? $formSection['label']['ït'] ?? $formSection['label']['en'];
     }
 }

@@ -106,7 +106,7 @@ class UgcPoi extends Resource
             Text::make('App ID', 'app_id')
                 ->onlyOnDetail(),
             Text::make('Form ID', function () {
-                $rawData = is_string($this->raw_data) ? json_decode($this->raw_data, true) : $this->raw_data;
+                $rawData = $this->raw_data;
                 return $this->form_id ?? $rawData['id'] ?? null;
             })
                 ->hideWhenCreating()
@@ -117,23 +117,23 @@ class UgcPoi extends Resource
                 ->hideWhenUpdating(),
             Text::make('Geohub ID', 'geohub_id')
                 ->onlyOnDetail(),
-            Text::make('Nome', 'name')
-                ->sortable()
-                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
-                    $model->{$attribute} = $request->{$requestAttribute};
-                    $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
-                    $rawData['title'] = $request->{$requestAttribute};
-                    $model->raw_data = $rawData;
-                    $model->save();
-                }),
-            Textarea::make('Descrizione', 'description')
-                ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
-                    $model->{$attribute} = $request->{$requestAttribute};
-                    $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
-                    $rawData['description'] = $request->{$requestAttribute};
-                    $model->raw_data = $rawData;
-                    $model->save();
-                }),
+            // Text::make('Nome', 'name')
+            //     ->sortable()
+            //     ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+            //         $model->{$attribute} = $request->{$requestAttribute};
+            //         $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+            //         $rawData['title'] = $request->{$requestAttribute};
+            //         $model->raw_data = $rawData;
+            //         $model->save();
+            //     }),
+            // Textarea::make('Descrizione', 'description')
+            //     ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+            //         $model->{$attribute} = $request->{$requestAttribute};
+            //         $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+            //         $rawData['description'] = $request->{$requestAttribute};
+            //         $model->raw_data = $rawData;
+            //         $model->save();
+            //     }),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
