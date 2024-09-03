@@ -18,7 +18,9 @@ use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
+use DKulyk\Nova\Tabs;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Panel;
 
 class UgcPoi extends Resource
 {
@@ -86,7 +88,7 @@ class UgcPoi extends Resource
      */
     public function fields(Request $request)
     {
-        $allFields = [
+        $commonFields = [
             ID::make(__('ID'), 'id')
                 ->sortable()
                 ->readonly()
@@ -104,7 +106,7 @@ class UgcPoi extends Resource
             Text::make('App ID', 'app_id')
                 ->onlyOnDetail(),
             Text::make('Form ID', function () {
-                $rawData = json_decode($this->raw_data, true);
+                $rawData = $this->raw_data;
                 return $this->form_id ?? $rawData['id'] ?? null;
             })
                 ->hideWhenCreating()
@@ -115,20 +117,23 @@ class UgcPoi extends Resource
                 ->hideWhenUpdating(),
             Text::make('Geohub ID', 'geohub_id')
                 ->onlyOnDetail(),
-            Text::make('Nome', 'name')
-                ->sortable(),
-            Textarea::make('Descrizione', 'description'),
-            BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
-            Text::make('Taxonomy wheres', function () {
-                $array = explode(',', $this->taxonomy_wheres);
-                $result = $array[0];
-                if (count($array) > 1) {
-                    $result .= '[...]';
-                }
-                return $result;
-            })->onlyOnIndex(),
-            Text::make('Taxonomy wheres', 'taxonomy_wheres')
-                ->hideFromIndex(),
+            // Text::make('Nome', 'name')
+            //     ->sortable()
+            //     ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+            //         $model->{$attribute} = $request->{$requestAttribute};
+            //         $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+            //         $rawData['title'] = $request->{$requestAttribute};
+            //         $model->raw_data = $rawData;
+            //         $model->save();
+            //     }),
+            // Textarea::make('Descrizione', 'description')
+            //     ->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+            //         $model->{$attribute} = $request->{$requestAttribute};
+            //         $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+            //         $rawData['description'] = $request->{$requestAttribute};
+            //         $model->raw_data = $rawData;
+            //         $model->save();
+            //     }),
             MapPointNova3::make('geometry')->withMeta([
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
@@ -138,7 +143,7 @@ class UgcPoi extends Resource
                 'defaultZoom' => 13
             ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
-                $jsonRawData = json_decode($model->raw_data, true);
+                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
                 unset($jsonRawData['position']);
                 unset($jsonRawData['displayPosition']);
                 unset($jsonRawData['city']);
@@ -148,7 +153,7 @@ class UgcPoi extends Resource
                 return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Device data'), function ($model) {
-                $jsonRawData = json_decode($model->raw_data, true);
+                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
                 $jsonData['position'] = $jsonRawData['position'] ?? null;
                 $jsonData['displayPosition'] = $jsonRawData['displayPosition'] ?? null;
                 $jsonData['city'] = $jsonRawData['city'] ?? null;
@@ -157,21 +162,31 @@ class UgcPoi extends Resource
                 return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Nominatim'), function ($model) {
-                $jsonData = json_decode($model->raw_data, true)['nominatim'];
-                $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return $rawData;
+                $jsonData = is_string($model->raw_data) ? json_decode($model->raw_data, true)['nominatim'] : $model->raw_data['nominatim'];
+                $jsonData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return $jsonData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Raw data'), function ($model) {
-                $rawData = json_encode(json_decode($model->raw_data, true), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return $rawData;
+                $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+                return json_encode($rawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             })->onlyOnDetail()->language('json')->rules('json'),
         ];
 
+        $formFields = $this->jsonForm('raw_data');
+
+        if (!empty($formFields)) {
+            array_push(
+                $commonFields,
+                $formFields,
+            );
+        }
+        array_push($commonFields, BelongsToMany::make('Media', 'ugc_media', UgcMedia::class));
+
         if (empty(static::$activeFields)) {
-            return $allFields;
+            return $commonFields;
         }
 
-        return array_filter($allFields, function ($field) {
+        return array_filter($commonFields, function ($field) {
             return in_array($field->name, static::$activeFields);
         });
     }

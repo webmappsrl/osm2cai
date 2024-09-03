@@ -14,6 +14,10 @@ class UgcTrack extends Model
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'metadata', 'app_id'];
 
+    protected $casts = [
+        'raw_data' => 'array',
+    ];
+
     public function ugc_media(): BelongsToMany
     {
         return $this->belongsToMany(UgcMedia::class);
