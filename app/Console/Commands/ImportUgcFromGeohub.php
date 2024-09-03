@@ -195,7 +195,7 @@ class ImportUgcFromGeohub extends Command
 
         $data = [
             'name' => $geoJson['properties']['name'],
-            'raw_data' => $geoJson['properties']['raw_data'],
+            'raw_data' => json_decode($geoJson['properties']['raw_data'], true),
             'updated_at' => $geoJson['properties']['updated_at'],
             'taxonomy_wheres' => $geoJson['properties']['taxonomy_wheres'],
             'app_id' => 'geohub_' . $appId,

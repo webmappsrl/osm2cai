@@ -59,7 +59,7 @@ class SourceSurvey extends UgcPoi
 
     public function fields(Request $request)
     {
-        $rawData = json_decode($this->raw_data, true);
+        $rawData = $this->raw_data;
         $fields = parent::fields($request);
 
         $dedicatedFields = [
@@ -119,7 +119,7 @@ class SourceSurvey extends UgcPoi
 
     public function readonlyFields()
     {
-        $rawData = json_decode($this->raw_data, true);
+        $rawData = $this->raw_data;
         return [
             Text::make('ID', 'id')->hideFromIndex()->readonly(),
             Text::make('User', 'user')->resolveUsing(function ($user) {

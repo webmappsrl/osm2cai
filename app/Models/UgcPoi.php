@@ -6,14 +6,20 @@ use Carbon\Carbon;
 use app\Traits\GeojsonableTrait;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\UgcWaterFlowValidatedStatus;
+use App\Traits\WmNovaFieldsTrait;
+use Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class UgcPoi extends Model
 {
-    use HasFactory, GeojsonableTrait;
+    use HasFactory, GeojsonableTrait, WmNovaFieldsTrait;
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_rate_volume', 'flow_rate_fill_time', 'has_photo', 'app_id'];
+
+    protected $casts = [
+        'raw_data' => 'array',
+    ];
 
     protected static function boot()
     {
@@ -24,6 +30,12 @@ class UgcPoi extends Model
             $model->form_id = $rawData['id'] ?? null;
             $model->save();
         });
+    }
+
+    //getter for the name attribute
+    public function getNameAttribute()
+    {
+        return $this->raw_data['title'] ?? null;
     }
 
     public function user()
