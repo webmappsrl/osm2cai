@@ -1,5 +1,13 @@
 # Changelog
 
+## [233.33.0](https://github.com/webmappsrl/osm2cai/compare/v233.32.0...v233.33.0) (2024-09-03)
+
+
+### Features
+
+* update nova ugc poi edit OC:3877 ([#128](https://github.com/webmappsrl/osm2cai/issues/128)) ([c052da4](https://github.com/webmappsrl/osm2cai/commit/c052da48801121ca3a86bf2f218baa6e302cb76d))
+* update survey policies OC:3873 ([#126](https://github.com/webmappsrl/osm2cai/issues/126)) ([88637b8](https://github.com/webmappsrl/osm2cai/commit/88637b8f2f267ee3d179c01638fdb86cf6364ab0))
+
 ## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-08-30)
 
 
