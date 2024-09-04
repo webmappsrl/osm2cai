@@ -26,7 +26,7 @@ class UgcPoiResource extends JsonResource
             $result['geometry'] = json_decode($geom, true);
         }
 
-        $result['raw_data'] = json_decode($this->raw_data, true);
+        $result['raw_data'] = $this->raw_data;
 
         return $result;
     }
