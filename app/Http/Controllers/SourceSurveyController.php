@@ -167,7 +167,7 @@ HTML;
         $features = [];
 
         foreach ($surveys as $survey) {
-            $rawData = json_decode($survey->raw_data, true);
+            $rawData = $survey->raw_data;
             $position = $rawData['position'] ?? null;
             $altitude = $position['altitude'] ?? 'N/A';
             $feature = [
@@ -197,7 +197,7 @@ HTML;
         $gpx .= '<gpx version="1.1" creator="OSM2CAI" xmlns="http://www.topografix.com/GPX/1/1">';
 
         foreach ($surveys as $survey) {
-            $rawData = json_decode($survey->raw_data, true);
+            $rawData = $survey->raw_data;
             $geometry = json_decode(DB::select("select st_asGeojson(geometry) as geom from ugc_pois where id=$survey->id;")[0]->geom, true);
             $position = $rawData['position'] ?? null;
             $altitude = $position['altitude'] ?? 'N/A';
@@ -228,7 +228,7 @@ HTML;
         $kml .= '<Document>';
 
         foreach ($surveys as $survey) {
-            $rawData = json_decode($survey->raw_data, true);
+            $rawData = $survey->raw_data;
             $geometry = json_decode(DB::select("select st_asGeojson(geometry) as geom from ugc_pois where id=$survey->id;")[0]->geom, true);
             $position = $rawData['position'] ?? null;
             $altitude = $position['altitude'] ?? 'N/A';
