@@ -21,6 +21,7 @@
     "fruitcake/laravel-cors": "^2.0",
     "gabrieliuga/laravel-nova-sidebar-links": "^1.0",
     "guzzlehttp/guzzle": "^7.0.1",
+    "idez/nova-date-range-filter": "^1.3",
     "imumz/leaflet-map": "^1.1",
     "laravel/framework": "^8.12",
     "laravel/nova": "*",
