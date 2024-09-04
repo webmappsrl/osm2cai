@@ -45,7 +45,7 @@ class SourceSurveyController extends Controller
             }
             $osm2caiUrl = url('resources/source-surveys/' . $sourceSurvey->id);
 
-            $rawData = json_decode($sourceSurvey->raw_data, true);
+            $rawData = $sourceSurvey->raw_data;
             $date = $rawData['date'] ?? 'N/A';
             if ($date !== 'N/A') {
                 $date = Carbon::parse($date)->format('d-m-Y');

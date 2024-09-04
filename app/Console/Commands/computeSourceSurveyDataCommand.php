@@ -42,7 +42,7 @@ class computeSourceSurveyDataCommand extends Command
     {
 
         foreach (UgcPoi::where('form_id', 'water')->get() as $sourceSurvey) {
-            $rawData = json_decode($sourceSurvey->raw_data, true);
+            $rawData = $sourceSurvey->raw_data;
 
             $volume = $rawData['range_volume'] ?? '0';
             $volume = preg_replace('/[^0-9,]/', '', $volume);
