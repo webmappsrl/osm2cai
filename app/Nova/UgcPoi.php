@@ -105,9 +105,12 @@ class UgcPoi extends Resource
                 ->options(UgcValidatedStatus::cases()),
             Text::make('App ID', 'app_id')
                 ->onlyOnDetail(),
-            Text::make('Form ID', function () {
-                $rawData = $this->raw_data;
-                return $this->form_id ?? $rawData['id'] ?? null;
+            Text::make('Form ID', 'form_id')->resolveUsing(function ($value) {
+                if ($this->raw_data and isset($this->raw_data['id'])) {
+                    return $this->raw_data['id'];
+                } else {
+                    return $value;
+                }
             })
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
@@ -180,7 +183,7 @@ class UgcPoi extends Resource
                 $formFields,
             );
         }
-        array_push($commonFields, BelongsToMany::make('Media', 'ugc_media', UgcMedia::class));
+        array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
 
         if (empty(static::$activeFields)) {
             return $commonFields;
