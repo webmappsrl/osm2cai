@@ -14,10 +14,7 @@ class AddValidatorRolesToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('is_archaeological_area_validator')->default(false);
-            $table->boolean('is_signs_validator')->default(false);
-            $table->boolean('is_geological_site_validator')->default(false);
-            $table->boolean('is_archaeological_site_validator')->default(false);
+            $table->jsonb('resources_validator')->nullable();
         });
     }
 
@@ -29,7 +26,7 @@ class AddValidatorRolesToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['is_archaeological_area_validator', 'is_signs_validator', 'is_geological_site_validator', 'is_archaeological_site_validator']);
+            $table->dropColumn('resources_validator');
         });
     }
 }
