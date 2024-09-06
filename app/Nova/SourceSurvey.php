@@ -41,7 +41,7 @@ class SourceSurvey extends AbstractValidationResource
      *
      * @var array
      */
-    protected static $activeFields = ['ID', 'User', 'Validated', 'geometry', 'Media', 'Gallery'];
+    protected static $activeFields = ['ID', 'User', 'Validated', 'Validation Date', 'Validator', 'geometry', 'Gallery'];
 
     public function fields(Request $request)
     {
@@ -97,10 +97,25 @@ class SourceSurvey extends AbstractValidationResource
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
             Select::make('Validated', 'validated')
-                ->options(UgcValidatedStatus::cases()),
+                ->options(UgcValidatedStatus::cases())
+                ->canSee(function ($request) {
+                    return $request->user()->isValidatorForFormId($this->form_id) ?? false;
+                })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $isValidated = $request->$requestAttribute;
+                    $model->$attribute = $isValidated;
+
+                    if ($isValidated == UgcValidatedStatus::Valid) {
+                        $model->validator_id = $request->user()->id;
+                        $model->validation_date = now();
+                    } else {
+                        $model->validator_id = null;
+                        $model->validation_date = null;
+                    }
+                }),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             Textarea::make('Notes', 'note'),
+
         ];
     }
 

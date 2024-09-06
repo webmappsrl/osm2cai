@@ -17,7 +17,7 @@ class UgcPoi extends Model
 {
     use HasFactory, GeojsonableTrait, WmNovaFieldsTrait;
 
-    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_rate_volume', 'flow_rate_fill_time', 'has_photo', 'app_id'];
+    protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'form_id', 'user_no_match', 'flow_rate_volume', 'flow_rate_fill_time', 'has_photo', 'app_id', 'validator_id', 'validation_date'];
 
     protected $casts = [
         'raw_data' => 'array',

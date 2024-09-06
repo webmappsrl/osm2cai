@@ -2,9 +2,7 @@
 
 namespace App\Nova;
 
-use App\Nova\User;
-use DKulyk\Nova\Tabs;
-use Laravel\Nova\Panel;
+
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -12,16 +10,11 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\KeyValue;
-use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
-use Illuminate\Support\Facades\Auth;
 use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
 class UgcPoi extends Resource
 {

@@ -137,16 +137,16 @@ class NaturalSpring extends Resource
 
     public function authorizeToView(Request $request)
     {
-        return Auth::user()->is_source_validator;
+        return Auth::user()->isValidatorForFormId('water');
     }
 
     public function authorizeToViewAny(Request $request)
     {
-        return Auth::user()->is_source_validator;
+        return Auth::user()->isValidatorForFormId('water');
     }
 
     public static function availableForNavigation(Request $request)
     {
-        return Auth::user()->is_source_validator;
+        return Auth::user()->isValidatorForFormId('water');
     }
 }
