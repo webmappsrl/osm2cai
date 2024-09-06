@@ -12,9 +12,6 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\KeyValue;
-use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\UgcAppIdFilter;
 use Illuminate\Support\Facades\Auth;
@@ -112,11 +109,39 @@ class UgcPoi extends Resource
                 ->hideFromIndex()
                 ->hideFromDetail(),
             Select::make('Validated', 'validated')
-                ->options(UgcValidatedStatus::cases()),
-            Text::make('App ID', 'app_id'),
-            Text::make('Form ID', function () {
-                $rawData = $this->raw_data;
-                return $this->form_id ?? $rawData['id'] ?? null;
+                ->options(UgcValidatedStatus::cases())
+                ->canSee(function ($request) {
+                    return $request->user()->isValidatorForFormId($this->form_id) ?? false;
+                })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $isValidated = $request->$requestAttribute;
+                    $model->$attribute = $isValidated;
+
+                    if ($isValidated == UgcValidatedStatus::Valid) {
+                        $model->validator_id = $request->user()->id;
+                        $model->validation_date = now();
+                    } else {
+                        $model->validator_id = null;
+                        $model->validation_date = null;
+                    }
+                }),
+            DateTime::make('Validation Date', 'validation_date')
+                ->format('DD MMM YYYY HH:mm:ss')
+                ->onlyOnDetail(),
+            Text::make('Validator', function () {
+                if ($this->validator_id) {
+                    return $this->validator->name;
+                } else {
+                    return null;
+                }
+            })->onlyOnDetail(),
+            Text::make('App ID', 'app_id')
+                ->onlyOnDetail(),
+            Text::make('Form ID', 'form_id')->resolveUsing(function ($value) {
+                if ($this->raw_data and isset($this->raw_data['id'])) {
+                    return $this->raw_data['id'];
+                } else {
+                    return $value;
+                }
             })
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
@@ -192,7 +217,7 @@ class UgcPoi extends Resource
                 $formFields,
             );
         }
-        array_push($commonFields, BelongsToMany::make('Media', 'ugc_media', UgcMedia::class));
+        array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
 
         if (empty(static::$activeFields)) {
             return $commonFields;

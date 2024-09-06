@@ -6,6 +6,7 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use Wm\MapPointNova3\MapPointNova3;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class NaturalSpring extends Resource
@@ -39,10 +40,11 @@ class NaturalSpring extends Resource
      * @var array
      */
     public static array $search = [
-        'id', 'name'
+        'id',
+        'name'
     ];
 
-    public static string $group = 'Acqua Sorgente';
+    public static string $group = ' Validazione';
     public static $priority = 2;
 
     /**
@@ -131,5 +133,20 @@ class NaturalSpring extends Resource
     public function actions(Request $request)
     {
         return [];
+    }
+
+    public function authorizeToView(Request $request)
+    {
+        return Auth::user()->isValidatorForFormId('water');
+    }
+
+    public function authorizeToViewAny(Request $request)
+    {
+        return Auth::user()->isValidatorForFormId('water');
+    }
+
+    public static function availableForNavigation(Request $request)
+    {
+        return Auth::user()->isValidatorForFormId('water');
     }
 }
