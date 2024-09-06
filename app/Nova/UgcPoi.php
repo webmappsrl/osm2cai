@@ -2,6 +2,9 @@
 
 namespace App\Nova;
 
+use App\Nova\User;
+use DKulyk\Nova\Tabs;
+use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -18,9 +21,7 @@ use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
-use DKulyk\Nova\Tabs;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel;
 
 class UgcPoi extends Resource
 {
@@ -102,7 +103,31 @@ class UgcPoi extends Resource
                 }
             })->asHtml(),
             Select::make('Validated', 'validated')
-                ->options(UgcValidatedStatus::cases()),
+                ->options(UgcValidatedStatus::cases())
+                ->canSee(function ($request) {
+                    return $request->user()->isValidatorForFormId($this->form_id) ?? false;
+                })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $isValidated = $request->$requestAttribute;
+                    $model->$attribute = $isValidated;
+
+                    if ($isValidated == UgcValidatedStatus::Valid) {
+                        $model->validator_id = $request->user()->id;
+                        $model->validation_date = now();
+                    } else {
+                        $model->validator_id = null;
+                        $model->validation_date = null;
+                    }
+                }),
+            DateTime::make('Validation Date', 'validation_date')
+                ->format('DD MMM YYYY HH:mm:ss')
+                ->onlyOnDetail(),
+            Text::make('Validator', function () {
+                if ($this->validator_id) {
+                    return $this->validator->name;
+                } else {
+                    return null;
+                }
+            })->onlyOnDetail(),
             Text::make('App ID', 'app_id')
                 ->onlyOnDetail(),
             Text::make('Form ID', 'form_id')->resolveUsing(function ($value) {
