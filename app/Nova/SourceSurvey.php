@@ -14,41 +14,26 @@ use Laravel\Nova\Fields\Textarea;
 use Wm\MapPointNova3\MapPointNova3;
 use Illuminate\Support\Facades\Auth;
 use App\Nova\Filters\ValidatedFilter;
+use App\Nova\AbstractValidationResource;
 use App\Enums\UgcWaterFlowValidatedStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\WaterFlowValidatedFilter;
 
-class SourceSurvey extends UgcPoi
+class SourceSurvey extends AbstractValidationResource
 {
-    public static string $group = 'Acqua Sorgente';
-    public static $priority = 1;
-
-    public static function label()
+    public static function getFormId(): string
     {
-        $label = 'Monitoraggi';
-
-        return __($label);
+        return 'water';
     }
 
-    public static function indexQuery(NovaRequest $request, $query)
+    public static function getLabel(): string
     {
-        $query =  $query->where('form_id', 'water');
+        return 'Acqua Sorgente';
     }
 
-
-    public function authorizedToUpdate(Request $request)
+    public static function getAuthorizationMethod(): string
     {
-        return $request->user()->is_source_validator;
-    }
-
-    public function authorizeToUpdate(Request $request)
-    {
-        return $request->user()->is_source_validator;
-    }
-
-    public function authorizedToDelete(Request $request)
-    {
-        return false;
+        return 'is_source_validator';
     }
 
     /**
@@ -142,20 +127,5 @@ class SourceSurvey extends UgcPoi
                 return true;
             })->standalone()
         ];
-    }
-
-    public function authorizeToView(Request $request)
-    {
-        return Auth::user()->is_source_validator;
-    }
-
-    public function authorizeToViewAny(Request $request)
-    {
-        return Auth::user()->is_source_validator;
-    }
-
-    public static function availableForNavigation(Request $request)
-    {
-        return Auth::user()->is_source_validator;
     }
 }

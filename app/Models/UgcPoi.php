@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Attribute;
 use Carbon\Carbon;
+use App\Models\User;
 use app\Traits\GeojsonableTrait;
+use App\Traits\WmNovaFieldsTrait;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\UgcWaterFlowValidatedStatus;
-use App\Traits\WmNovaFieldsTrait;
-use Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -19,6 +21,7 @@ class UgcPoi extends Model
 
     protected $casts = [
         'raw_data' => 'array',
+        'validation_date' => 'datetime',
     ];
 
     protected static function boot()
@@ -46,6 +49,11 @@ class UgcPoi extends Model
     public function ugc_media(): BelongsToMany
     {
         return $this->belongsToMany(UgcMedia::class);
+    }
+
+    public function validator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validator_id');
     }
 
     /**

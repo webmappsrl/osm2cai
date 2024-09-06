@@ -44,7 +44,7 @@ class NaturalSpring extends Resource
         'name'
     ];
 
-    public static string $group = 'Acqua Sorgente';
+    public static string $group = ' Validazione';
     public static $priority = 2;
 
     /**

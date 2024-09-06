@@ -26,43 +26,53 @@ trait WmNovaFieldsTrait
         // Ensure Laravel Nova is installed
         $this->ensureNovaIsInstalled();
 
-        if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
-            return [];
-        }
-
-        if (strpos($this->app_id, 'osm2cai') !== false) {
-            return [];
-        }
-
-        $appId = strpos($this->app_id, 'geohub_') !== false
-            ? substr($this->app_id, strpos($this->app_id, 'geohub_') + strlen('geohub_'))
-            : $this->app_id;
-
-        $geohubAppConfig = GEOHUB_API_URL . $appId . '/config.json';
-        $config = Cache::remember('geohub_app_config_' . $appId, now()->addHour(), function () use ($geohubAppConfig) {
-            $response = Http::get($geohubAppConfig);
-            return $response->json();
-        });
-        $acquisitionForm = $this->getAcquisitionForm($config);
-
-        $fields = [];
-        foreach ($acquisitionForm as $formSection) {
-            if ($this->form_id != $formSection['id']) {
-                continue;
+        if (!$formSchema) {
+            if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
+                return [];
             }
-            $tabsLabel = $this->getTabsLabel($formSection);
-            foreach ($formSection['fields'] as $fieldSchema) {
+
+            if (strpos($this->app_id, 'osm2cai') !== false) {
+                return [];
+            }
+
+            $appId = strpos($this->app_id, 'geohub_') !== false
+                ? substr($this->app_id, strpos($this->app_id, 'geohub_') + strlen('geohub_'))
+                : $this->app_id;
+
+            $geohubAppConfig = GEOHUB_API_URL . $appId . '/config.json';
+            $config = Cache::remember('geohub_app_config_' . $appId, now()->addHour(), function () use ($geohubAppConfig) {
+                $response = Http::get($geohubAppConfig);
+                return $response->json();
+            });
+            $acquisitionForm = $this->getAcquisitionForm($config);
+
+            $fields = [];
+            foreach ($acquisitionForm as $formSection) {
+                if ($this->form_id != $formSection['id']) {
+                    continue;
+                }
+                $tabsLabel = $this->getTabsLabel($formSection);
+                foreach ($formSection['fields'] as $fieldSchema) {
+                    $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
+                    if ($novaField) {
+                        $fields[] = $novaField;
+                    }
+                }
+            }
+
+            $tabs = new Tabs($tabsLabel, [
+                ' ' => $fields
+            ]);
+            return $tabs;
+        } else {
+            foreach ($formSchema as $fieldSchema) {
                 $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
                 if ($novaField) {
                     $fields[] = $novaField;
                 }
             }
+            return $fields;
         }
-
-        $tabs = new Tabs($tabsLabel, [
-            ' ' => $fields
-        ]);
-        return $tabs;
     }
 
     /**
@@ -78,7 +88,7 @@ trait WmNovaFieldsTrait
         $fieldType = $fieldSchema['type'] ?? 'text';
         $label = $fieldSchema['label']['it'] ?? $fieldSchema['label']['ït'] ?? $fieldSchema['label']['en'];
         $rules = $this->defineRules($fieldSchema);
-        if ($fieldSchema['required']) {
+        if (isset($fieldSchema['required']) && $fieldSchema['required']) {
             $rules[] = 'required';
         }
 
@@ -103,6 +113,10 @@ trait WmNovaFieldsTrait
                 ->options($options)
                 ->rules($rules)
                 ->displayUsingLabels()
+                ->hideFromIndex();
+        } elseif ($fieldType === 'boolean') {
+            $field = \Laravel\Nova\Fields\Boolean::make($label, "$columnName->$key")
+                ->rules($rules)
                 ->hideFromIndex();
         } else {
             $field = \Laravel\Nova\Fields\Text::make(__($label), "$columnName->$key")
