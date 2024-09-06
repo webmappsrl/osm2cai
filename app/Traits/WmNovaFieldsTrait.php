@@ -73,6 +73,16 @@ trait WmNovaFieldsTrait
             }
             return $fields;
         }
+        if (empty($fields)) {
+            $fields = [\Laravel\Nova\Fields\Text::make(__('No data for this form ID'), function () {
+                return '/';
+            })
+                ->hideFromIndex()];
+        }
+        $tabs = new Tabs($tabsLabel, [
+            ' ' => $fields
+        ]);
+        return $tabs;
     }
 
     /**

@@ -22,7 +22,15 @@ class UgcPoi extends Model
     protected $casts = [
         'raw_data' => 'array',
         'validation_date' => 'datetime',
+        'raw_data->date' => 'datetime:Y-m-d H:i:s'
     ];
+
+    public function getRegisteredAtAttribute()
+    {
+        return isset($this->raw_data['date'])
+            ? Carbon::parse($this->raw_data['date'])
+            : null;
+    }
 
     protected static function boot()
     {

@@ -2,19 +2,26 @@
 
 namespace App\Nova;
 
-
+use DKulyk\Nova\Tabs;
+use Laravel\Nova\Panel;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
 use Wm\MapPointNova3\MapPointNova3;
+use App\Nova\Filters\UgcAppIdFilter;
+use Illuminate\Support\Facades\Auth;
 use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\RelatedUGCFilter;
+use App\Nova\Filters\UgcUserFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
+use PosLifestyle\DateRangeFilter\Enums\Config;
+use PosLifestyle\DateRangeFilter\DateRangeFilter;
 
 class UgcPoi extends Resource
 {
@@ -95,6 +102,12 @@ class UgcPoi extends Resource
                     return $this->user_no_match;
                 }
             })->asHtml(),
+            BelongsTo::make('User', 'user', User::class)
+                ->searchable()
+                ->hideWhenUpdating()
+                ->hideWhenCreating()
+                ->hideFromIndex()
+                ->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases())
                 ->canSee(function ($request) {
@@ -132,10 +145,13 @@ class UgcPoi extends Resource
             })
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
+            DateTime::make('Registered At', 'registered_at')
+                ->format('DD MMM YYYY HH:mm:ss'),
             DateTime::make('Updated At')
                 ->format('DD MMM YYYY HH:mm:ss')
                 ->hideWhenCreating()
-                ->hideWhenUpdating(),
+                ->hideWhenUpdating()
+                ->sortable(),
             Text::make('Geohub ID', 'geohub_id')
                 ->onlyOnDetail(),
             // Text::make('Nome', 'name')
@@ -234,6 +250,17 @@ class UgcPoi extends Resource
         return [
             (new RelatedUGCFilter()),
             (new UgcFormIdFilter()),
+            (new UgcAppIdFilter()),
+            (new DateRangeFilter(
+                'Registered At',
+                'raw_data->date',
+                [
+                    Config::DATE_FORMAT => 'd-m-Y',
+                    Config::SHORTHAND_CURRENT_MONTH => true,
+                    Config::ENABLE_TIME => true,
+                    Config::ENABLE_SECONDS => true,
+                ]
+            )),
             (new UgcUserNoMatchFilter()),
         ];
     }

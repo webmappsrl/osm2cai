@@ -112,17 +112,6 @@ class ImportUgcFromGeohub extends Command
             $this->info("Nessun elemento da sincronizzare per $type da $endpoint");
             return;
         }
-        //get the most recent updated_at from the list
-        $mostRecentUpdatedAt = max(array_values($list));
-
-        //get the most recent updated_at from the database in the ugc column $type
-        $mostRecentUpdatedAtDb = $type == 'poi' ? UgcPoi::max('updated_at') : ($type == 'track' ? UgcTrack::max('updated_at') : UgcMedia::max('updated_at'));
-
-        if ($mostRecentUpdatedAtDb > $mostRecentUpdatedAt) {
-            Log::channel('import-ugc')->info("Il database é aggiornato per $type");
-            $this->info("Il database é aggiornato per $type");
-            return;
-        }
 
         foreach ($list as $id => $updated_at) {
             $this->syncElement($type, $id, $updated_at, $appId);
@@ -154,8 +143,7 @@ class ImportUgcFromGeohub extends Command
 
         // Aggiungiamo questa condizione per aggiornare sempre l'app_id
         $needsUpdate = $model->wasRecentlyCreated ||
-            $model->updated_at < $updated_at ||
-            $model->app_id !== 'geohub_' . $appId;
+            $model->updated_at < $updated_at;
 
         if ($needsUpdate) {
             $this->syncRecord($model, $geoJson, $id, $appId, $type);
