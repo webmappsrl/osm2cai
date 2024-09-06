@@ -142,7 +142,8 @@ class UgcPoi extends Resource
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
             DateTime::make('Registered At', 'registered_at')
-                ->format('DD MMM YYYY HH:mm:ss'),
+                ->format('DD MMM YYYY HH:mm:ss')
+                ->readonly(),
             DateTime::make('Updated At')
                 ->format('DD MMM YYYY HH:mm:ss')
                 ->hideWhenCreating()
