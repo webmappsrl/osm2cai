@@ -12,42 +12,28 @@ use Laravel\Nova\Fields\Boolean;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\Textarea;
 use Wm\MapPointNova3\MapPointNova3;
+use Illuminate\Support\Facades\Auth;
 use App\Nova\Filters\ValidatedFilter;
+use App\Nova\AbstractValidationResource;
 use App\Enums\UgcWaterFlowValidatedStatus;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use App\Nova\Filters\WaterFlowValidatedFilter;
 
-class SourceSurvey extends UgcPoi
+class SourceSurvey extends AbstractValidationResource
 {
-    public static string $group = 'Acqua Sorgente';
-    public static $priority = 1;
-
-    public static function label()
+    public static function getFormId(): string
     {
-        $label = 'Monitoraggi';
-
-        return __($label);
+        return 'water';
     }
 
-    public static function indexQuery(NovaRequest $request, $query)
+    public static function getLabel(): string
     {
-        $query =  $query->where('form_id', 'water');
+        return 'Acqua Sorgente';
     }
 
-
-    public function authorizedToUpdate(Request $request)
+    public static function getAuthorizationMethod(): string
     {
-        return $request->user()->is_source_validator;
-    }
-
-    public function authorizeToUpdate(Request $request)
-    {
-        return $request->user()->is_source_validator;
-    }
-
-    public function authorizedToDelete(Request $request)
-    {
-        return false;
+        return 'is_source_validator';
     }
 
     /**
@@ -55,7 +41,7 @@ class SourceSurvey extends UgcPoi
      *
      * @var array
      */
-    protected static $activeFields = ['ID', 'User', 'Validated'];
+    protected static $activeFields = ['ID', 'User', 'Validated', 'Validation Date', 'Validator', 'geometry', 'Gallery'];
 
     public function fields(Request $request)
     {
@@ -76,34 +62,6 @@ class SourceSurvey extends UgcPoi
             Boolean::make('Photos', 'has_photo')->hideFromDetail(),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
-            MapPointNova3::make('geometry')->withMeta([
-                'center' => [42, 10],
-                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
-                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-                'minZoom' => 8,
-                'maxZoom' => 17,
-                'defaultZoom' => 13
-            ])->hideFromIndex(),
-            Text::make('Gallery', function () {
-                //get the ugc_media related to the resource
-                $medias = $this->ugc_media()->get();
-                $html = <<<HTML
-                        <div style="display: flex; justify-content: start;">
-                        HTML;
-                foreach ($medias as $media) {
-                    $html .= <<<HTML
-                <a href="{$media->relative_url}" target="_blank">
-                    <img src="{$media->relative_url}" style="width: 60px; margin-right: 5px; height: 60px; border: 1px solid #ccc; border-radius: 40%; padding: 2px;" alt="Thumbnail">
-                </a>
-                HTML;
-                }
-                $html .= <<<HTML
-                </div>
-                HTML;
-
-                return $html;
-            })->asHtml()
-                ->onlyOnDetail(),
             Textarea::make('Notes', 'note')->hideFromIndex(),
         ];
 
@@ -139,10 +97,25 @@ class SourceSurvey extends UgcPoi
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
             Select::make('Validated', 'validated')
-                ->options(UgcValidatedStatus::cases()),
+                ->options(UgcValidatedStatus::cases())
+                ->canSee(function ($request) {
+                    return $request->user()->isValidatorForFormId($this->form_id) ?? false;
+                })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
+                    $isValidated = $request->$requestAttribute;
+                    $model->$attribute = $isValidated;
+
+                    if ($isValidated == UgcValidatedStatus::Valid) {
+                        $model->validator_id = $request->user()->id;
+                        $model->validation_date = now();
+                    } else {
+                        $model->validator_id = null;
+                        $model->validation_date = null;
+                    }
+                }),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             Textarea::make('Notes', 'note'),
+
         ];
     }
 

@@ -31,7 +31,8 @@ class User extends Resource
     public static string $model = \App\Models\User::class;
     public static string $title = 'name';
     public static array $search = [
-        'name', 'email',
+        'name',
+        'email',
     ];
     public static string $group = '';
 
@@ -89,7 +90,7 @@ class User extends Resource
      */
     public function fields(Request $request): array
     {
-        return [
+        $fields = [
             //            ID::make()->sortable(),
             //            Gravatar::make()->maxWidth(50),
             Text::make('Name')
@@ -125,15 +126,6 @@ class User extends Resource
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
             Boolean::make(__('Itinerary Manager'), 'is_itinerary_manager')->sortable()->hideWhenCreating(function () {
-                $user = \App\Models\User::getEmulatedUser();
-
-                return !$user->is_administrator && !$user->is_national_referent;
-            })->hideWhenUpdating(function () {
-                $user = \App\Models\User::getEmulatedUser();
-
-                return !$user->is_administrator && !$user->is_national_referent;
-            }),
-            Boolean::make(__('Source Validator'), 'is_source_validator')->sortable()->hideWhenCreating(function () {
                 $user = \App\Models\User::getEmulatedUser();
 
                 return !$user->is_administrator && !$user->is_national_referent;
@@ -184,6 +176,12 @@ class User extends Resource
                 })
                 ->help('Utilizzare placeholder " @osm_id " per sostituire con l\'id della relazione(e.g. rel(@osm_id);node(around:1000)["amenity"~"monastery|place_of_worship|ruins"];);out;")'),
         ];
+
+        $validationFields = $this->jsonForm('resources_validator', $this->getValidatorFieldsSchema());
+
+        $fields = array_merge($fields, $validationFields);
+
+        return $fields;
     }
 
     /**

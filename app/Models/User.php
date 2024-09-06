@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Traits\WmNovaFieldsTrait;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class User
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Log;
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, WmNovaFieldsTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -46,6 +47,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'resources_validator' => 'array',
     ];
 
     public function region()
@@ -166,6 +168,72 @@ class User extends Authenticatable
             return 'local';
         }
         return $role;
+    }
+
+    public function isValidatorForFormId(string $formId)
+    {
+        $resourcesValidator = $this->resources_validator ?? [];
+
+        switch ($formId) {
+            case 'water':
+                return $resourcesValidator['is_source_validator'] ?? false;
+            case 'archaeological_area':
+                return $resourcesValidator['is_archaeological_area_validator'] ?? false;
+            case 'archaeological_site':
+                return $resourcesValidator['is_archaeological_site_validator'] ?? false;
+            case 'signs':
+                return $resourcesValidator['is_signs_validator'] ?? false;
+            case 'geological_site':
+                return $resourcesValidator['is_geological_site_validator'] ?? false;
+            default:
+                return false;
+        }
+    }
+
+    public function getValidatorFieldsSchema(): array
+    {
+        return [
+            [
+                'name' => 'is_source_validator',
+                'label' => [
+                    'it' => 'Validatore Sorgenti',
+                    'en' => 'Source Validator',
+                ],
+                'type' => 'boolean',
+            ],
+            [
+                'name' => 'is_archaeological_area_validator',
+                'label' => [
+                    'it' => 'Validatore Aree Archeologiche',
+                    'en' => 'Archaeological Area Validator',
+                ],
+                'type' => 'boolean',
+            ],
+            [
+                'name' => 'is_signs_validator',
+                'label' => [
+                    'it' => 'Validatore Segni',
+                    'en' => 'Signs Validator',
+                ],
+                'type' => 'boolean',
+            ],
+            [
+                'name' => 'is_geological_site_validator',
+                'label' => [
+                    'it' => 'Validatore Siti Geologici',
+                    'en' => 'Geological Site Validator',
+                ],
+                'type' => 'boolean',
+            ],
+            [
+                'name' => 'is_archaeological_site_validator',
+                'label' => [
+                    'it' => 'Validatore Siti Archeologici',
+                    'en' => 'Archaeological Site Validator',
+                ],
+                'type' => 'boolean',
+            ],
+        ];
     }
 
     /**
