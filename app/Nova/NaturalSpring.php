@@ -31,7 +31,7 @@ class NaturalSpring extends Resource
 
     public static function label()
     {
-        return 'Database';
+        return 'Database Acqua Sorgente';
     }
 
     /**
