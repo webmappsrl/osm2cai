@@ -54,10 +54,15 @@ class UgcPoiPolicy
      */
     public function update(User $user, UgcPoi $ugcPoi)
     {
+        $formId = $ugcPoi->form_id;
+        $validatorKey = $formId === 'water' ? 'is_source_validator' : 'is_' . $formId . '_validator';
+
         if ($user->is_administrator) {
             return true;
         }
-        return $user->id === $ugcPoi->user_id && $ugcPoi->validated != 'valid';
+
+        $resourcesValidator = $user->resources_validator ?? [];
+        return $resourcesValidator[$validatorKey] ?? false;
     }
 
     /**
