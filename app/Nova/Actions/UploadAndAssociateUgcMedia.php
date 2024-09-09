@@ -55,6 +55,7 @@ class UploadAndAssociateUgcMedia extends Action
                 'relative_url' => 'ugc-media/' . basename($path),
                 'user_id' => auth()->user()->id,
                 'geometry' => 'SRID=4326;' . $geometry,
+                'app_id' => 'osm2cai'
             ]);
 
             $ugcPoi->ugc_media()->attach($newUgcMedia->id);
