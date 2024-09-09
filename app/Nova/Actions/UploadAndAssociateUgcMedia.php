@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Nova\Actions;
+
+use Ebess\AdvancedNovaMediaLibrary\Fields\Images;
+use Illuminate\Bus\Queueable;
+use Laravel\Nova\Fields\File;
+use Laravel\Nova\Actions\Action;
+use Illuminate\Support\Collection;
+use Laravel\Nova\Fields\ActionFields;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Storage;
+
+class UploadAndAssociateUgcMedia extends Action
+{
+    use InteractsWithQueue, Queueable;
+
+    public $name = 'Carica Immagine';
+    public $showOnDetail = true;
+    public $showOnTableRow = true;
+
+    public function handle(ActionFields $fields, Collection $models)
+    {
+        \Log::info('UploadAndAssociateUgcMedia action started');
+        \Log::info('Fields:', $fields->toArray());
+
+        $ugcPoi = $models->first();
+
+        if (auth()->user()->id !== $ugcPoi->user_id) {
+            return Action::danger('Non sei autorizzato a caricare immagini per questo UgcPoi.');
+        }
+
+        if (!$fields->has('ugc-media')) {
+            \Log::error('No image field found in the request');
+            return Action::danger('Nessuna immagine trovata nella richiesta.');
+        }
+
+        $ugcMedia = $fields->ugc_media;
+
+        if (!$ugcMedia) {
+            \Log::error('Image is null');
+            return Action::danger('L\'immagine caricata è nulla.');
+        }
+
+        \Log::info('Image details:', [
+            'name' => $ugcMedia->getClientOriginalName(),
+            'size' => $ugcMedia->getSize(),
+            'mime' => $ugcMedia->getMimeType(),
+        ]);
+
+        try {
+            $path = $ugcMedia->store('ugc-media', 'public');
+
+            // Modifica qui per includere lo SRID
+            $geometry = $ugcPoi->geometry;
+            $newUgcMedia = \App\Models\UgcMedia::create([
+                'name' => $ugcMedia->getClientOriginalName(),
+                'relative_url' => 'ugc-media/' . basename($path),
+                'user_id' => auth()->user()->id,
+                'geometry' => 'SRID=4326;' . $geometry,
+            ]);
+
+            $ugcPoi->ugc_media()->attach($newUgcMedia->id);
+
+
+            \Log::info('UgcMedia created successfully', ['id' => $newUgcMedia->id]);
+
+            return Action::message('Immagine caricata e associata con successo!');
+        } catch (\Exception $e) {
+            \Log::error('Error creating UgcMedia: ' . $e->getMessage());
+            return Action::danger('Errore durante il caricamento dell\'immagine: ' . $e->getMessage());
+        }
+    }
+
+    public function fields()
+    {
+        return [
+            File::make('Immagine', 'ugc_media')
+                ->disk('public')
+                ->path('ugc-media')
+                ->store(function ($request, $model) {
+                    return $request->file('ugc-media')->store('ugc-media', 'public');
+                })
+                ->onlyOnDetail()
+        ];
+    }
+}

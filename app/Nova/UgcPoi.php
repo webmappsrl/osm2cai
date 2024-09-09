@@ -5,10 +5,12 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\UgcAppIdFilter;
@@ -16,7 +18,6 @@ use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
-use Illuminate\Support\Facades\DB;
 use PosLifestyle\DateRangeFilter\Enums\Config;
 use PosLifestyle\DateRangeFilter\DateRangeFilter;
 
@@ -231,6 +232,20 @@ class UgcPoi extends Resource
                 }
                 return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
+            Text::make('Galleria', function () {
+                $images = $this->ugc_media;
+                $html = '<div style="display: flex; flex-wrap: wrap;">';
+                foreach ($images as $image) {
+                    $url = url('storage/' . $image->relative_url);
+                    $html .= '<div style="margin: 5px; text-align: center;">';
+                    $html .= '<a href="' . $url . '" target="_blank">';
+                    $html .= '<img src="' . $url . '" width="100" height="100" style="object-fit: cover;">';
+                    $html .= '</a>';
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+                return $html;
+            })->asHtml()->onlyOnDetail(),
         ];
 
         $formFields = $this->jsonForm('raw_data');
@@ -241,7 +256,7 @@ class UgcPoi extends Resource
                 $formFields,
             );
         }
-        array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
+        //array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
 
         if (empty(static::$activeFields)) {
             return $commonFields;
@@ -312,7 +327,13 @@ class UgcPoi extends Resource
             (new \App\Nova\Actions\DownloadUgcCsv()),
             (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
                 return true;
-            })->standalone()
+            })->standalone(),
+            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canRun(function ($request) {
+                return true; //autorizzazione gestita nella action
+            })
+                ->confirmText('Sei sicuro di voler caricare questa immagine?')
+                ->confirmButtonText('Carica')
+                ->cancelButtonText('Annulla'),
         ];
     }
 
