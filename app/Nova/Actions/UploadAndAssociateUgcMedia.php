@@ -22,8 +22,6 @@ class UploadAndAssociateUgcMedia extends Action
 
     public function handle(ActionFields $fields, Collection $models)
     {
-        \Log::info('UploadAndAssociateUgcMedia action started');
-        \Log::info('Fields:', $fields->toArray());
 
         $ugcPoi = $models->first();
 
@@ -32,14 +30,12 @@ class UploadAndAssociateUgcMedia extends Action
         }
 
         if (!$fields->has('ugc-media')) {
-            \Log::error('No image field found in the request');
             return Action::danger('Nessuna immagine trovata nella richiesta.');
         }
 
         $ugcMedia = $fields->ugc_media;
 
         if (!$ugcMedia) {
-            \Log::error('Image is null');
             return Action::danger('L\'immagine caricata è nulla.');
         }
 
@@ -64,11 +60,8 @@ class UploadAndAssociateUgcMedia extends Action
             $ugcPoi->ugc_media()->attach($newUgcMedia->id);
 
 
-            \Log::info('UgcMedia created successfully', ['id' => $newUgcMedia->id]);
-
             return Action::message('Immagine caricata e associata con successo!');
         } catch (\Exception $e) {
-            \Log::error('Error creating UgcMedia: ' . $e->getMessage());
             return Action::danger('Errore durante il caricamento dell\'immagine: ' . $e->getMessage());
         }
     }
@@ -82,7 +75,7 @@ class UploadAndAssociateUgcMedia extends Action
                 ->store(function ($request, $model) {
                     return $request->file('ugc-media')->store('ugc-media', 'public');
                 })
-                ->onlyOnDetail()
+                ->help('Carica un\'immagine da associare al POI. Se non sei il proprietario del POI, non potrai caricare le immagini.')
         ];
     }
 }
