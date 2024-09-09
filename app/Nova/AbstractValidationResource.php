@@ -46,7 +46,7 @@ abstract class AbstractValidationResource extends UgcPoi
             return $filter instanceof UgcFormIdFilter || $filter instanceof UgcUserNoMatchFilter;
         })->toArray();
 
-        return array_merge($parentFilters, [new ValidatedFilter]);
+        return $parentFilters;
     }
 
     public function authorizeToView(Request $request)

@@ -15,6 +15,7 @@ use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\UgcAppIdFilter;
 use App\Nova\Filters\UgcFormIdFilter;
+use App\Nova\Filters\ValidatedFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
@@ -256,7 +257,6 @@ class UgcPoi extends Resource
                 $formFields,
             );
         }
-        //array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
 
         if (empty(static::$activeFields)) {
             return $commonFields;
@@ -288,6 +288,7 @@ class UgcPoi extends Resource
     {
         return [
             (new RelatedUGCFilter()),
+            (new ValidatedFilter()),
             (new UgcFormIdFilter()),
             (new UgcAppIdFilter()),
             (new DateRangeFilter(
