@@ -68,4 +68,9 @@ abstract class AbstractValidationResource extends UgcPoi
     {
         return Auth::user()->isValidatorForFormId(static::getFormId());
     }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
+    }
 }
