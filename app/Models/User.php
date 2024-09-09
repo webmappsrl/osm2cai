@@ -170,8 +170,12 @@ class User extends Authenticatable
         return $role;
     }
 
-    public function isValidatorForFormId(string $formId)
+    public function isValidatorForFormId(?string $formId)
     {
+        if (!$formId) {
+            return false;
+        }
+
         $resourcesValidator = $this->resources_validator ?? [];
 
         switch ($formId) {
