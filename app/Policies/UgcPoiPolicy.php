@@ -61,6 +61,10 @@ class UgcPoiPolicy
             return true;
         }
 
+        if ($ugcPoi->user_id === $user->id) {
+            return true;
+        }
+
         $resourcesValidator = $user->resources_validator ?? [];
         return $resourcesValidator[$validatorKey] ?? false;
     }
