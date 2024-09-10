@@ -179,7 +179,7 @@ class User extends Resource
 
         $validationFields = $this->jsonForm('resources_validator', $this->getValidatorFieldsSchema());
 
-        $fields = array_merge($fields, $validationFields);
+        array_push($fields, $validationFields);
 
         return $fields;
     }

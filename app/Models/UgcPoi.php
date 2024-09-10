@@ -37,8 +37,8 @@ class UgcPoi extends Model
         parent::boot();
 
         static::created(function ($model) {
-            $rawData = json_decode($model->raw_data, true);
-            $model->form_id = $rawData['id'] ?? null;
+            $model->user_id = auth()->id();
+            $model->app_id = 'osm2cai';
             $model->save();
         });
     }

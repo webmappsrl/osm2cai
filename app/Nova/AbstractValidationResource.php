@@ -46,7 +46,7 @@ abstract class AbstractValidationResource extends UgcPoi
             return $filter instanceof UgcFormIdFilter || $filter instanceof UgcUserNoMatchFilter;
         })->toArray();
 
-        return array_merge($parentFilters, [new ValidatedFilter]);
+        return $parentFilters;
     }
 
     public function authorizeToView(Request $request)
@@ -67,5 +67,10 @@ abstract class AbstractValidationResource extends UgcPoi
     public function authorizedToUpdate(Request $request)
     {
         return Auth::user()->isValidatorForFormId(static::getFormId());
+    }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return false;
     }
 }

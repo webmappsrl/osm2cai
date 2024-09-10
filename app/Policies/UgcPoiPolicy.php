@@ -42,7 +42,7 @@ class UgcPoiPolicy
      */
     public function create(User $user)
     {
-        return false;
+        return true;
     }
 
     /**
@@ -58,6 +58,10 @@ class UgcPoiPolicy
         $validatorKey = $formId === 'water' ? 'is_source_validator' : 'is_' . $formId . '_validator';
 
         if ($user->is_administrator) {
+            return true;
+        }
+
+        if ($ugcPoi->user_id === $user->id) {
             return true;
         }
 
