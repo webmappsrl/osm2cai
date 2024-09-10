@@ -23,6 +23,9 @@ use App\Http\Controllers\MiturAbruzzoMapsController;
 */
 
 Route::get('/')->name('home');
+
+Route::get('/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth')->name('logs');
+
 Route::prefix('/emulatedUser')->name('emulatedUser.')->group(function () {
     Route::get('/restore', [\App\Http\Controllers\EmulateUserController::class, 'restore'])->name('restore');
 });
