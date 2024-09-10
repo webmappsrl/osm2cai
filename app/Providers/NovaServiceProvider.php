@@ -26,6 +26,7 @@ use App\Services\CacheService;
 use App\Services\CardsService;
 use Ericlagarda\NovaTextCard\TextCard;
 use Giuga\LaravelNovaSidebar\NovaSidebar;
+use Giuga\LaravelNovaSidebar\SidebarLink;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -383,16 +384,16 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
 ?>
-<h5><?= $relatedModel->name ?>: </h5>
-<a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    geojson
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    shape
-    Percorsi</a>
-<a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
-    csv
-    Percorsi</a>
+            <h5><?= $relatedModel->name ?>: </h5>
+            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geojson
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                shape
+                Percorsi</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                csv
+                Percorsi</a>
 <?php
         }
         $downloadLiks = ob_get_clean();
@@ -816,10 +817,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             ['API', '/api/documentation'],
             ['Documentazione OSM2CAI', 'https://catastorei.gitbook.io/documentazione-osm2cai/']
         ];
-        $user = Auth::user();
-        if ($user->is_administrator) {
+        $isAdmin = Auth::user()->is_administrator;
+        if ($isAdmin) {
             $tools[] = ['Sync UGC', route('import-ugc')];
             $tools[] = ['Sync EcPois,Mountain groups and Huts to regions', route('sync-to-regions')];
+            $tools[] = ['Logs', '/logs'];
         }
         return [
             (new NovaSidebar())->hydrate([
