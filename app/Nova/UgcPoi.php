@@ -237,7 +237,7 @@ class UgcPoi extends Resource
                 $images = $this->ugc_media;
                 $html = '<div style="display: flex; flex-wrap: wrap;">';
                 foreach ($images as $image) {
-                    $url = url('storage/' . $image->relative_url);
+                    $url = $image->getUrl();
                     $html .= '<div style="margin: 5px; text-align: center;">';
                     $html .= '<a href="' . $url . '" target="_blank">';
                     $html .= '<img src="' . $url . '" width="100" height="100" style="object-fit: cover;">';
