@@ -5,14 +5,17 @@ namespace App\Nova;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Filters\UgcAppIdFilter;
 use App\Nova\Filters\UgcFormIdFilter;
+use App\Nova\Filters\ValidatedFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
@@ -85,6 +88,23 @@ class UgcPoi extends Resource
      */
     public function fields(Request $request)
     {
+
+        $formIdOptions = DB::table('ugc_pois')
+            ->select('form_id')
+            ->distinct()
+            ->pluck('form_id', 'form_id')
+            ->toArray();
+
+        if ($request->isCreateOrAttachRequest()) {
+            return [
+                Select::make('Form ID', 'form_id')
+                    ->options($formIdOptions)
+                    ->rules('required')
+                    ->help('Seleziona il tipo di UGC che vuoi creare. Dopo il salvataggio, potrai inserire tutti i dettagli.'),
+            ];
+        }
+
+
         $commonFields = [
             ID::make(__('ID'), 'id')
                 ->sortable()
@@ -177,33 +197,56 @@ class UgcPoi extends Resource
                 'defaultZoom' => 13
             ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
-                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
-                unset($jsonRawData['position']);
-                unset($jsonRawData['displayPosition']);
-                unset($jsonRawData['city']);
-                unset($jsonRawData['date']);
-                unset($jsonRawData['nominatim']);
-                $rawData = json_encode($jsonRawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return $rawData;
+                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+                if ($jsonRawData) {
+                    unset($jsonRawData['position']);
+                    unset($jsonRawData['displayPosition']);
+                    unset($jsonRawData['city']);
+                    unset($jsonRawData['date']);
+                    unset($jsonRawData['nominatim']);
+                    $jsonRawData = json_encode($jsonRawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }
+                return $jsonRawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Device data'), function ($model) {
-                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
-                $jsonData['position'] = $jsonRawData['position'] ?? null;
-                $jsonData['displayPosition'] = $jsonRawData['displayPosition'] ?? null;
-                $jsonData['city'] = $jsonRawData['city'] ?? null;
-                $jsonData['date'] = $jsonRawData['date'] ?? null;
-                $rawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                return $rawData;
+                $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+                if ($jsonRawData) {
+                    $jsonData['position'] = $jsonRawData['position'] ?? null;
+                    $jsonData['displayPosition'] = $jsonRawData['displayPosition'] ?? null;
+                    $jsonData['city'] = $jsonRawData['city'] ?? null;
+                    $jsonData['date'] = $jsonRawData['date'] ?? null;
+                    $jsonRawData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }
+                return $jsonRawData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Nominatim'), function ($model) {
-                $jsonData = is_string($model->raw_data) ? json_decode($model->raw_data, true)['nominatim'] : $model->raw_data['nominatim'];
-                $jsonData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $jsonData = is_string($model->raw_data) ? json_decode($model->raw_data, true)['nominatim'] : $model->raw_data['nominatim'] ?? null;
+                if ($jsonData) {
+                    $jsonData = json_encode($jsonData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }
                 return $jsonData;
             })->onlyOnDetail()->language('json')->rules('json'),
             Code::make(__('Raw data'), function ($model) {
-                $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
-                return json_encode($rawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+                if ($rawData) {
+                    $rawData = json_encode($rawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }
+                return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
+            Text::make('Galleria', function () {
+                $images = $this->ugc_media;
+                $html = '<div style="display: flex; flex-wrap: wrap;">';
+                foreach ($images as $image) {
+                    $url = url('storage/' . $image->relative_url);
+                    $html .= '<div style="margin: 5px; text-align: center;">';
+                    $html .= '<a href="' . $url . '" target="_blank">';
+                    $html .= '<img src="' . $url . '" width="100" height="100" style="object-fit: cover;">';
+                    $html .= '</a>';
+                    $html .= '</div>';
+                }
+                $html .= '</div>';
+                return $html;
+            })->asHtml()->onlyOnDetail(),
         ];
 
         $formFields = $this->jsonForm('raw_data');
@@ -214,7 +257,6 @@ class UgcPoi extends Resource
                 $formFields,
             );
         }
-        array_push($commonFields, BelongsToMany::make('Gallery', 'ugc_media', UgcMedia::class));
 
         if (empty(static::$activeFields)) {
             return $commonFields;
@@ -246,6 +288,7 @@ class UgcPoi extends Resource
     {
         return [
             (new RelatedUGCFilter()),
+            (new ValidatedFilter()),
             (new UgcFormIdFilter()),
             (new UgcAppIdFilter()),
             (new DateRangeFilter(
@@ -285,7 +328,23 @@ class UgcPoi extends Resource
             (new \App\Nova\Actions\DownloadUgcCsv()),
             (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
                 return true;
-            })->standalone()
+            })->standalone(),
+            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canRun(function ($request) {
+                return true; //autorizzazione gestita nella action
+            })
+                ->confirmText('Sei sicuro di voler caricare questa immagine?')
+                ->confirmButtonText('Carica')
+                ->cancelButtonText('Annulla'),
         ];
+    }
+
+    public static function authorizedToCreate(Request $request)
+    {
+        return true;
+    }
+
+    public static function redirectAfterCreate(Request $request, $resource)
+    {
+        return '/resources/ugc-pois/' . $resource->id . '/edit';
     }
 }
