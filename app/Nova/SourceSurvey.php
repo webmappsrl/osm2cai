@@ -59,7 +59,9 @@ class SourceSurvey extends AbstractValidationResource
             Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
             Text::make('Conductivity microS/cm', 'conductivity'),
             Text::make('Temperature °C', 'temperature'),
-            Boolean::make('Photos', 'has_photo')->hideFromDetail(),
+            Boolean::make('Photos', function () {
+                return count($this->ugc_media) > 0;
+            })->hideFromDetail(),
             Select::make('Water Flow Rate Validated', 'water_flow_rate_validated')
                 ->options(UgcWaterFlowValidatedStatus::cases()),
             Textarea::make('Notes', 'note')->hideFromIndex(),

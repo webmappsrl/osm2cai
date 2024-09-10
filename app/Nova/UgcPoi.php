@@ -233,7 +233,7 @@ class UgcPoi extends Resource
                 }
                 return $rawData;
             })->onlyOnDetail()->language('json')->rules('json'),
-            Text::make('Galleria', function () {
+            Text::make('Gallery', function () {
                 $images = $this->ugc_media;
                 $html = '<div style="display: flex; flex-wrap: wrap;">';
                 foreach ($images as $image) {
