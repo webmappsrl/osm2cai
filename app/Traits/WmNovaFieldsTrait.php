@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use DKulyk\Nova\Tabs;
 use Laravel\Nova\Fields\Field;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 trait WmNovaFieldsTrait
 {
@@ -17,7 +19,25 @@ trait WmNovaFieldsTrait
         }
 
         if ($formSchema === null) {
-            $config = config('osm2cai.ugc_pois_forms');
+            $config = Cache::remember('geohub_config', 60 * 60, function () {
+                $config = [];
+                $geohubConfigApi = [
+                    26 => 'https://geohub.webmapp.it/api/app/webmapp/26/config.json',
+                    20 => 'https://geohub.webmapp.it/api/app/webmapp/20/config.json',
+                    58 => 'https://geohub.webmapp.it/api/app/webmapp/58/config.json',
+                ];
+
+                foreach ($geohubConfigApi as $formId => $url) {
+                    $response = Http::get($url);
+                    $acquisitionForm = $response->json()['APP']['poi_acquisition_form'];
+                    foreach ($acquisitionForm as $form) {
+                        $config[$form['id']] = $form;
+                    }
+                }
+
+                // Remove duplicates key in the config array
+                return array_unique($config, SORT_REGULAR);
+            });
 
             if (!isset($config[$this->form_id])) {
                 return $this->createNoDataField();
@@ -26,7 +46,7 @@ trait WmNovaFieldsTrait
             $formConfig = $config[$this->form_id];
             $fields = $this->buildFieldsFromConfig($formConfig['fields'], $columnName);
 
-            $tabsLabel = $formConfig['label']['it'] ?? $formConfig['label']['en'] ?? __('Form');
+            $tabsLabel = $formConfig['label']['it'] ?? $formConfig['label']['ït'] ?? $formConfig['label']['en'] ?? __('Form');
         } else {
             $fields = $this->buildFieldsFromConfig($formSchema, $columnName);
             $tabsLabel = __('Validation Permissions');
@@ -57,7 +77,7 @@ trait WmNovaFieldsTrait
     {
         $key = $fieldSchema['name'] ?? null;
         $fieldType = $fieldSchema['type'] ?? 'text';
-        $label = $fieldSchema['label']['it'] ?? $fieldSchema['label']['en'] ?? $key;
+        $label = $fieldSchema['label']['it'] ?? $fieldSchema['label']['ït'] ?? $fieldSchema['label']['en'] ?? $key;
         $rules = $this->defineRules($fieldSchema);
 
         $field = null;
