@@ -329,9 +329,17 @@ class UgcPoi extends Resource
             (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
                 return true;
             })->standalone(),
-            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canRun(function ($request) {
-                return true; //autorizzazione gestita nella action
+            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canSee(function ($request) {
+                if ($this->user_id)
+                    return auth()->user()->id == $this->user_id;
+                if ($request->has('resources'))
+                    return true;
+
+                return false;
             })
+                ->canRun(function ($request) {
+                    return true;
+                })
                 ->confirmText('Sei sicuro di voler caricare questa immagine?')
                 ->confirmButtonText('Carica')
                 ->cancelButtonText('Annulla'),
