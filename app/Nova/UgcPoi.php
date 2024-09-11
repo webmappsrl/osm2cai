@@ -197,7 +197,7 @@ class UgcPoi extends Resource
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
                 'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
                 'minZoom' => 5,
-                'maxZoom' => 17,
+                'maxZoom' => 14,
                 'defaultZoom' => 5
             ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
