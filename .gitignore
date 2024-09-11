@@ -20,3 +20,5 @@ dump.sql
 docker/volumes
 local/
 public/
+# Eccezione per il file nova-custom.js
+!public/js/nova-custom.js
