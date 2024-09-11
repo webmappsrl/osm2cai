@@ -131,6 +131,7 @@ class UgcPoi extends Resource
                 })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
                     $isValidated = $request->$requestAttribute;
                     $model->$attribute = $isValidated;
+                    //logica per tracciare validatore e data di validazione
 
                     if ($isValidated == UgcValidatedStatus::Valid) {
                         $model->validator_id = $request->user()->id;
@@ -139,7 +140,10 @@ class UgcPoi extends Resource
                         $model->validator_id = null;
                         $model->validation_date = null;
                     }
-                }),
+                })->onlyOnForms(),
+            Text::make('Validation Status', function () {
+                return $this->validated;
+            }),
             DateTime::make('Validation Date', 'validation_date')
                 ->format('DD MMM YYYY HH:mm:ss')
                 ->onlyOnDetail(),
