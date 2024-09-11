@@ -192,9 +192,9 @@ class UgcPoi extends Resource
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
                 'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-                'minZoom' => 8,
+                'minZoom' => 5,
                 'maxZoom' => 17,
-                'defaultZoom' => 13
+                'defaultZoom' => 5
             ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
                 $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
