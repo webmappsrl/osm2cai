@@ -53,6 +53,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             \Laravel\Nova\Http\Controllers\LoginController::class
         );
         Nova::style('admin', public_path('css/admin.css'));
+        Nova::script('nova-custom', asset('js/nova-custom.js')); //script to hide "create and add another" button in ugc-poi resource
         Sector::observe(SectorObserver::class);
     }
 
