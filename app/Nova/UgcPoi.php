@@ -131,6 +131,7 @@ class UgcPoi extends Resource
                 })->fillUsing(function ($request, $model, $attribute, $requestAttribute) {
                     $isValidated = $request->$requestAttribute;
                     $model->$attribute = $isValidated;
+                    //logica per tracciare validatore e data di validazione
 
                     if ($isValidated == UgcValidatedStatus::Valid) {
                         $model->validator_id = $request->user()->id;
@@ -139,7 +140,10 @@ class UgcPoi extends Resource
                         $model->validator_id = null;
                         $model->validation_date = null;
                     }
-                }),
+                })->onlyOnForms(),
+            Text::make('Validation Status', function () {
+                return $this->validated;
+            }),
             DateTime::make('Validation Date', 'validation_date')
                 ->format('DD MMM YYYY HH:mm:ss')
                 ->onlyOnDetail(),
@@ -192,9 +196,9 @@ class UgcPoi extends Resource
                 'center' => [42, 10],
                 'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
                 'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-                'minZoom' => 8,
-                'maxZoom' => 17,
-                'defaultZoom' => 13
+                'minZoom' => 5,
+                'maxZoom' => 14,
+                'defaultZoom' => 5
             ])->hideFromIndex(),
             Code::make(__('Form data'), function ($model) {
                 $jsonRawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
@@ -329,9 +333,17 @@ class UgcPoi extends Resource
             (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
                 return true;
             })->standalone(),
-            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canRun(function ($request) {
-                return true; //autorizzazione gestita nella action
+            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canSee(function ($request) {
+                if ($this->user_id)
+                    return auth()->user()->id == $this->user_id;
+                if ($request->has('resources'))
+                    return true;
+
+                return false;
             })
+                ->canRun(function ($request) {
+                    return true;
+                })
                 ->confirmText('Sei sicuro di voler caricare questa immagine?')
                 ->confirmButtonText('Carica')
                 ->cancelButtonText('Annulla'),

@@ -43,7 +43,7 @@ class UgcMediaPolicy
      */
     public function create(User $user)
     {
-        return false;
+        return true;
     }
 
     /**
@@ -55,7 +55,7 @@ class UgcMediaPolicy
      */
     public function update(User $user, UgcMedia $ugcMedia)
     {
-        return false;
+        return true;
     }
 
     /**

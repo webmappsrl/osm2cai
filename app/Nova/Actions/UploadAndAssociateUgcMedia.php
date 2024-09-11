@@ -45,6 +45,10 @@ class UploadAndAssociateUgcMedia extends Action
             'mime' => $ugcMedia->getMimeType(),
         ]);
 
+        if ($ugcMedia->getSize() > 10485760) {
+            return Action::danger('L\'immagine caricata supera le dimensioni massime consentite');
+        }
+
         try {
             $path = $ugcMedia->store('ugc-media', 'public');
 
@@ -54,7 +58,7 @@ class UploadAndAssociateUgcMedia extends Action
                 'name' => $ugcMedia->getClientOriginalName(),
                 'relative_url' => 'ugc-media/' . basename($path),
                 'user_id' => auth()->user()->id,
-                'geometry' => 'SRID=4326;' . $geometry,
+                'geometry' => $geometry,
                 'app_id' => 'osm2cai'
             ]);
 
@@ -76,7 +80,7 @@ class UploadAndAssociateUgcMedia extends Action
                 ->store(function ($request, $model) {
                     return $request->file('ugc-media')->store('ugc-media', 'public');
                 })
-                ->help('Carica un\'immagine da associare al POI. Se non sei il proprietario del POI, non potrai caricare le immagini.')
+                ->help('Carica un\'immagine da associare al POI. Dimensione consentita: max 10MB')
         ];
     }
 }

@@ -80,7 +80,7 @@ class UgcMedia extends Resource
                 ->searchable()
                 ->sortable(),
             Text::make('Media', function () {
-                return "<a href='{$this->relative_url}' target='_blank'><img src='{$this->relative_url}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
+                return "<a href='{$this->getUrl()}' target='_blank'><img src='{$this->getUrl()}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
             })->asHtml(),
             BelongsToMany::make('UGC Pois', 'ugc_pois', UgcMedia::class),
             BelongsToMany::make('UGC Tracks', 'ugc_tracks', UgcMedia::class),
