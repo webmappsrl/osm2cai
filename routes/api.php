@@ -4,11 +4,13 @@ use App\Models\HikingRoute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EcPoiController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\SectorController;
+use App\Http\Controllers\UgcPoiController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\ItineraryController;
@@ -18,7 +20,6 @@ use App\Http\Controllers\SourceSurveyController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
-use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,21 @@ Route::name('api.')->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
         Route::post('me', [AuthController::class, 'me'])->name('me');
         Route::post('delete', [AuthController::class, 'delete'])->name('delete');
+    });
+
+    /**
+     * Here should go all the api that need authentication
+     */
+    Route::group([
+        'middleware' => 'auth.jwt',
+    ], function () {
+        Route::prefix('ugc')->name('ugc.')->group(function () {
+            Route::prefix('poi')->name('poi.')->group(function () {
+                Route::post("store", [UgcPoiController::class, 'store'])->name('store');
+                Route::get("index", [UgcPoiController::class, 'index'])->name('index');
+                Route::get("delete/{id}", [UgcPoiController::class, 'destroy'])->name('destroy');
+            });
+        });
     });
 
     Route::prefix('csv')->name('csv.')->group(function () {
