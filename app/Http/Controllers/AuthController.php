@@ -44,10 +44,6 @@ class AuthController extends Controller
 
         $credentials = $request->only(['email', 'password', 'name']);
 
-        // Check if user already exists
-        if ($token = auth('api')->attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-            return $this->loginResponse($token);
-        }
 
         try {
             $user = $this->createUser($credentials);
@@ -162,6 +158,9 @@ class AuthController extends Controller
     public function me(): JsonResponse
     {
         $user = auth('api')->user();
+        if (!$user) {
+            return response()->json(['error' => 'Utente non autenticato.'], 401);
+        }
 
         $result = $user->toArray();
 
@@ -189,7 +188,11 @@ class AuthController extends Controller
      */
     public function refresh(): JsonResponse
     {
-        return $this->respondWithToken(auth('api')->refresh());
+        try {
+            return $this->respondWithToken(auth('api')->refresh());
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Impossibile aggiornare il token.'], 401);
+        }
     }
 
     /**
