@@ -18,6 +18,7 @@ use App\Http\Controllers\SourceSurveyController;
 use App\Http\Controllers\V2\MiturAbruzzoController;
 use App\Http\Controllers\V1\HikingRoutesRegionControllerV1;
 use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,18 @@ use App\Http\Controllers\V2\HikingRoutesRegionControllerV2;
 Route::name('api.')->group(function () {
     Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    Route::post('/auth/login', [AuthController::class, 'login'])->name('login');
+    Route::middleware('throttle:100,1')->post('/auth/signup', [AuthController::class, 'signup'])->name('signup');
+    Route::group([
+        'middleware' => 'auth.jwt',
+        'prefix' => 'auth'
+    ], function () {
+        Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('refresh', [AuthController::class, 'refresh'])->name('refresh');
+        Route::post('me', [AuthController::class, 'me'])->name('me');
+        Route::post('delete', [AuthController::class, 'delete'])->name('delete');
     });
 
     Route::prefix('csv')->name('csv.')->group(function () {
