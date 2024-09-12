@@ -32,10 +32,9 @@ class UgcPoiController extends Controller
             if (!empty($request->header('app-id'))) {
                 $reqAppId = $request->header('app-id');
                 $appId = 'geohub_' . $reqAppId;
+                $pois = UgcPoi::where([['user_id', $user->id], ['app_id', $appId]])->orderByRaw('updated_at DESC')->get();
+                return $this->getUGCFeatureCollection($pois);
             }
-            $pois = UgcPoi::where([['user_id', $user->id], ['app_id', $appId]])->orderByRaw('updated_at DESC')->get();
-            return $this->getUGCFeatureCollection($pois);
-
 
             $pois = UgcPoi::where('user_id', $user->id)->orderByRaw('updated_at DESC')->get();
             return $this->getUGCFeatureCollection($pois);
