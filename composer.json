@@ -37,6 +37,7 @@
     "suenerds/nova-searchable-belongs-to-filter": "^1.0",
     "symm/gisconverter": "^1.0",
     "titasgailius/search-relations": "^2.0",
+    "tymon/jwt-auth": "^1.0",
     "webmapp/wm-embedmaps-field": "*",
     "wm/map-multi-linestring-nova": "*",
     "wm/map-multi-polygon-nova3": "dev-main",

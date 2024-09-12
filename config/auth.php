@@ -42,7 +42,7 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
+            'driver' => 'jwt',
             'provider' => 'users',
             'hash' => false,
         ],
@@ -113,5 +113,12 @@ return [
     */
 
     'password_timeout' => 10800,
+
+
+    'partnerships' => [
+        'cai' => [
+            'basic_auth_key' => env('PARTNERSHIP_CAI_BASIC_AUTHENTICATION_KEY')
+        ]
+    ]
 
 ];
