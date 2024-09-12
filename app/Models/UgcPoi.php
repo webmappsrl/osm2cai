@@ -80,6 +80,10 @@ class UgcPoi extends Model
                 unset($array[$property]);
         }
 
+        if (isset($array['raw_data'])) {
+            $array['raw_data']  = json_encode($array['raw_data']);
+        }
+
         return $array;
     }
 
