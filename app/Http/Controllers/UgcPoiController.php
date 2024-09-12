@@ -86,6 +86,7 @@ class UgcPoiController extends Controller
             $poi->description = $data['properties']['description'];
         $poi->geometry = DB::raw("ST_GeomFromGeojson('" . json_encode($data['geometry']) . ")')");
         $poi->user_id = $user->id;
+        $poi->form_id = $data['properties']['id'];
 
         if (isset($data['properties']['app_id'])) {
             $appId = 'geohub_' . $data['properties']['app_id'];
