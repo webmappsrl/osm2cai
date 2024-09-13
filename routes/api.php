@@ -13,6 +13,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UgcPoiController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\UgcMediaController;
 use App\Http\Controllers\UgcTrackController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Resources\HikingRouteTDHResource;
