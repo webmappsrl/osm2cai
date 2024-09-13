@@ -94,19 +94,13 @@ class UgcTrack extends Resource
             Code::Make(__('metadata'), 'metadata')->language('json')->rules('nullable', 'json')->help(
                 'metadata of track'
             )->onlyOnDetail(),
-            Text::make(__('Raw data'), function ($model) {
-                $rawData = json_decode($model->raw_data, true);
-                $result = [];
-
-                if ($rawData)
-                    foreach ($rawData as $key => $value) {
-                        $result[] = $key . ' = ' . json_encode($value);
-                    }
-                else
-                    $result[] = 'No raw data';
-
-                return join('<br>', $result);
-            })->onlyOnDetail()->asHtml(),
+            Code::make(__('Raw data'), function ($model) {
+                $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+                if ($rawData) {
+                    $rawData = json_encode($rawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                }
+                return $rawData;
+            })->onlyOnDetail()->language('json')->rules('json'),
             WmEmbedmapsField::make(__('Map'), function ($model) {
                 return [
                     'feature' => $model->getGeojson(),

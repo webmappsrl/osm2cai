@@ -13,6 +13,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\UgcPoiController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\UgcTrackController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Resources\HikingRouteTDHResource;
 use App\Http\Controllers\HikingRouteController;
@@ -60,6 +61,17 @@ Route::name('api.')->group(function () {
                 Route::post("store", [UgcPoiController::class, 'store'])->name('store');
                 Route::get("index", [UgcPoiController::class, 'index'])->name('index');
                 Route::get("delete/{id}", [UgcPoiController::class, 'destroy'])->name('destroy');
+            });
+            Route::prefix('track')->name('track.')->group(function () {
+                Route::post("store", [UgcTrackController::class, 'store'])->name('store');
+                Route::get("index", [UgcTrackController::class, 'index'])->name('index');
+                Route::get("delete/{id}", [UgcTrackController::class, 'destroy'])->name('destroy');
+            });
+            Route::prefix('media')->name('media.')->group(function () {
+                // TODO: riabilitare quando fixato il bug
+                Route::post("store", [UgcMediaController::class, 'store'])->name('store');
+                Route::get("index", [UgcMediaController::class, 'index'])->name('index');
+                Route::get("delete/{id}", [UgcMediaController::class, 'destroy'])->name('destroy');
             });
         });
     });
