@@ -18,7 +18,7 @@ class SourceSurveysExport implements FromCollection, WithHeadings
     public function collection()
     {
         return $this->models->map(function ($model) {
-            $rawData = json_decode($model->raw_data, true);
+            $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
             return [
                 'osm2cai_id' => $model->id,
                 'operator' => $model->user->name ?? $model->user_no_match ?? '/',
@@ -43,8 +43,22 @@ class SourceSurveysExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'Osm2cai_id', 'Operator', 'Monitoring date', 'URL osm2cai', 'Lon', 'Lat', 'Ele', 'Name', 'Active',
-            'Range Time', 'Range Volume', 'Range L/s', 'Temperature °C', 'Conductivity MicroS/cm', 'Photo', 'Notes',
+            'Osm2cai_id',
+            'Operator',
+            'Monitoring date',
+            'URL osm2cai',
+            'Lon',
+            'Lat',
+            'Ele',
+            'Name',
+            'Active',
+            'Range Time',
+            'Range Volume',
+            'Range L/s',
+            'Temperature °C',
+            'Conductivity MicroS/cm',
+            'Photo',
+            'Notes',
         ];
     }
 }
