@@ -52,6 +52,10 @@ class UgcMedia extends Model
                     $array['url'] = Storage::disk('public')->url($value);
                 unset($array[$property]);
             }
+
+            if (isset($array['raw_data'])) {
+                $array['raw_data']  = json_encode($array['raw_data']);
+            }
         }
 
         return $array;
