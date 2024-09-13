@@ -80,7 +80,7 @@ class UgcMedia extends Resource
                 ->searchable()
                 ->sortable(),
             Text::make('Media', function () {
-                return "<a href='{$this->getUrl()}' target='_blank'><img src='{$this->getUrl()}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
+                return "<a href='{$this->model()->getUrl()}' target='_blank'><img src='{$this->model()->getUrl()}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
             })->asHtml(),
             BelongsToMany::make('UGC Pois', 'ugc_pois', UgcMedia::class),
             BelongsToMany::make('UGC Tracks', 'ugc_tracks', UgcMedia::class),
@@ -89,7 +89,7 @@ class UgcMedia extends Resource
             Text::make('Relative URL', 'relative_url')
                 ->hideFromIndex()
                 ->displayUsing(function ($value) {
-                    return "<a href='{$value}' target='_blank'>{$value}</a>";
+                    return "<a href='" . url('storage/' . $value) . "' target='_blank'>" . url($value) . "</a>";
                 })
                 ->asHtml(),
             WmEmbedmapsField::make(__('Map'), function ($model) {
