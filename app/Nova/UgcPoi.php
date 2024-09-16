@@ -229,6 +229,7 @@ class UgcPoi extends Resource
                     $html .= '<a href="' . $url . '" target="_blank">';
                     $html .= '<img src="' . $url . '" width="100" height="100" style="object-fit: cover;">';
                     $html .= '</a>';
+                    $html .= '<p style="color: lightgray;">ID: ' . $image->id . '</p>';
                     $html .= '</div>';
                 }
                 $html .= '</div>';
@@ -330,6 +331,14 @@ class UgcPoi extends Resource
                 ->confirmText('Sei sicuro di voler caricare questa immagine?')
                 ->confirmButtonText('Carica')
                 ->cancelButtonText('Annulla'),
+            (new \App\Nova\Actions\DeleteUgcMedia($this->model()))->canSee(function ($request) {
+                if ($this->user_id)
+                    return auth()->user()->id == $this->user_id;
+                if ($request->has('resources'))
+                    return true;
+
+                return false;
+            })
         ];
     }
 
