@@ -59,6 +59,11 @@ return [
             'path' => storage_path('logs/missing-users.log'),
             'level' => 'info',
         ],
+        'reconciledUsers' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/reconciled-users.log'),
+            'level' => 'info',
+        ],
 
         'caiHutsReconciliations' => [
             'driver' => 'single',
