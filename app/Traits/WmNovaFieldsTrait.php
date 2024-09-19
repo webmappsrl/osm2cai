@@ -44,11 +44,11 @@ trait WmNovaFieldsTrait
             }
 
             $formConfig = $config[$this->form_id];
-            $fields = $this->buildFieldsFromConfig($formConfig['fields'], $columnName);
+            $fields = $this->buildFieldsFromConfig($formConfig['fields'], $columnName, $this->form_id);
 
             $tabsLabel = $formConfig['label']['it'] ?? $formConfig['label']['ït'] ?? $formConfig['label']['en'] ?? __('Form');
         } else {
-            $fields = $this->buildFieldsFromConfig($formSchema, $columnName);
+            $fields = $this->buildFieldsFromConfig($formSchema, $columnName, $this->form_id);
             $tabsLabel = __('Validation Permissions');
         }
 
@@ -59,11 +59,37 @@ trait WmNovaFieldsTrait
         return $tabs;
     }
 
-    protected function buildFieldsFromConfig(array $fieldsConfig, string $columnName): array
+    protected function buildFieldsFromConfig(array $fieldsConfig, string $columnName, ?string $formId): array
     {
         $fields = [];
 
         foreach ($fieldsConfig as $fieldSchema) {
+            if ($fieldSchema['name'] == 'waypointtype' && $formId == 'poi') {
+                array_push(
+                    $fieldSchema['values'],
+                    [
+                        'value' => 'flora',
+                        'label' => [
+                            'it' => 'Flora',
+                            'en' => 'Flora',
+                        ]
+                    ],
+                    [
+                        'value' => 'fauna',
+                        'label' => [
+                            'it' => 'Fauna',
+                            'en' => 'Fauna',
+                        ]
+                    ],
+                    [
+                        'value' => 'habitat',
+                        'label' => [
+                            'it' => 'Habitat',
+                            'en' => 'Habitat',
+                        ]
+                    ],
+                );
+            }
             $novaField = $this->createFieldFromSchema($fieldSchema, $columnName);
             if ($novaField) {
                 $fields[] = $novaField;

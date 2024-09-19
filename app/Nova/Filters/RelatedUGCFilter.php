@@ -42,7 +42,7 @@ class RelatedUGCFilter extends BooleanFilter
         //get the last part of the url
         $model = explode('/', $url)[count(explode('/', $url)) - 2];
         return [
-            'Show my ' . $model => 'show_my_ugc'
+            'Mostra i miei ' . $model => 'show_my_ugc'
         ];
     }
 }
