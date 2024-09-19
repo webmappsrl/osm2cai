@@ -41,14 +41,16 @@ class UgcFormIdFilter extends Filter
     public function options(Request $request)
     {
         //select all the form_id from the ugc_pois table distinct
-        $formIds = \App\Models\UgcPoi::distinct('form_id')->pluck('form_id')->toArray();
-        //remove null value from the array
-        $formIds = array_filter($formIds, function ($value) {
-            return $value !== null;
-        });
-
-        $formIds = array_combine($formIds, $formIds);
-        $formIds['null'] = 'null';
+        $formIds = [
+            'Sentieristica' => 'paths',
+            'Segnalazione Problemi' => 'report',
+            'Punti di Interesse' => 'poi',
+            'Acqua Sorgente' => 'water',
+            'Segni dell\'uomo' => 'signs',
+            'Aree Archeologiche' => 'archaeological_area',
+            'Siti Archeologici' => 'archaeological_site',
+            'Siti Geologici' => 'geological_site',
+        ];
 
         return $formIds;
     }
