@@ -89,11 +89,16 @@ class UgcPoi extends Resource
     public function fields(Request $request)
     {
 
-        $formIdOptions = DB::table('ugc_pois')
-            ->select('form_id')
-            ->distinct()
-            ->pluck('form_id', 'form_id')
-            ->toArray();
+        $formIdOptions = [
+            'paths' => 'Sentieristica',
+            'report' =>  'Segnalazione Problemi',
+            'poi' => 'Punti di Interesse',
+            'water' => 'Acqua Sorgente',
+            'signs' => 'Segni dell\'uomo',
+            'archaeological_area' => 'Aree Archeologiche',
+            'archaeological_site' => 'Siti Archeologici',
+            'geological_site' => 'Siti Geologici',
+        ];
 
         if ($request->isCreateOrAttachRequest()) {
             return [
@@ -103,7 +108,6 @@ class UgcPoi extends Resource
                     ->help('Seleziona il tipo di UGC che vuoi creare. Dopo il salvataggio, potrai inserire tutti i dettagli.'),
             ];
         }
-
 
         $commonFields = [
             ID::make(__('ID'), 'id')
