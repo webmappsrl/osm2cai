@@ -241,6 +241,10 @@ class UgcPoi extends Resource
             })->asHtml()->onlyOnDetail(),
         ];
 
+        if ($this->form_id == 'poi') {
+            array_splice($commonFields, array_search('user', array_column($commonFields, 'name')), 0, [Text::make('Poi Type', 'raw_data->waypointtype')->onlyOnDetail()]);
+        }
+
         $formFields = $this->jsonForm('raw_data');
 
         if (!empty($formFields)) {

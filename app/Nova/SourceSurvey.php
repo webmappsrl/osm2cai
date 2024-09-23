@@ -50,7 +50,7 @@ class SourceSurvey extends AbstractValidationResource
 
         $dedicatedFields = [
             Date::make('Monitoring Date', function () use ($rawData) {
-                return $rawData['date'] ?? $this->created_at;
+                return $this->getRegisteredAtAttribute();
             })->sortable(),
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
                 return $this->calculateFlowRate();
@@ -86,7 +86,7 @@ class SourceSurvey extends AbstractValidationResource
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
             Date::make('Monitoring Date', function () use ($rawData) {
-                return $rawData['date'];
+                return $this->getRegisteredAtAttribute();
             })
                 ->sortable()->readonly(),
         ];
