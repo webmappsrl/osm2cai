@@ -1,5 +1,46 @@
 # Changelog
 
+## [233.33.0](https://github.com/webmappsrl/osm2cai/compare/v233.32.0...v233.33.0) (2024-09-23)
+
+
+### Features
+
+* added delete ugc media action ([85028b5](https://github.com/webmappsrl/osm2cai/commit/85028b5759768348a78fcaf6645ee7bc2e2e6c6f))
+* added delete ugc media action ([a34ae5f](https://github.com/webmappsrl/osm2cai/commit/a34ae5f1a78cee11602d5ef54044c0665d9d91dc))
+* added flora fauna and habitat to form with id poi ([970e250](https://github.com/webmappsrl/osm2cai/commit/970e25056c8fb451b5be96956b1b899dcb4d25f0))
+* configured laravel log viewer ([d8440bf](https://github.com/webmappsrl/osm2cai/commit/d8440bff119c76ba2732ef5650dc4ed6877bd07d))
+* increased jwt token length ([46a1d2c](https://github.com/webmappsrl/osm2cai/commit/46a1d2cfb7944f8bce63d9bff56d38b526d5d722))
+* move auth business logic to osm2cai OC:3934 ([#136](https://github.com/webmappsrl/osm2cai/issues/136)) ([004c48e](https://github.com/webmappsrl/osm2cai/commit/004c48e57da247969204c9eea7aae2009ca2c4bc))
+* ugc media endpoints ([#140](https://github.com/webmappsrl/osm2cai/issues/140)) ([686befc](https://github.com/webmappsrl/osm2cai/commit/686befcc27392708eebb1d30d341f08f2f247ae0))
+* ugc poi validation OC:3898 ([#132](https://github.com/webmappsrl/osm2cai/issues/132)) ([37a2383](https://github.com/webmappsrl/osm2cai/commit/37a238331e0ec8b7f3d07c685ffc9d9479fe9042))
+* ugc pois api endpoints ([#138](https://github.com/webmappsrl/osm2cai/issues/138)) ([7b990b8](https://github.com/webmappsrl/osm2cai/commit/7b990b84ab7f48fc072180b3943179a9d698bb0b))
+* ugc pois nova index enhancements OC:3891 ([#131](https://github.com/webmappsrl/osm2cai/issues/131)) ([25c8566](https://github.com/webmappsrl/osm2cai/commit/25c85660767390cd19ad261c1b4511c327b21a3f))
+* ugc_poi_create_hardening OC:3925 ([#134](https://github.com/webmappsrl/osm2cai/issues/134)) ([f2c73a1](https://github.com/webmappsrl/osm2cai/commit/f2c73a16b3f772dad8c0087d3746df08d28a73cc))
+* update nova ugc poi edit OC:3877 ([#128](https://github.com/webmappsrl/osm2cai/issues/128)) ([c052da4](https://github.com/webmappsrl/osm2cai/commit/c052da48801121ca3a86bf2f218baa6e302cb76d))
+* update survey policies OC:3873 ([#126](https://github.com/webmappsrl/osm2cai/issues/126)) ([88637b8](https://github.com/webmappsrl/osm2cai/commit/88637b8f2f267ee3d179c01638fdb86cf6364ab0))
+
+
+### Bug Fixes
+
+* acqua sorgente csv download ([4dfa6ff](https://github.com/webmappsrl/osm2cai/commit/4dfa6ff9f7c836f18c874aee1878afb6d7b309de))
+* added form_id filling in store post request ugc pois ([6b42d43](https://github.com/webmappsrl/osm2cai/commit/6b42d439d9bcba2903112166e2c2b083b3206f50))
+* added readonly to registered at field ([01fb2f7](https://github.com/webmappsrl/osm2cai/commit/01fb2f70a3b91cc9f3a278d46317fe830f1956d4))
+* bug fix ([a68442d](https://github.com/webmappsrl/osm2cai/commit/a68442da2102f098f254ad7e86232f9b2c99a54e))
+* fixed app_id during store post api call ([13f428c](https://github.com/webmappsrl/osm2cai/commit/13f428c4350b6c298e6b15a6971fd9fabd2b3010))
+* fixed gallery in ugc poi ([15e9cf1](https://github.com/webmappsrl/osm2cai/commit/15e9cf1665720acb3c0b39d0fee85193860ede54))
+* imported missing nova class ([674de16](https://github.com/webmappsrl/osm2cai/commit/674de160f74acde7249733942b221a21f01734c7))
+* reconcile users command ([88573a3](https://github.com/webmappsrl/osm2cai/commit/88573a3ba357a69c90c8c6c5c55b5ef7fe2e81e6))
+* validation bugs ([#141](https://github.com/webmappsrl/osm2cai/issues/141)) ([eb41f73](https://github.com/webmappsrl/osm2cai/commit/eb41f73ef6d45474f6d34f70c3059b97bc54a25a))
+
+
+### Miscellaneous Chores
+
+* better error handling in auth controller ([4de07d3](https://github.com/webmappsrl/osm2cai/commit/4de07d39454e76f152f97963b82e04274d9b5a7e))
+* installed laravel log viewer package ([0f5f94c](https://github.com/webmappsrl/osm2cai/commit/0f5f94c33c3ebf46f6d7c8abcec54f4f22d7cbc9))
+* refactoring jsonform config in wm nova field trait ([13bdb97](https://github.com/webmappsrl/osm2cai/commit/13bdb97eb6d1ef7c78e14465aae89989edae9735))
+* renamed natural spring nova resource ([e93de1c](https://github.com/webmappsrl/osm2cai/commit/e93de1cc1df154f3aeffe8652de0ed0f2f904121))
+* updated select for ugc poi form_id in create interface ([af86316](https://github.com/webmappsrl/osm2cai/commit/af8631636a1acdc6bae340e46000720325cf6acc))
+
 ## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-08-30)
 
 
