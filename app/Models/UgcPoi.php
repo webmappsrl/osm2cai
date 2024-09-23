@@ -29,7 +29,7 @@ class UgcPoi extends Model
     {
         return isset($this->raw_data['date'])
             ? Carbon::parse($this->raw_data['date'])
-            : null;
+            : $this->created_at;
     }
 
     protected static function boot()
