@@ -57,6 +57,10 @@ class UgcPoiPolicy
         $formId = $ugcPoi->form_id;
         $validatorKey = $formId === 'water' ? 'is_source_validator' : 'is_' . $formId . '_validator';
 
+        if ($ugcPoi->validated === 'valid') {
+            return false;
+        }
+
         if ($user->is_administrator) {
             return true;
         }
