@@ -80,10 +80,12 @@ class UgcMedia extends Resource
                 ->searchable()
                 ->sortable(),
             Text::make('Media', function () {
-                return "<a href='{$this->model()->getUrl()}' target='_blank'><img src='{$this->model()->getUrl()}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
+                if ($this->model() instanceof \App\Models\UgcMedia) {
+                    return "<a href='{$this->getUrl()}' target='_blank'><img src='{$this->getUrl()}' style='max-width: 100px; max-height: 100px; border: 1px solid #ccc; border-radius: 10%; padding: 2px;' alt='Thumbnail'></a>";
+                }
             })->asHtml(),
-            BelongsToMany::make('UGC Pois', 'ugc_pois', UgcMedia::class),
-            BelongsToMany::make('UGC Tracks', 'ugc_tracks', UgcMedia::class),
+            BelongsToMany::make('UGC Pois', 'ugc_pois'),
+            BelongsToMany::make('UGC Tracks', 'ugc_tracks'),
             Text::make('Tassonomie Where', 'taxonomy_wheres')
                 ->sortable(),
             Text::make('Relative URL', 'relative_url')

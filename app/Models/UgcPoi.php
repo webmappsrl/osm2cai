@@ -37,7 +37,7 @@ class UgcPoi extends Model
         parent::boot();
 
         static::created(function ($model) {
-            $model->user_id = auth()->id();
+            $model->user_id = auth()->id() ?? $model->user_id;
             $model->app_id = $model->app_id ?? 'osm2cai';
             $model->save();
         });
