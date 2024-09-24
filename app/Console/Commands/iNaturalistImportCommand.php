@@ -15,7 +15,7 @@ class iNaturalistImportCommand extends Command
     protected $description = 'Importa UGC POI da iNaturalist';
 
     // Definizione delle costanti
-    protected const INATURALIST_EMAIL = 'inaturalist@email.com';
+    protected const INATURALIST_EMAIL = 'inaturalist@webmapp.it';
     protected const INATURALIST_NAME = 'iNaturalist';
     protected const DEFAULT_PASSWORD = 'inaturalist123';
     protected const DEFAULT_TYPE = 'poi';
