@@ -1,15 +1,16 @@
 <?php
 
-use App\Console\Commands\AssociateMountainGroupsToRegions;
-use App\Console\Commands\AssociateToRegions;
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Console\Commands\AssociateToRegions;
 use App\Http\Controllers\CasLoginController;
+use App\Http\Controllers\ExportCsvController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
-use App\Http\Controllers\HikingRouteLoscarponeExportController;
 use App\Http\Controllers\MiturAbruzzoMapsController;
+use App\Console\Commands\AssociateMountainGroupsToRegions;
+use App\Http\Controllers\HikingRouteLoscarponeExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,3 +92,5 @@ Route::get('/poi/map/{id}', [MiturAbruzzoMapsController::class, 'poiMap'])->name
 Route::get('/mountain-groups/map/{id}', [MiturAbruzzoMapsController::class, 'mountainGroupsMap'])->name('mountain-groups-map');
 Route::get('/cai-huts/map/{id}', [MiturAbruzzoMapsController::class, 'caiHutsMap'])->name('cai-huts-map');
 Route::get('/mountain-groups-hr/map/{id}', [MiturAbruzzoMapsController::class, 'mountainGroupsHrMap'])->name('mountain-groups-hr-map');
+Route::get('/export-form', [ExportCsvController::class, 'showForm'])->name('export.form');
+Route::post('/export-csv', [ExportCsvController::class, 'export'])->name('export.csv');
