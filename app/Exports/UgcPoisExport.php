@@ -18,7 +18,7 @@ class UgcPoisExport implements FromCollection, WithHeadings
     public function collection()
     {
         return $this->models->map(function ($model) {
-            $rawData = json_decode($model->raw_data, true);
+            $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
             return [
                 'osm2cai_id' => $model->id,
                 'url' => 'https://osm2cai.cai.it/resources/ugc-pois/' . $model->id,
@@ -39,8 +39,18 @@ class UgcPoisExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'osm2cai_id', 'URL osm2cai', 'Lon', 'Lat', 'Ele', 'Name', 'Active',
-            'Range Time', 'Range Volume', 'Temperature', 'Conductivity', 'Photo'
+            'osm2cai_id',
+            'URL osm2cai',
+            'Lon',
+            'Lat',
+            'Ele',
+            'Name',
+            'Active',
+            'Range Time',
+            'Range Volume',
+            'Temperature',
+            'Conductivity',
+            'Photo'
         ];
     }
 }
