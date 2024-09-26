@@ -2,41 +2,35 @@
 
 namespace App\Providers;
 
-use App\Console\Commands\import;
-use App\Helpers\Osm2CaiHelper;
 use App\Models\Area;
-use App\Models\HikingRoute;
-use App\Models\Province;
-use App\Models\Region;
-use App\Models\Sector;
 use App\Models\User;
-use App\Nova\Dashboards\AcquaSorgente;
-use App\Nova\Dashboards\EcPoisDashboard;
-use App\Nova\Dashboards\ItalyDashboard;
-use App\Nova\Dashboards\Percorribilità;
-use App\Nova\Dashboards\PercorsiFavoriti;
-use App\Nova\Dashboards\SAL;
-use App\Nova\Dashboards\SectorsDashboard;
-use App\Nova\Dashboards\Utenti;
-use App\Nova\UgcMedia;
-use App\Nova\UgcPoi;
-use App\Nova\UgcTrack;
-use App\Observers\SectorObserver;
-use App\Services\CacheService;
-use App\Services\CardsService;
-use Ericlagarda\NovaTextCard\TextCard;
-use Giuga\LaravelNovaSidebar\NovaSidebar;
-use Giuga\LaravelNovaSidebar\SidebarLink;
+use App\Models\Sector;
+use Laravel\Nova\Nova;
+use App\Models\Province;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
+use App\Nova\Dashboards\SAL;
+use App\Helpers\Osm2CaiHelper;
+use App\Services\CacheService;
+use App\Services\CardsService;
+use App\Nova\Dashboards\Utenti;
+use App\Observers\SectorObserver;
+use Spatie\SchemaOrg\MenuSection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Laravel\Nova\Nova;
-use Laravel\Nova\NovaApplicationServiceProvider;
-use Mako\CustomTableCard\CustomTableCard;
-use Mako\CustomTableCard\Table\Cell;
 use Mako\CustomTableCard\Table\Row;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Mako\CustomTableCard\Table\Cell;
+use App\Nova\Dashboards\AcquaSorgente;
+use Ericlagarda\NovaTextCard\TextCard;
+use App\Nova\Dashboards\ItalyDashboard;
+use App\Nova\Dashboards\Percorribilità;
+use App\Nova\Dashboards\EcPoisDashboard;
+use App\Nova\Dashboards\PercorsiFavoriti;
+use App\Nova\Dashboards\SectorsDashboard;
+use Giuga\LaravelNovaSidebar\NovaSidebar;
+use Mako\CustomTableCard\CustomTableCard;
+use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -816,7 +810,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
             ['INFOMONT', 'https://15.app.geohub.webmapp.it/#/map'],
             ['LoScarpone-Export', route('loscarpone-export')],
             ['API', '/api/documentation'],
-            ['Documentazione OSM2CAI', 'https://catastorei.gitbook.io/documentazione-osm2cai/']
+            ['Documentazione OSM2CAI', 'https://catastorei.gitbook.io/documentazione-osm2cai/'],
+            ['Export CSV', route('export.form')],
         ];
         $isAdmin = Auth::user()->is_administrator;
         if ($isAdmin) {

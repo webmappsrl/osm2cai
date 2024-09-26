@@ -235,6 +235,27 @@ return [
                             'value' => 'other',
                             'label' => ['it' => 'Altri tipi di luoghi di interesse', 'en' => 'Other types of point of interest'],
                         ],
+                        [
+                            'value' => 'flora',
+                            'label' => [
+                                'it' => 'Flora',
+                                'en' => 'Flora',
+                            ]
+                        ],
+                        [
+                            'value' => 'fauna',
+                            'label' => [
+                                'it' => 'Fauna',
+                                'en' => 'Fauna',
+                            ]
+                        ],
+                        [
+                            'value' => 'habitat',
+                            'label' => [
+                                'it' => 'Habitat',
+                                'en' => 'Habitat',
+                            ]
+                        ],
                     ]
                 ],
                 [
