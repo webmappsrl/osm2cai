@@ -89,16 +89,9 @@ class ImportUgcFromGeohub extends Command
     {
         Log::channel('import-ugc')->info("Avvio sync per l'app con ID $appId");
         $this->info("Avvio sync per l'app con ID $appId");
-        $appName = $this->apps[$appId] ?? null;
-
-        if (!$appName) {
-            Log::channel('import-ugc')->error("ID app non valido: $appId");
-            $this->error("ID app non valido: $appId");
-            return;
-        }
 
         foreach ($this->types as $type) {
-            $endpoint = "{$this->baseApiUrl}{$type}/geojson/{$appName}/list";
+            $endpoint = "{$this->baseApiUrl}{$type}/geojson/{$appId}/list";
             $this->syncType($type, $endpoint, $appId);
         }
     }
