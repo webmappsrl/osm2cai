@@ -327,7 +327,7 @@ class UgcPoi extends Resource
             })->standalone(),
             (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canSee(function ($request) {
                 if ($this->user_id)
-                    return auth()->user()->id == $this->user_id;
+                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
                 if ($request->has('resources'))
                     return true;
 
@@ -341,7 +341,7 @@ class UgcPoi extends Resource
                 ->cancelButtonText('Annulla'),
             (new \App\Nova\Actions\DeleteUgcMedia($this->model()))->canSee(function ($request) {
                 if ($this->user_id)
-                    return auth()->user()->id == $this->user_id;
+                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
                 if ($request->has('resources'))
                     return true;
 
