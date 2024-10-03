@@ -95,6 +95,8 @@ Route::name('api.')->group(function () {
         Route::get('/sector/{id}', [SectorController::class, 'geojson'])->name('sector');
         Route::get('/section/{id}', [SectionController::class, 'geojson'])->name('section');
         Route::post('/hiking_routes/bounding_box', [HikingRouteController::class, 'boundingBox'])->name('hiking_routes');
+        Route::get('/ugcpoi/{ids}', [UgcPoiController::class, 'geojson'])->name('ugcpoi');
+        Route::get('/ugctrack/{ids}', [UgcTrackController::class, 'geojson'])->name('ugctrack');
     });
     Route::prefix('shapefile')->name('shapefile.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'shapefile'])->name('region');
