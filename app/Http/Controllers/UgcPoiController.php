@@ -164,4 +164,25 @@ class UgcPoiController extends Controller
         }
         return response()->json(['success' => 'waypoint deleted']);
     }
+
+    public function geojson($ids)
+    {
+        $featureCollection = ['type' => 'FeatureCollection', 'features' => []];
+
+        $ids = explode(',', $ids);
+        $pois = UgcPoi::whereIn('id', $ids)->get();
+
+        foreach ($pois as $poi) {
+            $feature = $poi->getEmptyGeojson();
+            $feature['properties'] = $poi->getJson();
+            $featureCollection['features'][] = $feature;
+        }
+
+        $headers = [
+            'Content-type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="ugc_pois.geojson"'
+        ];
+
+        return response()->json($featureCollection, 200, $headers);
+    }
 }

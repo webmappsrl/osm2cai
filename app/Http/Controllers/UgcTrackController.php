@@ -168,4 +168,25 @@ class UgcTrackController extends Controller
         }
         return response()->json(['success' => 'track deleted']);
     }
+
+    public function geojson($ids)
+    {
+        $featureCollection = ['type' => 'FeatureCollection', 'features' => []];
+
+        $ids = explode(',', $ids);
+        $tracks = UgcTrack::whereIn('id', $ids)->get();
+
+        foreach ($tracks as $track) {
+            $feature = $track->getEmptyGeojson();
+            $feature['properties'] = $track->getJson();
+            $featureCollection['features'][] = $feature;
+        }
+
+        $headers = [
+            'Content-type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="ugc_tracks.geojson"'
+        ];
+
+        return response()->json($featureCollection, 200, $headers);
+    }
 }
