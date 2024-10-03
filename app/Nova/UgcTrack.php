@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Actions\DownloadFeatureCollection;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -156,6 +157,15 @@ class UgcTrack extends Resource
         return [
             (new DownloadGeojsonZipUgcTracks())
                 ->canSee(function ($request) {
+                    return true;
+                })->canRun(function ($request) {
+                    return true;
+                }),
+            (new DownloadFeatureCollection())
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request) {
                     return true;
                 })
         ];

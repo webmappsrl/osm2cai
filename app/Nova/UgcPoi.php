@@ -13,13 +13,19 @@ use Laravel\Nova\Fields\DateTime;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use Wm\MapPointNova3\MapPointNova3;
+use App\Nova\Actions\DeleteUgcMedia;
+use App\Nova\Actions\DownloadUgcCsv;
 use App\Nova\Filters\UgcAppIdFilter;
+use App\Nova\Actions\DownloadGeojson;
 use App\Nova\Filters\UgcFormIdFilter;
 use App\Nova\Filters\ValidatedFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UgcUserNoMatchFilter;
+use App\Nova\Actions\CheckUserNoMatchAction;
+use App\Nova\Actions\DownloadFeatureCollection;
 use PosLifestyle\DateRangeFilter\Enums\Config;
+use App\Nova\Actions\UploadAndAssociateUgcMedia;
 use PosLifestyle\DateRangeFilter\DateRangeFilter;
 
 class UgcPoi extends Resource
@@ -321,11 +327,14 @@ class UgcPoi extends Resource
     public function actions(Request $request)
     {
         return [
-            (new \App\Nova\Actions\DownloadUgcCsv()),
-            (new \App\Nova\Actions\CheckUserNoMatchAction)->canRun(function () {
+            (new DownloadUgcCsv()),
+            (new DownloadFeatureCollection())->canSee(function ($request) {
+                return true;
+            }),
+            (new CheckUserNoMatchAction)->canRun(function () {
                 return true;
             })->standalone(),
-            (new \App\Nova\Actions\UploadAndAssociateUgcMedia())->canSee(function ($request) {
+            (new UploadAndAssociateUgcMedia())->canSee(function ($request) {
                 if ($this->user_id)
                     return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
                 if ($request->has('resources'))
@@ -339,7 +348,7 @@ class UgcPoi extends Resource
                 ->confirmText('Sei sicuro di voler caricare questa immagine?')
                 ->confirmButtonText('Carica')
                 ->cancelButtonText('Annulla'),
-            (new \App\Nova\Actions\DeleteUgcMedia($this->model()))->canSee(function ($request) {
+            (new DeleteUgcMedia($this->model()))->canSee(function ($request) {
                 if ($this->user_id)
                     return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
                 if ($request->has('resources'))
