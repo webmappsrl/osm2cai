@@ -14,7 +14,7 @@ class AddHrValidatorColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('hr_validator')->default(false);
+            $table->boolean('ugc_track_validator')->default(false);
         });
 
         Schema::table('ugc_tracks', function (Blueprint $table) {
