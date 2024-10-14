@@ -6,12 +6,13 @@ use DKulyk\Nova\Tabs;
 use Laravel\Nova\Fields\Field;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\CollectsArbitraryKeys;
 
 trait WmNovaFieldsTrait
 {
     public function jsonForm(string $columnName, array $formSchema = null)
     {
-        // Ensure Laravel Nova is installed
+        // Assicurati che Laravel Nova sia installato
         $this->ensureNovaIsInstalled();
 
         if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
@@ -29,26 +30,39 @@ trait WmNovaFieldsTrait
 
                 foreach ($geohubConfigApi as $formId => $url) {
                     $response = Http::get($url);
-                    $acquisitionForm = $response->json()['APP']['poi_acquisition_form'];
-                    foreach ($acquisitionForm as $form) {
-                        $config[$form['id']] = $form;
-                    }
+                    $jsonResponse = $response->json()['APP'];
+                    $poiAcquisitionForm = $jsonResponse['poi_acquisition_form'];
+                    $trackAcquisitionForm = $jsonResponse['track_acquisition_form'] ?? [];
+
+                    $config['poi'] = array_merge($config['poi'] ?? [], $poiAcquisitionForm);
+                    $config['track'] = array_merge($config['track'] ?? [], $trackAcquisitionForm);
                 }
 
-                // Remove duplicates key in the config array
-                return array_unique($config, SORT_REGULAR);
+                // Rimuovi i duplicati dagli array di configurazione
+                $config['poi'] = array_unique($config['poi'], SORT_REGULAR);
+                $config['track'] = array_unique($config['track'], SORT_REGULAR);
+
+                return $config;
             });
 
-            if (!isset($config[$this->form_id])) {
+            $modelType = $this instanceof \App\Models\UgcTrack ? 'track' : 'poi';
+
+            if ($modelType === 'track') {
+                $formConfig = $config['track'][0] ?? null; // Prendi il primo elemento dell'array track
+            } else {
+                // Cerca l'elemento corrispondente in base al form_id
+                $formConfig = collect($config['poi'])->firstWhere('id', $this->form_id);
+            }
+
+            if (!$formConfig) {
                 return $this->createNoDataField();
             }
 
-            $formConfig = $config[$this->form_id];
-            $fields = $this->buildFieldsFromConfig($formConfig['fields'], $columnName, $this->form_id);
+            $fields = $this->buildFieldsFromConfig($formConfig['fields'], $columnName, $modelType);
 
             $tabsLabel = $formConfig['label']['it'] ?? $formConfig['label']['ït'] ?? $formConfig['label']['en'] ?? __('Form');
         } else {
-            $fields = $this->buildFieldsFromConfig($formSchema, $columnName, $this->form_id);
+            $fields = $this->buildFieldsFromConfig($formSchema, $columnName, $this instanceof \App\Models\UgcTrack ? 'track' : 'poi');
             $tabsLabel = __('Validation Permissions');
         }
 
@@ -59,12 +73,12 @@ trait WmNovaFieldsTrait
         return $tabs;
     }
 
-    protected function buildFieldsFromConfig(array $fieldsConfig, string $columnName, ?string $formId): array
+    protected function buildFieldsFromConfig(array $fieldsConfig, string $columnName, string $modelType): array
     {
         $fields = [];
 
         foreach ($fieldsConfig as $fieldSchema) {
-            if ($fieldSchema['name'] == 'waypointtype' && $formId == 'poi') {
+            if ($fieldSchema['name'] == 'waypointtype' && $modelType == 'poi') {
                 array_push(
                     $fieldSchema['values'],
                     [
