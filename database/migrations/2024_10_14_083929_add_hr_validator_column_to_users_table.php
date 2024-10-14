@@ -33,7 +33,7 @@ class AddHrValidatorColumnToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('hr_validator');
+            $table->dropColumn('ugc_track_validator');
         });
 
         Schema::table('ugc_tracks', function (Blueprint $table) {

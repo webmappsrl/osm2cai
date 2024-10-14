@@ -20,6 +20,8 @@ class UgcTrack extends Model
 
     protected $casts = [
         'raw_data' => 'array',
+        'validation_date' => 'datetime',
+        'raw_data->date' => 'datetime:Y-m-d H:i:s'
     ];
 
     public function getRegisteredAtAttribute()
@@ -29,9 +31,19 @@ class UgcTrack extends Model
             : $this->created_at;
     }
 
+    public function setGeometryAttribute($value)
+    {
+        $this->attributes['geometry'] = json_encode($value);
+    }
+
     public function ugc_media(): BelongsToMany
     {
         return $this->belongsToMany(UgcMedia::class);
+    }
+
+    public function validator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validator_id');
     }
 
     public function user(): BelongsTo
