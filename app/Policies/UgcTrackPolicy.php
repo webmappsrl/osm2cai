@@ -41,7 +41,7 @@ class UgcTrackPolicy
      */
     public function create(User $user)
     {
-        return false;
+        return true;
     }
 
     /**
@@ -53,7 +53,13 @@ class UgcTrackPolicy
      */
     public function update(User $user, UgcTrack $ugcTrack)
     {
-        return false;
+        if ($user->is_administrator) {
+            return true;
+        }
+
+        if ($ugcTrack->user_id === $user->id) {
+            return $ugcTrack->validated === 'not_validated';
+        }
     }
 
     /**
@@ -68,7 +74,7 @@ class UgcTrackPolicy
         if ($user->is_administrator) {
             return true;
         }
-        return $user->id === $ugcTrack->user_id;
+        return $user->id === $ugcTrack->user_id && $ugcTrack->validated != 'valid';
     }
 
     /**
