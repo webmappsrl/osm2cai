@@ -68,7 +68,7 @@ class UgcTrack extends Resource
      */
     public function fields(Request $request)
     {
-        return [
+        $fields = [
             ID::make(__('ID'), 'id')->sortable(),
             DateTime::make('Updated At')
                 ->format('DD MMM YYYY HH:mm:ss')
@@ -109,6 +109,17 @@ class UgcTrack extends Resource
                 ];
             })->onlyOnDetail(),
         ];
+
+        $formFields = $this->jsonForm('raw_data');
+
+        if (!empty($formFields)) {
+            array_push(
+                $fields,
+                $formFields,
+            );
+        }
+
+        return $fields;
     }
 
     /**

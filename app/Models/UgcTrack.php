@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\GeojsonableTrait;
+use App\Traits\WmNovaFieldsTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +11,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class UgcTrack extends Model
 {
-    use HasFactory, GeojsonableTrait;
+    use HasFactory,
+        GeojsonableTrait,
+        WmNovaFieldsTrait;
 
     protected $fillable = ['geohub_id', 'name', 'description', 'geometry', 'user_id', 'updated_at', 'raw_data', 'taxonomy_wheres', 'metadata', 'app_id'];
 
