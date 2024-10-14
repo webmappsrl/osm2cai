@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Carbon;
 use App\Traits\GeojsonableTrait;
 use App\Traits\WmNovaFieldsTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,13 @@ class UgcTrack extends Model
     protected $casts = [
         'raw_data' => 'array',
     ];
+
+    public function getRegisteredAtAttribute()
+    {
+        return isset($this->raw_data['date'])
+            ? Carbon::parse($this->raw_data['date'])
+            : $this->created_at;
+    }
 
     public function ugc_media(): BelongsToMany
     {

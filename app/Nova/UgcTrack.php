@@ -2,7 +2,7 @@
 
 namespace App\Nova;
 
-use App\Nova\Actions\DownloadFeatureCollection;
+use App\Nova\AbstractUgc;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
@@ -10,15 +10,13 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Fields\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
+use App\Nova\Actions\DownloadFeatureCollection;
 use App\Nova\Actions\DownloadGeojsonZipUgcTracks;
-use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
 
-class UgcTrack extends Resource
+class UgcTrack extends AbstractUgc
 {
     /**
      * The model the resource corresponds to.
@@ -50,7 +48,6 @@ class UgcTrack extends Resource
         'name',
     ];
 
-    public static string $group = 'Rilievi';
     public static $priority = 2;
 
     public static function label()
@@ -68,21 +65,17 @@ class UgcTrack extends Resource
      */
     public function fields(Request $request)
     {
-        $fields = [
-            ID::make(__('ID'), 'id')->sortable(),
-            DateTime::make('Updated At')
-                ->format('DD MMM YYYY HH:mm:ss')
-                ->hideWhenCreating()
-                ->hideWhenUpdating(),
-            Text::make('Geohub ID', 'geohub_id')
-                ->onlyOnDetail(),
+        $fields = parent::fields($request);
+
+        return array_merge($fields, $this->additionalFields($request));
+    }
+
+    public function additionalFields(Request $request)
+    {
+        return [
             Text::make('Nome', 'name')
                 ->sortable(),
             Textarea::make('Descrizione', 'description'),
-            BelongsTo::make('User', 'user')
-                ->searchable()
-                ->sortable(),
-            BelongsToMany::make('Media', 'ugc_media', UgcMedia::class),
             Text::make('Tassonomie Where', function ($model) {
                 $wheres = $model->taxonomy_wheres;
                 $words = explode(' ', $wheres);
@@ -91,35 +84,17 @@ class UgcTrack extends Resource
                     return implode(' ', $line);
                 }, $lines));
                 return $formattedWheres;
-            })->asHtml(),
-            Code::Make(__('metadata'), 'metadata')->language('json')->rules('nullable', 'json')->help(
-                'metadata of track'
-            )->onlyOnDetail(),
-            Code::make(__('Raw data'), function ($model) {
-                $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
-                if ($rawData) {
-                    $rawData = json_encode($rawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                }
-                return $rawData;
-            })->onlyOnDetail()->language('json')->rules('json'),
+            })->asHtml()
+                ->onlyOnDetail(),
             WmEmbedmapsField::make(__('Map'), function ($model) {
                 return [
                     'feature' => $model->getGeojson(),
                     'related' => $model->getRelatedUgcGeojson()
                 ];
             })->onlyOnDetail(),
+            $this->getRawDataField(),
+            $this->getMetadataField(),
         ];
-
-        $formFields = $this->jsonForm('raw_data');
-
-        if (!empty($formFields)) {
-            array_push(
-                $fields,
-                $formFields,
-            );
-        }
-
-        return $fields;
     }
 
     /**
@@ -131,19 +106,6 @@ class UgcTrack extends Resource
     public function cards(Request $request)
     {
         return [];
-    }
-
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [
-            (new RelatedUGCFilter()),
-        ];
     }
 
     /**
