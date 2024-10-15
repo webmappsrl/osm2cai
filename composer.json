@@ -40,6 +40,7 @@
     "tymon/jwt-auth": "^1.0",
     "webmapp/wm-embedmaps-field": "*",
     "wm/map-multi-linestring-nova": "*",
+    "wm/map-multi-linestring-nova3": "^0.0.9",
     "wm/map-multi-polygon-nova3": "dev-main",
     "wm/map-point-nova3": "^0.0.9"
   },

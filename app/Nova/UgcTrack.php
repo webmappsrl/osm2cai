@@ -6,15 +6,19 @@ use App\Nova\AbstractUgc;
 use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Textarea;
+use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use App\Nova\Filters\RelatedUGCFilter;
 use Laravel\Nova\Fields\BelongsToMany;
 use Webmapp\WmEmbedmapsField\WmEmbedmapsField;
 use App\Nova\Actions\DownloadFeatureCollection;
 use App\Nova\Actions\DownloadGeojsonZipUgcTracks;
+use Wm\MapMultiLinestringNova\MapMultiLinestringNova;
+use Wm\MapMultiLinestringNova3\MapMultiLinestringNova3;
 
 class UgcTrack extends AbstractUgc
 {
@@ -67,15 +71,30 @@ class UgcTrack extends AbstractUgc
     {
         $fields = parent::fields($request);
 
+        if ($request->isCreateOrAttachRequest()) {
+            $fields = [
+                Text::make('Nome', 'raw_data->title')
+                    ->sortable(),
+                Textarea::make('Descrizione', 'raw_data->description'),
+                MapMultiLinestringNova3::make(__('Map'), 'geometry')
+                    ->withMeta([
+                        'center' => ["51", "4"],
+                        'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                        'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                        'minZoom' => 7,
+                        'maxZoom' => 16,
+                    ])
+                    ->hideFromIndex(),
+            ];
+        }
+
+
         return array_merge($fields, $this->additionalFields($request));
     }
 
     public function additionalFields(Request $request)
     {
-        return [
-            Text::make('Nome', 'name')
-                ->sortable(),
-            Textarea::make('Descrizione', 'description'),
+        $fields = [
             Text::make('Tassonomie Where', function ($model) {
                 $wheres = $model->taxonomy_wheres;
                 $words = explode(' ', $wheres);
@@ -86,15 +105,11 @@ class UgcTrack extends AbstractUgc
                 return $formattedWheres;
             })->asHtml()
                 ->onlyOnDetail(),
-            WmEmbedmapsField::make(__('Map'), function ($model) {
-                return [
-                    'feature' => $model->getGeojson(),
-                    'related' => $model->getRelatedUgcGeojson()
-                ];
-            })->onlyOnDetail(),
             $this->getRawDataField(),
             $this->getMetadataField(),
         ];
+
+        return $fields;
     }
 
     /**
