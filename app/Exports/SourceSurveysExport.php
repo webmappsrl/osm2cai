@@ -22,7 +22,7 @@ class SourceSurveysExport implements FromCollection, WithHeadings
             return [
                 'osm2cai_id' => $model->id,
                 'operator' => $model->user->name ?? $model->user_no_match ?? '/',
-                'monitoring_date' => $rawData['date'],
+                'monitoring_date' => $rawData['date'] ?? $model->created_at,
                 'url' => url("resources/source-surveys/$model->id"),
                 'lon' => $rawData['position']['longitude'] ?? '/',
                 'lat' => $rawData['position']['latitude'] ?? '/',
