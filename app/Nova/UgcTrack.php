@@ -76,15 +76,6 @@ class UgcTrack extends AbstractUgc
                 Text::make('Nome', 'raw_data->title')
                     ->sortable(),
                 Textarea::make('Descrizione', 'raw_data->description'),
-                MapMultiLinestringNova3::make(__('Map'), 'geometry')
-                    ->withMeta([
-                        'center' => ["51", "4"],
-                        'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
-                        'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-                        'minZoom' => 7,
-                        'maxZoom' => 16,
-                    ])
-                    ->hideFromIndex(),
             ];
         }
 
@@ -107,6 +98,15 @@ class UgcTrack extends AbstractUgc
                 ->onlyOnDetail(),
             $this->getRawDataField(),
             $this->getMetadataField(),
+            // MapMultiLinestringNova3::make(__('Map'), 'geometry')
+            //     ->withMeta([
+            //         'center' => ["51", "4"],
+            //         'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+            //         'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+            //         'minZoom' => 7,
+            //         'maxZoom' => 16,
+            //     ])
+            //     ->hideFromIndex(),
         ];
 
         return $fields;
