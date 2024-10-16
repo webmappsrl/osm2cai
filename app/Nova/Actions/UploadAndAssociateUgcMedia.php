@@ -23,10 +23,10 @@ class UploadAndAssociateUgcMedia extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
 
-        $ugcPoi = $models->first();
+        $model = $models->first();
 
-        if (auth()->user()->id !== $ugcPoi->user_id) {
-            return Action::danger('Non sei autorizzato a caricare immagini per questo UgcPoi.');
+        if (auth()->user()->id !== $model->user_id) {
+            return Action::danger('Non sei autorizzato a caricare immagini per questo model.');
         }
 
         if (!$fields->has('ugc-media')) {
@@ -53,7 +53,7 @@ class UploadAndAssociateUgcMedia extends Action
             $path = $ugcMedia->store('ugc-media', 'public');
 
             // Modifica qui per includere lo SRID
-            $geometry = $ugcPoi->geometry;
+            $geometry = $model->geometry;
             $newUgcMedia = \App\Models\UgcMedia::create([
                 'name' => $ugcMedia->getClientOriginalName(),
                 'relative_url' => 'ugc-media/' . basename($path),
@@ -62,7 +62,7 @@ class UploadAndAssociateUgcMedia extends Action
                 'app_id' => 'osm2cai'
             ]);
 
-            $ugcPoi->ugc_media()->attach($newUgcMedia->id);
+            $model->ugc_media()->attach($newUgcMedia->id);
 
 
             return Action::message('Immagine caricata e associata con successo!');

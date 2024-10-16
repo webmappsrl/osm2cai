@@ -188,37 +188,15 @@ class UgcPoi extends AbstractUgc
      */
     public function actions(Request $request)
     {
-        return [
+        $parentActions = parent::actions($request);
+        $specificActions = [
             (new DownloadUgcCsv()),
-            (new DownloadFeatureCollection())->canSee(function ($request) {
-                return true;
-            }),
             (new CheckUserNoMatchAction)->canRun(function () {
                 return true;
             })->standalone(),
-            (new UploadAndAssociateUgcMedia())->canSee(function ($request) {
-                if ($this->user_id)
-                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
-                if ($request->has('resources'))
-                    return true;
-
-                return false;
-            })
-                ->canRun(function ($request) {
-                    return true;
-                })
-                ->confirmText('Sei sicuro di voler caricare questa immagine?')
-                ->confirmButtonText('Carica')
-                ->cancelButtonText('Annulla'),
-            (new DeleteUgcMedia($this->model()))->canSee(function ($request) {
-                if ($this->user_id)
-                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
-                if ($request->has('resources'))
-                    return true;
-
-                return false;
-            })
         ];
+
+        return array_merge($parentActions, $specificActions);
     }
 
     public static function authorizedToCreate(Request $request)

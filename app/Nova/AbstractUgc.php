@@ -10,12 +10,15 @@ use Laravel\Nova\Fields\Select;
 use App\Enums\UgcValidatedStatus;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\BelongsTo;
+use App\Nova\Actions\DeleteUgcMedia;
 use App\Nova\Filters\UgcAppIdFilter;
 use App\Nova\Filters\ValidatedFilter;
 use App\Nova\Filters\RelatedUGCFilter;
 use App\Nova\Traits\RawDataFieldsTrait;
 use App\Nova\Filters\UgcUserNoMatchFilter;
 use PosLifestyle\DateRangeFilter\Enums\Config;
+use App\Nova\Actions\DownloadFeatureCollection;
+use App\Nova\Actions\UploadAndAssociateUgcMedia;
 use PosLifestyle\DateRangeFilter\DateRangeFilter;
 
 abstract class AbstractUgc extends Resource
@@ -58,6 +61,7 @@ abstract class AbstractUgc extends Resource
                 ->hideFromDetail(),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases())
+                ->default(UgcValidatedStatus::NotValidated)
                 ->canSee(function ($request) {
                     //if is an ugcTrack instance return $user->ugc_track_validator
                     if ($this instanceof UgcTrack) {
@@ -148,6 +152,37 @@ abstract class AbstractUgc extends Resource
                     Config::ENABLE_SECONDS => true,
                 ]
             )),
+        ];
+    }
+
+    public function actions(Request $request)
+    {
+        return [
+            (new UploadAndAssociateUgcMedia())->canSee(function ($request) {
+                if ($this->user_id)
+                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
+                if ($request->has('resources'))
+                    return true;
+
+                return false;
+            })
+                ->canRun(function ($request) {
+                    return true;
+                })
+                ->confirmText('Sei sicuro di voler caricare questa immagine?')
+                ->confirmButtonText('Carica')
+                ->cancelButtonText('Annulla'),
+            (new DeleteUgcMedia($this->model()))->canSee(function ($request) {
+                if ($this->user_id)
+                    return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
+                if ($request->has('resources'))
+                    return true;
+
+                return false;
+            }),
+            (new DownloadFeatureCollection())->canSee(function ($request) {
+                return true;
+            }),
         ];
     }
 

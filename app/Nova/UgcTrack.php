@@ -71,13 +71,13 @@ class UgcTrack extends AbstractUgc
     {
         $fields = parent::fields($request);
 
-        if ($request->isCreateOrAttachRequest()) {
-            $fields = [
-                Text::make('Nome', 'raw_data->title')
-                    ->sortable(),
-                Textarea::make('Descrizione', 'raw_data->description'),
-            ];
-        }
+        // if ($request->isCreateOrAttachRequest()) {
+        //     $fields = [
+        //         Text::make('Nome', 'raw_data->title')
+        //             ->sortable(),
+        //         Textarea::make('Descrizione', 'raw_data->description'),
+        //     ];
+        // }
 
 
         return array_merge($fields, $this->additionalFields($request));
@@ -98,15 +98,15 @@ class UgcTrack extends AbstractUgc
                 ->onlyOnDetail(),
             $this->getRawDataField(),
             $this->getMetadataField(),
-            // MapMultiLinestringNova3::make(__('Map'), 'geometry')
-            //     ->withMeta([
-            //         'center' => ["51", "4"],
-            //         'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
-            //         'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
-            //         'minZoom' => 7,
-            //         'maxZoom' => 16,
-            //     ])
-            //     ->hideFromIndex(),
+            MapMultiLinestringNova3::make(__('Map'), 'geometry')
+                ->withMeta([
+                    'center' => ["51", "4"],
+                    'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                    'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                    'minZoom' => 7,
+                    'maxZoom' => 16,
+                ])
+                ->hideFromIndex(),
         ];
 
         return $fields;
@@ -142,20 +142,16 @@ class UgcTrack extends AbstractUgc
      */
     public function actions(Request $request)
     {
-        return [
+        $parentActions = parent::actions($request);
+        $specificActions = [
             (new DownloadGeojsonZipUgcTracks())
                 ->canSee(function ($request) {
                     return true;
                 })->canRun(function ($request) {
                     return true;
                 }),
-            (new DownloadFeatureCollection())
-                ->canSee(function ($request) {
-                    return true;
-                })
-                ->canRun(function ($request) {
-                    return true;
-                })
         ];
+
+        return array_merge($parentActions, $specificActions);
     }
 }
