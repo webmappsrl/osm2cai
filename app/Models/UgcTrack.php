@@ -44,7 +44,11 @@ class UgcTrack extends Model
 
     public function setGeometryAttribute($value)
     {
-        $this->attributes['geometry'] = json_encode($value);
+        if (!is_string($value)) {
+            $this->attributes['geometry'] = json_encode($value);
+        } else {
+            $this->attributes['geometry'] = $value;
+        }
     }
 
     public function ugc_media(): BelongsToMany
