@@ -15,9 +15,9 @@ trait WmNovaFieldsTrait
         // Assicurati che Laravel Nova sia installato
         $this->ensureNovaIsInstalled();
 
-        if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
-            return $this->createNoDataField();
-        }
+        // if (!isset($this->attributes) || !array_key_exists($columnName, $this->attributes)) {
+        //     return $this->createNoDataField();
+        // }
 
         if ($formSchema === null) {
             $config = Cache::remember('geohub_config', 60 * 60, function () {
