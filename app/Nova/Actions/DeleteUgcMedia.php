@@ -2,12 +2,15 @@
 
 namespace App\Nova\Actions;
 
+use App\Models\UgcPoi;
+use App\Models\UgcTrack;
 use Illuminate\Bus\Queueable;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Actions\Action;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Fields\ActionFields;
 use Illuminate\Support\Facades\Storage;
+
 
 class DeleteUgcMedia extends Action
 {
@@ -24,7 +27,9 @@ class DeleteUgcMedia extends Action
         $this->model = $model;
 
         if (!is_null($resourceId = request('resourceId'))) {
-            $this->model = \App\Models\UgcPoi::find($resourceId);
+            //get base class name
+            $modelClass = class_basename($this->model);
+            $this->model = app('App\Models\\' . $modelClass)->find($resourceId);
         }
     }
 

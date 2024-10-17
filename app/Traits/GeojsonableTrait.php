@@ -67,12 +67,14 @@ trait GeojsonableTrait
         }
         $geom = $obj->geom;
 
-        $obj_raw_data = $model::where('id', '=', $this->id)
-            ->select(
-                DB::raw("ST_AsGeoJSON(geometry_raw_data) as geom_raw")
-            )
-            ->first();
-        $geom_raw = $obj_raw_data->geom_raw;
+        if (isset($this->geometry_raw_data)) {
+            $obj_raw_data = $model::where('id', '=', $this->id)
+                ->select(
+                    DB::raw("ST_AsGeoJSON(geometry_raw_data) as geom_raw")
+                )
+                ->first();
+            $geom_raw = $obj_raw_data->geom_raw;
+        }
 
         if (isset($geom_raw) && isset($geom)) {
             return [
