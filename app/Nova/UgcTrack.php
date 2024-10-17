@@ -87,8 +87,8 @@ class UgcTrack extends AbstractUgc
                 return $formattedWheres;
             })->asHtml()
                 ->onlyOnDetail(),
-            $this->getRawDataField(),
-            $this->getMetadataField(),
+            $this->getCodeField('Raw data'),
+            $this->getCodeField('Metadata'),
             MapMultiLinestringNova3::make(__('Map'), 'geometry')
                 ->withMeta([
                     'center' => ["51", "4"],

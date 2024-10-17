@@ -137,9 +137,9 @@ class UgcPoi extends AbstractUgc
                 'maxZoom' => 14,
                 'defaultZoom' => 5
             ])->hideFromIndex(),
-            $this->getCodeField('Form data', ['id', 'form_id', 'waypointtype']),
+            $this->getCodeField('Form data', ['id', 'form_id', 'waypointtype', 'key', 'date', 'title']),
             $this->getCodeField('Device data', ['position', 'displayPosition', 'city', 'date']),
-            $this->getCodeField('Nominatim', ['displayPosition', 'city', 'date']),
+            $this->getCodeField('Nominatim'),
             $this->getCodeField('Raw data'),
         ];
     }
