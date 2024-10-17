@@ -71,22 +71,13 @@ class UgcTrack extends AbstractUgc
     {
         $fields = parent::fields($request);
 
-        // if ($request->isCreateOrAttachRequest()) {
-        //     $fields = [
-        //         Text::make('Nome', 'raw_data->title')
-        //             ->sortable(),
-        //         Textarea::make('Descrizione', 'raw_data->description'),
-        //     ];
-        // }
-
-
         return array_merge($fields, $this->additionalFields($request));
     }
 
     public function additionalFields(Request $request)
     {
         $fields = [
-            Text::make('Tassonomie Where', function ($model) {
+            Text::make(__('Taxonomy Where'), function ($model) {
                 $wheres = $model->taxonomy_wheres;
                 $words = explode(' ', $wheres);
                 $lines = array_chunk($words, 3);

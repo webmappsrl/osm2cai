@@ -11,98 +11,23 @@ use Laravel\Nova\Fields\Code;
  */
 trait RawDataFieldsTrait
 {
-    /**
-     * Get the raw data fields.
-     * 
-     * This method returns an array of raw data fields, including form data, device data, Nominatim data, and raw data.
-     * 
-     * @return array
-     */
-    protected function getRawDataFields()
-    {
-        return [
-            $this->getFormDataField(),
-            $this->getDeviceDataField(),
-            $this->getNominatimField(),
-            $this->getRawDataField(),
-        ];
-    }
 
     /**
-     * Get the form data field.
+     * Get the code field.
      * 
-     * This method returns a form data field in JSON format, excluding some specific keys.
+     * This method returns a code field in JSON format including only the specified keys.
      * 
+     * @param string $fieldName The name of the field.
+     * @param array $includeKeys The keys to include in the field.
      * @return Code
      */
-    protected function getFormDataField()
+    protected function getCodeField(string $fieldName, array $includeKeys = [])
     {
-        return Code::make(__('Form data'), function ($model) {
-            $jsonRawData = $this->getJsonRawData($model);
-            if ($jsonRawData) {
-                $excludeKeys = ['position', 'displayPosition', 'city', 'date', 'nominatim'];
-                $filteredData = array_diff_key($jsonRawData, array_flip($excludeKeys));
-                return json_encode($filteredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-            return null;
+        return Code::make(__($fieldName), function ($model) use ($includeKeys, $fieldName) {
+            return $this->encodeFilteredJsonData($model, $includeKeys, $fieldName);
         })->onlyOnDetail()->language('json')->rules('json');
     }
 
-    /**
-     * Get the device data field.
-     * 
-     * This method returns a device data field in JSON format, including only some specific keys.
-     * 
-     * @return Code
-     */
-    protected function getDeviceDataField()
-    {
-        return Code::make(__('Device data'), function ($model) {
-            $jsonRawData = $this->getJsonRawData($model);
-            if ($jsonRawData) {
-                $includeKeys = ['position', 'displayPosition', 'city', 'date'];
-                $filteredData = array_intersect_key($jsonRawData, array_flip($includeKeys));
-                return json_encode($filteredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-            return null;
-        })->onlyOnDetail()->language('json')->rules('json');
-    }
-
-    /**
-     * Get the Nominatim field.
-     * 
-     * This method returns a Nominatim field in JSON format, if present.
-     * 
-     * @return Code
-     */
-    protected function getNominatimField()
-    {
-        return Code::make(__('Nominatim'), function ($model) {
-            $jsonRawData = $this->getJsonRawData($model);
-            if (isset($jsonRawData['nominatim'])) {
-                return json_encode($jsonRawData['nominatim'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-            return null;
-        })->onlyOnDetail()->language('json')->rules('json');
-    }
-
-    /**
-     * Get the raw data field.
-     * 
-     * This method returns a raw data field in JSON format, if present.
-     * 
-     * @return Code
-     */
-    protected function getRawDataField()
-    {
-        return Code::make(__('Raw data'), function ($model) {
-            $jsonRawData = $this->getJsonRawData($model);
-            if ($jsonRawData) {
-                return json_encode($jsonRawData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-            return null;
-        })->onlyOnDetail()->language('json')->rules('json');
-    }
 
     /**
      * Get the metadata field.
@@ -114,12 +39,30 @@ trait RawDataFieldsTrait
     protected function getMetadataField()
     {
         return Code::make(__('Metadata'), function ($model) {
-            $jsonMetadata = $model->metaData;
-            if ($jsonMetadata) {
-                return json_encode($jsonMetadata, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-            return null;
+            return $model->metaData ? json_encode($model->metaData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : null;
         })->onlyOnDetail()->language('json')->rules('json');
+    }
+
+
+    /**
+     * Encode filtered JSON data.
+     * 
+     * This method encodes the filtered JSON data based on the provided include keys.
+     * 
+     * @param $model
+     * @param array $includeKeys
+     * @param string $fieldName
+     * @return string
+     */
+    protected function encodeFilteredJsonData($model, $includeKeys, $fieldName)
+    {
+        $jsonRawData = $this->getJsonRawData($model, $fieldName);
+        if (!$jsonRawData) {
+            return null;
+        }
+
+        $filteredData = empty($includeKeys) ? $jsonRawData : array_intersect_key($jsonRawData, array_flip($includeKeys));
+        return json_encode($filteredData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -130,8 +73,12 @@ trait RawDataFieldsTrait
      * @param $model
      * @return array|null
      */
-    protected function getJsonRawData($model)
+    protected function getJsonRawData($model, $fieldName)
     {
-        return is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+        $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data ?? null;
+        if ($fieldName === 'Nominatim') {
+            return $rawData ? $rawData['nominatim'] ?? null : null;
+        }
+        return $rawData;
     }
 }

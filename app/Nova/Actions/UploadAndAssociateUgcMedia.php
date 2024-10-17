@@ -16,9 +16,10 @@ class UploadAndAssociateUgcMedia extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = 'Carica Immagine';
+    public $name = 'Upload Image';
     public $showOnDetail = true;
     public $showOnTableRow = true;
+
 
     public function handle(ActionFields $fields, Collection $models)
     {
@@ -26,17 +27,17 @@ class UploadAndAssociateUgcMedia extends Action
         $model = $models->first();
 
         if (auth()->user()->id !== $model->user_id) {
-            return Action::danger('Non sei autorizzato a caricare immagini per questo model.');
+            return Action::danger(__('You are not authorized to upload images for this model.'));
         }
 
         if (!$fields->has('ugc-media')) {
-            return Action::danger('Nessuna immagine trovata nella richiesta.');
+            return Action::danger(__('No image found in the request.'));
         }
 
         $ugcMedia = $fields->ugc_media;
 
         if (!$ugcMedia) {
-            return Action::danger('L\'immagine caricata è nulla.');
+            return Action::danger(__('The uploaded image is null.'));
         }
 
         \Log::info('Image details:', [
@@ -46,13 +47,13 @@ class UploadAndAssociateUgcMedia extends Action
         ]);
 
         if ($ugcMedia->getSize() > 10485760) {
-            return Action::danger('L\'immagine caricata supera le dimensioni massime consentite');
+            return Action::danger(__('The uploaded image exceeds the maximum allowed size'));
         }
 
         try {
             $path = $ugcMedia->store('ugc-media', 'public');
 
-            // Modifica qui per includere lo SRID
+            // Modify here to include the SRID
             $geometry = $model->geometry;
             $newUgcMedia = \App\Models\UgcMedia::create([
                 'name' => $ugcMedia->getClientOriginalName(),
@@ -65,22 +66,22 @@ class UploadAndAssociateUgcMedia extends Action
             $model->ugc_media()->attach($newUgcMedia->id);
 
 
-            return Action::message('Immagine caricata e associata con successo!');
+            return Action::message(__('Image uploaded and associated successfully!'));
         } catch (\Exception $e) {
-            return Action::danger('Errore durante il caricamento dell\'immagine: ' . $e->getMessage());
+            return Action::danger(__('Error during image upload: ') . $e->getMessage());
         }
     }
 
     public function fields()
     {
         return [
-            File::make('Immagine', 'ugc_media')
+            File::make('Image', 'ugc_media')
                 ->disk('public')
                 ->path('ugc-media')
                 ->store(function ($request, $model) {
                     return $request->file('ugc-media')->store('ugc-media', 'public');
                 })
-                ->help('Carica un\'immagine da associare al POI. Dimensione consentita: max 10MB')
+                ->help(__('Upload an image to associate with the POI. Allowed size: max 10MB'))
         ];
     }
 }

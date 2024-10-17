@@ -161,10 +161,7 @@ abstract class AbstractUgc extends Resource
             (new UploadAndAssociateUgcMedia())->canSee(function ($request) {
                 if ($this->user_id)
                     return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
-                if ($request->has('resources'))
-                    return true;
-
-                return false;
+                return $request->has('resources');
             })
                 ->canRun(function ($request) {
                     return true;
@@ -175,10 +172,7 @@ abstract class AbstractUgc extends Resource
             (new DeleteUgcMedia($this->model()))->canSee(function ($request) {
                 if ($this->user_id)
                     return auth()->user()->id == $this->user_id && $this->validated === UgcValidatedStatus::NotValidated;
-                if ($request->has('resources'))
-                    return true;
-
-                return false;
+                return $request->has('resources');
             }),
             (new DownloadFeatureCollection())->canSee(function ($request) {
                 return true;
