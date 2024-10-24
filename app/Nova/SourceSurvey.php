@@ -55,10 +55,10 @@ class SourceSurvey extends AbstractValidationResource
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
                 return $this->calculateFlowRate();
             }),
-            Text::make('Flow Rate/Volume', 'flow_rate_volume')->hideFromIndex(),
-            Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time')->hideFromIndex(),
-            Text::make('Conductivity microS/cm', 'conductivity'),
-            Text::make('Temperature °C', 'temperature'),
+            Text::make('Flow Rate/Volume', 'raw_data->range_volume')->hideFromIndex(),
+            Text::make('Flow Rate/Fill Time', 'raw_data->range_time')->hideFromIndex(),
+            Text::make('Conductivity microS/cm', 'raw_data->conductivity'),
+            Text::make('Temperature °C', 'raw_data->temperature'),
             Boolean::make('Photos', function () {
                 return count($this->ugc_media) > 0;
             })->hideFromDetail(),
@@ -89,15 +89,16 @@ class SourceSurvey extends AbstractValidationResource
                 return $this->getRegisteredAtAttribute();
             })
                 ->sortable()->readonly(),
+            Text::make('Flow Rate L/s', 'flow_rate')->readonly(),
         ];
     }
     public function modifiablesFields()
     {
         return [
-            Text::make('Flow Rate/Volume', 'flow_rate_volume'),
-            Text::make('Flow Rate/Fill Time', 'flow_rate_fill_time'),
-            Text::make('Conductivity microS/cm', 'conductivity'),
-            Text::make('Temperature °C', 'temperature'),
+            Text::make('Flow Rate/Volume', 'raw_data->range_volume'),
+            Text::make('Flow Rate/Fill Time', 'raw_data->range_time'),
+            Text::make('Conductivity microS/cm', 'raw_data->conductivity'),
+            Text::make('Temperature °C', 'raw_data->temperature'),
             Select::make('Validated', 'validated')
                 ->options(UgcValidatedStatus::cases())
                 ->canSee(function ($request) {

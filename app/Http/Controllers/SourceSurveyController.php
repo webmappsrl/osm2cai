@@ -50,18 +50,18 @@ class SourceSurveyController extends Controller
             if ($date !== 'N/A') {
                 $date = Carbon::parse($date)->format('d-m-Y');
             }
-            if (isset($sourceSurvey->flow_rate) && $sourceSurvey->flow_rate !== 'N/A') {
-                $flowRate = str_replace(',', '.', $sourceSurvey->flow_rate) . ' L/s';
+            if (isset($rawData['range_volume']) && $rawData['range_volume'] !== 'N/A') {
+                $flowRate = str_replace(',', '.', $rawData['range_volume']) . ' L/s';
             } else {
                 $flowRate = 'N/A';
             }
-            if (isset($sourceSurvey->temperature) && $sourceSurvey->temperature !== 'N/A') {
-                $temperature = str_replace(',', '.', $sourceSurvey->temperature) . 'C';
+            if (isset($rawData['temperature']) && $rawData['temperature'] !== 'N/A') {
+                $temperature = str_replace(',', '.', $rawData['temperature']) . 'C';
             } else {
                 $temperature = 'N/A';
             }
-            if (isset($sourceSurvey->conductivity) && $sourceSurvey->conductivity !== 'N/A') {
-                $conductivity = str_replace(',', '.', $sourceSurvey->conductivity) . ' microS/cm';
+            if (isset($rawData['conductivity']) && $rawData['conductivity'] !== 'N/A') {
+                $conductivity = str_replace(',', '.', $rawData['conductivity']) . ' microS/cm';
             } else {
                 $conductivity = 'N/A';
             }
