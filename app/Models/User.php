@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Section;
 use App\Traits\WmNovaFieldsTrait;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -50,6 +51,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'resources_validator' => 'array',
         'regional_referent_expire_date' => 'date',
+        'section_manager_expire_date' => 'date',
     ];
 
     /**
@@ -100,6 +102,11 @@ class User extends Authenticatable implements JWTSubject
     public function section()
     {
         return $this->belongsTo(Section::class);
+    }
+
+    public function managedSection()
+    {
+        return $this->belongsTo(Section::class, 'manager_section_id');
     }
 
     public function ecPois()
@@ -169,6 +176,8 @@ class User extends Authenticatable implements JWTSubject
             || count($this->sectors) > 0
         ) {
             return 'Referente di zona';
+        } else if (!is_null($this->managedSection)) {
+            return 'Responsabile sezione';
         }
         return 'Unknown';
     }

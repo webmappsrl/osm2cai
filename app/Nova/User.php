@@ -25,6 +25,7 @@ use App\Nova\Filters\UserProvinceFilter;
 use App\Nova\Actions\AssociaUtenteAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Nova\Filters\UserAssociationFilter;
+use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -156,7 +157,8 @@ class User extends Resource
                 ->readonly(function () {
                     return !auth()->user()->is_administrator;
                 })
-                ->hideFromIndex(),
+                ->hideFromIndex()
+                ->format('DD/MM/YYYY'),
             Text::make(__('Provinces'), function () {
                 $result = [];
                 foreach ($this->provinces as $province) {
@@ -184,10 +186,26 @@ class User extends Resource
             BelongsToMany::make('Provinces', 'provinces'),
             BelongsToMany::make('Areas', 'areas'),
             BelongsToMany::make('Sectors', 'sectors'),
-            Belongsto::make('Section')
+            Belongsto::make('Section Member', 'section', Section::class)
                 ->hideFromIndex()
                 ->searchable()
                 ->nullable(),
+            BelongsTo::make('Managed Section', 'managedSection', Section::class)
+                ->nullable()
+                ->searchable(),
+            Date::make('Section Manager Expire Date', 'section_manager_expire_date')
+                ->nullable()
+                ->canSee(function ($request) {
+                    return $this->managedSection;
+                })
+                ->required(function () {
+                    return $this->model()->getPermissionString() === 'Responsabile sezione';
+                })
+                ->readonly(function () {
+                    return !auth()->user()->is_administrator;
+                })
+                ->hideFromIndex()
+                ->format('DD/MM/YYYY'),
             Code::make('Default overpass query', 'default_overpass_query')
                 ->onlyOnDetail(),
             Code::make('Default overpass query', 'default_overpass_query')

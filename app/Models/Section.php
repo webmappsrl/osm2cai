@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use App\Traits\CsvableModelTrait;
 use App\Traits\GeoIntersectTrait;
 use Illuminate\Database\Eloquent\Model;
@@ -34,7 +35,8 @@ class Section extends Model
         'opening_hours',
         'wheelchair',
         'fax',
-        'cached_mitur_api_data'
+        'cached_mitur_api_data',
+        'section_manager_id',
     ];
 
     public function region()
@@ -50,5 +52,10 @@ class Section extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function sectionManager()
+    {
+        return $this->hasOne(User::class, 'manager_section_id');
     }
 }

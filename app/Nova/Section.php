@@ -8,7 +8,6 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use App\Helpers\Osm2CaiHelper;
-use App\Services\CacheService;
 use Laravel\Nova\Fields\HasMany;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
@@ -20,9 +19,9 @@ use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Actions\DownloadRoutesCsv;
 use App\Models\Section as ModelsSection;
 use App\Nova\Filters\SectionRegionFilter;
+use App\Nova\Actions\AssignSectionManager;
+use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use App\Models\HikingRoute as ModelsHikingRoute;
-use App\Nova\Actions\CalculateIntersectionsAction;
 
 class Section extends Resource
 {
@@ -77,16 +76,16 @@ class Section extends Resource
         $hikingRoutes = $this->hikingRoutes()->get();
 
         //define the hiking routes for each osm2cai status
-        $hikingRoutesSDA1 = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->osm2cai_status == 1);
-        $hikingRoutesSDA2 = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->osm2cai_status == 2);
-        $hikingRoutesSDA3 = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->osm2cai_status == 3);
-        $hikingRoutesSDA4 = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->osm2cai_status == 4);
+        $hikingRoutesSDA1 = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->osm2cai_status == 1);
+        $hikingRoutesSDA2 = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->osm2cai_status == 2);
+        $hikingRoutesSDA3 = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->osm2cai_status == 3);
+        $hikingRoutesSDA4 = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->osm2cai_status == 4);
 
         //define the hikingroutes for each issue status
-        $hikingRoutesSPS = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Unknown);
-        $hikingRoutesSPP = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Open);
-        $hikingRouteSPPP = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->issues_status == IssueStatus::PartiallyClosed);
-        $hikingRoutesSPNP = $hikingRoutes->filter(fn ($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Closed);
+        $hikingRoutesSPS = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Unknown);
+        $hikingRoutesSPP = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Open);
+        $hikingRouteSPPP = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->issues_status == IssueStatus::PartiallyClosed);
+        $hikingRoutesSPNP = $hikingRoutes->filter(fn($hikingRoute) => $hikingRoute->issues_status == IssueStatus::Closed);
 
 
 
@@ -117,6 +116,10 @@ class Section extends Resource
             BelongsTo::make('Regione', 'region', Region::class)
                 ->searchable(),
             HasMany::make('Utenti', 'users', User::class),
+            Text::make('Responsabile sezione', function () {
+                $sectionManager = $this->sectionManager;
+                return $sectionManager ? '<a href="' . url('/resources/users/' . $sectionManager->id) . '">' . $sectionManager->name . '</a>' : '/';
+            })->asHtml(),
             BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
                 ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),
             Text::make('SDA1', function () use ($hikingRoutesSDA1) {
@@ -327,6 +330,11 @@ class Section extends Resource
     public function actions(Request $request): array
     {
         return [
+            (new AssignSectionManager())->canRun(
+                function ($request) {
+                    return $request->user()->is_administrator || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id);
+                }
+            ),
             (new DownloadGeojson)
                 ->canRun(
                     function ($request, $model) {

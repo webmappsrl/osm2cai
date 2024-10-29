@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRegionalReferentExpireDateToUsersTable extends Migration
+class AddManagerSectionIdToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,8 @@ class AddRegionalReferentExpireDateToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->date('regional_referent_expire_date')->nullable();
-            $table->dateTime('section_manager_expire_date')->nullable();
+            $table->unsignedBigInteger('manager_section_id')->nullable();
+            $table->foreign('manager_section_id')->references('id')->on('sections')->onDelete('set null');
         });
     }
 
@@ -27,8 +27,8 @@ class AddRegionalReferentExpireDateToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('regional_referent_expire_date');
-            $table->dropColumn('section_manager_expire_date');
+            $table->dropForeign(['manager_section_id']);
+            $table->dropColumn('manager_section_id');
         });
     }
 }
