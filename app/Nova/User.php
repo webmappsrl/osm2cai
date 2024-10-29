@@ -11,21 +11,16 @@ use Laravel\Nova\Fields\Boolean;
 use App\Models\User as UserModel;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
-use Laravel\Nova\Fields\Textarea;
-use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use App\Nova\Filters\UserAreaFilter;
 use App\Nova\Filters\UserTypeFilter;
 use App\Nova\Actions\DownloadUsersCsv;
 use App\Nova\Filters\UserRegionFilter;
 use App\Nova\Filters\UserSectorFilter;
-use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UserProvinceFilter;
 use App\Nova\Actions\AssociaUtenteAction;
 use Illuminate\Database\Eloquent\Builder;
-use App\Nova\Filters\UserAssociationFilter;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -190,11 +185,11 @@ class User extends Resource
                 ->hideFromIndex()
                 ->searchable()
                 ->nullable()
-                ->help('La sezione di cui é membro l\'utente'),
+                ->help(__('La sezione di cui é membro l\'utente')),
             BelongsTo::make('Managed Section', 'managedSection', Section::class)
                 ->nullable()
                 ->searchable()
-                ->help('La sezione di cui l\'utente é responsabile'),
+                ->help(__('La sezione di cui l\'utente é responsabile')),
             Date::make('Section Manager Expire Date', 'section_manager_expire_date')
                 ->nullable()
                 ->canSee(function ($request) {

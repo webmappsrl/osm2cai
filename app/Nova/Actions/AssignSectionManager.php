@@ -16,7 +16,12 @@ class AssignSectionManager extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = 'Assegna responsabile sezione';
+    public $name;
+
+    public function __construct()
+    {
+        $this->name = __('Assegna responsabile sezione');
+    }
 
     /**
      * Perform the action on the given models.
@@ -35,7 +40,7 @@ class AssignSectionManager extends Action
             $model->save();
         }
 
-        return Action::message('Responsabile sezione assegnato con successo!');
+        return Action::message(__('Responsabile sezione assegnato con successo'));
     }
 
     /**
@@ -46,10 +51,10 @@ class AssignSectionManager extends Action
     public function fields()
     {
         return [
-            Select::make('Responsabile sezione', 'sectionManager')
+            Select::make(__('Responsabile sezione'), 'sectionManager')
                 ->options(User::all('id', 'name')->pluck('name', 'id'))
                 ->searchable(),
-            Date::make('Data di scadenza dell\'incarico', 'section_manager_expire_date')
+            Date::make(__('Data di scadenza dell\'incarico'), 'section_manager_expire_date')
                 ->nullable(),
         ];
     }
