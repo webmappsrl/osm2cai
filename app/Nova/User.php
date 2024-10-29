@@ -4,12 +4,14 @@ namespace App\Nova;
 
 use App\Models\Region;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Code;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Boolean;
 use App\Models\User as UserModel;
-use App\Nova\Actions\AssociaUtenteAction;
 use App\Nova\Actions\EmulateUser;
 use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\Textarea;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
 use App\Nova\Filters\UserAreaFilter;
@@ -20,10 +22,9 @@ use App\Nova\Filters\UserSectorFilter;
 use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Filters\UserProvinceFilter;
+use App\Nova\Actions\AssociaUtenteAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Nova\Filters\UserAssociationFilter;
-use Laravel\Nova\Fields\Code;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class User extends Resource
@@ -144,7 +145,18 @@ class User extends Resource
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
             BelongsTo::make('Region')->nullable(),
-
+            Date::make('Regional Referent Expire Date', 'regional_referent_expire_date')
+                ->nullable()
+                ->canSee(function () {
+                    return $this->model()->getTerritorialRole() === 'regional';
+                })
+                ->required(function () {
+                    return $this->model()->getTerritorialRole() === 'regional';
+                })
+                ->readonly(function () {
+                    return !auth()->user()->is_administrator;
+                })
+                ->hideFromIndex(),
             Text::make(__('Provinces'), function () {
                 $result = [];
                 foreach ($this->provinces as $province) {

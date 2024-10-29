@@ -49,6 +49,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'resources_validator' => 'array',
+        'regional_referent_expire_date' => 'date',
     ];
 
     /**
