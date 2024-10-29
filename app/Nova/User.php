@@ -145,7 +145,7 @@ class User extends Resource
 
                 return !$user->is_administrator && !$user->is_national_referent;
             }),
-            BelongsTo::make('Region')->nullable(),
+            BelongsTo::make('Region')->nullable()->help('La regione di cui é referente l\'utente'),
             Date::make('Regional Referent Expire Date', 'regional_referent_expire_date')
                 ->nullable()
                 ->canSee(function () {
@@ -189,10 +189,12 @@ class User extends Resource
             Belongsto::make('Section Member', 'section', Section::class)
                 ->hideFromIndex()
                 ->searchable()
-                ->nullable(),
+                ->nullable()
+                ->help('La sezione di cui é membro l\'utente'),
             BelongsTo::make('Managed Section', 'managedSection', Section::class)
                 ->nullable()
-                ->searchable(),
+                ->searchable()
+                ->help('La sezione di cui l\'utente é responsabile'),
             Date::make('Section Manager Expire Date', 'section_manager_expire_date')
                 ->nullable()
                 ->canSee(function ($request) {
