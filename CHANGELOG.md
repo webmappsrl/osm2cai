@@ -1,5 +1,52 @@
 # Changelog
 
+## [233.33.0](https://github.com/webmappsrl/osm2cai/compare/v233.32.0...v233.33.0) (2024-10-30)
+
+
+### Features
+
+* added delete ugc media action ([85028b5](https://github.com/webmappsrl/osm2cai/commit/85028b5759768348a78fcaf6645ee7bc2e2e6c6f))
+* added delete ugc media action ([c192b49](https://github.com/webmappsrl/osm2cai/commit/c192b491ad7191e70de4d202e0ff1f91b8356bae))
+* added delete ugc media action ([a34ae5f](https://github.com/webmappsrl/osm2cai/commit/a34ae5f1a78cee11602d5ef54044c0665d9d91dc))
+* added delete ugc media action ([dd14d7c](https://github.com/webmappsrl/osm2cai/commit/dd14d7c2ada36c7b7cd8a386c656d83e42ebc9a0))
+* added flora fauna and habitat to form with id poi ([970e250](https://github.com/webmappsrl/osm2cai/commit/970e25056c8fb451b5be96956b1b899dcb4d25f0))
+* added flora fauna and habitat to form with id poi ([60ba85e](https://github.com/webmappsrl/osm2cai/commit/60ba85e2f28c3e65e3c1b36ed51db0ad927afa47))
+* download geojson action for ugc pois and tracks ([#146](https://github.com/webmappsrl/osm2cai/issues/146)) ([c5b7948](https://github.com/webmappsrl/osm2cai/commit/c5b79484daa98cc2b5c3ea2aa96bd3e15de55ed7))
+* gestione ruoli e durate incarichi OC:4199,4200 ([#149](https://github.com/webmappsrl/osm2cai/issues/149)) ([7dec221](https://github.com/webmappsrl/osm2cai/commit/7dec22110eef1bf31d66a11731b360d370c4d4f7))
+* iNaturalist import v1 ([07f16a3](https://github.com/webmappsrl/osm2cai/commit/07f16a39c504877cb5f5b4d1512cdf04102c23ff))
+* iNaturalist import v1 ([1c6c6a1](https://github.com/webmappsrl/osm2cai/commit/1c6c6a139e694ee60ed5fc9ab26d0c8f32276dc6))
+* increased jwt token length ([46a1d2c](https://github.com/webmappsrl/osm2cai/commit/46a1d2cfb7944f8bce63d9bff56d38b526d5d722))
+* increased jwt token length ([5ab1b32](https://github.com/webmappsrl/osm2cai/commit/5ab1b32d617826521bf914fe13614a106a32e53b))
+* ugc media endpoints ([#140](https://github.com/webmappsrl/osm2cai/issues/140)) ([686befc](https://github.com/webmappsrl/osm2cai/commit/686befcc27392708eebb1d30d341f08f2f247ae0))
+* ugc media endpoints ([#140](https://github.com/webmappsrl/osm2cai/issues/140)) ([c439dac](https://github.com/webmappsrl/osm2cai/commit/c439dacc3d226783bef2da1449d152b74cec6f95))
+* ugc poi export ([d0ca96e](https://github.com/webmappsrl/osm2cai/commit/d0ca96e22c813045eca30b09cf71471a6f1c4d3a))
+* ugc poi export ([b346a0c](https://github.com/webmappsrl/osm2cai/commit/b346a0c3f0c5cf28eb17d72589062acc57bc2ede))
+
+
+### Bug Fixes
+
+* acqua sorgente csv download ([4dfa6ff](https://github.com/webmappsrl/osm2cai/commit/4dfa6ff9f7c836f18c874aee1878afb6d7b309de))
+* acqua sorgente csv download ([fd0f0c6](https://github.com/webmappsrl/osm2cai/commit/fd0f0c6a0739e6b6fd96af334911aeae26ddde6b))
+* acqua sorgente csv download OC:4100 ([b332f29](https://github.com/webmappsrl/osm2cai/commit/b332f29018beaa15b84bd82e15caac5438fe8d20))
+* added form_id filling in store post request ugc pois ([6b42d43](https://github.com/webmappsrl/osm2cai/commit/6b42d439d9bcba2903112166e2c2b083b3206f50))
+* bug fix on source surveys ([7cfc4d3](https://github.com/webmappsrl/osm2cai/commit/7cfc4d3d2fa29d71169024e5deb9883f422bd455))
+* nova code fields ([481236c](https://github.com/webmappsrl/osm2cai/commit/481236cee968c7bea41d140354cc2da966a7cc9a))
+* raw_data ([6044ede](https://github.com/webmappsrl/osm2cai/commit/6044ede4ddc343f8aa26d734e244c1b00c3e0d7b))
+* raw_data ([d176494](https://github.com/webmappsrl/osm2cai/commit/d17649492edf78024f39ca36ad98e6c56a88b38e))
+* reconcile users command ([88573a3](https://github.com/webmappsrl/osm2cai/commit/88573a3ba357a69c90c8c6c5c55b5ef7fe2e81e6))
+* reconcile users command ([f928db5](https://github.com/webmappsrl/osm2cai/commit/f928db5147909eb8235886f749b91fe2eaf72a77))
+* user link in section interface ([5f52af8](https://github.com/webmappsrl/osm2cai/commit/5f52af8e35a95de199a1242c5a276a8b757e72f7))
+* validation bugs ([#141](https://github.com/webmappsrl/osm2cai/issues/141)) ([eb41f73](https://github.com/webmappsrl/osm2cai/commit/eb41f73ef6d45474f6d34f70c3059b97bc54a25a))
+* validation bugs ([#141](https://github.com/webmappsrl/osm2cai/issues/141)) ([1145dd7](https://github.com/webmappsrl/osm2cai/commit/1145dd717d081f33ee5fd0a7596bfe157de1ed47))
+
+
+### Miscellaneous Chores
+
+* name changed ([3a48294](https://github.com/webmappsrl/osm2cai/commit/3a482941e5097cc6e1ec352dfb632e49d8e279e7))
+* name changed ([e094ff3](https://github.com/webmappsrl/osm2cai/commit/e094ff32ec4bfec01b00028fe6433c4cbad6f480))
+* updated select for ugc poi form_id in create interface ([af86316](https://github.com/webmappsrl/osm2cai/commit/af8631636a1acdc6bae340e46000720325cf6acc))
+* updated select for ugc poi form_id in create interface ([77c6edc](https://github.com/webmappsrl/osm2cai/commit/77c6edc6ebc8643ed141df73ff4554cbd30a6d94))
+
 ## [233.32.0](https://github.com/webmappsrl/osm2cai/compare/v233.31.0...v233.32.0) (2024-08-30)
 
 
