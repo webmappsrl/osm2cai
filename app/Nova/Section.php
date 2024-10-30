@@ -118,9 +118,7 @@ class Section extends Resource
             HasMany::make('Utenti', 'users', User::class),
             Text::make('Responsabile sezione', function () {
                 $sectionManager = $this->sectionManager;
-                return $sectionManager ? <<<HTML
-                    <a href="{url('/resources/users/' . $sectionManager->id)}">{$sectionManager->name}</a>
-                HTML : '/';
+                return $sectionManager ? "<a href='/resources/users/{$sectionManager->id}'>{$sectionManager->name}</a>" : '/';
             })->asHtml(),
             BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
                 ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),
