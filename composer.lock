@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3c3e5555c2059637069a52d32436522e",
+    "content-hash": "ea09d247ceb81604dd33bac1dfbd551e",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -73,6 +73,53 @@
                 "source": "https://github.com/apereo/phpCAS/tree/1.6.0"
             },
             "time": "2022-10-31T20:39:27+00:00"
+        },
+        {
+            "name": "arku/nova-multiselect",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/arku31/NovaMultiSelect.git",
+                "reference": "1908fffb6138ae75b2ce631f0d459cad86f4a695"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/arku31/NovaMultiSelect/zipball/1908fffb6138ae75b2ce631f0d459cad86f4a695",
+                "reference": "1908fffb6138ae75b2ce631f0d459cad86f4a695",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Nova\\Multiselect\\FieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nova\\Multiselect\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova Multiselect Implementation.",
+            "keywords": [
+                "laravel",
+                "multiselect",
+                "nova"
+            ],
+            "support": {
+                "issues": "https://github.com/arku31/NovaMultiSelect/issues",
+                "source": "https://github.com/arku31/NovaMultiSelect/tree/master"
+            },
+            "time": "2019-10-06T15:32:28+00:00"
         },
         {
             "name": "asm89/stack-cors",
@@ -9146,7 +9193,7 @@
         },
         {
             "name": "webmapp/wm-embedmaps-field",
-            "version": "dev-ugc_track_nova_validation",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/WmEmbedmapsField",
@@ -9240,7 +9287,7 @@
         },
         {
             "name": "wm/map-multi-linestring-nova",
-            "version": "dev-ugc_track_nova_validation",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "./nova-components/MapMultiLinestringNova",
@@ -11819,6 +11866,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "arku/nova-multiselect": 20,
         "wm/map-multi-polygon-nova3": 20
     },
     "prefer-stable": true,
@@ -11827,6 +11875,6 @@
         "php": "^7.4|^8.0",
         "ext-json": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

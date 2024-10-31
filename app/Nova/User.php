@@ -288,11 +288,6 @@ class User extends Resource
                 ->canRun(function ($request, $zone) {
                     return auth()->user()->is_administrator || auth()->user()->is_national_referent;
                 }),
-            (new AssociaUtenteAction)->standalone()->canSee(function ($request) {
-                return auth()->user()->is_administrator || auth()->user()->is_national_referent || auth()->user()->getTerritorialRole() == 'regional';
-            })->canRun(function ($request, $zone) {
-                return auth()->user()->is_administrator || auth()->user()->is_national_referent || auth()->user()->getTerritorialRole() == 'regional';
-            }),
         ];
     }
 

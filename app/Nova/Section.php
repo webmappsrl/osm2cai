@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\ID;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Text;
 use App\Helpers\Osm2CaiHelper;
+use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Fields\HasMany;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Fields\BelongsTo;
@@ -18,9 +19,9 @@ use Ericlagarda\NovaTextCard\TextCard;
 use Laravel\Nova\Fields\BelongsToMany;
 use App\Nova\Actions\DownloadRoutesCsv;
 use App\Models\Section as ModelsSection;
+use App\Nova\Actions\AddMembersToSection;
 use App\Nova\Filters\SectionRegionFilter;
 use App\Nova\Actions\AssignSectionManager;
-use Laravel\Nova\Fields\HasOne;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Section extends Resource
@@ -332,7 +333,12 @@ class Section extends Resource
         return [
             (new AssignSectionManager())->canRun(
                 function ($request) {
-                    return $request->user()->is_administrator || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id);
+                    return $request->user()->is_administrator || $request->user()->is_national_referent || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id);
+                }
+            ),
+            (new AddMembersToSection())->canRun(
+                function ($request) {
+                    return $request->user()->is_administrator || $request->user()->is_national_referent || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id) || !is_null($this->managedSection);
                 }
             ),
             (new DownloadGeojson)

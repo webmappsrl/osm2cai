@@ -10,6 +10,7 @@
   "require": {
     "php": "^7.4|^8.0",
     "ext-json": "*",
+    "arku/nova-multiselect": "dev-master",
     "chriskonnertz/open-graph": "^2.0",
     "darkaonline/l5-swagger": "^8.3",
     "david-griffiths/nova-dark-theme": "^1.0",
