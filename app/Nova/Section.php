@@ -331,16 +331,75 @@ class Section extends Resource
     public function actions(Request $request): array
     {
         return [
-            (new AssignSectionManager())->canRun(
-                function ($request) {
-                    return $request->user()->is_administrator || $request->user()->is_national_referent || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id);
-                }
-            ),
-            (new AddMembersToSection())->canRun(
-                function ($request) {
-                    return $request->user()->is_administrator || $request->user()->is_national_referent || ($request->user()->getTerritorialRole() == 'regional' && $request->user()->region_id == $this->region_id) || !is_null($this->managedSection);
-                }
-            ),
+            (new AssignSectionManager())
+                ->canSee(function ($request) {
+                    $user = $request->user();
+
+                    if ($user->is_administrator) {
+                        return true;
+                    }
+
+                    if ($user->is_national_referent) {
+                        return true;
+                    }
+
+                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
+                        return true;
+                    }
+                    return false;
+                })
+                ->canRun(function ($request) {
+                    $user = $request->user();
+                    if ($user->is_administrator) {
+                        return true;
+                    }
+
+                    if ($user->is_national_referent) {
+                        return true;
+                    }
+
+                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
+                        return true;
+                    }
+                    return false;
+                }),
+            (new AddMembersToSection())
+                ->canSee(function ($request) {
+                    $user = $request->user();
+                    if ($user->is_administrator) {
+                        return true;
+                    }
+
+                    if ($user->is_national_referent) {
+                        return true;
+                    }
+
+                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
+                        return true;
+                    }
+
+                    if ($user->managedSection && $user->managedSection->id == $this->id) {
+                        return true;
+                    }
+                })
+                ->canRun(function ($request) {
+                    $user = $request->user();
+                    if ($user->is_administrator) {
+                        return true;
+                    }
+
+                    if ($user->is_national_referent) {
+                        return true;
+                    }
+
+                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
+                        return true;
+                    }
+
+                    if ($user->managedSection && $user->managedSection->id == $this->id) {
+                        return true;
+                    }
+                }),
             (new DownloadGeojson)
                 ->canRun(
                     function ($request, $model) {
@@ -356,7 +415,8 @@ class Section extends Resource
             (new CacheMiturApi())->canSee(function ($request) {
                 return $request->user()->is_administrator;
             })->canRun(function ($request) {
-                return $request->user()->is_administrator;
+                $user = $request->user();
+                return $user->is_administrator;
             }),
         ];
     }
