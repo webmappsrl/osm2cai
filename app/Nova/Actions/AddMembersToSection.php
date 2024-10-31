@@ -27,7 +27,11 @@ class AddMembersToSection extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
+        $user = auth()->user();
         foreach ($models as $model) {
+            if (!$this->userCanManageSection($user, $model)) {
+                return Action::danger('Non sei autorizzato a modificare questa sezione');
+            }
             $ids = explode(',', str_replace(['[', ']', '"'], '', $fields->users));
             foreach ($ids as $id) {
                 $id = trim($id);
@@ -39,6 +43,11 @@ class AddMembersToSection extends Action
             }
         }
         return Action::message('Membri aggiunti alla sezione');
+    }
+
+    private function userCanManageSection($user, $section)
+    {
+        return $user->is_administrator || $user->is_national_referent || ($user->getTerritorialRole() == 'regional' && $user->region_id == $section->region_id) || (!is_null($user->managedSection) && $user->managedSection->id == $section->id);
     }
 
     /**

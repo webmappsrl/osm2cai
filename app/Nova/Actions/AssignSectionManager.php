@@ -32,15 +32,23 @@ class AssignSectionManager extends Action
      */
     public function handle(ActionFields $fields, Collection $models)
     {
+        $user = auth()->user();
         foreach ($models as $model) {
+            if (!$this->userCanManageSection($user, $model)) {
+                return Action::danger('Non sei autorizzato a modificare questa sezione');
+            }
             $user = User::find($fields->sectionManager);
             $user->manager_section_id = $model->id;
             $user->section_manager_expire_date = $fields->section_manager_expire_date;
             $user->save();
-            $model->save();
         }
 
         return Action::message(__('Responsabile sezione assegnato con successo'));
+    }
+
+    private function userCanManageSection($user, $section)
+    {
+        return $user->is_administrator || $user->is_national_referent || ($user->getTerritorialRole() == 'regional' && $user->region_id == $section->region_id) || (!is_null($user->managedSection) && $user->managedSection->id == $section->id);
     }
 
     /**

@@ -333,72 +333,17 @@ class Section extends Resource
         return [
             (new AssignSectionManager())
                 ->canSee(function ($request) {
-                    $user = $request->user();
-
-                    if ($user->is_administrator) {
-                        return true;
-                    }
-
-                    if ($user->is_national_referent) {
-                        return true;
-                    }
-
-                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 })
                 ->canRun(function ($request) {
-                    $user = $request->user();
-                    if ($user->is_administrator) {
-                        return true;
-                    }
-
-                    if ($user->is_national_referent) {
-                        return true;
-                    }
-
-                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
-                        return true;
-                    }
-                    return false;
+                    return true;
                 }),
             (new AddMembersToSection())
                 ->canSee(function ($request) {
-                    $user = $request->user();
-                    if ($user->is_administrator) {
-                        return true;
-                    }
-
-                    if ($user->is_national_referent) {
-                        return true;
-                    }
-
-                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
-                        return true;
-                    }
-
-                    if ($user->managedSection && $user->managedSection->id == $this->id) {
-                        return true;
-                    }
+                    return true;
                 })
                 ->canRun(function ($request) {
-                    $user = $request->user();
-                    if ($user->is_administrator) {
-                        return true;
-                    }
-
-                    if ($user->is_national_referent) {
-                        return true;
-                    }
-
-                    if ($user->getTerritorialRole() == 'regional' && $user->region_id == $this->region_id) {
-                        return true;
-                    }
-
-                    if ($user->managedSection && $user->managedSection->id == $this->id) {
-                        return true;
-                    }
+                    return true;
                 }),
             (new DownloadGeojson)
                 ->canRun(
