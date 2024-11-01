@@ -11,6 +11,7 @@ use Wm\MapPointNova3\MapPointNova3;
 use App\Nova\Actions\DeleteUgcMedia;
 use App\Nova\Actions\DownloadUgcCsv;
 use App\Nova\Filters\UgcFormIdFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Nova\Actions\CheckUserNoMatchAction;
 use App\Nova\Actions\DownloadFeatureCollection;
 use App\Nova\Actions\UploadAndAssociateUgcMedia;
@@ -47,6 +48,21 @@ class UgcPoi extends AbstractUgc
         'name',
         'user_no_match',
     ];
+
+    public static function applySearch($query, $search)
+    {
+        return $query->where(function ($query) use ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%')
+                ->orWhere('user_no_match', 'like', '%' . $search . '%')
+                ->orWhereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+        });
+    }
+
+
 
     /**
      * The relationship columns that should be searched
