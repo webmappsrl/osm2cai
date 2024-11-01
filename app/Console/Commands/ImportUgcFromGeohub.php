@@ -183,8 +183,16 @@ class ImportUgcFromGeohub extends Command
         ];
 
         $user = User::where('email', $geoJson['properties']['user_email'])->first();
-        $geometry = isset($geoJson['geometry']) && $geoJson['geometry'] != null ? DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')') : null;
-        $geometry = $geometry ? DB::raw('ST_Transform(' . $geometry . ', 4326)') : null;
+        $geometry = null;
+        if (
+            isset($geoJson['geometry']) &&
+            $geoJson['geometry'] !== null &&
+            !empty($geoJson['geometry']) &&
+            isset($geoJson['geometry']['coordinates'])
+        ) {
+            $geometry = DB::raw('ST_GeomFromGeoJSON(\'' . json_encode($geoJson['geometry']) . '\')');
+            $geometry = DB::raw('ST_Transform(' . $geometry . ', 4326)');
+        }
 
         if ($geometry) {
             $data['geometry'] = $geometry;
