@@ -19,6 +19,8 @@ class ImportUgcFromGeohub extends Command
      */
     protected $signature = 'osm2cai:sync-ugc {app_id?}';
 
+    protected $logger;
+
     /**
      * The console command description.
      *
@@ -34,6 +36,7 @@ class ImportUgcFromGeohub extends Command
     public function __construct()
     {
         parent::__construct();
+        $this->logger = Log::channel('import-ugc');
     }
 
     private $baseApiUrl = "https://geohub.webmapp.it/api/ugc/";
@@ -43,12 +46,9 @@ class ImportUgcFromGeohub extends Command
         58 => 'it.webmapp.acquasorgente'
     ];
     private $types = ['poi', 'track', 'media'];
-    private $createdElements = [
-        'poi' => 0,
-        'track' => 0,
-        'media' => 0
-    ];
+    private $createdElements = [];
     private $updatedElements = [];
+    private $failedElements = [];
 
     /**
      * Execute the console command.
@@ -58,12 +58,6 @@ class ImportUgcFromGeohub extends Command
     public function handle()
     {
         $appId = $this->argument('app_id');
-        $createdElements = [
-            'poi' => 0,
-            'track' => 0,
-            'media' => 0
-        ];
-        $updatedElements = [];
         if ($appId) {
             $this->syncApp($appId);
         } else {
@@ -71,10 +65,17 @@ class ImportUgcFromGeohub extends Command
         }
 
         $this->updateFormIds();
-        Log::channel('import-ugc')->info("Sync completato.");
+
+        $this->logResults();
+
+        $this->logger->info("Sync completato.");
         $this->info("Sync completato.");
 
-        return ['createdElements' => $this->createdElements, 'updatedElements' => $this->updatedElements];
+        return [
+            'createdElements' => $this->createdElements,
+            'updatedElements' => $this->updatedElements,
+            'failedElements' => $this->failedElements
+        ];
     }
 
     private function syncAllApps()
@@ -87,8 +88,15 @@ class ImportUgcFromGeohub extends Command
 
     private function syncApp($appId)
     {
-        Log::channel('import-ugc')->info("Avvio sync per l'app con ID $appId");
+        $this->logger->info("Avvio sync per l'app con ID $appId");
         $this->info("Avvio sync per l'app con ID $appId");
+        $appName = $this->apps[$appId] ?? null;
+
+        if (!$appName) {
+            $this->logger->error("ID app non valido: $appId");
+            $this->error("ID app non valido: $appId");
+            return;
+        }
 
         foreach ($this->types as $type) {
             $endpoint = "{$this->baseApiUrl}{$type}/geojson/{$appId}/list";
@@ -98,10 +106,10 @@ class ImportUgcFromGeohub extends Command
 
     private function syncType($type, $endpoint, $appId)
     {
-        Log::channel('import-ugc')->info("Effettuando il sync per $type da $endpoint");
+        $this->logger->info("Effettuando il sync per $type da $endpoint");
         $list = json_decode($this->get_content($endpoint), true);
         if (empty($list)) {
-            Log::channel('import-ugc')->info("Nessun elemento da sincronizzare per $type da $endpoint");
+            $this->logger->info("Nessun elemento da sincronizzare per $type da $endpoint");
             $this->info("Nessun elemento da sincronizzare per $type da $endpoint");
             return;
         }
@@ -119,7 +127,7 @@ class ImportUgcFromGeohub extends Command
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
         $data = curl_exec($ch);
         if ($data === false) {
-            Log::channel('import-ugc')->error("Failed to fetch content from URL: $url");
+            $this->logger->error("Failed to fetch content from URL: $url");
             $this->error("Failed to fetch content from URL: $url");
             throw new \Exception("Failed to fetch content from URL: $url");
         }
@@ -129,26 +137,36 @@ class ImportUgcFromGeohub extends Command
 
     private function syncElement($type, $id, $updated_at, $appId)
     {
-        Log::channel('import-ugc')->info("Controllo $type con geohub id $id");
-        $this->info("Controllo $type con geohub id $id");
-        $model = $this->getModel($type, $id);
-        $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
+        try {
+            $model = $this->getModel($type, $id);
+            $geoJson = $this->getGeojson("https://geohub.webmapp.it/api/ugc/{$type}/geojson/{$id}/osm2cai");
 
-        // Aggiungiamo questa condizione per aggiornare sempre l'app_id
-        $needsUpdate = $model->wasRecentlyCreated ||
-            $model->updated_at < $updated_at;
+            $needsUpdate = $model->wasRecentlyCreated || $model->updated_at < $updated_at;
 
-        if ($needsUpdate) {
-            $this->syncRecord($model, $geoJson, $id, $appId, $type);
-            if ($model->wasRecentlyCreated) {
-                $this->createdElements[$type]++;
-                $this->info("Creato nuovo $type con id $id");
-                Log::channel('import-ugc')->info("Creato nuovo $type con id $id");
-            } else {
-                $this->updatedElements[] = ucfirst($type) . ' with id ' . $id . ' updated';
-                $this->info("Aggiornato $type con geohub id $id");
-                Log::channel('import-ugc')->info("Aggiornato $type con geohub id $id");
+            if ($needsUpdate) {
+                $this->syncRecord($model, $geoJson, $id, $appId, $type);
+                if ($model->wasRecentlyCreated) {
+                    $this->createdElements[] = [
+                        'type' => $type,
+                        'id' => $id,
+                        'app' => $this->apps[$appId]
+                    ];
+                } else {
+                    $this->updatedElements[] = [
+                        'type' => $type,
+                        'id' => $id,
+                        'app' => $this->apps[$appId]
+                    ];
+                }
             }
+        } catch (\Exception $e) {
+            $this->failedElements[] = [
+                'type' => $type,
+                'id' => $id,
+                'app' => $this->apps[$appId],
+                'error' => $e->getMessage()
+            ];
+            $this->logger->error("Errore durante la sincronizzazione di $type ID $id per app {$this->apps[$appId]}: " . $e->getMessage());
         }
     }
 
@@ -162,7 +180,7 @@ class ImportUgcFromGeohub extends Command
     {
         $geoJson = json_decode($this->get_content($url), true);
         if ($geoJson === null) {
-            Log::channel('import-ugc')->error("Errore nel fetch del GeoJSON da $url");
+            $this->logger->error("Errore nel fetch del GeoJSON da $url");
             $this->error("Errore nel fetch del GeoJSON da $url");
             throw new \Exception("Errore nel fetch del GeoJSON da $url");
         }
@@ -171,7 +189,7 @@ class ImportUgcFromGeohub extends Command
 
     private function syncRecord($model, $geoJson, $id, $appId, $type)
     {
-        Log::channel('import-ugc')->info("Aggiornamento $type con id $id");
+        $this->logger->info("Aggiornamento $type con id $id");
         $this->info("Aggiornamento $type con id $id");
 
         $data = [
@@ -227,7 +245,7 @@ class ImportUgcFromGeohub extends Command
 
         $model->update($data);
         $model->save();
-        Log::channel('import-ugc')->info("Aggiornamento completato");
+        $this->logger->info("Aggiornamento completato");
         $this->info("Aggiornamento completato");
     }
 
@@ -237,6 +255,26 @@ class ImportUgcFromGeohub extends Command
         foreach ($ugcPois as $ugcPoi) {
             $rawData = json_decode($ugcPoi->raw_data, true);
             DB::table('ugc_pois')->where('id', $ugcPoi->id)->update(['form_id' => $rawData['id'] ?? null]);
+        }
+    }
+
+    private function logResults()
+    {
+        $this->logger->info("=== RIEPILOGO SINCRONIZZAZIONE ===");
+
+        $this->logger->info("ELEMENTI CREATI (" . count($this->createdElements) . "):");
+        foreach ($this->createdElements as $element) {
+            $this->logger->info("{$element['type']} ID: {$element['id']} - App: {$element['app']}");
+        }
+
+        $this->logger->info("ELEMENTI AGGIORNATI (" . count($this->updatedElements) . "):");
+        foreach ($this->updatedElements as $element) {
+            $this->logger->info("{$element['type']} ID: {$element['id']} - App: {$element['app']}");
+        }
+
+        $this->logger->info("ELEMENTI FALLITI (" . count($this->failedElements) . "):");
+        foreach ($this->failedElements as $element) {
+            $this->logger->info("{$element['type']} ID: {$element['id']} - App: {$element['app']} - Errore: {$element['error']}");
         }
     }
 }
