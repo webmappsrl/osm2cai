@@ -46,7 +46,6 @@ class User extends Resource
     {
         if (empty($request->get('orderBy'))) {
             $query->getQuery()->orders = [];
-
             $query->orderBy(key(static::$indexDefaultOrder), reset(static::$indexDefaultOrder));
         }
 
@@ -54,13 +53,23 @@ class User extends Resource
          * @var \App\Models\User
          */
         $user = auth()->user();
+
+        //if user is administrator or national referent
+        if ($user->is_administrator || $user->is_national_referent) {
+            return $query;
+        }
+
+        //if user is regional referent
         if ($user->getTerritorialRole() == 'regional') {
             $regionId = $user->region_id;
+
+            // Get users from territorial hierarchy
             $provinces = Region::find($regionId)->provinces()->get();
             $regionUsers = UserModel::where('region_id', $regionId)->get()->pluck('id')->toArray();
             $provinceUsers = [];
             $areaUsers = [];
             $sectorUsers = [];
+
             foreach ($provinces as $province) {
                 $provinceUsers = array_merge($provinceUsers, $province->users()->get()->pluck('id')->toArray());
                 $areas = $province->areas()->get();
@@ -72,7 +81,46 @@ class User extends Resource
                     }
                 }
             }
-            $query->whereIn('id', array_unique(array_merge($provinceUsers, $areaUsers, $sectorUsers, $regionUsers)));
+
+            // Get users from sections in the region
+            $sectionUsers = UserModel::whereHas('section', function ($query) use ($regionId) {
+                $query->whereHas('region', function ($query) use ($regionId) {
+                    $query->where('id', $regionId);
+                });
+            })->pluck('id')->toArray();
+
+            // Get users who manage sections in the region
+            $sectionManagerUsers = UserModel::whereHas('managedSection', function ($query) use ($regionId) {
+                $query->whereHas('region', function ($query) use ($regionId) {
+                    $query->where('id', $regionId);
+                });
+            })->pluck('id')->toArray();
+
+            // Merge all user IDs and remove duplicates
+            $allUsers = array_unique(array_merge(
+                $regionUsers,
+                $provinceUsers,
+                $areaUsers,
+                $sectorUsers,
+                $sectionUsers,
+                $sectionManagerUsers
+            ));
+
+            $query->whereIn('id', $allUsers);
+        }
+        //if user is section manager
+        elseif ($user->managedSection) {
+            $sectionId = $user->managedSection->id;
+
+            // Get users who are members of the managed section
+            $sectionMemberIds = UserModel::whereHas('section', function ($query) use ($sectionId) {
+                $query->where('id', $sectionId);
+            })->pluck('id')->toArray();
+
+            // Include also the section manager in the list
+            $allUsers = array_unique(array_merge([$user->id], $sectionMemberIds));
+
+            $query->whereIn('id', $allUsers);
         }
 
         return $query;
@@ -210,7 +258,7 @@ class User extends Resource
                 ->canSee(function ($request) {
                     return auth()->user()->is_administrator || auth()->user()->is_national_referent || auth()->user()->id == $request->resourceId;
                 })
-                ->help('Utilizzare placeholder " @osm_id " per sostituire con l\'id della relazione(e.g. rel(@osm_id);node(around:1000)["amenity"~"monastery|place_of_worship|ruins"];);out;")'),
+                ->help('Utilizzare placeholder " @osm_id " per sostituire con l\'id della relazione(e.g. rel(@osm_id);node(around:1000)["amenity"~"monastery|place_of_worship|ruins"];);out;')
         ];
 
         $validationFields = $this->jsonForm('resources_validator', $this->getValidatorFieldsSchema());

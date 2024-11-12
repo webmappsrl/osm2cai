@@ -17,9 +17,7 @@ class UserPolicy
      *
      * @return void
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Return true if the given user is a manager of the model user
@@ -46,12 +44,17 @@ class UserPolicy
 
     public function viewAny(User $user): bool
     {
-
         $territorialRole = $user->getTerritorialRole();
-        if ($territorialRole == 'local' || $territorialRole == 'unknown')
+
+        if ($territorialRole == 'local' || $territorialRole == 'unknown') {
+            // Allow section managers to view users
+            if ($user->managedSection) {
+                return true;
+            }
             return false;
-        else
-            return true;
+        }
+
+        return true;
     }
 
     public function view(User $user, User $model): bool
