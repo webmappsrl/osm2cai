@@ -85,8 +85,9 @@ Route::name('api.')->group(function () {
         Route::get('/section/{id}', [SectionController::class, 'csv'])->name('section');
         Route::get('/users/', [UserController::class, 'csv'])->name('users');
     });
-    Route::prefix('geojson/complete')->name('geojson_complete.')->group(function () {
+    Route::prefix('geojson-complete')->name('geojson_complete.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'geojsonComplete'])->name('region');
+        Route::get('/sector/{id}', [SectorController::class, 'geojsonComplete'])->name('sector');
     });
     Route::prefix('geojson')->name('geojson.')->group(function () {
         Route::get('/region/{id}', [RegionController::class, 'geojson'])->name('region');

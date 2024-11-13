@@ -378,15 +378,22 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         ob_start();
         foreach ($user->$table as $relatedModel) {
             $id = $relatedModel->id;
+
+            //local referent should download hiking routes geojson for the sector and not the geojson of the sector
+            if ($tableSingular == 'sector') {
+                $type = 'geojson-complete';
+            } else {
+                $type = 'geojson';
+            }
 ?>
             <h5><?= $relatedModel->name ?>: </h5>
-            <a href="<?= route("loading-download", ['type' => 'geojson', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+            <a href="<?= route("loading-download", ['type' => $type, 'model' => $tableSingular, 'id' => $id]) ?>" target="_blank">Download
                 geojson
                 Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+            <a href="<?= route("loading-download", ['type' => 'shapefile', 'model' => $tableSingular, 'id' => $id]) ?>" target="_blank">Download
                 shape
-                Percorsi</a>
-            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>">Download
+                geometria territoriale</a>
+            <a href="<?= route("loading-download", ['type' => 'csv', 'model' => $tableSingular, 'id' => $id]) ?>" target="_blank">Download
                 csv
                 Percorsi</a>
 <?php

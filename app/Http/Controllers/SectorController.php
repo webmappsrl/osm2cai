@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sector;
+use App\Models\HikingRoute;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Nova\Actions\Action;
 
 class SectorController extends Controller
 {
@@ -39,6 +39,18 @@ class SectorController extends Controller
             return response(json_encode($geojson), 200, $headers);
         } else
             return response()->json(['Error' => 'Sector ' . $id . ' not found'], 404);
+    }
+
+    public function geojsonComplete(string $id)
+    {
+        $sector = Sector::find($id);
+
+        $headers = [
+            'Content-type' => 'application/json',
+            'Content-Disposition' => 'attachment; filename="osm2cai_' . date('Ymd') . '_settore_complete_' . $sector->name . '.geojson"',
+        ];
+
+        return response($sector->getGeojsonComplete(), 200, $headers);
     }
 
     public function shapefile(string $id)
