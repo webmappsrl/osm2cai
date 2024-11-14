@@ -50,8 +50,8 @@ class SourceSurveyController extends Controller
             if ($date !== 'N/A') {
                 $date = Carbon::parse($date)->format('d-m-Y');
             }
-            if (isset($rawData['range_volume']) && $rawData['range_volume'] !== 'N/A') {
-                $flowRate = str_replace(',', '.', $rawData['range_volume']) . ' L/s';
+            if (isset($sourceSurvey->flow_rate) && $sourceSurvey->flow_rate !== 'N/A' && $sourceSurvey->flow_rate !== null) {
+                $flowRate = $sourceSurvey->flow_rate . ' L/s';
             } else {
                 $flowRate = 'N/A';
             }
