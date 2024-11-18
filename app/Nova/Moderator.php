@@ -12,9 +12,10 @@ use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Moderator extends Resource {
+class Moderator extends Resource
+{
 
-     /**
+    /**
      * Indicates if the resource should be displayed in the sidebar.
      *
      * @var bool
@@ -24,11 +25,13 @@ class Moderator extends Resource {
     public static string $model = \App\Models\User::class;
     public static string $title = 'name';
     public static array $search = [
-        'name', 'email',
+        'name',
+        'email',
     ];
     public static string $group = '';
 
-    public static function label() {
+    public static function label()
+    {
         return 'Responsabili';
     }
 
@@ -43,7 +46,8 @@ class Moderator extends Resource {
      *
      * @return array
      */
-    public function fields(Request $request): array {
+    public function fields(Request $request): array
+    {
         return [
             Text::make('Name')
                 ->sortable(),
@@ -64,7 +68,8 @@ class Moderator extends Resource {
      *
      * @return array
      */
-    public function cards(Request $request): array {
+    public function cards(Request $request): array
+    {
         return [];
     }
 
@@ -75,7 +80,8 @@ class Moderator extends Resource {
      *
      * @return array
      */
-    public function filters(Request $request): array {
+    public function filters(Request $request): array
+    {
         return [];
     }
 
@@ -86,7 +92,13 @@ class Moderator extends Resource {
      *
      * @return array
      */
-    public function lenses(Request $request): array {
+    public function lenses(Request $request): array
+    {
         return [];
+    }
+
+    public static function authorizedToViewAny(Request $request)
+    {
+        return false;
     }
 }
