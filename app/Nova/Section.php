@@ -117,9 +117,16 @@ class Section extends Resource
             BelongsTo::make('Regione', 'region', Region::class)
                 ->searchable(),
             HasMany::make('Utenti', 'users', User::class),
-            Text::make('Responsabile sezione', function () {
-                $sectionManager = $this->sectionManager;
-                return $sectionManager ? "<a href='/resources/users/{$sectionManager->id}'>{$sectionManager->name}</a>" : '/';
+            Text::make('Responsabili sezione', function () {
+                $sectionManagers = $this->sectionManagers()->get();
+                $sectionManagerString = '';
+                foreach ($sectionManagers as $sectionManager) {
+                    $sectionManagerString .= "<a href='/resources/users/{$sectionManager->id}'>{$sectionManager->name}</a>";
+                    if (strlen($sectionManagerString) > 40) {
+                        $sectionManagerString .= "<br>";
+                    }
+                }
+                return $sectionManagerString ? rtrim($sectionManagerString, ', ') : '/';
             })->asHtml(),
             BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
                 ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),

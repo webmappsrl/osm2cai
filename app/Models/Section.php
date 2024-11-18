@@ -54,8 +54,8 @@ class Section extends Model
         return $this->hasMany(User::class);
     }
 
-    public function sectionManager()
+    public function sectionManagers()
     {
-        return $this->hasOne(User::class, 'manager_section_id');
+        return $this->hasMany(User::class, 'manager_section_id');
     }
 }
