@@ -125,7 +125,8 @@ class Sector extends Resource
             Text::make(__('Area'), 'area_id', function () {
                 return $this->area->name;
             })->hideWhenUpdating()->hideWhenCreating(),
-            BelongsToMany::make('Moderators', 'users')->searchable(),
+            BelongsToMany::make('Moderators', 'users')
+                ->searchable(),
             BelongsTo::make('Area')->onlyOnForms(),
             File::make('Geometry')->store(function (Request $request, $model) {
                 return $model->fileToGeometry($request->geometry->get());
@@ -300,5 +301,22 @@ class Sector extends Resource
             }),
             (new SectorAssignModerator)
         ];
+    }
+
+    public function authorizedToAttachAny(NovaRequest $request, $model)
+    {
+        $user = $request->user();
+        $sector = $model;
+
+        if ($user->is_administrator || $user->is_national_referent) {
+            return true;
+        }
+
+        if ($user->region_id && $sector->area->province->region->id === $user->region_id) {
+            return true;
+        }
+
+
+        return false;
     }
 }
