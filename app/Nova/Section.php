@@ -195,7 +195,7 @@ class Section extends Resource
 
         $section = ModelsSection::where('id', $sectionId)->first();
         $hr = $section ?  $section->hikingRoutes()->get() : [];
-        if (!Auth::user()->is_administrator && Auth::user()->section_id != null) {
+        if (!Auth::user()->is_administrator && Auth::user()->section_id != null && Auth::user()->region_id != null) {
             $data = DB::table('sections_view')
                 ->select(['tot', 'tot1', 'tot2', 'tot3', 'tot4'])
                 ->where('id', Auth::user()->section->id)
@@ -208,7 +208,7 @@ class Section extends Resource
                 (new TextCard())
                     ->onlyOnDetail()
                     ->forceFullWidth()
-                    ->heading(\auth()->user()->region->name),
+                    ->heading(\auth()->user()->region->name ?? ''),
                 $this->_getSdaCard(1, $numbers[1], $exploreBaseUrl, $base64Filters),
                 $this->_getSdaCard(2, $numbers[2], $exploreBaseUrl, $base64Filters),
                 $this->_getSdaCard(3, $numbers[3], $exploreBaseUrl, $base64Filters),
