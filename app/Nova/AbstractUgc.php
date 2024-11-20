@@ -19,6 +19,7 @@ use App\Nova\Filters\UgcUserNoMatchFilter;
 use PosLifestyle\DateRangeFilter\Enums\Config;
 use App\Nova\Actions\DownloadFeatureCollection;
 use App\Nova\Actions\UploadAndAssociateUgcMedia;
+use Illuminate\Support\Facades\Auth;
 use PosLifestyle\DateRangeFilter\DateRangeFilter;
 
 abstract class AbstractUgc extends Resource
@@ -46,11 +47,15 @@ abstract class AbstractUgc extends Resource
     {
         $novaFields = [
             ID::make(__('ID'), 'id')->sortable()->readonly(),
-            Text::make('User', function () {
+            Text::make('User', function () use ($request) {
                 if ($this->user_id) {
+                    if (Auth::user()->isValidatorForFormId($this->form_id)) {
+                        //add the email of the user next to the name for validator
+                        return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . ' (' . $this->user->email . ')' . '</a>';
+                    }
                     return '<a style="text-decoration:none; font-weight:bold; color:teal;" href="/resources/users/' . $this->user_id . '">' . $this->user->name . '</a>';
                 } else {
-                    return $this->user_no_match ?? 'N/A';
+                    return $this->user_no_match ?? $this->user->email ?? 'N/A';
                 }
             })->asHtml(),
             BelongsTo::make('User', 'user', User::class)
