@@ -25,7 +25,7 @@ class ArchaeologicalAreaUmapResource extends JsonResource
                 'location' => $this->raw_data['location'] ?? '',
                 'notes' => $this->raw_data['notes'] ?? '',
                 'validation_status' => $this->validated ?? '',
-                'osm2cai_link' => url('resources/ugc-pois/' . $this->osm_id),
+                'osm2cai_link' => url('resources/ugc-pois/' . $this->id),
                 'images' => $this->ugc_media->map(function ($image) {
                     $url = $image->getUrl();
                     if (strpos($url, 'http') === false) {

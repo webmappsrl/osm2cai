@@ -26,7 +26,7 @@ class SignUmapResource extends JsonResource
                 'conservation_status' => $this->raw_data['conservation_status'] ?? '',
                 'notes' => $this->raw_data['notes'] ?? '',
                 'validation_status' => $this->validated ?? '',
-                'osm2cai_link' => url('resources/ugc-pois/' . $this->osm_id),
+                'osm2cai_link' => url('resources/ugc-pois/' . $this->id),
                 'images' => $this->ugc_media->map(function ($image) {
                     $url = $image->getUrl();
                     if (strpos($url, 'http') === false) {
