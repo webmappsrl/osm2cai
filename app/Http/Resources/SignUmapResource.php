@@ -26,7 +26,7 @@ class SignUmapResource extends JsonResource
                 'conservation_status' => $this->raw_data['conservation_status'] ?? '',
                 'notes' => $this->raw_data['notes'] ?? '',
                 'validation_status' => $this->validated ?? '',
-                'geohub_link' => $this->geohub_id ? 'https://geohub.webmapp.it/resources/ugc-pois/' . $this->geohub_id : '',
+                'osm2cai_link' => url('resources/ugc-pois/' . $this->osm_id),
                 'images' => $this->ugc_media->map(function ($image) {
                     $url = $image->getUrl();
                     if (strpos($url, 'http') === false) {

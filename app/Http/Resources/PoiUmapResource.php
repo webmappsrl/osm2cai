@@ -24,7 +24,7 @@ class PoiUmapResource extends JsonResource
                 'description' => $this->raw_data['description'] ?? $this->description ?? '',
                 'waypointtype' => $this->raw_data['waypointtype'] ?? '',
                 'validation_status' => $this->validated ?? '',
-                'geohub_link' => $this->geohub_id ? 'https://geohub.webmapp.it/resources/ugc-pois/' . $this->geohub_id : '',
+                'osm2cai_link' => url('resources/ugc-pois/' . $this->osm_id),
                 'images' => $this->ugc_media->map(function ($image) {
                     $url = $image->getUrl();
                     if (strpos($url, 'http') === false) {
