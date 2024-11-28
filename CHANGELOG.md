@@ -1,5 +1,34 @@
 # Changelog
 
+## [233.34.0](https://github.com/webmappsrl/osm2cai/compare/v233.33.0...v233.34.0) (2024-11-25)
+
+
+### Features
+
+* add email next to user name for validators ([72d3336](https://github.com/webmappsrl/osm2cai/commit/72d3336e8cca17835144e10f1c13841e6119894b))
+* Api Overlay per UMAP OC:4339 ([0685aee](https://github.com/webmappsrl/osm2cai/commit/0685aee429b11248b65991710704631c962d9317))
+* dedicated log for ugc sync from geohub ([#153](https://github.com/webmappsrl/osm2cai/issues/153)) ([69d927f](https://github.com/webmappsrl/osm2cai/commit/69d927fc1376d0efe0fef7c43f4aa4e6032ee006))
+* possibilitá di visualizzare piu utenti nel campo responsabili di sezione OC: 4311 ([3f2587a](https://github.com/webmappsrl/osm2cai/commit/3f2587a76d5f84a8e952d46412cf3e2c6b2fe8b7))
+
+
+### Bug Fixes
+
+* associate user to section action ([845f105](https://github.com/webmappsrl/osm2cai/commit/845f105e050eeaee1a3fa08b4d0af67362fa34ca))
+* bug fix on section details ([36bd0b9](https://github.com/webmappsrl/osm2cai/commit/36bd0b9f1cb4ed87699882cdb7996acb33264616))
+* errore url download geojson OC: 4267 ([27d7b23](https://github.com/webmappsrl/osm2cai/commit/27d7b235fc1df0e997695c13b06034943c6a7e27))
+* excluding pois with null geometry for umap feature collection ([839597a](https://github.com/webmappsrl/osm2cai/commit/839597a5bc79800ed0b6c86ff36edd5cf7c3e478))
+* fixed user indexquery and policy to allow section managers and local referents to see members ([a5b987d](https://github.com/webmappsrl/osm2cai/commit/a5b987d7265f693414c0c1f6ec50c89cd67598f1))
+* handling action authorization inside action class ([006ce8d](https://github.com/webmappsrl/osm2cai/commit/006ce8d87de3659ab791941681472dd38dc31834))
+* permessi resources/moderators OC: 4315 ([d2b17d4](https://github.com/webmappsrl/osm2cai/commit/d2b17d4a9ec0cb1bfd48dfe1bce1e6acba459554))
+* source survey overlay geojson ([3107df6](https://github.com/webmappsrl/osm2cai/commit/3107df647a4b05fc51bf2c983ba92e1dd814d658))
+* typo ([f6a0afb](https://github.com/webmappsrl/osm2cai/commit/f6a0afbbee45ff4685a07ab28378a1fd32ac61ed))
+* ugc media syng OC: 4209 ([#152](https://github.com/webmappsrl/osm2cai/issues/152)) ([6a36e3f](https://github.com/webmappsrl/osm2cai/commit/6a36e3f505541fc453da0a8d117523743952b419))
+
+
+### Miscellaneous Chores
+
+* referente sezionale non deve avere permessi di associazione territoriale OC: 4329 ([4a1107c](https://github.com/webmappsrl/osm2cai/commit/4a1107cbf9495e228fc4e0ff2f530b3335a6b95f))
+
 ## [233.33.0](https://github.com/webmappsrl/osm2cai/compare/v233.32.0...v233.33.0) (2024-10-30)
 
 
