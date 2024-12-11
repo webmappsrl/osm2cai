@@ -21,7 +21,9 @@ class DownloadSourceSurveyCsv extends Action
     public $showOnIndex = true;
     public $withoutConfirmation = true;
 
-    /**
+    public static $chunkCount = 2000;
+
+    /** 
      * Perform the action on the given models.
      *
      * @param  \Laravel\Nova\Fields\ActionFields  $fields

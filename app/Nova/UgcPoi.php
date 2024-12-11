@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Nova\Actions\CheckUserNoMatchAction;
 use App\Nova\Actions\DownloadFeatureCollection;
 use App\Nova\Actions\UploadAndAssociateUgcMedia;
+use Laravel\Nova\Fields\Number;
 
 class UgcPoi extends AbstractUgc
 {
@@ -153,6 +154,7 @@ class UgcPoi extends AbstractUgc
                 'maxZoom' => 14,
                 'defaultZoom' => 5
             ])->hideFromIndex(),
+            Number::make('Elevation', 'raw_data->position->altitude')->step(.01)->hideFromIndex(),
             $this->getCodeField('Form data', ['id', 'form_id', 'waypointtype', 'key', 'date', 'title']),
             $this->getCodeField('Device data', ['position', 'displayPosition', 'city', 'date']),
             $this->getCodeField('Nominatim'),

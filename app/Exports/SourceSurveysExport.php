@@ -3,8 +3,9 @@
 namespace App\Exports;
 
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\FromCollection;
 
 class SourceSurveysExport implements FromCollection, WithHeadings
 {
@@ -19,21 +20,29 @@ class SourceSurveysExport implements FromCollection, WithHeadings
     {
         return $this->models->map(function ($model) {
             $rawData = is_string($model->raw_data) ? json_decode($model->raw_data, true) : $model->raw_data;
+            $modelLat = DB::select("SELECT ST_Y(geometry) AS latitude FROM ugc_pois WHERE id = $model->id")[0]->latitude;
+            $modelLon = DB::select("SELECT ST_X(geometry) AS longitude FROM ugc_pois WHERE id = $model->id")[0]->longitude;
+
+            $lon = $modelLon ?? $rawData['position']['longitude'] ?? '/';
+            $lat = $modelLat ?? $rawData['position']['latitude'] ?? '/';
+
             return [
                 'osm2cai_id' => $model->id,
                 'operator' => $model->user->name ?? $model->user_no_match ?? '/',
                 'monitoring_date' => $rawData['date'] ?? $model->created_at,
                 'url' => url("resources/source-surveys/$model->id"),
-                'lon' => $rawData['position']['longitude'] ?? '/',
-                'lat' => $rawData['position']['latitude'] ?? '/',
+                'lon' => $lon,
+                'lat' => $lat,
                 'ele' => $rawData['position']['altitude'] ?? '/',
                 'name' => $model->name ?? '/',
                 'active' => $rawData['active'] ?? '/',
-                'flow_rate_fill_time' => $model->flow_rate_fill_time ?? '/',
-                'flow_rate_volume' => $model->flow_rate_volume ?? '/',
-                'flow_rate L/s' => is_numeric($model->flow_rate_volume) && is_numeric($model->flow_rate_fill_time) && $model->flow_rate_fill_time != 0 ? round($model->flow_rate_volume / $model->flow_rate_fill_time, 3) : '/',
-                'temperature' => $model->temperature ?? '/',
-                'conductivity' => $model->conductivity ?? '/',
+                'validated' => $model->validated ?? '/',
+                'water_flow_rate_validated' => $model->water_flow_rate_validated ?? '/',
+                'flow_rate_fill_time' => $rawData['range_time'] ?? '/',
+                'flow_rate_volume' => $rawData['range_volume'] ?? '/',
+                'flow_rate L/s' => is_numeric($rawData['range_volume']) && is_numeric($rawData['range_time']) && $rawData['range_time'] != 0 ? round($rawData['range_volume'] / $rawData['range_time'], 3) : '/',
+                'temperature' => $rawData['temperature'] ?? '/',
+                'conductivity' => $rawData['conductivity'] ?? '/',
                 'photo' => count($model->ugc_media()->get()) > 0 ? 'yes' : 'no',
                 'notes' => $model->note ?? '/',
             ];
@@ -52,6 +61,8 @@ class SourceSurveysExport implements FromCollection, WithHeadings
             'Ele',
             'Name',
             'Active',
+            'Validated',
+            'Water Flow Rate Validated',
             'Range Time',
             'Range Volume',
             'Range L/s',
