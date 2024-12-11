@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\Text;
 use Illuminate\Support\Carbon;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Boolean;
 use App\Enums\UgcValidatedStatus;
@@ -45,11 +46,10 @@ class SourceSurvey extends AbstractValidationResource
 
     public function fields(Request $request)
     {
-        $rawData = $this->raw_data;
         $fields = parent::fields($request);
 
         $dedicatedFields = [
-            Date::make('Monitoring Date', function () use ($rawData) {
+            Date::make('Monitoring Date', function () {
                 return $this->getRegisteredAtAttribute();
             })->sortable(),
             Text::make('Flow Rate L/s', 'flow_rate')->resolveUsing(function ($value) {
@@ -79,13 +79,12 @@ class SourceSurvey extends AbstractValidationResource
 
     public function readonlyFields()
     {
-        $rawData = $this->raw_data;
         return [
             Text::make('ID', 'id')->hideFromIndex()->readonly(),
             Text::make('User', 'user')->resolveUsing(function ($user) {
                 return $user->name ?? $this->user_no_match;
             })->readonly(),
-            Date::make('Monitoring Date', function () use ($rawData) {
+            Date::make('Monitoring Date', function () {
                 return $this->getRegisteredAtAttribute();
             })
                 ->sortable()->readonly(),
@@ -95,6 +94,15 @@ class SourceSurvey extends AbstractValidationResource
     public function modifiablesFields()
     {
         return [
+            MapPointNova3::make('geometry')->withMeta([
+                'center' => [42, 10],
+                'attribution' => '<a href="https://webmapp.it/">Webmapp</a> contributors',
+                'tiles' => 'https://api.webmapp.it/tiles/{z}/{x}/{y}.png',
+                'minZoom' => 5,
+                'maxZoom' => 14,
+                'defaultZoom' => 5
+            ])->hideFromIndex(),
+            Number::make('Elevation', 'raw_data->position->altitude')->step(.01)->hideFromIndex(),
             Text::make('Flow Rate/Volume', 'raw_data->range_volume'),
             Text::make('Flow Rate/Fill Time', 'raw_data->range_time'),
             Text::make('Conductivity microS/cm', 'raw_data->conductivity'),
