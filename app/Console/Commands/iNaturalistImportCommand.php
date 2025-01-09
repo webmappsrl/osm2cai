@@ -190,7 +190,7 @@ class iNaturalistImportCommand extends Command
 
         // Crea o aggiorna il modello UgcPoi
         $ugcPoi = UgcPoi::updateOrCreate(
-            ['name' => $data['species_guess'] ?? 'Sconosciuto', 'app_id' => self::INATURALIST_NAME],
+            ['raw_data->uri' => $rawData['uri'], 'app_id' => self::INATURALIST_NAME],
             [
                 'geometry' => $geometry,
                 'type' => $ancestor,
