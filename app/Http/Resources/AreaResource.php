@@ -20,7 +20,7 @@ class AreaResource extends JsonResource
 
         if ($this->resource->geometry) {
             $geom = DB::select(
-                DB::raw('SELECT ST_AsGeoJSON(geometry) As geom FROM areas WHERE id = :id'),
+                DB::raw('SELECT ST_AsGeoJSON(ST_Multi(ST_Force2D(ST_CurveToLine(geometry)))) As geom FROM areas WHERE id = :id'),
                 ['id' => $this->resource->id]
             )[0]->geom;
 
