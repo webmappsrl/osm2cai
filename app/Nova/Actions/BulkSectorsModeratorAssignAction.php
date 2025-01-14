@@ -16,7 +16,7 @@ class BulkSectorsModeratorAssignAction extends Action
 {
     use InteractsWithQueue, Queueable;
 
-    public $name = "Associa moderatore";
+    public $name = "Associa Referente Sentieristica";
 
     /**
      * Perform the action on the given models.
@@ -28,10 +28,10 @@ class BulkSectorsModeratorAssignAction extends Action
     public function handle(ActionFields $fields, Collection $models)
     {
         $userId = $fields->get('user');
-        $models->map( function($model) use ($userId) {
-            if ( ! $model->users->contains( $userId ) )
-                $model->users()->attach( $userId );
-        } );
+        $models->map(function ($model) use ($userId) {
+            if (! $model->users->contains($userId))
+                $model->users()->attach($userId);
+        });
         return Action::message('Moderatori assegnati correttamente!');
     }
 
@@ -42,7 +42,9 @@ class BulkSectorsModeratorAssignAction extends Action
      */
     public function fields()
     {
-        $users = User::all(['id','email', 'name'])->keyBy('id')->map( function($e){ return "{$e->name} ({$e->email})"; } )->all();
+        $users = User::all(['id', 'email', 'name'])->keyBy('id')->map(function ($e) {
+            return "{$e->name} ({$e->email})";
+        })->all();
         return [
             Select::make('User')->searchable()->options(
                 $users
