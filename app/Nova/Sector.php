@@ -298,7 +298,6 @@ class Sector extends Resource
             (new DownloadRoutesCsv)->canRun(function ($request, $zone) {
                 return $request->user()->can('downloadKml', $zone);
             }),
-            (new SectorAssignModerator)
         ];
     }
 }
