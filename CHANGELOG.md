@@ -1,5 +1,15 @@
 # Changelog
 
+## [233.34.1](https://github.com/webmappsrl/osm2cai/compare/v233.34.0...v233.34.1) (2025-01-14)
+
+
+### Bug Fixes
+
+* acquasorgente download CSV OC:4466 ([#154](https://github.com/webmappsrl/osm2cai/issues/154)) ([3f78711](https://github.com/webmappsrl/osm2cai/commit/3f78711f83f9cae102a22cd9788328c6dcf1f172))
+* duplicate assign moderator action in sectors interface ([#156](https://github.com/webmappsrl/osm2cai/issues/156)) ([d69e69d](https://github.com/webmappsrl/osm2cai/commit/d69e69df0800e41141aa2f1b011c8e097130c5ab))
+* handled multisurface type geometry for areas api resources ([029310e](https://github.com/webmappsrl/osm2cai/commit/029310e0aa0a9718dea100bcc508232e30f0122a))
+* Inaturalist import now search match with uri instead of name for improved precision and avoid duplicates ([a4f5e67](https://github.com/webmappsrl/osm2cai/commit/a4f5e67f25daf8f38bb67a6cddae52c031c148d9))
+
 ## [233.34.0](https://github.com/webmappsrl/osm2cai/compare/v233.33.0...v233.34.0) (2024-11-25)
 
 
