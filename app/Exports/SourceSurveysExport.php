@@ -40,7 +40,7 @@ class SourceSurveysExport implements FromCollection, WithHeadings
                 'water_flow_rate_validated' => $model->water_flow_rate_validated ?? '/',
                 'flow_rate_fill_time' => $rawData['range_time'] ?? '/',
                 'flow_rate_volume' => $rawData['range_volume'] ?? '/',
-                'flow_rate L/s' => is_numeric($rawData['range_volume']) && is_numeric($rawData['range_time']) && $rawData['range_time'] != 0 ? round($rawData['range_volume'] / $rawData['range_time'], 3) : '/',
+                'flow_rate L/s' => $rawData && isset($rawData['range_volume']) && isset($rawData['range_time']) && is_numeric($rawData['range_volume']) && is_numeric($rawData['range_time']) && $rawData['range_time'] != 0 ? round($rawData['range_volume'] / $rawData['range_time'], 3) : '/',
                 'temperature' => $rawData['temperature'] ?? '/',
                 'conductivity' => $rawData['conductivity'] ?? '/',
                 'photo' => count($model->ugc_media()->get()) > 0 ? 'yes' : 'no',
