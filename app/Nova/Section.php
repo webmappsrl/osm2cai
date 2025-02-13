@@ -23,6 +23,7 @@ use App\Nova\Actions\AddMembersToSection;
 use App\Nova\Filters\SectionRegionFilter;
 use App\Nova\Actions\AssignSectionManager;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use App\Nova\Actions\RemoveMembersFromSection;
 
 class Section extends Resource
 {
@@ -118,15 +119,10 @@ class Section extends Resource
                 ->searchable(),
             HasMany::make('Utenti', 'users', User::class),
             Text::make('Responsabili sezione', function () {
-                $sectionManagers = $this->sectionManagers()->get();
-                $sectionManagerString = '';
-                foreach ($sectionManagers as $sectionManager) {
-                    $sectionManagerString .= "<a href='/resources/users/{$sectionManager->id}'>{$sectionManager->name}</a>";
-                    if (strlen($sectionManagerString) > 40) {
-                        $sectionManagerString .= "<br>";
-                    }
-                }
-                return $sectionManagerString ? rtrim($sectionManagerString, ', ') : '/';
+                return $this->formatUserList($this->sectionManagers()->get(), null, false);
+            })->asHtml(),
+            Text::make('Membri sezione', function () {
+                return $this->formatUserList($this->users()->get(), null, true);
             })->asHtml(),
             BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
                 ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),
@@ -352,6 +348,13 @@ class Section extends Resource
                 ->canRun(function ($request) {
                     return true;
                 }),
+            (new RemoveMembersFromSection())
+                ->canSee(function ($request) {
+                    return true;
+                })
+                ->canRun(function ($request) {
+                    return true;
+                }),
             (new DownloadGeojson)
                 ->canRun(
                     function ($request, $model) {
@@ -381,5 +384,34 @@ class Section extends Resource
     public function authorizedToAttach(NovaRequest $request, $model)
     {
         return Auth::user()->is_administrator || Auth::user()->is_national_referent;
+    }
+
+    /**
+     * Format a list of users into an HTML string
+     * 
+     * @param \Illuminate\Database\Eloquent\Collection $users
+     * @param int|null $maxLength Maximum length of each name
+     * @param bool $showCount Whether to show the total count
+     * @return string
+     */
+    private function formatUserList($users, $maxLength = null, $showCount = false)
+    {
+        if ($users->isEmpty()) {
+            return '-';
+        }
+
+        $formattedNames = $users->map(function ($user) use ($maxLength) {
+            $name = $user->name;
+            if ($maxLength && strlen($name) > $maxLength) {
+                $name = substr($name, 0, $maxLength) . '...';
+            }
+            return $name;
+        })->join('<br>');
+
+        if ($showCount) {
+            $formattedNames .= '<br><strong>Total: ' . $users->count() . '</strong>';
+        }
+
+        return $formattedNames;
     }
 }

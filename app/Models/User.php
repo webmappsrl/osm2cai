@@ -376,4 +376,9 @@ class User extends Authenticatable implements JWTSubject
                 break;
         }
     }
+
+    public function canManageSection($section)
+    {
+        return $this->is_administrator || $this->is_national_referent || ($this->getTerritorialRole() == 'regional' && $this->region_id == $section->region_id) || (!is_null($this->managedSection) && $this->managedSection->id == $section->id);
+    }
 }

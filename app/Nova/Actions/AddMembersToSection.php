@@ -29,7 +29,7 @@ class AddMembersToSection extends Action
     {
         $user = auth()->user();
         foreach ($models as $model) {
-            if (!$this->userCanManageSection($user, $model)) {
+            if (!$user->canManageSection($model)) {
                 return Action::danger('Non sei autorizzato a modificare questa sezione');
             }
             $ids = explode(',', str_replace(['[', ']', '"'], '', $fields->users));
