@@ -123,7 +123,8 @@ class Section extends Resource
             })->asHtml(),
             Text::make('Membri sezione', function () {
                 return $this->formatUserList($this->users()->get(), null, true);
-            })->asHtml(),
+            })->asHtml()
+                ->onlyOnDetail(),
             BelongsToMany::make('Sentieri della sezione', 'hikingRoutes', HikingRoute::class)
                 ->help('Solo i referenti nazionali possono aggiungere percorsi alla sezione'),
             Text::make('SDA1', function () use ($hikingRoutesSDA1) {
