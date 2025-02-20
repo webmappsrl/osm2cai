@@ -31,7 +31,7 @@ class LoginController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('nova.guest:'.config('nova.guard'))->except('logout');
+        $this->middleware('nova.guest:' . config('nova.guard'))->except('logout');
     }
 
     /**
@@ -66,7 +66,7 @@ class LoginController extends Controller
      */
     public function redirectPath()
     {
-        return Nova::path();
+        return '/maintenance';
     }
 
     /**
