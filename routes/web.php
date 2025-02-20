@@ -2,15 +2,14 @@
 
 use App\Models\HikingRoute;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Artisan;
 use App\Console\Commands\AssociateToRegions;
 use App\Http\Controllers\CasLoginController;
 use App\Http\Controllers\ExportCsvController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\MiturAbruzzoMapsController;
-use App\Console\Commands\AssociateMountainGroupsToRegions;
 use App\Http\Controllers\HikingRouteLoscarponeExportController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +22,13 @@ use App\Http\Controllers\HikingRouteLoscarponeExportController;
 |
 */
 
-Route::get('/')->name('home');
+Route::get('/maintenance', function () {
+    $user = Auth::user();
+    if (!$user || $user->email !== 'team@webmapp.it') {
+        return view('maintenance');
+    }
+    return redirect('/');
+})->name('maintenance');
 
 Route::get('/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth')->name('logs');
 
