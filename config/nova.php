@@ -1,9 +1,10 @@
 <?php
 
 use Laravel\Nova\Actions\ActionResource;
-use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Http\Middleware\Authorize;
 use Laravel\Nova\Http\Middleware\BootTools;
+use Laravel\Nova\Http\Middleware\Authenticate;
+use App\Http\Middleware\MigrationNoticeMiddleware;
 use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
 
 return [
@@ -100,6 +101,7 @@ return [
     'middleware' => [
         'web',
         Authenticate::class,
+        MigrationNoticeMiddleware::class,
         DispatchServingNovaEvent::class,
         BootTools::class,
         Authorize::class,
