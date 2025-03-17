@@ -1,5 +1,24 @@
 # Changelog
 
+## [233.35.0](https://github.com/webmappsrl/osm2cai/compare/v233.34.0...v233.35.0) (2025-03-17)
+
+
+### Features
+
+* Add maintenance mode and Nova authorization middleware ([#157](https://github.com/webmappsrl/osm2cai/issues/157)) ([85c1600](https://github.com/webmappsrl/osm2cai/commit/85c1600d67d4d2891678544c06cb58e8154a6a65))
+* Added middleware and warning page for system migration ([#158](https://github.com/webmappsrl/osm2cai/issues/158)) ([1f6a39f](https://github.com/webmappsrl/osm2cai/commit/1f6a39f50377a176395b091514d179947a756560))
+
+
+### Bug Fixes
+
+* Acquasorgente data download OC:4901 ([f70bf0e](https://github.com/webmappsrl/osm2cai/commit/f70bf0e951a4950c66bbc4127bc91cfbca02fea7))
+* acquasorgente download CSV OC:4466 ([#154](https://github.com/webmappsrl/osm2cai/issues/154)) ([3f78711](https://github.com/webmappsrl/osm2cai/commit/3f78711f83f9cae102a22cd9788328c6dcf1f172))
+* duplicate assign moderator action in sectors interface ([#156](https://github.com/webmappsrl/osm2cai/issues/156)) ([d69e69d](https://github.com/webmappsrl/osm2cai/commit/d69e69df0800e41141aa2f1b011c8e097130c5ab))
+* handled multisurface type geometry for areas api resources ([029310e](https://github.com/webmappsrl/osm2cai/commit/029310e0aa0a9718dea100bcc508232e30f0122a))
+* Inaturalist import now search match with uri instead of name for improved precision and avoid duplicates ([a4f5e67](https://github.com/webmappsrl/osm2cai/commit/a4f5e67f25daf8f38bb67a6cddae52c031c148d9))
+* Restrict section members display to detail view in Nova ([9ba5fba](https://github.com/webmappsrl/osm2cai/commit/9ba5fba9aa6da4a6ec03eb2d19e7034fc65a1c60))
+* Section Manager can now remove members from section ([d3a183b](https://github.com/webmappsrl/osm2cai/commit/d3a183b9c741ef81675a52af2b42ba418ebcaa06))
+
 ## [233.34.0](https://github.com/webmappsrl/osm2cai/compare/v233.33.0...v233.34.0) (2024-11-25)
 
 
