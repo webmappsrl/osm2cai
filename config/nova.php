@@ -4,6 +4,7 @@ use Laravel\Nova\Actions\ActionResource;
 use Laravel\Nova\Http\Middleware\Authorize;
 use Laravel\Nova\Http\Middleware\BootTools;
 use Laravel\Nova\Http\Middleware\Authenticate;
+use App\Http\Middleware\EnsureUserIsAuthorizedForNova;
 use App\Http\Middleware\MigrationNoticeMiddleware;
 use Laravel\Nova\Http\Middleware\DispatchServingNovaEvent;
 
@@ -105,6 +106,7 @@ return [
         DispatchServingNovaEvent::class,
         BootTools::class,
         Authorize::class,
+        EnsureUserIsAuthorizedForNova::class,
     ],
 
     /*
