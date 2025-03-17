@@ -8,6 +8,8 @@ use App\Http\Controllers\ExportCsvController;
 use App\Http\Controllers\ImportUGCController;
 use App\Http\Controllers\HikingRouteController;
 use App\Http\Controllers\MiturAbruzzoMapsController;
+use App\Http\Controllers\MigrationNoticeController;
+use App\Console\Commands\AssociateMountainGroupsToRegions;
 use App\Http\Controllers\HikingRouteLoscarponeExportController;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +31,10 @@ Route::get('/maintenance', function () {
     }
     return redirect('/');
 })->name('maintenance');
+
+// Migration notice routes
+Route::get('/migration-notice', [MigrationNoticeController::class, 'show'])->name('migration.notice');
+Route::get('/migration-continue', [MigrationNoticeController::class, 'continue'])->name('migration.continue');
 
 Route::get('/logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index'])->middleware('auth')->name('logs');
 
